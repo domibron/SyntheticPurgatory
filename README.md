@@ -1,4 +1,4 @@
-# studio3
+# Synthetic Purgatory
 no peaking, jk.
 
 ---
