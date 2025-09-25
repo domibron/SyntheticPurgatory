@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,119 +28,279 @@ public class PlayerMovement : MonoBehaviour
 
     float wallFloorBarrier = 40f;
 
+    [SerializeField]
+    float gravityScalar = 1f;
+
     //States
-    bool running;
-    bool jump;
-    bool crouched;
+    // bool running;
+    // bool jump;
+    // bool crouched;
     bool grounded;
+    bool isJumping;
+    bool isOnSteepSlope;
+    bool isOnSlightSlope;
 
-    Collider ground;
-
-    Vector3 groundNormal = Vector3.up;
+    // List<Collider> ground = new List<Collider>();
+    Vector3 groundNormalAverage = Vector3.up;
 
     CapsuleCollider col;
-
-
     Rigidbody rb;
-    Vector3 dir = Vector3.zero;
 
-    void Start()
+    [SerializeField]
+    Transform cameraTarget;
+
+    [SerializeField]
+    Transform orientation;
+
+    [SerializeField]
+    float sens = 1f;
+
+    Vector2 lookDelta = Vector2.zero;
+    float camXRot = 0f;
+    Vector3 dir = Vector3.zero;
+    bool wantToJump;
+    bool wantToCrouch;
+
+    InputAction movementInput;
+    InputAction jumpInput;
+    InputAction crouchInput;
+    InputAction lookInput;
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
+
+        movementInput = InputSystem.actions.FindAction("Move");
+        jumpInput = InputSystem.actions.FindAction("Jump");
+        crouchInput = InputSystem.actions.FindAction("Jump");
+        lookInput = InputSystem.actions.FindAction("Look");
+    }
+
+    void Start()
+    {
+
     }
 
     void Update()
     {
-        col.material.dynamicFriction = 0f;
-        dir = Direction();
+        // col.material.dynamicFriction = 0f;
+        PollInput();
 
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        // camera stuff.
+        camXRot -= lookDelta.y * sens;
+
+        camXRot = Mathf.Clamp(camXRot, -80, 80);
+
+        cameraTarget.localRotation = Quaternion.Euler(camXRot, 0, 0);
+
+        orientation.Rotate(0, lookDelta.x * sens, 0);
+    }
+
+    void OnGUI()
+    {
+        GUILayout.Label("<color=red>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
+        GUILayout.Label("<color=blue>" + rb.linearVelocity.magnitude.ToString("F2"));
     }
 
     void FixedUpdate()
     {
-
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
 
+        if (isOnSteepSlope)
+        {
+            Vector3 gravAlongSlope = Vector3.down + Vector3.ProjectOnPlane(Vector3.down, groundNormalAverage);
+            rb.AddForce((gravAlongSlope.normalized * Physics.gravity.magnitude * gravityScalar) * Time.fixedDeltaTime, ForceMode.Acceleration);
+            Debug.DrawLine(transform.position, transform.position + gravAlongSlope.normalized, Color.green, 10f);
+            Debug.DrawLine(transform.position, transform.position + Vector3.down, Color.red, 10f);
+        }
+        else
+        {
+            rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
+        }
+
+        if (grounded)
+        {
+            Vector3 velocityToAdd = GroundedMovement(dir, groundSpeed, grAccel);
+            velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
+            rb.AddForce(velocityToAdd, ForceMode.Acceleration);
+
+            if (isOnSlightSlope && rb.linearVelocity.magnitude < 0.2f && dir.magnitude <= 0.1f)
+            {
+                rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
+            }
+
+
+
+
+
+            if (wantToJump && !isJumping)
+            {
+                rb.AddForce(groundNormalAverage * jumpUpSpeed, ForceMode.Impulse);
+                isJumping = true;
+            }
+        }
+        else
+        {
+            Vector3 velToAdd = AirMovement(dir, airSpeed, airAccel);
+            rb.AddForce(velToAdd, ForceMode.VelocityChange);
+
+            if (isJumping) isJumping = false; // this is cursed.
+        }
+
+
     }
 
-
-
-    private Vector3 Direction()
+    private void PollInput()
     {
-        float hAxis = Input.GetAxisRaw("Horizontal");
-        float vAxis = Input.GetAxisRaw("Vertical");
+        Vector2 inputVector = movementInput.ReadValue<Vector2>();
+        Vector3 inputInWorld = new Vector3(inputVector.x, 0, inputVector.y);
 
-        Vector3 direction = new Vector3(hAxis, 0, vAxis);
-        return rb.transform.TransformDirection(direction);
+        dir = orientation.transform.TransformDirection(inputInWorld);
+
+        wantToJump = jumpInput.IsPressed();
+
+        wantToCrouch = crouchInput.IsPressed();
+
+        lookDelta = lookInput.ReadValue<Vector2>();
     }
 
+    private void CheckForGround()
+    {
+        Collider[] results = Physics.OverlapSphere(transform.position - Vector3.down * (col.height / 2f), col.radius - 0.03f); // TODO ground mask?
 
+        foreach (Collider collider in results)
+        {
+
+        }
+    }
+
+    private bool WithinGroundRange(Vector3 point)
+    {
+        Vector3 feetPos = transform.position - Vector3.down * (col.height / 2f);
+
+        float radius = col.radius - 0.01f;
+
+        return Vector3.Distance(point, feetPos) < radius;
+
+    }
+
+    Vector3 GetGravityVector()
+    {
+        if (grounded && !isOnSteepSlope)
+        {
+            Vector3 gravityVector = Physics.gravity - Vector3.ProjectOnPlane(Physics.gravity, groundNormalAverage);
+            return gravityVector * gravityScalar;
+        }
+        else
+        {
+            return Physics.gravity * gravityScalar;
+        }
+    }
 
     void OnCollisionStay(Collision collision)
     {
-        if (collision.contactCount > 0)
+
+        Vector3 slopeNormalAverage = Vector3.zero;
+
+        float angle;
+        int validContacts = 0;
+        foreach (ContactPoint contact in collision.contacts)
         {
-            float angle;
 
-            foreach (ContactPoint contact in collision.contacts)
-            {
-                angle = Vector3.Angle(contact.normal, Vector3.up);
-                if (angle < wallFloorBarrier)
-                {
-                    grounded = true;
-                    groundNormal = contact.normal;
-                    ground = contact.otherCollider;
-                    return;
-                }
-            }
+            Vector3 contactPos = contact.point;
+            if (WithinGroundRange(contactPos)) continue;
 
-            if (VectorToGround().magnitude > 0.2f)
+            contactPos.y = transform.position.y;
+
+
+            if (Vector3.Distance(contactPos, transform.position) > col.radius) continue;
+
+            angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
+
+
+            if (angle > 85) continue;
+            validContacts++;
+            slopeNormalAverage += contact.normal;
+
+        }
+        slopeNormalAverage /= validContacts;
+        groundNormalAverage = slopeNormalAverage;
+
+        if (validContacts == 0)
+        {
+            slopeNormalAverage = Vector3.up;
+            groundNormalAverage = slopeNormalAverage;
+        }
+
+        angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
+        // print(angle);
+
+        if (angle <= wallFloorBarrier)
+        {
+            grounded = true;
+            isOnSteepSlope = false;
+            if (angle > 1)
             {
-                grounded = false;
+                isOnSlightSlope = true;
             }
         }
+        else if (VectorToGround().magnitude > 0.2f)
+        {
+            grounded = false;
+            isOnSteepSlope = angle > wallFloorBarrier;
+            isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
+        }
+        else
+        {
+            grounded = false;
+            isOnSteepSlope = angle > wallFloorBarrier;
+            isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
+        }
+
     }
 
     void OnCollisionExit(Collision collision)
     {
+        // if (ground.Contains(collision.collider)) ground.Remove(collision.collider);
+
         if (collision.contactCount == 0)
         {
             grounded = false;
+            isOnSteepSlope = false;
+            isOnSlightSlope = false;
         }
     }
 
 
-    Vector3 Walk(Vector3 wishDir, float maxSpeed, float acceleration)
+    Vector3 GroundedMovement(Vector3 wishDir, float maxSpeed, float acceleration)
     {
-
-        //if (crouched) acceleration = 0.5f;
         wishDir = wishDir.normalized;
-        Vector3 spid = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        if (spid.magnitude > maxSpeed) acceleration *= spid.magnitude / maxSpeed;
-        Vector3 direction = wishDir * maxSpeed - spid;
+        Vector3 currentVelSpeedNoY = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        if (currentVelSpeedNoY.magnitude > maxSpeed) acceleration *= currentVelSpeedNoY.magnitude / maxSpeed; // what the fuck. increase the accel if overspeed. But you need to to counter?
 
-        if (direction.magnitude < 0.5f)
+        Vector3 foceNeededForDesiredForce = wishDir * maxSpeed - currentVelSpeedNoY;
+
+        if (foceNeededForDesiredForce.magnitude < 0.5f)
         {
-            acceleration *= direction.magnitude / 0.5f;
+            acceleration *= foceNeededForDesiredForce.magnitude / 0.5f; // slows down the accel? 
+            //I presume because we reach our target speed. We want to override the current vel since we are on the ground.
         }
 
-        direction = direction.normalized * acceleration;
-        float magn = direction.magnitude;
-        direction = direction.normalized;
-        direction *= magn;
+        Vector3 accelForce = foceNeededForDesiredForce.normalized * acceleration; // turn the force needed into a acceleration.
+        float magn = accelForce.magnitude; // this makes no sense.
+        accelForce = accelForce.normalized; // because you did this.
+        accelForce *= magn; // already.
 
-        Vector3 slopeCorrection = groundNormal * Physics.gravity.y / groundNormal.y;
-        slopeCorrection.y = 0f;
-        //if(!crouched)
-        direction += slopeCorrection;
-
-        return direction; // Forcemode.Acceleration);
+        return accelForce; // Forcemode.Acceleration);
 
     }
 
-    Vector3 AirMove(Vector3 wishDir, float maxSpeed, float acceleration)
+    Vector3 AirMovement(Vector3 wishDir, float maxSpeed, float acceleration)
     {
         float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
         float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movment
