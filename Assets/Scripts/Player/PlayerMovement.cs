@@ -102,8 +102,10 @@ public class PlayerMovement : MonoBehaviour
 
     void OnGUI()
     {
-        GUILayout.Label("<color=red>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
-        GUILayout.Label("<color=blue>" + rb.linearVelocity.magnitude.ToString("F2"));
+        // GUILayoutOption[] layout = { GUILayout.MinHeight(Screen.height / 10) };
+
+        GUILayout.Label($"<color=red><size={Screen.height / 20}>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
+        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + rb.linearVelocity.magnitude.ToString("F2"));
     }
 
     void FixedUpdate()
@@ -111,6 +113,7 @@ public class PlayerMovement : MonoBehaviour
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
 
+        // Gravity.
         if (isOnSteepSlope)
         {
             Vector3 gravAlongSlope = Vector3.down + Vector3.ProjectOnPlane(Vector3.down, groundNormalAverage);
@@ -129,6 +132,7 @@ public class PlayerMovement : MonoBehaviour
             velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
             rb.AddForce(velocityToAdd, ForceMode.Acceleration);
 
+            // counter slope sliding when not inputing anything and dont have any vel, aka play is stopped so stop the player.
             if (isOnSlightSlope && rb.linearVelocity.magnitude < 0.2f && dir.magnitude <= 0.1f)
             {
                 rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
