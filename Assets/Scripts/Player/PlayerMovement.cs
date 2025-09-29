@@ -174,8 +174,17 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (grounded && isCrouched)
         {
-            Vector3 velToAdd = AirMovement(dir, groundSpeed, grAccel);
-            rb.AddForce(velToAdd, ForceMode.VelocityChange);
+            if (rb.linearVelocity.magnitude > groundSpeed)
+            {
+                Vector3 velToAdd = AirMovement(dir, groundSpeed, grAccel);
+                rb.AddForce(velToAdd, ForceMode.VelocityChange);
+            }
+            else
+            {
+                Vector3 velocityToAdd = GroundedMovement(dir, groundSpeed, grAccel);
+                velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
+                rb.AddForce(velocityToAdd, ForceMode.Acceleration);
+            }
 
             if (wantToJump && !isJumping)
             {
@@ -372,7 +381,7 @@ public class PlayerMovement : MonoBehaviour
 
         appliedBoost = true;
 
-        Vector3 boostDir = rb.linearVelocity.normalized;
+        Vector3 boostDir = dir;
 
         rb.AddForce(boostDir * SlideBoost, ForceMode.Impulse);
 
