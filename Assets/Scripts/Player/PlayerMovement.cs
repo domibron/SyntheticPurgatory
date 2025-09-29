@@ -73,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 
         movementInput = InputSystem.actions.FindAction("Move");
         jumpInput = InputSystem.actions.FindAction("Jump");
-        crouchInput = InputSystem.actions.FindAction("Jump");
+        crouchInput = InputSystem.actions.FindAction("Crouch");
         lookInput = InputSystem.actions.FindAction("Look");
     }
 
@@ -113,12 +113,28 @@ public class PlayerMovement : MonoBehaviour
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
 
+        if (wantToCrouch)
+        {
+            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 10f);
+        }
+        else
+        {
+            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 10f);
+        }
+
         // Gravity.
         if (isOnSteepSlope)
         {
-            Vector3 gravAlongSlope = Vector3.down + Vector3.ProjectOnPlane(Vector3.down, groundNormalAverage);
-            rb.AddForce((gravAlongSlope.normalized * Physics.gravity.magnitude * gravityScalar) * Time.fixedDeltaTime, ForceMode.Acceleration);
-            Debug.DrawLine(transform.position, transform.position + gravAlongSlope.normalized, Color.green, 10f);
+            float gravOnSlope = Physics.gravity.magnitude * gravityScalar * 3f;
+
+
+            Vector3 gravAlongSlope = (Vector3.down * gravOnSlope).normalized + Vector3.ProjectOnPlane(Vector3.down * gravOnSlope, groundNormalAverage).normalized;
+
+
+
+            rb.AddForce(gravAlongSlope.normalized * gravOnSlope, ForceMode.Acceleration);
+
+            Debug.DrawLine(transform.position, transform.position + gravAlongSlope, Color.green, 10f);
             Debug.DrawLine(transform.position, transform.position + Vector3.down, Color.red, 10f);
         }
         else
