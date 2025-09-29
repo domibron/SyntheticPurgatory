@@ -31,6 +31,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float gravityScalar = 1f;
 
+    [SerializeField]
+    float SlideBoost = 5f;
+
     //States
     // bool running;
     // bool jump;
@@ -39,6 +42,10 @@ public class PlayerMovement : MonoBehaviour
     bool isJumping;
     bool isOnSteepSlope;
     bool isOnSlightSlope;
+
+    bool isCrouched = false;
+    bool canCrouchBoost = true;
+    bool appliedBoost = false;
 
     // List<Collider> ground = new List<Collider>();
     Vector3 groundNormalAverage = Vector3.up;
@@ -115,11 +122,15 @@ public class PlayerMovement : MonoBehaviour
 
         if (wantToCrouch)
         {
-            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 10f);
+            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 20f);
+            isCrouched = true;
+            CrouchBoost();
         }
         else
         {
-            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 10f);
+            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
+            isCrouched = false;
+            appliedBoost = false;
         }
 
         // Gravity.
@@ -142,7 +153,7 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
         }
 
-        if (grounded)
+        if (grounded && !isCrouched)
         {
             Vector3 velocityToAdd = GroundedMovement(dir, groundSpeed, grAccel);
             velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
@@ -154,9 +165,17 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
             }
 
-
-
-
+            // jumping
+            if (wantToJump && !isJumping)
+            {
+                rb.AddForce(groundNormalAverage * jumpUpSpeed, ForceMode.Impulse);
+                isJumping = true;
+            }
+        }
+        else if (grounded && isCrouched)
+        {
+            Vector3 velToAdd = AirMovement(dir, groundSpeed, grAccel);
+            rb.AddForce(velToAdd, ForceMode.VelocityChange);
 
             if (wantToJump && !isJumping)
             {
@@ -345,5 +364,25 @@ public class PlayerMovement : MonoBehaviour
         {
             return Vector3.positiveInfinity;
         }
+    }
+
+    void CrouchBoost()
+    {
+        if (!grounded || !canCrouchBoost || !isCrouched || appliedBoost) return;
+
+        appliedBoost = true;
+
+        Vector3 boostDir = rb.linearVelocity.normalized;
+
+        rb.AddForce(boostDir * SlideBoost, ForceMode.Impulse);
+
+        if (canCrouchBoost) StartCoroutine(HandleCrouchBoostCoolDown());
+    }
+
+    IEnumerator HandleCrouchBoostCoolDown()
+    {
+        canCrouchBoost = false;
+        yield return new WaitForSeconds(1f);
+        canCrouchBoost = true;
     }
 }
