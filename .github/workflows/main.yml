@@ -21,12 +21,6 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
-    steps:
-      - uses: actions/checkout@v4
-      
-  buildForAllSupportedPlatforms:
-    name: Build for ${{ matrix.targetPlatform }}
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -47,6 +41,3 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
       - uses: actions/upload-artifact@v4
-        with:
-          name: Build-${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
