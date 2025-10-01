@@ -31,14 +31,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float gravityScalar = 1f;
 
+    // Sliding
     [SerializeField]
-    float SlideBoost = 5f;
+    float SlideBoostForce = 5f;
 
+    [SerializeField]
+    float AirBoostForce = 5f;
 
-    //States
-    // bool running;
-    // bool jump;
-    // bool crouched;
     bool grounded;
     bool isJumping;
     bool isOnSteepSlope;
@@ -51,7 +50,7 @@ public class PlayerMovement : MonoBehaviour
     bool canAirBoost = true;
     bool appliedAirBoost = false;
 
-    // List<Collider> ground = new List<Collider>();
+
     Vector3 groundNormalAverage = Vector3.up;
 
     CapsuleCollider col;
@@ -68,6 +67,8 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 lookDelta = Vector2.zero;
     float camXRot = 0f;
+
+    // Input
     Vector3 dir = Vector3.zero;
     bool wantToJump;
     bool wantToCrouch;
@@ -127,9 +128,13 @@ public class PlayerMovement : MonoBehaviour
         if (wantToCrouch)
         {
             col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 20f);
+            if (!isCrouched)
+            {
+                CrouchBoost(); // so lazy
+                AirBoost();
+            }
+
             isCrouched = true;
-            CrouchBoost(); // so lazy
-            AirBoost();
         }
         else
         {
@@ -409,7 +414,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 boostDir = dir;
 
-        rb.AddForce(GetBoostVector(boostDir, SlideBoost), ForceMode.Impulse);
+        rb.AddForce(GetBoostVector(boostDir, SlideBoostForce), ForceMode.Impulse);
 
         // if (canSlideBoost) StartCoroutine(HandleCrouchBoostCoolDown());
     }
@@ -422,7 +427,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 boostDir = dir;
 
-        rb.AddForce(GetBoostVector(boostDir, SlideBoost), ForceMode.Impulse);
+        rb.AddForce(GetBoostVector(boostDir, AirBoostForce), ForceMode.Impulse);
     }
 
     // IEnumerator HandleCrouchBoostCoolDown()
