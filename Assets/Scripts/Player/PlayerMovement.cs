@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float SlideBoost = 5f;
 
+
     //States
     // bool running;
     // bool jump;
@@ -44,8 +45,11 @@ public class PlayerMovement : MonoBehaviour
     bool isOnSlightSlope;
 
     bool isCrouched = false;
-    bool canCrouchBoost = true;
-    bool appliedBoost = false;
+
+    bool canSlideBoost = true;
+    bool appliedSlideBoost = false;
+    bool canAirBoost = true;
+    bool appliedAirBoost = false;
 
     // List<Collider> ground = new List<Collider>();
     Vector3 groundNormalAverage = Vector3.up;
@@ -124,13 +128,14 @@ public class PlayerMovement : MonoBehaviour
         {
             col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 20f);
             isCrouched = true;
-            CrouchBoost();
+            CrouchBoost(); // so lazy
+            AirBoost();
         }
         else
         {
             col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
             isCrouched = false;
-            appliedBoost = false;
+            appliedSlideBoost = false;
         }
 
         // Gravity.
@@ -151,6 +156,11 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
+        }
+
+        if (grounded)
+        {
+            appliedAirBoost = false;
         }
 
         if (grounded && !isCrouched)
@@ -350,6 +360,8 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 AirMovement(Vector3 wishDir, float maxSpeed, float acceleration)
     {
+        wishDir.Normalize();
+
         float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
         float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movment
 
@@ -358,6 +370,20 @@ public class PlayerMovement : MonoBehaviour
             accelVel = Mathf.Max(0f, maxSpeed - projVel);
 
         return wishDir.normalized * accelVel; // ForceMode.VelocityChange);
+    }
+
+    Vector3 GetBoostVector(Vector3 wishDir, float boostSpeed)
+    {
+        wishDir.Normalize();
+
+        float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
+        float boostVel = boostSpeed; // Accelerated velocity in direction of movment
+
+        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
+        if (projVel + boostVel > boostSpeed)
+            boostVel = Mathf.Max(0f, boostSpeed - projVel);
+
+        return wishDir.normalized * boostVel; // ForceMode.VelocityChange);
     }
 
 
@@ -377,21 +403,32 @@ public class PlayerMovement : MonoBehaviour
 
     void CrouchBoost()
     {
-        if (!grounded || !canCrouchBoost || !isCrouched || appliedBoost) return;
+        if (!grounded || !canSlideBoost || !isCrouched || appliedSlideBoost) return;
 
-        appliedBoost = true;
+        appliedSlideBoost = true;
 
         Vector3 boostDir = dir;
 
-        rb.AddForce(boostDir * SlideBoost, ForceMode.Impulse);
+        rb.AddForce(GetBoostVector(boostDir, SlideBoost), ForceMode.Impulse);
 
-        if (canCrouchBoost) StartCoroutine(HandleCrouchBoostCoolDown());
+        // if (canSlideBoost) StartCoroutine(HandleCrouchBoostCoolDown());
     }
 
-    IEnumerator HandleCrouchBoostCoolDown()
+    void AirBoost()
     {
-        canCrouchBoost = false;
-        yield return new WaitForSeconds(1f);
-        canCrouchBoost = true;
+        if (grounded || !canAirBoost || !isCrouched || appliedAirBoost) return;
+
+        appliedAirBoost = true;
+
+        Vector3 boostDir = dir;
+
+        rb.AddForce(GetBoostVector(boostDir, SlideBoost), ForceMode.Impulse);
     }
+
+    // IEnumerator HandleCrouchBoostCoolDown()
+    // {
+    //     canSlideBoost = false;
+    //     yield return new WaitForSeconds(1f);
+    //     canSlideBoost = true;
+    // }
 }
