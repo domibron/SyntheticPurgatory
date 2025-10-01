@@ -51,4 +51,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}-v${{ steps.buildStep.outputs.buildVersion }}
-          path: build/${{ matrix.targetPlatform }}-v${{ steps.buildStep.outputs.buildVersion }}
+          path: Build
