@@ -49,6 +49,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
+          buildMethod: BuildProject.BuildForWindowsDev
           versioning: Semantic
       - uses: actions/upload-artifact@v4
         with:
