@@ -408,7 +408,7 @@ public class PlayerMovement : MonoBehaviour
 
     void CrouchBoost()
     {
-        if (!grounded || !canSlideBoost || !isCrouched || appliedSlideBoost) return;
+        if (!grounded || !canSlideBoost || appliedSlideBoost) return;
 
         appliedSlideBoost = true;
 
@@ -421,7 +421,7 @@ public class PlayerMovement : MonoBehaviour
 
     void AirBoost()
     {
-        if (grounded || !canAirBoost || !isCrouched || appliedAirBoost) return;
+        if (grounded || !canAirBoost || appliedAirBoost) return;
 
         appliedAirBoost = true;
 
