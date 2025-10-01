@@ -38,6 +38,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float AirBoostForce = 5f;
 
+    public bool IsGrounded { get => grounded; }
+
     bool grounded;
     bool isJumping;
     bool isOnSteepSlope;
