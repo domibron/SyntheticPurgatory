@@ -1073,6 +1073,7 @@ GameObject:
   - component: {fileID: 409257563}
   - component: {fileID: 409257562}
   - component: {fileID: 409257564}
+  - component: {fileID: 409257565}
   - component: {fileID: 409257560}
   m_Layer: 0
   m_Name: Player
@@ -1273,10 +1274,33 @@ MonoBehaviour:
   jumpUpSpeed: 4
   dashSpeed: 6
   gravityScalar: 1
-  SlideBoost: 10
+  SlideBoostForce: 5
+  AirBoostForce: 5
   cameraTarget: {fileID: 2085582607}
   orientation: {fileID: 791840880}
   sens: 0.1
+--- !u!114 &409257565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409257556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 257631cf6ddffea47bee25e8cc6618ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 0}
+  projectileSpawnLocation: {fileID: 0}
+  projectileSpeed: 10
+  projectileDamage: 20
+  projectileFireRate: 0.3
+  projectileMagSize: 20
+  meleeAttackDelay: 0.5
+  meleeDamage: 10
+  kickPushForce: 10
+  kickAttackDelay: 0.5
 --- !u!43 &515745999
 Mesh:
   m_ObjectHideFlags: 0
@@ -1996,7 +2020,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1460450118}
+  m_Mesh: {fileID: 515745999}
 --- !u!33 &844554879
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -2432,7 +2456,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1559471374}
+  m_Mesh: {fileID: 1922782512}
 --- !u!33 &1245837046
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -3227,7 +3251,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 515745999}
+  m_Mesh: {fileID: 17883077}
 --- !u!33 &1504895319
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -4188,7 +4212,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1922782512}
+  m_Mesh: {fileID: 1460450118}
 --- !u!33 &1945418377
 MeshFilter:
   m_ObjectHideFlags: 10
