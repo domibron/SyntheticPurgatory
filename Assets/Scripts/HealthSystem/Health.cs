@@ -15,7 +15,7 @@ using UnityEngine;
 /// <summary>
 /// The health class to give objects health.
 /// </summary>
-public class Health : MonoBehaviour, IDamageable
+public class Health : MonoBehaviour
 {
     /// <summary>
     /// The max health of the entity.
@@ -71,7 +71,9 @@ public class Health : MonoBehaviour, IDamageable
     {
         currentHealth += amount;
 
-        InvokeOnAddToHealth(amount);
+        if (amount > 0) InvokeOnAddToHealth(amount);
+        else if (amount < 0) InvokeOnTakeDamage(amount);
+
 
         if (currentHealth > maxHealth) currentHealth = maxHealth;
 
@@ -80,22 +82,6 @@ public class Health : MonoBehaviour, IDamageable
             calledOnDeathEvent = true; // prevent spamming the event.
             InvokeOnDeath();
         }
-    }
-
-    /// <summary>
-    /// Part of the IDamageable interface. Removes the amount from the current health.
-    /// </summary>
-    /// <param name="amount">How much damage to take (negative will heal).</param>
-    /// <returns>Whether taking damage was successful or not.</returns>
-    public virtual bool TakeDamage(float amount) // TODO: from the interface. Should be replaced with Add to health
-    {
-        AddToHealth(-amount);
-
-
-        InvokeOnTakeDamage(amount);
-
-
-        return true;
     }
 
     /// <summary>
