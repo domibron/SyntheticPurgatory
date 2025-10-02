@@ -127,7 +127,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            projectileRB.AddForce(projectile.transform.forward * projectileSpeed, ForceMode.VelocityChange);
+            projectileRB.AddForce(mainCamera.forward * projectileSpeed, ForceMode.VelocityChange);
         }
 
         Debug.Log("Fired ranged weapon");
