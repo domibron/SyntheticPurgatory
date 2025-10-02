@@ -31,18 +31,15 @@ public class HealthWithShield : HealthWithBasicShield
 
     }
 
-    public override bool TakeDamage(float amount)
+    public override void AddToHealth(float amount)
     {
-        if (shieldActive)
+        if (shieldActive && amount < 0)
         {
             InvokeOnShieldHit();
-
-            return false;
+            return;
         }
 
-        AddToHealth(-amount);
-
-        return true;
+        base.AddToHealth(amount);
     }
 
     public override void ActivateShield()

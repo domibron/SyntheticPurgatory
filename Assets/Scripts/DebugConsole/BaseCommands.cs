@@ -123,22 +123,22 @@ public class BaseCommands
             }
         });
 
-        setSprintSpeed = new Command<float>("walkspeed", "set the sprint speed of the player", "walkspeed <float>", (newSpeed) =>
-        {
-#nullable enable
-            GameObject? go = GameObject.FindGameObjectWithTag("Player");
-#nullable restore
-            if (go != null && go.transform.name == "Player")
-            {
-                go.transform.GetComponent<PlayerMovementHandler>().walkSpeed = newSpeed;
-                console.TextToConsole("Set sprint speed of the player to " + newSpeed);
-            }
-            else
-            {
-                console.TextToConsole("Cannot find the player");
-                return;
-            }
-        });
+        //         setSprintSpeed = new Command<float>("walkspeed", "set the sprint speed of the player", "walkspeed <float>", (newSpeed) =>
+        //         {
+        // #nullable enable
+        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
+        // #nullable restore
+        //             if (go != null && go.transform.name == "Player")
+        //             {
+        //                 go.transform.GetComponent<PlayerMovementHandler>().walkSpeed = newSpeed;
+        //                 console.TextToConsole("Set sprint speed of the player to " + newSpeed);
+        //             }
+        //             else
+        //             {
+        //                 console.TextToConsole("Cannot find the player");
+        //                 return;
+        //             }
+        //         });
 
 
         reloadLevel = new Command("reload", "reloads the level", "reload", () =>
@@ -161,26 +161,26 @@ public class BaseCommands
             }
         });
 
-        damagePlayer = new Command<float>("damage", "damages the player", "damage <float>", (damage) =>
-        {
+        //         damagePlayer = new Command<float>("damage", "damages the player", "damage <float>", (damage) =>
+        //         {
 
 
-#nullable enable
-            GameObject? go = GameObject.FindGameObjectWithTag("Player");
-#nullable restore
-            if (go != null && go.transform.name == "Player")
-            {
-                go.transform.GetComponent<IDamageable>().TakeDamage(damage);
-                console.TextToConsole($"player hp is now at {go.transform.GetComponent<Health>().ReturnHealthValue()}");
+        // #nullable enable
+        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
+        // #nullable restore
+        //             if (go != null && go.transform.name == "Player")
+        //             {
+        //                 go.transform.GetComponent<IDamageable>().TakeDamage(damage);
+        //                 console.TextToConsole($"player hp is now at {go.transform.GetComponent<Health>().ReturnHealthValue()}");
 
-            }
-            else
-            {
-                console.TextToConsole("Cannot find the player");
-                return;
-            }
+        //             }
+        //             else
+        //             {
+        //                 console.TextToConsole("Cannot find the player");
+        //                 return;
+        //             }
 
-        });
+        //         });
 
 
         damagePlayer = new Command<float>("heal", "damages the player", "damage <float>", (health) =>
@@ -261,64 +261,64 @@ public class BaseCommands
         });
 
 
-        unlockAllAbilities = new Command("unlockall", "gives you all the abilities", "unlockall", () =>
-        {
-#nullable enable
-            GameObject? go = GameObject.FindGameObjectWithTag("Player");
-#nullable restore
-            if (go != null && go.transform.name == "Player")
-            {
+        //         unlockAllAbilities = new Command("unlockall", "gives you all the abilities", "unlockall", () =>
+        //         {
+        // #nullable enable
+        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
+        // #nullable restore
+        //             if (go != null && go.transform.name == "Player")
+        //             {
 
-                go.GetComponent<ShieldAbility>().unlockedShield = true;
-                go.GetComponent<PlayerAttackHandler>().heavyAttackUnlocked = true;
+        //                 go.GetComponent<ShieldAbility>().unlockedShield = true;
+        //                 go.GetComponent<PlayerAttackHandler>().heavyAttackUnlocked = true;
 
-                console.TextToConsole($"Unlocked all abilities");
+        //                 console.TextToConsole($"Unlocked all abilities");
 
-            }
-            else
-            {
-                console.TextToConsole("Cannot find the player");
-                return;
-            }
-        });
+        //             }
+        //             else
+        //             {
+        //                 console.TextToConsole("Cannot find the player");
+        //                 return;
+        //             }
+        //         });
 
 
-        removeHud = new Command("togglehud", "removes the hud", "togglehud", () =>
-        {
-            if (PlayerCanvasReference.instance == null)
-            {
-                console.TextToConsole("Cannot find the canvas!");
-                return;
-            }
+        // removeHud = new Command("togglehud", "removes the hud", "togglehud", () =>
+        // {
+        //     if (PlayerCanvasReference.instance == null)
+        //     {
+        //         console.TextToConsole("Cannot find the canvas!");
+        //         return;
+        //     }
 
-            GameObject playerCanvas = PlayerCanvasReference.instance.GetPlayerCanvasReference();
+        //     GameObject playerCanvas = PlayerCanvasReference.instance.GetPlayerCanvasReference();
 
-            GameObject hudCanvas = playerCanvas.transform.Find("Player HUD").gameObject;
+        //     GameObject hudCanvas = playerCanvas.transform.Find("Player HUD").gameObject;
 
-            hudCanvas.SetActive(!hudCanvas.activeSelf);
+        //     hudCanvas.SetActive(!hudCanvas.activeSelf);
 
-            console.TextToConsole("Toggled");
-        });
+        //     console.TextToConsole("Toggled");
+        // });
 
-        setAttackDamage = new Command<float>("setdmg", "sets the player light attack damage", "setdmg", (x) =>
-        {
-#nullable enable
-            GameObject? go = GameObject.FindGameObjectWithTag("Player");
-#nullable restore
-            if (go != null && go.transform.name == "Player")
-            {
+        //         setAttackDamage = new Command<float>("setdmg", "sets the player light attack damage", "setdmg", (x) =>
+        //         {
+        // #nullable enable
+        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
+        // #nullable restore
+        //             if (go != null && go.transform.name == "Player")
+        //             {
 
-                go.GetComponent<PlayerAttackHandler>().lightAttackDamage = x;
+        //                 go.GetComponent<PlayerAttackHandler>().lightAttackDamage = x;
 
-                console.TextToConsole($"Setted the damage");
+        //                 console.TextToConsole($"Setted the damage");
 
-            }
-            else
-            {
-                console.TextToConsole("Cannot find the player");
-                return;
-            }
-        });
+        //             }
+        //             else
+        //             {
+        //                 console.TextToConsole("Cannot find the player");
+        //                 return;
+        //             }
+        //         });
 
         // foreach
 

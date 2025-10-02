@@ -13,7 +13,7 @@ using UnityEngine;
 // © 2025 domibron
 
 
-public class HealthWithBasicShield : Health, IShieldObject
+public class HealthWithBasicShield : Health
 {
 	[Header("Shield Settings")]
 	[SerializeField]
@@ -44,8 +44,7 @@ public class HealthWithBasicShield : Health, IShieldObject
 	/// <summary>
 	/// Get whether the shield is active or not.
 	/// </summary>
-	// TODO remove unnecessary interfaces.
-	bool IShieldObject.isShieldActive { get => shieldActive; }
+	public bool IsShieldActive { get => shieldActive; }
 
 	protected override void Start()
 	{
@@ -83,20 +82,15 @@ public class HealthWithBasicShield : Health, IShieldObject
 		InvokeOnShieldBreak();
 	}
 
-	public override bool TakeDamage(float amount)
+	public override void AddToHealth(float amount)
 	{
-		if (shieldActive)
+		if (shieldActive && amount < 0)
 		{
 			InvokeOnShieldHit();
-
-			// SpawnShieldBlockedText();
-
-
-			// if (shieldHitIndicator != null) shieldHitIndicator.ShieldHit();
-			return false;
+			return;
 		}
 
-		return base.TakeDamage(amount);
+		base.AddToHealth(amount);
 	}
 
 
@@ -105,15 +99,6 @@ public class HealthWithBasicShield : Health, IShieldObject
 		shieldActive = true;
 		shieldObject.SetActive(true);
 		InvokeOnShieldActivate();
-	}
-
-	/// <summary>
-	/// Returns if the shield is active, originally was going to return shield health but that was scrapped.
-	/// </summary>
-	/// <returns>Returns 1 if the shield is active and 0 if not</returns>
-	public virtual float GetShieldNormalized()
-	{
-		return (shieldActive ? 1 : 0);
 	}
 
 
