@@ -62,10 +62,12 @@ public class PlayerCombat : MonoBehaviour
     bool wantToFireRanged = false;
     bool wantToMelee = false;
     bool wantToKick = false;
+    bool wantToReload = false;
 
     InputAction rangedWeaponInput;
     InputAction meleeWeaponInput;
     InputAction KickInput;
+    InputAction ReloadInput;
 
     [SerializeField]
     bool showMeleeBox = false;
@@ -82,6 +84,7 @@ public class PlayerCombat : MonoBehaviour
         rangedWeaponInput = InputSystem.actions.FindAction("Attack");
         meleeWeaponInput = InputSystem.actions.FindAction("Melee");
         KickInput = InputSystem.actions.FindAction("Interact");
+        ReloadInput = InputSystem.actions.FindAction("Reload");
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -115,6 +118,11 @@ public class PlayerCombat : MonoBehaviour
             KickAttack();
         }
 
+        if (wantToReload && currentAmmoCount < projectileMagSize)
+        {
+            Reload();
+        }
+
     }
 
     void OnDrawGizmos()
@@ -144,6 +152,12 @@ public class PlayerCombat : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(Vector3.zero, kickBounds);
         }
+    }
+
+    private void Reload()
+    {
+        // TODO add delays and shit.
+        currentAmmoCount = projectileMagSize;
     }
 
     private void KickAttack()
@@ -223,5 +237,6 @@ public class PlayerCombat : MonoBehaviour
         wantToFireRanged = rangedWeaponInput.IsPressed();
         wantToMelee = meleeWeaponInput.IsPressed();
         wantToKick = KickInput.IsPressed();
+        wantToReload = ReloadInput.IsPressed();
     }
 }
