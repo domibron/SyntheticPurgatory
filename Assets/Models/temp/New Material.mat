@@ -27,17 +27,17 @@ Material:
   m_ValidKeywords:
   - _EMISSIVE_SIMPLE
   - _IS_ANGELRING_OFF
-  - _IS_CLIPPING_OFF
-  - _IS_OUTLINE_CLIPPING_NO
+  - _IS_CLIPPING_TRANSMODE
+  - _IS_OUTLINE_CLIPPING_YES
   - _OUTLINE_POS
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2450
   stringTagMap:
     IgnoreProjection: False
-    RenderType: Opaque
+    RenderType: TransparentCutout
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -61,7 +61,8 @@ Material:
     - _2nd_ShadeColor_Step: 0.55
     - _BaseColor_Step: 0.75
     - _BaseShade_Feather: 0.0001
-    - _ClippingMode: 0
+    - _ClippingMode: 2
+    - _CullMode: 2
     - _GI_Intensity: 0
     - _GlossMapScale: 0
     - _GlossyReflections: 0
@@ -82,13 +83,18 @@ Material:
     - _Outline_Width: 30
     - _Parallax: 0.005
     - _RimLight: 0
+    - _SPRDefaultUnlitColorMask: 15
+    - _SRPDefaultUnlitColMode: 1
     - _ShadeColor_Step: 0.55
     - _Smoothness: 0.5
     - _StencilComp: 0
+    - _TransparentEnabled: 0
     - _Tweak_SystemShadowsLevel: 0
     - _Unlit_Intensity: 0
     - _Use_1stAs2nd: 1
     - _Use_BaseAs1st: 1
+    - _ZOverDrawMode: 0
+    - _ZWriteMode: 1
     m_Colors:
     - _2nd_ShadeColor: {r: 0.3207547, g: 0.3207547, b: 0.3207547, a: 1}
     - _HighColor: {r: 0, g: 0, b: 0, a: 1}
