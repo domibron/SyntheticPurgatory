@@ -95,7 +95,7 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {
         if (currentKickCooldown > 0) currentKickCooldown -= Time.deltaTime;
-        if (currentMeleeCooldown > 0) currentKickCooldown -= Time.deltaTime;
+        if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
         if (currentProjectileCooldown > 0) currentProjectileCooldown -= Time.deltaTime;
 
         PollInput();
@@ -105,12 +105,12 @@ public class PlayerCombat : MonoBehaviour
             FireProjectile();
         }
 
-        if (wantToMelee && currentMeleeCooldown > 0)
+        if (wantToMelee && currentMeleeCooldown <= 0)
         {
             MeleeAttack();
         }
 
-        if (wantToKick && currentKickCooldown > 0)
+        if (wantToKick && currentKickCooldown <= 0)
         {
             KickAttack();
         }
@@ -151,15 +151,14 @@ public class PlayerCombat : MonoBehaviour
         // does knockback
 
         // if (currentKickCooldown > 0) return; // Dunno if i want to do timer check here or update?
-
-        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f);
+        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f, transform.rotation);
 
         if (hits.Length > 0)
         {
             foreach (Collider c in hits)
             {
                 Vector3 kickDir = c.transform.position - transform.position;
-                c.GetComponent<IKickable>()?.KickObject(kickDir * kickForce);
+                c.GetComponent<IKickable>()?.KickObject(kickDir * kickForce, ForceMode.VelocityChange);
             }
         }
 
@@ -182,7 +181,8 @@ public class PlayerCombat : MonoBehaviour
             // damage
             foreach (Collider c in hits)
             {
-                c.GetComponent<Health>()?.AddToHealth(-meleeDamage); // deal damage.
+                print(c.gameObject.name);
+                c.transform.GetComponent<Health>()?.AddToHealth(-meleeDamage); // deal damage.
             }
         }
 
