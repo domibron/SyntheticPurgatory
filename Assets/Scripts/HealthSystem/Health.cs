@@ -39,15 +39,15 @@ public class Health : MonoBehaviour
     /// </summary>
     public event Action onDeath;
 
-    /// <summary>
-    /// Called when taking damage, provided float is how much damage to take (its positive).
-    /// </summary>
-    public event Action<float> onTakeDamage;
+    // /// <summary>
+    // /// Called when taking damage, provided float is how much damage to take (its positive).
+    // /// </summary>
+    // public event Action<float> onTakeDamage;
 
     /// <summary>
     /// Called when adding to the health, the provided float is what to add to the health.
     /// </summary>
-    public event Action<float> onAddToHealth;
+    public event Action<float> onHealthChanged;
 
     protected virtual void Start()
     {
@@ -71,8 +71,7 @@ public class Health : MonoBehaviour
     {
         currentHealth += amount;
 
-        if (amount > 0) InvokeOnAddToHealth(amount);
-        else if (amount < 0) InvokeOnTakeDamage(amount);
+        if (amount != 0) InvokeOnHealthChanged(amount);
 
 
         if (currentHealth > maxHealth) currentHealth = maxHealth;
@@ -104,22 +103,22 @@ public class Health : MonoBehaviour
 
     // ! These functions exist as you cannot call these events when inheriting.
 
-    /// <summary>
-    /// Calls the onTakeDamage event.
-    /// </summary>
-    /// <param name="amount">The amount of damage to take (positive number).</param>
-    protected void InvokeOnTakeDamage(float amount)
-    {
-        onTakeDamage?.Invoke(amount);
-    }
+    // /// <summary>
+    // /// Calls the onTakeDamage event.
+    // /// </summary>
+    // /// <param name="amount">The amount of damage to take (positive number).</param>
+    // protected void InvokeOnTakeDamage(float amount)
+    // {
+    //     onTakeDamage?.Invoke(amount);
+    // }
 
     /// <summary>
     /// Calls the onAddToHealth event.
     /// </summary>
     /// <param name="amount">The amount to add to the current health value.</param>
-    protected void InvokeOnAddToHealth(float amount)
+    protected void InvokeOnHealthChanged(float amount)
     {
-        onAddToHealth?.Invoke(amount);
+        onHealthChanged?.Invoke(amount);
     }
 
     /// <summary>

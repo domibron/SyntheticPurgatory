@@ -62,7 +62,7 @@ public class HurtIndicatorAuto : MonoBehaviour
         }
 
         // subscript to the take damage health event to flash when taking damage.
-        GetComponent<Health>().onTakeDamage += TakenDamage;
+        GetComponent<Health>().onHealthChanged += TakenDamage;
     }
 
     // Update is called once per frame
@@ -97,7 +97,8 @@ public class HurtIndicatorAuto : MonoBehaviour
     /// <param name="amount">The amount of damage to take.</param>
     protected virtual void TakenDamage(float amount)
     {
-        Flash();
+        if (amount < 0)
+            Flash();
     }
 
     /// <summary>
