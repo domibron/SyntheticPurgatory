@@ -1,16 +1,6 @@
 using UnityEngine;
 
-public class IKickable : MonoBehaviour
+public interface IKickable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public void KickObject(Vector3 forceAndDir, ForceMode forceMode = ForceMode.Force);
 }

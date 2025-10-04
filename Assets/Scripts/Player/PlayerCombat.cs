@@ -24,19 +24,32 @@ public class PlayerCombat : MonoBehaviour
     int projectileMagSize = 20;
 
     [SerializeField]
+    Vector3 meleeBounds = Vector3.one;
+
+    [SerializeField]
+    Vector3 meleeOffset = Vector3.forward;
+
+    [SerializeField]
     float meleeAttackDelay = 0.5f;
 
     [SerializeField]
     float meleeDamage = 10f;
 
     [SerializeField]
-    float kickPushForce = 10f;
+    Vector3 kickBounds = Vector3.one;
+
+    [SerializeField]
+    Vector3 kickOffset = Vector3.forward;
+
+    [SerializeField]
+    float kickForce = 10f;
 
     [SerializeField]
     float kickAttackDelay = 0.5f;
 
     int currentAmmoCount = 0;
 
+    // float currentKickCooldown = 0;
 
     float currentProjectileCooldown = 0f;
     float currentMeleeCooldown = 0f;
@@ -53,6 +66,12 @@ public class PlayerCombat : MonoBehaviour
     InputAction rangedWeaponInput;
     InputAction meleeWeaponInput;
     InputAction KickInput;
+
+    [SerializeField]
+    bool showMeleeBox = false;
+
+    [SerializeField]
+    bool showKickBox = false;
 
     // TODO reload
 
@@ -98,9 +117,55 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
+    void OnDrawGizmos()
+    {
+        if (showMeleeBox && Camera.main != null)
+        {
+            // Gizmos.matrix = Matrix4x4.identity; // reset the matrix.
+            Transform cam = Camera.main.transform;
+            Vector3 offsetPos = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
+
+            // newTransform.position = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
+            Gizmos.matrix = Matrix4x4.TRS(offsetPos,
+                Quaternion.LookRotation((offsetPos - cam.position), cam.up),
+                cam.localScale);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(Vector3.zero, meleeBounds);
+        }
+
+        if (showKickBox && Camera.main != null)
+        {
+            Transform cam = Camera.main.transform;
+            Vector3 offsetPos = cam.position + (cam.forward * kickOffset.z) + (cam.right * kickOffset.x) + (cam.up * kickOffset.y);
+
+            Gizmos.matrix = Matrix4x4.TRS(offsetPos,
+                Quaternion.LookRotation((offsetPos - cam.position), cam.up),
+                cam.localScale);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(Vector3.zero, kickBounds);
+        }
+    }
+
     private void KickAttack()
     {
         // does knockback
+
+        // if (currentKickCooldown > 0) return; // Dunno if i want to do timer check here or update?
+
+        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f);
+
+        if (hits.Length > 0)
+        {
+            foreach (Collider c in hits)
+            {
+                Vector3 kickDir = c.transform.position - transform.position;
+                c.GetComponent<IKickable>()?.KickObject(kickDir * kickForce);
+            }
+        }
+
+        Debug.Log("Kick!");
+
+        currentKickCooldown = kickAttackDelay;
 
     }
 
@@ -108,6 +173,22 @@ public class PlayerCombat : MonoBehaviour
     {
         // does damage
 
+        // if (currentMeleeCooldown > 0) return;
+
+        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * meleeOffset.z) + (mainCamera.right * meleeOffset.x) + (mainCamera.up * meleeOffset.y), meleeBounds / 2f, transform.rotation);
+
+        if (hits.Length > 0)
+        {
+            // damage
+            foreach (Collider c in hits)
+            {
+                c.GetComponent<Health>()?.AddToHealth(-meleeDamage); // deal damage.
+            }
+        }
+
+        Debug.Log("Melee!");
+
+        currentMeleeCooldown = meleeAttackDelay;
     }
 
     private void FireProjectile()
@@ -130,7 +211,9 @@ public class PlayerCombat : MonoBehaviour
             projectileRB.AddForce(mainCamera.forward * projectileSpeed, ForceMode.VelocityChange);
         }
 
-        Debug.Log("Fired ranged weapon");
+        // projectile.GetComp<>().SetDamage();
+
+        // Debug.Log("Fired ranged weapon");
 
         // set damage and so on.
     }

@@ -1297,10 +1297,16 @@ MonoBehaviour:
   projectileDamage: 20
   projectileFireRate: 0.3
   projectileMagSize: 20
+  meleeBounds: {x: 1, y: 1, z: 1}
+  meleeOffset: {x: 0, y: 0, z: 1}
   meleeAttackDelay: 0.5
-  meleeDamage: 10
-  kickPushForce: 10
+  meleeDamage: 2
+  kickBounds: {x: 1, y: 1, z: 1}
+  kickOffset: {x: 0, y: 0, z: 1}
+  kickForce: 10
   kickAttackDelay: 0.5
+  showMeleeBox: 0
+  showKickBox: 0
 --- !u!43 &515745999
 Mesh:
   m_ObjectHideFlags: 0
@@ -4080,13 +4086,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1878264713}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.0037186588, z: -0, w: 0.9999931}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2085582607}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0.426, z: 0}
 --- !u!114 &1878264717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4648,7 +4654,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2085582606}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.0044618617, z: -0, w: 0.99999005}
   m_LocalPosition: {x: 0, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4657,7 +4663,7 @@ Transform:
   - {fileID: 1567440075}
   - {fileID: 1516720220}
   m_Father: {fileID: 791840880}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -0.511, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
