@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_ScrapPile
+  m_Shader: {fileID: 4800000, guid: be891319084e9d147b09d89e80ce60e0, type: 3}
+  m_Parent: {fileID: 2100000, guid: 886065b1779536a4694ca4f1570aaa6b, type: 2}
+  m_ModifiedSerializedProperties: 16
+  m_ValidKeywords:
+  - _EMISSIVE_SIMPLE
+  - _IS_ANGELRING_OFF
+  - _IS_CLIPPING_TRANSMODE
+  - _IS_OUTLINE_CLIPPING_YES
+  - _OUTLINE_NML
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2450
+  stringTagMap:
+    IgnoreProjection: False
+    RenderType: TransparentCutout
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 5025308374215e54bb2b405e0c301901, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: f0eb7afa6bd8b7f44ae0a01ddf29ba27, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _1st2nd_Shades_Feather: 0.186
+    - _1st_ShadeColor_Step: 0.25
+    - _2nd_ShadeColor_Feather: 0.186
+    - _2nd_ShadeColor_Step: 0.8
+    - _BaseColor_Step: 0.25
+    - _ClippingMode: 2
+    - _HighColor_Power: 0
+    - _Is_BakedNormal: 0
+    - _Is_BlendAddToHiColor: 1
+    - _Is_NormalMapToBase: 1
+    - _Is_OutlineTex: 0
+    - _MatCap: 1
+    - _OUTLINE: 0
+    - _Outline_Width: 10
+    - _RimLight: 0
+    - _ShadeColor_Step: 0.8
+    - _StencilComp: 0
+    - _Tweak_SystemShadowsLevel: -0.02
+    - _Use_1stAs2nd: 1
+    - _Use_BaseAs1st: 1
+    m_Colors:
+    - _1st_ShadeColor: {r: 0.6289307, g: 0.6289307, b: 0.6289307, a: 1}
+    - _2nd_ShadeColor: {r: 0.735849, g: 0.66998214, b: 0.5865966, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _HighColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Outline_Color: {r: 0.0754717, g: 0.027088255, b: 0.0060519767, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &4566843378906754901
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 9
