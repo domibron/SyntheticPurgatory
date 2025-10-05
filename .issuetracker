@@ -1,0 +1,7 @@
+# Integration with Issue Tracker
+#
+# (note that '\' need to be escaped).
+
+[issuetracker "Sample Jira Rule"]
+  regex = "SCRUM-(\\d+)"
+  url = "https://synthpurg.atlassian.net/browse/SCRUM-$1"
