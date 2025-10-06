@@ -46,6 +46,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
+          buildProfile: 'Assets/Settings/Build Profiles/New Windows Profile.asset'
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: BuildProject.BuildForWindowsDev
           versioning: Semantic
