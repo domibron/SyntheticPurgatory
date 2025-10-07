@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 
@@ -10,9 +12,14 @@ public class ScrapManager : MonoBehaviour
     public static ScrapManager Instance { get => instance; }
     static ScrapManager instance;
 
-    public const float MaxCollectionRange = 5f; // TODO create a stats class that can be publicly access and read from and not editable during gameplay.
-    public const float CollectItemRange = 1f;
+    public float MaxCollectionRange = 5f; // TODO create a stats class that can be publicly access and read from and not editable during gameplay.
+    public float CollectItemRange = 1f;
 
+    public float flyAccel = 15f;
+    public float flyMaxSpeed = 30f;
+    public float flyDistanceBoost = 10f;
+
+    [SerializeField]
     int maxInventoryScrap = 10;
     int currentInventoryScrap = 0;
 
@@ -43,6 +50,43 @@ public class ScrapManager : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public ScrapItemData GetPrefabWithHighestWorth(int worthNeeded)
+    {
+        if (worthNeeded <= 0) return null;
+
+        ReadOnlyCollection<ScrapItemData> scrapItems = ScrapPrefabsWithWorth.ScrapItemData;
+
+        ScrapItemData scrapItem = new ScrapItemData();
+
+        for (int i = 0; i < scrapItems.Count; i++)
+        {
+            if (i == 0) // TODO better checking that the first item can work to spawn.
+            {
+                scrapItem.ScrapWorth = scrapItems[i].ScrapWorth;
+                scrapItem.ScrapPrefab = scrapItems[i].ScrapPrefab;
+                continue;
+            }
+
+            if (scrapItems[i].ScrapWorth <= worthNeeded && scrapItems[i].ScrapWorth > scrapItem.ScrapWorth)
+            {
+                scrapItem.ScrapWorth = scrapItems[i].ScrapWorth;
+                scrapItem.ScrapPrefab = scrapItems[i].ScrapPrefab;
+            }
+        }
+
+        return scrapItem;
+    }
+
+    public bool HaveInventorySpace()
+    {
+        return currentInventoryScrap < maxInventoryScrap;
+    }
+
+    public int HowMuchCanInventoryHold()
+    {
+        return maxInventoryScrap - currentInventoryScrap;
     }
 
     public int CollectScrap(int amount)

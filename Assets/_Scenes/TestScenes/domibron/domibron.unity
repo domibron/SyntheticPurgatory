@@ -1479,6 +1479,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ScrapPrefabsWithWorth: {fileID: 11400000, guid: 2196a8e1d3781db4aa5cf80527fb462b, type: 2}
+  MaxCollectionRange: 5
+  CollectItemRange: 1
+  flyAccel: 15
+  flyMaxSpeed: 60
+  flyDistanceBoost: 10
+  maxInventoryScrap: 10
 --- !u!43 &515745999
 Mesh:
   m_ObjectHideFlags: 0
@@ -2956,6 +2962,14 @@ PrefabInstance:
     - target: {fileID: 7122366557261921073, guid: 8c77fd95c42302d40ae07654db8ec4c5, type: 3}
       propertyPath: m_Name
       value: P_BoltCollectable_Bronze
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731745393705546603, guid: 8c77fd95c42302d40ae07654db8ec4c5, type: 3}
+      propertyPath: flyAccel
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731745393705546603, guid: 8c77fd95c42302d40ae07654db8ec4c5, type: 3}
+      propertyPath: flyMaxSpeed
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
