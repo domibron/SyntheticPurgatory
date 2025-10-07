@@ -12,14 +12,14 @@ public class ScrapCollectable : MonoBehaviour
     [SerializeField]
     int scrapWorth = 1;
 
-    [SerializeField]
-    float flyAccel = 5f; // TODO static constant thing.
+    // [SerializeField]
+    // float flyAccel = 5f; // TODO static constant thing.
 
-    [SerializeField]
-    float flyMaxSpeed = 15f;
+    // [SerializeField]
+    // float flyMaxSpeed = 15f;
 
-    [SerializeField]
-    float flyDistanceBoost = 10f;
+    // [SerializeField]
+    // float flyDistanceBoost = 10f;
 
     void Awake()
     {
@@ -45,9 +45,14 @@ public class ScrapCollectable : MonoBehaviour
         FlyTowardsPlayer();
     }
 
+    public void Initialize(int scrapWorth)
+    {
+        this.scrapWorth = scrapWorth;
+    }
+
     private void CheckForPlayer()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, ScrapManager.MaxCollectionRange, LayerMask.GetMask("Player"));
+        Collider[] colliders = Physics.OverlapSphere(transform.position, ScrapManager.Instance.MaxCollectionRange, LayerMask.GetMask("Player"));
 
         if (colliders.Length <= 0)
         {
@@ -68,7 +73,7 @@ public class ScrapCollectable : MonoBehaviour
 
     private void FlyTowardsPlayer()
     {
-        if (playerTransform == null)
+        if (!CanPlayerCollect())
         {
             rb.useGravity = true;
             return;
@@ -78,10 +83,10 @@ public class ScrapCollectable : MonoBehaviour
 
         Vector3 wishDir = (playerTransform.position - transform.position).normalized;
         float projVel = Vector3.Dot(rb.linearVelocity, wishDir.normalized);
-        float accel = flyAccel * Mathf.Max(Vector3.Distance(transform.position, playerTransform.position), 1) * Time.deltaTime;
+        float accel = ScrapManager.Instance.flyAccel + Mathf.Pow(ScrapManager.Instance.flyDistanceBoost, Mathf.Max(Mathf.FloorToInt(ScrapManager.Instance.MaxCollectionRange - Vector3.Distance(transform.position, playerTransform.position)), 1)) * Time.deltaTime;
 
-        if (projVel + accel > flyMaxSpeed)
-            accel = Mathf.Max(0, flyMaxSpeed - projVel);
+        if (projVel + accel > ScrapManager.Instance.flyMaxSpeed)
+            accel = Mathf.Max(0, ScrapManager.Instance.flyMaxSpeed - projVel);
 
         wishDir = wishDir.normalized * accel;
 
@@ -93,16 +98,34 @@ public class ScrapCollectable : MonoBehaviour
 
     private void CollectItem()
     {
-        if (playerTransform == null) return;
+        if (!CanPlayerCollect()) return;
 
-        if (Vector3.Distance(transform.position, playerTransform.position) > ScrapManager.CollectItemRange) return;
+        if (Vector3.Distance(transform.position, playerTransform.position) > ScrapManager.Instance.CollectItemRange) return;
 
         int remaining = ScrapManager.Instance.CollectScrap(scrapWorth);
 
-        // do bullshittery magic to spawn the other scrap values. 
-        // Scrap manager has scrap and worth values as a SO.
+        while (remaining > 0) // fingers cross this doesn't fuck up. It will in the future and cause a stutter, you watch.
+        {
+            ScrapItemData prefabToSpawn = ScrapManager.Instance.GetPrefabWithHighestWorth(remaining);
+
+            Instantiate(prefabToSpawn.ScrapPrefab, transform.position, Quaternion.identity);
+
+            remaining -= prefabToSpawn.ScrapWorth;
+        }
 
         Destroy(gameObject);
+    }
+
+    private bool CanPlayerCollect()
+    {
+        if (playerTransform == null)
+            return false;
+
+        if (!ScrapManager.Instance.HaveInventorySpace())
+            return false;
+
+        return true;
+
     }
 
 }
