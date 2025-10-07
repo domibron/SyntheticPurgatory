@@ -322,7 +322,7 @@ public class LevelGenerator : MonoBehaviour
         AddAllRotatableRoomsToList(LevelPieceCollection.StartRooms, ref startRooms); // we add to start rooms list
 
 
-        while (loop) // inf loop for testing.
+        do // inf loop for testing.
         {
             levelData.Clear();
             currentID = 1;
@@ -421,17 +421,22 @@ public class LevelGenerator : MonoBehaviour
                 yield return null;
             }
 
-            yield return new WaitForSeconds(3f);
-
-            Transform[] children = transform.GetComponentsInChildren<Transform>();
-
-            foreach (Transform child in children)
+            if (loop)
             {
-                if (child == transform) continue;
+                yield return new WaitForSeconds(3f);
 
-                Destroy(child.gameObject);
+                Transform[] children = transform.GetComponentsInChildren<Transform>();
+
+                foreach (Transform child in children)
+                {
+                    if (child == transform) continue;
+
+                    Destroy(child.gameObject);
+                }
             }
-        }
+
+        } while (loop);
+
     }
 
     private void InitializeNewSeed()
