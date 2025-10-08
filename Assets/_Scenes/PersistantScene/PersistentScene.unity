@@ -177,9 +177,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'V1.1.1
-
-    ALPHA'
+  m_text: V1.1.1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -271,7 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiText: {fileID: 96736105}
-  AdditionalText: ALPHA
+  AdditionalText: 
   PrefixVersionText: 
   SuffixVersionText: 
 --- !u!1 &830313772
@@ -287,7 +285,7 @@ GameObject:
   - component: {fileID: 830313774}
   - component: {fileID: 830313773}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: LoadingCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -798,11 +796,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b68dca26ff241184db40930bdaad7a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingScreen: {fileID: 830313772}
-  progressBar: {fileID: 1764447051}
-  MainMenuSceneName: Domibron
-  loading: 0
-  overrideAll: 0
+  LoadingScreen: {fileID: 830313772}
+  ProgressBar: {fileID: 1764447051}
+  MainMenuSceneName: MainMenu
+  IsLoading: 0
+  OverrideAll: 0
 --- !u!1 &1742369105
 GameObject:
   m_ObjectHideFlags: 0
@@ -978,19 +976,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 131346483927619162, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 131346483927619162, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 1001593181495244796, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1001593181495244796, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1001593181495244796, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMin.x
@@ -1030,19 +1028,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3858219740362441263, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3858219740362441263, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3858219740362441263, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 3858219740362441263, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 3905522134735194555, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_Name
@@ -1052,13 +1050,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: DebugConsoleCanvas
       objectReference: {fileID: 0}
-    - target: {fileID: 4861194180111286098, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
-      propertyPath: m_AnchorMax.x
+    - target: {fileID: 4283762510796555889, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4861194180111286098, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4861194180111286098, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4861194180111286098, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMin.y
@@ -1174,11 +1176,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8244131659489186322, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8244131659489186322, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: -17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

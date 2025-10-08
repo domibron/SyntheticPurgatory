@@ -21,11 +21,11 @@ public class LoadNextLevel : MonoBehaviour
 
     public void LoadLevel()
     {
-        if (LevelLoading.instance != null)
+        if (LevelLoading.Instance != null)
         {
-            if (LevelCollections.CheckSceneInCollection(nameOfLevel))
+            if (LevelCollection.CheckSceneInCollection(nameOfLevel))
             {
-                LevelLoading.instance.LoadScene(LevelCollections.GetCollectionNameFromScene(nameOfLevel));
+                LevelLoading.Instance.LoadScene(LevelCollection.GetCollectionNameFromScene(nameOfLevel));
             }
         }
         else
