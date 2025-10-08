@@ -46,6 +46,17 @@ public class MeleeEnemyAI : MonoBehaviour
     /// </summary>
     [SerializeField]
     private float attackCone = 0.3f;
+    /// <summary>
+    /// Time between initialization of attacks
+    /// </summary>
+    [SerializeField]
+    private float attackCooldown = 1;
+    /// <summary>
+    /// Current Cooldown of attack
+    /// </summary>
+    private float curAttackCooldown = 0;
+
+
 
 
     void Start()
@@ -104,13 +115,14 @@ public class MeleeEnemyAI : MonoBehaviour
 
         //print("left: " + leftTreadSpeed + "   right: " + rightTreadSpeed);
         oldRotation = transform.rotation.eulerAngles; // Save old angle
+        curAttackCooldown -= Time.fixedDeltaTime;
     }
 
 
     /// <summary>
     /// Checks if the target is within reach
     /// </summary>
-    /// <returns>True if the target within range and attack angle</returns>
+    /// <returns>True if the target within range and not on cooldown</returns>
     public bool CheckCanAttack()
     {
         // Check if target within attacking distance
@@ -127,7 +139,13 @@ public class MeleeEnemyAI : MonoBehaviour
             return false;
         }
 
-        // Return true if previous two checks weren't triggered
+        // Check attack cooldown
+        if (curAttackCooldown > 0)
+        {
+            return false;
+        }
+
+        // Return true if all checks weren't triggered
         return true;
     }
 
@@ -136,7 +154,13 @@ public class MeleeEnemyAI : MonoBehaviour
     /// </summary>
     public void InitiateAttack()
     {
-        // Code here
+        curAttackCooldown = attackCooldown; // Reset attack cooldown
+
+        Health healthscript;
+        if (healthscript = goal.gameObject.GetComponent<Health>()) // Attack object if it has the health script attached
+        {
+            healthscript.AddToHealth(-8);
+        }
     }
 
 }
