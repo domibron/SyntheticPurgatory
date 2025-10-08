@@ -87,7 +87,8 @@ MonoBehaviour:
   goal: {fileID: 0}
   baseSpeed: 3.5
   turnReduction: 5
-  oldRotation: {x: 0, y: 0, z: 0}
+  attackRange: 2
+  attackCone: 0.3
 --- !u!195 &8936433327460139543
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -99,7 +100,7 @@ NavMeshAgent:
   m_AgentTypeID: -1372625422
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 16
   avoidancePriority: 50
   m_AngularSpeed: 160
   m_StoppingDistance: 0
