@@ -13,4 +13,9 @@ public class MainMenu : MonoBehaviour
 
         LevelLoading.Instance.LoadScene(HubWorldSceneName);
     }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }
