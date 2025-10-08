@@ -12,6 +12,13 @@ using UnityEngine;
 //  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
 // © 2025 domibron
 
+//  ▄▄▄▄  ▄▄▄▄▄   ▄▄▄▄   ▄▄▄▄  ▄      ▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄
+// ▄▀  ▀▄ █    █ █▀   ▀ ▄▀  ▀▄ █      █        █    █     
+// █    █ █▄▄▄▄▀ ▀█▄▄▄  █    █ █      █▄▄▄▄▄   █    █▄▄▄▄▄
+// █    █ █    █     ▀█ █    █ █      █        █    █     
+//  █▄▄█  █▄▄▄▄▀ ▀▄▄▄█▀  █▄▄█  █▄▄▄▄▄ █▄▄▄▄▄   █    █▄▄▄▄▄
+
+
 [Obsolete("Please use" + nameof(LevelCollection) + "instead!", true)]
 public static class LevelCollections
 {
