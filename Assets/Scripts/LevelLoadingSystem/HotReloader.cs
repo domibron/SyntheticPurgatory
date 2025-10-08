@@ -40,7 +40,7 @@ public class HotReloader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (LevelLoading.instance != null) return;
+        if (LevelLoading.Instance != null) return;
 
         sceneNameToReload = SceneManager.GetActiveScene().name;
 
@@ -55,25 +55,27 @@ public class HotReloader : MonoBehaviour
         if (!isReloading) return;
 
 
-        if (LevelLoading.instance == null) return;
+        if (LevelLoading.Instance == null) return;
 
-        if (LevelLoading.instance.loading) return;
+        if (LevelLoading.Instance.IsLoading) return;
 
 
         if (SceneManager.GetActiveScene().buildIndex != 1) return;
 
 
 
-        if (LevelCollections.CheckSceneInCollection(sceneNameToReload))
+        if (LevelCollection.CheckSceneInCollection(sceneNameToReload))
         {
-            LevelLoading.instance.LoadLevel(LevelCollections.GetLevelIDFromSceneName(sceneNameToReload));
+            LevelLoading.Instance.LoadScene(LevelCollection.GetCollectionNameFromScene(sceneNameToReload));
         }
         else
         {
-            LevelLoading.instance.LoadScene(sceneNameToReload);
+            LevelLoading.Instance.LoadScene(sceneNameToReload);
         }
 
         Debug.Log("Keep in mind that there will be errors from when the scene was first loaded!", this);
+        Debug.LogWarning("Keep in mind that there will be errors from when the scene was first loaded!", this);
+        Debug.LogError("Keep in mind that there will be errors from when the scene was first loaded!", this);
 
         Destroy(this.gameObject);
     }

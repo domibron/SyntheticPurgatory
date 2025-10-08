@@ -74,14 +74,14 @@ public class BaseCommands
                 }
 
                 console.TextToConsole($"Loading scene {index}");
-                if (LevelLoading.instance == null)
+                if (LevelLoading.Instance == null)
                 {
                     SceneManager.LoadScene(index);
                     return;
                 }
 
-                if (LevelLoading.instance.loading) return;
-                LevelLoading.instance.LoadScene(index);
+                if (LevelLoading.Instance.IsLoading) return;
+                LevelLoading.Instance.LoadScene(index);
             }
             catch (Exception e)
             {
@@ -146,14 +146,14 @@ public class BaseCommands
             try
             {
                 console.TextToConsole($"Reloading...");
-                if (LevelLoading.instance == null)
+                if (LevelLoading.Instance == null)
                 {
                     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                     return;
                 }
 
-                if (LevelLoading.instance.loading) return;
-                LevelLoading.instance.Reload();
+                if (LevelLoading.Instance.IsLoading) return;
+                LevelLoading.Instance.Reload();
             }
             catch (Exception e)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 //by    _                 _ _                     
 //     | |               (_) |                    
@@ -21,11 +22,11 @@ using UnityEngine.SceneManagement;
 public class LevelLoading : MonoBehaviour
 {
 	// Instance so other scripts can call functions.
-	public static LevelLoading instance;
+	public static LevelLoading Instance;
 
 	// The loading screen UI.
-	public GameObject loadingScreen;
-	public Slider progressBar;
+	public GameObject LoadingScreen;
+	public Slider ProgressBar;
 
 	[SerializeField]
 	private string MainMenuSceneName = "MainMenu";
@@ -34,10 +35,10 @@ public class LevelLoading : MonoBehaviour
 	private bool isReloading = false;
 
 	// if the level is being loaded.
-	public bool loading = false;
+	public bool IsLoading = false;
 
 	// this prevents loading when enabled.
-	public bool overrideAll = false;
+	public bool OverrideAll = false;
 
 	// progress of loading the scene.
 	private float totalSceneProgress;
@@ -50,13 +51,13 @@ public class LevelLoading : MonoBehaviour
 	// sets the instance
 	void Awake()
 	{
-		if (instance != null && instance != this)
+		if (Instance != null && Instance != this)
 		{
 			Destroy(this.gameObject);
 		}
 		else
 		{
-			instance = this;
+			Instance = this;
 			// prevents this of being destroyed on load.
 			DontDestroyOnLoad(this.gameObject);
 		}
@@ -69,9 +70,9 @@ public class LevelLoading : MonoBehaviour
 	// sets variables.
 	private void Start()
 	{
-		if (overrideAll) return;
+		if (OverrideAll) return;
 
-		loadingScreen.SetActive(false);
+		LoadingScreen.SetActive(false);
 
 		LoadMainMenu();
 
@@ -85,10 +86,10 @@ public class LevelLoading : MonoBehaviour
 	#region Update
 	private void Update()
 	{
-		if (overrideAll) return;
+		if (OverrideAll) return;
 
 		// stops reloading of reloading multiple times.
-		isReloading = loadingScreen.gameObject.activeSelf;
+		isReloading = LoadingScreen.gameObject.activeSelf;
 	}
 	#endregion
 
@@ -105,7 +106,7 @@ public class LevelLoading : MonoBehaviour
 	#endregion
 
 
-
+	[Obsolete("This was for another project.", true)]
 	public void LoadLevel(int levelID)
 	{
 		if (levelID == 1)
@@ -130,10 +131,10 @@ public class LevelLoading : MonoBehaviour
 	/// <param name="indexNumber">build scene index</param>
 	public void LoadScene(int indexNumber)
 	{
-		if (overrideAll) return;
+		if (OverrideAll) return;
 
-		loading = true;
-		loadingScreen.gameObject.SetActive(true);
+		IsLoading = true;
+		LoadingScreen.gameObject.SetActive(true);
 		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
 		if (SceneManager.sceneCount > 1)
@@ -156,10 +157,10 @@ public class LevelLoading : MonoBehaviour
 	/// <param name="sceneName">build scene index</param>
 	public void LoadScene(string sceneName)
 	{
-		if (overrideAll) return;
+		if (OverrideAll) return;
 
-		loading = true;
-		loadingScreen.gameObject.SetActive(true);
+		IsLoading = true;
+		LoadingScreen.gameObject.SetActive(true);
 		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
 		if (SceneManager.sceneCount > 1)
@@ -182,10 +183,10 @@ public class LevelLoading : MonoBehaviour
 	/// <param name="mapName">build scene name</param>
 	public void LoadScene(string[] mapNames)
 	{
-		if (overrideAll) return;
+		if (OverrideAll) return;
 
-		loading = true;
-		loadingScreen.gameObject.SetActive(true);
+		IsLoading = true;
+		LoadingScreen.gameObject.SetActive(true);
 		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
 		if (SceneManager.sceneCount > 1)
@@ -212,13 +213,13 @@ public class LevelLoading : MonoBehaviour
 	/// </summary>
 	public void Reload()
 	{
-		if (overrideAll) return;
+		if (OverrideAll) return;
 
-		loading = true;
+		IsLoading = true;
 		if (isReloading) return;
 		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
-		loadingScreen.gameObject.SetActive(true);
+		LoadingScreen.gameObject.SetActive(true);
 
 		Scene savedScene = SceneManager.GetSceneAt(1);
 
@@ -230,9 +231,9 @@ public class LevelLoading : MonoBehaviour
 		}
 
 		// reload the scenes
-		if (LevelCollections.CheckSceneInCollection(savedScene.name))
+		if (LevelCollection.CheckSceneInCollection(savedScene.name))
 		{
-			foreach (string map in LevelCollections.GetCollectionNameFromScene(savedScene.name))
+			foreach (string map in LevelCollection.GetCollectionNameFromScene(savedScene.name))
 			{
 				scenesLoading.Add(SceneManager.LoadSceneAsync(map, LoadSceneMode.Additive));
 			}
@@ -269,14 +270,14 @@ public class LevelLoading : MonoBehaviour
 
 				totalSceneProgress = (totalSceneProgress / scenesLoading.Count) * 100f;
 
-				progressBar.value = totalSceneProgress;
+				ProgressBar.value = totalSceneProgress;
 
 				yield return null;
 			}
 		}
 
-		loading = false;
-		loadingScreen.gameObject.SetActive(false);
+		IsLoading = false;
+		LoadingScreen.gameObject.SetActive(false);
 
 		if (SceneManager.sceneCount > 1)
 		{

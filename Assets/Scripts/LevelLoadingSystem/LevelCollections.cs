@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using UnityEngine;
 //  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
 // © 2025 domibron
 
-
+[Obsolete("Please use" + nameof(LevelCollection) + "instead!", true)]
 public static class LevelCollections
 {
     public static string[] Level1 = new string[] { "Level_1A", "Level_1B" };

@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public string HubWorldSceneName = "HubWorld";
 
-    // Update is called once per frame
-    void Update()
+    public void StartNewGame()
     {
-        
+        // should have a little menu for chips but we load into the level for now.
+        if (LevelLoading.Instance == null) return;
+
+        if (LevelLoading.Instance.IsLoading) return;
+
+        LevelLoading.Instance.LoadScene(HubWorldSceneName);
     }
 }
