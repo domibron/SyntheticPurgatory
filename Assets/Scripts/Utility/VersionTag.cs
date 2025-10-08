@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,16 +16,27 @@ using UnityEngine;
 public class VersionTag : MonoBehaviour
 {
     public TMP_Text uiText;
+    public string AdditionalText = "ALPHA";
+    public string PrefixVersionText = "";
+    public string SuffixVersionText = "";
+
+    void OnValidate()
+    {
+        if (GetComponent<TMP_Text>() != null)
+        {
+            uiText = GetComponent<TMP_Text>();
+            uiText.text = GetText();
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        uiText.text = "V " + Application.version;
+        uiText.text = GetText();
     }
 
-    // Update is called once per frame
-    void Update()
+    string GetText()
     {
-
+        return $"{PrefixVersionText}V{Application.version}{SuffixVersionText}" + (String.IsNullOrWhiteSpace(AdditionalText) ? "" : "\n" + AdditionalText);
     }
 }
