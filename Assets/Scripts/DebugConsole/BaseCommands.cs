@@ -331,14 +331,14 @@ public class BaseCommands
             loadLevel,
             tp,
             destroyObjectCommand,
-            setSprintSpeed,
+            // setSprintSpeed,
             reloadLevel,
-            damagePlayer,
+            // damagePlayer,
             removeDialog,
             noClip,
-            unlockAllAbilities,
-            removeHud,
-            setAttackDamage,
+            // unlockAllAbilities,
+            // removeHud,
+            // setAttackDamage,
         };
 
         foreach (var command in commandsToAdd)
