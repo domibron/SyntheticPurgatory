@@ -42,12 +42,20 @@ public class Constants
 
     #endregion
 
+    public const string ScrapTag = "Scrap";
+
+    public const string ScrapLayer = "Scrap";
+
+    public const string DepoScrapTag = "DepoScrap";
+
+    public const string DepoSrapLayer = "DepoScrap";
+
     /// <summary>
     /// The name of the item layer.
     /// </summary>
-    public const string ItemLayer = "Item";
+    // public const string ItemLayer = "Item";
 
     public const string DefaultLayer = "Default";
 
-    public const string CheckpointTag = "Checkpoint";
+    // public const string CheckpointTag = "Checkpoint";
 }
