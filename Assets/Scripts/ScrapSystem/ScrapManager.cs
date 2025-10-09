@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class ScrapManager : MonoBehaviour
 {
-    public ScrapWithWorthSO ScrapPrefabsWithWorth;
-    public ScrapWithWorthSO DepositScrapWithWorth;
+    public SO_ScrapWithWorth ScrapPrefabsWithWorth;
+    public SO_ScrapWithWorth DepositScrapWithWorth;
 
     public static ScrapManager Instance { get => instance; }
     static ScrapManager instance;
@@ -59,7 +59,7 @@ public class ScrapManager : MonoBehaviour
     }
 
     // * This is static.
-    public static ScrapItemData GetPrefabWithHighestWorth(int worthNeeded, ScrapWithWorthSO scrapWithWorthSO)
+    public static ScrapItemData GetPrefabWithHighestWorth(int worthNeeded, SO_ScrapWithWorth scrapWithWorthSO)
     {
         if (worthNeeded <= 0) return null;
 
