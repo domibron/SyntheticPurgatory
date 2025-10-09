@@ -11,7 +11,7 @@ public class ScrapItemData
 }
 
 [CreateAssetMenu(fileName = "ScrapWithWorthData", menuName = "ScriptableObjects/Scrap/ScrapWithWorth")]
-public class ScrapWithWorthSO : ScriptableObject
+public class SO_ScrapWithWorth : ScriptableObject
 {
     [SerializeField]
     private ScrapItemData[] scrapItemsData;

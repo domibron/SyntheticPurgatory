@@ -5,268 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[Serializable]
-public class RoomPiece
-{
-    private SO_LevelPiece LevelPiece;
-    public float OrientationInDegrees = 0; // rotation is such a pain.
 
-    public Vector3 SpawnPointOffset = Vector3.zero;
-    public Quaternion Rotation;
-    public DoorwayData[] DoorwayData;
-    public Vector2Int BoundingSize;
-
-    public float UnitSizeInMeters;
-
-    public RoomPiece(SO_LevelPiece levelPiece, float orientationInDegrees, float unitSizeInMeters)
-    {
-        UnitSizeInMeters = unitSizeInMeters;
-
-        LevelPiece = levelPiece;
-
-        if (orientationInDegrees >= 0 && orientationInDegrees <= 360)
-            OrientationInDegrees = Mathf.Abs(orientationInDegrees);
-        else
-            OrientationInDegrees = 0f;
-
-        BoundingSize = LevelPiece.BoundingSize;
-
-        if (orientationInDegrees != 0)
-        {
-            if ((orientationInDegrees / 90) % 2 == 1)
-            {
-                BoundingSize.x = LevelPiece.BoundingSize.y;
-                BoundingSize.y = LevelPiece.BoundingSize.x;
-            }
-        }
-
-        Rotation = Quaternion.Euler(0, orientationInDegrees, 0);
-
-        DoorwayData = new DoorwayData[LevelPiece.DoorwayData.Length];
-        for (int i = 0; i < DoorwayData.Length; i++)
-        {
-            DoorwayData[i] = new DoorwayData(LevelPiece.DoorwayData[i].Location, LevelPiece.DoorwayData[i].FacingDirection);
-        }
-
-        if (orientationInDegrees != 0)
-        {
-
-            switch (orientationInDegrees / 90)
-            {
-                case 1:
-                    SpawnPointOffset.z = levelPiece.BoundingSize.x - 1;
-                    break;
-                case 2:
-                    SpawnPointOffset.z = levelPiece.BoundingSize.x - 1;
-                    SpawnPointOffset.x = levelPiece.BoundingSize.y - 1;
-                    break;
-                case 3:
-                    SpawnPointOffset.x = levelPiece.BoundingSize.y - 1;
-                    break;
-                default: // in case for immense fuck up. I know I would manage something like that.
-                    SpawnPointOffset = Vector3.zero;
-                    break;
-            }
-
-
-            RotateAllDoorways();
-        }
-    }
-
-    public SO_LevelPiece GetLevelPiece()
-    {
-        return LevelPiece;
-    }
-
-    public GameObject GetPrefab()
-    {
-        return LevelPiece.LevelPiecePrefab;
-    }
-
-    private void RotateAllDoorways()
-    {
-        for (int i = 0; i < DoorwayData.Length; i++)
-        {
-            DoorwayData[i] = GetDoorwayAfterRotation(DoorwayData[i]);
-        }
-    }
-
-    public DoorwayData GetDoorwayAfterRotation(DoorwayData doorwayToRotate)
-    {
-
-        DoorwayData returnedDoorwayData = doorwayToRotate;
-
-        // Debug.Log($"before: {returnedDoorwayData.Location}");
-
-        Vector2 rotatedPoint = LevelGenerationUtil.RotatePoint(doorwayToRotate.Location, (new Vector2(LevelPiece.BoundingSize.x, LevelPiece.BoundingSize.y) - Vector2.one) / 2f,
-            (-1f * OrientationInDegrees) * Mathf.Deg2Rad); // times -1 to turn into negative to inverse rotation direction to be clockwise rather than counter.
-
-        returnedDoorwayData.Location = new Vector2Int(Mathf.RoundToInt(rotatedPoint.x), Mathf.RoundToInt(rotatedPoint.y));
-        // Debug.Log($"after: {returnedDoorwayData.Location} rr {rotatedPoint}");
-
-
-        returnedDoorwayData.FacingDirection = LevelGenerationUtil.RotateCompassDirectionByDegrees(doorwayToRotate.FacingDirection, OrientationInDegrees);
-
-        return returnedDoorwayData;
-    }
-
-    public List<DoorwayData> GetDoorwaysFacingThatDirection(CompassDirection facingDirection)
-    {
-        List<DoorwayData> doorways = new List<DoorwayData>();
-
-        foreach (DoorwayData doorway in DoorwayData)
-        {
-            if (doorway.FacingDirection == facingDirection)
-            {
-                doorways.Add(doorway);
-            }
-        }
-
-        return doorways;
-    }
-
-    public bool HasAnyDoorwayWithFacingDirection(CompassDirection direction)
-    {
-        foreach (DoorwayData doorway in DoorwayData)
-        {
-            if (doorway.FacingDirection == direction)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-}
-
-[Serializable]
-public class SpawnedLevelRoomData
-{
-    public int ID;
-    public Vector2Int GridCoordinates;
-    public float OrientationInDegrees = 0; // rotation is such a pain.
-
-    public Vector3 SpawnPointOffset = Vector3.zero;
-    public Quaternion Rotation;
-    public DoorwayData[] DoorwayData;
-    public Vector2Int BoundingSize;
-
-    private GameObject levelPiecePrefab;
-
-    private float UnitSizeInMeters;
-
-    public SpawnedLevelRoomData(int id, Vector2Int gridCoordinates, RoomPiece roomPiece)
-    {
-        UnitSizeInMeters = roomPiece.UnitSizeInMeters;
-
-        ID = id;
-
-        levelPiecePrefab = roomPiece.GetPrefab();
-
-        OrientationInDegrees = roomPiece.OrientationInDegrees;
-
-        GridCoordinates = gridCoordinates;
-
-        BoundingSize = roomPiece.BoundingSize;
-
-        Rotation = roomPiece.Rotation;
-
-        DoorwayData = new DoorwayData[roomPiece.DoorwayData.Length];
-        for (int i = 0; i < DoorwayData.Length; i++)
-        {
-            DoorwayData[i] = new DoorwayData(roomPiece.DoorwayData[i].Location, roomPiece.DoorwayData[i].FacingDirection);
-        }
-
-        if (OrientationInDegrees != 0)
-        {
-
-            switch (OrientationInDegrees / 90)
-            {
-                case 1:
-                    SpawnPointOffset.z = roomPiece.BoundingSize.x - 1;
-                    break;
-                case 2:
-                    SpawnPointOffset.z = roomPiece.BoundingSize.x - 1;
-                    SpawnPointOffset.x = roomPiece.BoundingSize.y - 1;
-                    break;
-                case 3:
-                    SpawnPointOffset.x = roomPiece.BoundingSize.y - 1;
-                    break;
-                default: // in case for immense fuck up. I know I would do something like that.
-                    SpawnPointOffset = Vector3.zero;
-                    break;
-            }
-        }
-
-    }
-
-    public GameObject GetPrefab()
-    {
-        return levelPiecePrefab;
-    }
-
-    public Vector3 GetSpawnPoint()
-    {
-        Vector2 rotatedSpawnPoint = LevelGenerationUtil.RotatePoint(Vector2.zero, new Vector2(BoundingSize.x, BoundingSize.y) / 2f, (-1f * OrientationInDegrees) * Mathf.Deg2Rad);
-
-        return (LevelGenerationUtil.ConvertVector2IntToVector3(GridCoordinates) + new Vector3(rotatedSpawnPoint.x, 0, rotatedSpawnPoint.y)) * UnitSizeInMeters;
-    }
-
-    public Vector3 GetOffsetBasedOnDirection()
-    {
-        if (OrientationInDegrees != 0)
-        {
-            switch (OrientationInDegrees / 90)
-            {
-                case 1:
-                    return Vector3.forward;
-                case 2:
-                    return Vector3.forward + Vector3.right;
-                case 3:
-                    return Vector3.right;
-                default: // in case for immense fuck up. I know I would do something like that.
-                    return Vector3.zero;
-            }
-        }
-        else
-        {
-            return Vector3.zero;
-        }
-    }
-
-    public float GetUnitSizeInMeters()
-    {
-        return UnitSizeInMeters;
-    }
-
-    public List<DoorwayData> GetDoorwaysFacingThatDirection(CompassDirection facingDirection)
-    {
-        List<DoorwayData> doorways = new List<DoorwayData>();
-
-        foreach (DoorwayData doorway in DoorwayData)
-        {
-            if (doorway.FacingDirection == facingDirection)
-            {
-                doorways.Add(doorway);
-            }
-        }
-
-        return doorways;
-    }
-
-    public bool HasAnyDoorwayWithFacingDirection(CompassDirection direction)
-    {
-        foreach (DoorwayData doorway in DoorwayData)
-        {
-            if (doorway.FacingDirection == direction)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-}
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -295,8 +34,7 @@ public class LevelGenerator : MonoBehaviour
 
     private int currentID = 1;
 
-    public bool loop = true;
-
+    private Coroutine RoomGenerationCoroutine;
 
 
     List<RoomPiece> allRepeatableRooms = new List<RoomPiece>();
@@ -304,12 +42,87 @@ public class LevelGenerator : MonoBehaviour
     List<RoomPiece> allExitRooms = new List<RoomPiece>();
     List<RoomPiece> startRooms = new List<RoomPiece>();
 
+    public event Action onLevelGenerationComplete;
+    public event Action onLevelGenerationStart;
+    public event Action onLevelGenerationDestroy;
+
+    public enum RoomSpawnStatus
+    {
+        Failed,
+        DeadEnd,
+        ExtendableRoom,
+    }
 
 
-    // Start is called before the first frame update
-    IEnumerator Start()
+    void Awake()
     {
         // clear lists before using in case of some strange behaviours.
+
+        SetupRoomGeneration();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
+        RoomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
+
+    }
+
+    private IEnumerator StartLevelGeneration()
+    {
+        onLevelGenerationStart?.Invoke();
+
+        levelData.Clear();
+        currentID = 1;
+
+        int seed = InitializeNewSeed();
+
+        SpawnStartRoom(currentID);
+
+        List<int> roomsWithEmptyDoorways = new List<int>();
+        roomsWithEmptyDoorways.Add(currentID);
+
+        currentID++;
+
+
+        while (roomsWithEmptyDoorways.Count > 0)
+        {
+            int generatingRoomsFromID = roomsWithEmptyDoorways[Random.Range(0, roomsWithEmptyDoorways.Count)];
+            List<int> roomIdsToAdd = SpawnConnectingRooms(generatingRoomsFromID);
+
+            roomsWithEmptyDoorways.AddRange(roomIdsToAdd);
+            roomsWithEmptyDoorways.Remove(generatingRoomsFromID);
+
+            yield return null;
+        }
+
+
+        // if (CHECKING_CRITERIA)
+        // {
+        //     DestoryAllRooms();
+        // }
+
+        // clean up
+        if (RoomGenerationCoroutine != null)
+        {
+            onLevelGenerationComplete?.Invoke();
+            RoomGenerationCoroutine = null;
+            print(GetGridAsString());
+            print(seed.ToString());
+            print("Done generating");
+        }
+    }
+
+    /// <summary>
+    /// Initilizes and populates all the room lists with all the room pieces and their rotatable variants.
+    /// </summary>
+    private void SetupRoomGeneration()
+    {
+        allRepeatableRooms.Clear();
+        allEndCaps.Clear();
+        allExitRooms.Clear();
+        startRooms.Clear();
 
         AddAllRotatableRoomsToList(LevelPieceCollection.RegularRooms, ref allRepeatableRooms);
         AddAllRotatableRoomsToList(LevelPieceCollection.Corridors, ref allRepeatableRooms);
@@ -320,136 +133,86 @@ public class LevelGenerator : MonoBehaviour
         AddAllRotatableRoomsToList(LevelPieceCollection.ExitRooms, ref allExitRooms);
 
         AddAllRotatableRoomsToList(LevelPieceCollection.StartRooms, ref startRooms); // we add to start rooms list
+    }
 
+    /// <summary>
+    /// Removes all the room prefabs this level generator created. DO NOT remove other objects.
+    /// </summary>
+    private void DestoryAllRooms()
+    {
+        Transform[] children = transform.GetComponentsInChildren<Transform>();
 
-        do // inf loop for testing.
+        foreach (Transform child in children)
         {
-            levelData.Clear();
-            currentID = 1;
+            if (child == transform) continue;
 
-            InitializeNewSeed();
+            Destroy(child.gameObject);
+        }
 
-            SpawnStartRoom();
+        onLevelGenerationDestroy?.Invoke();
+    }
 
-            List<int> roomsWithEmptyDoorways = new List<int>();
-            roomsWithEmptyDoorways.Add(currentID);
+    /// <summary>
+    /// Spawns connecting rooms
+    /// </summary>
+    /// <param name="roomsWithEmptyDoorways"></param>
+    private List<int> SpawnConnectingRooms(int generatingRoomsFromID)
+    {
+        List<int> roomsWithDoorsToReturn = new List<int>();
 
-            currentID++;
+        DoorwayData[] doorsToConnectTo = levelData[generatingRoomsFromID].DoorwayData;
+
+        int doorsConnected = 0;
+        foreach (var doorway in doorsToConnectTo)
+        {
+            Vector2Int vectorDistanceFromSpawn = (levelData[1].GridCoordinates - levelData[generatingRoomsFromID].GridCoordinates - (doorway.Location + doorway.GetFacingAsVector()));
+            float magnitude = LevelGenerationUtil.GetMagnitudeOfVector2Int(vectorDistanceFromSpawn);
 
 
-            // TODO this code isn't that great and needs to be refactored. Im doing that now, i think.
-
-            bool exitHasSpawned = false;
 
 
-            float minDistFromStart = 5f; // TODO Make good with size checking and all that with max size so no stalemate can be reached. what? you mean have the exit replace a corridor end?
-            float exitSpawnChance = 0.1f;
-
-            while (roomsWithEmptyDoorways.Count > 0)
+            if (!CanGenerateFurther(levelData[generatingRoomsFromID].GridCoordinates + doorway.Location + doorway.GetFacingAsVector()))
             {
-                int generatingRoomsFromID = roomsWithEmptyDoorways[Random.Range(0, roomsWithEmptyDoorways.Count)];
-
-                DoorwayData[] doorsToConnectTo = levelData[generatingRoomsFromID].DoorwayData;
-
-                int doorsConnected = 0;
-                foreach (var doorway in doorsToConnectTo)
+                if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, currentID) != RoomSpawnStatus.Failed)
                 {
-                    Vector2Int vectorDistanceFromSpawn = (levelData[1].GridCoordinates - levelData[generatingRoomsFromID].GridCoordinates - (doorway.Location + doorway.GetFacingAsVector()));
-                    float magnitude = LevelGenerationUtil.GetMagnitudeOfVector2Int(vectorDistanceFromSpawn);
+                    roomsWithDoorsToReturn.Add(currentID);
+                    currentID++;
 
-
-                    if (!exitHasSpawned && magnitude > minDistFromStart && Random.Range(0f, 1f) < exitSpawnChance * (magnitude - minDistFromStart)) // TODO Remove magic numbers.
-                    {
-
-                        GetAllPossibleRoomsAndPositions(allExitRooms, levelData[generatingRoomsFromID].GridCoordinates, doorway, out List<RoomPiece> allValidLevelPieces, out List<Vector2Int> gridSpawnLocation);
-
-
-                        if (allValidLevelPieces.Count > 0)
-                        {
-                            int randomPieceIndex = Random.Range(0, allValidLevelPieces.Count);
-
-                            SpawnLevelPiece(new SpawnedLevelRoomData(currentID, gridSpawnLocation[randomPieceIndex], allValidLevelPieces[randomPieceIndex]));
-
-                            currentID++;
-
-                            exitHasSpawned = true;
-                            doorsConnected++;
-                        }
-                        else
-                        {
-                            if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, ref roomsWithEmptyDoorways, exitHasSpawned))
-                            {
-                                doorsConnected++;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!CanGenerateFurther(levelData[generatingRoomsFromID].GridCoordinates + doorway.Location + doorway.GetFacingAsVector()))
-                        {
-                            if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, ref roomsWithEmptyDoorways))
-                            {
-                                doorsConnected++;
-                            }
-                        }
-                        else if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, ref roomsWithEmptyDoorways, exitHasSpawned))
-                        {
-                            doorsConnected++;
-                        }
-                    }
-
-
-                }
-
-                // print(generatingRoomsFromID + " " + doorsConnected + " " + doorsToConnectTo.Length);
-                if (doorsConnected >= doorsToConnectTo.Length) roomsWithEmptyDoorways.Remove(generatingRoomsFromID);
-                else if (!CanGenerateASingleRoom(generatingRoomsFromID)) roomsWithEmptyDoorways.Remove(generatingRoomsFromID);
-
-                yield return null;
-            }
-
-            print(GetGridAsString());
-
-            while (!exitHasSpawned)
-            {
-                // Debug.LogError("FAILED!");
-                if (Input.GetKey(KeyCode.Space))
-                {
-                    exitHasSpawned = true;
-                    print("Exiting");
-                }
-                yield return null;
-            }
-
-            if (loop)
-            {
-                yield return new WaitForSeconds(3f);
-
-                Transform[] children = transform.GetComponentsInChildren<Transform>();
-
-                foreach (Transform child in children)
-                {
-                    if (child == transform) continue;
-
-                    Destroy(child.gameObject);
+                    doorsConnected++;
                 }
             }
+            else if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, currentID, false) != RoomSpawnStatus.Failed)
+            {
+                roomsWithDoorsToReturn.Add(currentID);
+                currentID++;
 
-        } while (loop);
+                doorsConnected++;
+            }
+
+
+
+        }
+
+        // print(generatingRoomsFromID + " " + doorsConnected + " " + doorsToConnectTo.Length);
+        if (doorsConnected >= doorsToConnectTo.Length) roomsWithDoorsToReturn.Remove(generatingRoomsFromID); // remove the generatingRoomsFromID from list since we generated the doors for said room.
+        else if (!CanGenerateASingleRoom(generatingRoomsFromID)) roomsWithDoorsToReturn.Remove(generatingRoomsFromID); // remove generatingRoomsFromID if we cant generate a room.
+
+        return roomsWithDoorsToReturn; // added int list return not sure if above needs the orignial ref list. // * It seems to work just fine.
 
     }
 
-    private void InitializeNewSeed()
+    private int InitializeNewSeed()
     {
         levelGrid = new int[XSize + GridEdgeBuffer + GridEdgeBuffer, YSize + GridEdgeBuffer + GridEdgeBuffer];
 
         int timeStampSeed = (int)new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
         if (Seed != -1) timeStampSeed = Seed;
-        print("Current seed: " + timeStampSeed);
+        // print("Current seed: " + timeStampSeed);
         Random.InitState(timeStampSeed);
+        return timeStampSeed;
     }
 
-    private void SpawnStartRoom()
+    private void SpawnStartRoom(int idForStartRoom)
     {
         List<RoomPiece> availableStartRoomPieces = new List<RoomPiece>();
 
@@ -460,7 +223,7 @@ public class LevelGenerator : MonoBehaviour
             if (CanPlacePiece(startGridCords, startRoom)) availableStartRoomPieces.Add(startRoom);
         }
 
-        SpawnLevelPiece(new SpawnedLevelRoomData(currentID, startGridCords, availableStartRoomPieces[Random.Range(0, availableStartRoomPieces.Count)]));
+        SpawnLevelPiece(new SpawnedLevelRoomData(idForStartRoom, startGridCords, availableStartRoomPieces[Random.Range(0, availableStartRoomPieces.Count)]));
     }
 
     private bool CanGenerateFurther(Vector2Int gridCoordinates)
@@ -501,7 +264,7 @@ public class LevelGenerator : MonoBehaviour
     }
 
     // TODO make into general pickAndSpawn func? maybe?
-    private bool SpawnRoomOrEndCap(int generatingRoomsFromID, DoorwayData doorway, ref List<int> roomsWithEmptyDoorways, bool blockGeneration = true)
+    private RoomSpawnStatus SpawnRoomOrEndCap(int generatingRoomsFromID, DoorwayData doorway, int thisRoomID, bool blockGeneration = true)
     {
         GetAllPossibleRoomsAndPositions(allRepeatableRooms, levelData[generatingRoomsFromID].GridCoordinates, doorway, out List<RoomPiece> allValidLevelPieces, out List<Vector2Int> gridSpawnLocation);
 
@@ -531,11 +294,7 @@ public class LevelGenerator : MonoBehaviour
 
             SpawnLevelPiece(new SpawnedLevelRoomData(currentID, FinalRoomsSpawnLocation[randomPieceIndex], FinalRooms[randomPieceIndex]));
 
-            roomsWithEmptyDoorways.Add(currentID);
-
-            currentID++;
-
-            return true; // ! don't continue.
+            return RoomSpawnStatus.ExtendableRoom; // ! don't continue.
 
         }
         else if (allValidLevelPieces.Count > 0 && gridSpawnLocation.Count > 0 && blockGeneration)
@@ -545,11 +304,13 @@ public class LevelGenerator : MonoBehaviour
 
             SpawnLevelPiece(new SpawnedLevelRoomData(currentID, gridSpawnLocation[randomPieceIndex], allValidLevelPieces[randomPieceIndex]));
 
-            roomsWithEmptyDoorways.Add(currentID);
+            // roomsWithEmptyDoorways.Add(currentID);
 
-            currentID++;
-
-            return true; // ! don't continue.
+            // currentID++;
+            if (allEndCaps.Contains(allValidLevelPieces[randomPieceIndex]))
+                return RoomSpawnStatus.DeadEnd;
+            else
+                return RoomSpawnStatus.ExtendableRoom; // ! don't continue.
         }
 
 
@@ -563,12 +324,12 @@ public class LevelGenerator : MonoBehaviour
 
             // roomsWithEmptyDoorways.Add(currentID);
 
-            currentID++;
+            // currentID++;
 
-            return true;
+            return RoomSpawnStatus.DeadEnd;
         }
 
-        return false;
+        return RoomSpawnStatus.Failed;
 
     }
 
