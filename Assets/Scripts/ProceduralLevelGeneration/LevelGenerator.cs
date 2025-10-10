@@ -46,6 +46,8 @@ public class LevelGenerator : MonoBehaviour
     public event Action onLevelGenerationStart;
     public event Action onLevelGenerationDestroy;
 
+    private Vector3 playerSpawnLocation;
+
     public enum RoomSpawnStatus
     {
         Failed,
@@ -78,7 +80,19 @@ public class LevelGenerator : MonoBehaviour
 
         int seed = InitializeNewSeed();
 
-        SpawnStartRoom(currentID);
+        GameObject startRoom = SpawnStartRoom(currentID);
+
+        if (startRoom.GetComponent<StartLocation>() != null)
+        {
+            print("Hit");
+            playerSpawnLocation = startRoom.GetComponent<StartLocation>().GetSpawnLocation();
+        }
+        else
+        {
+            playerSpawnLocation = Vector3.zero;
+
+            // some cool checks to get spawn room grid cords and convert into a spawn locations.
+        }
 
         List<int> roomsWithEmptyDoorways = new List<int>();
         roomsWithEmptyDoorways.Add(currentID);
@@ -124,15 +138,15 @@ public class LevelGenerator : MonoBehaviour
         allExitRooms.Clear();
         startRooms.Clear();
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.RegularRooms, ref allRepeatableRooms);
-        AddAllRotatableRoomsToList(LevelPieceCollection.Corridors, ref allRepeatableRooms);
+        AddAllRotatableRoomsToList(LevelPieceCollection.RegularRooms, ref allRepeatableRooms, LevelPieceCollection.UnitSizeInMeters);
+        AddAllRotatableRoomsToList(LevelPieceCollection.Corridors, ref allRepeatableRooms, LevelPieceCollection.UnitSizeInMeters);
 
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.EndCapRooms, ref allEndCaps);
+        AddAllRotatableRoomsToList(LevelPieceCollection.EndCapRooms, ref allEndCaps, LevelPieceCollection.UnitSizeInMeters);
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.ExitRooms, ref allExitRooms);
+        AddAllRotatableRoomsToList(LevelPieceCollection.ExitRooms, ref allExitRooms, LevelPieceCollection.UnitSizeInMeters);
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.StartRooms, ref startRooms); // we add to start rooms list
+        AddAllRotatableRoomsToList(LevelPieceCollection.StartRooms, ref startRooms, LevelPieceCollection.UnitSizeInMeters); // we add to start rooms list
     }
 
     /// <summary>
@@ -212,7 +226,7 @@ public class LevelGenerator : MonoBehaviour
         return timeStampSeed;
     }
 
-    private void SpawnStartRoom(int idForStartRoom)
+    private GameObject SpawnStartRoom(int idForStartRoom)
     {
         List<RoomPiece> availableStartRoomPieces = new List<RoomPiece>();
 
@@ -223,7 +237,7 @@ public class LevelGenerator : MonoBehaviour
             if (CanPlacePiece(startGridCords, startRoom)) availableStartRoomPieces.Add(startRoom);
         }
 
-        SpawnLevelPiece(new SpawnedLevelRoomData(idForStartRoom, startGridCords, availableStartRoomPieces[Random.Range(0, availableStartRoomPieces.Count)]));
+        return SpawnLevelPiece(new SpawnedLevelRoomData(idForStartRoom, startGridCords, availableStartRoomPieces[Random.Range(0, availableStartRoomPieces.Count)]));
     }
 
     private bool CanGenerateFurther(Vector2Int gridCoordinates)
@@ -340,7 +354,8 @@ public class LevelGenerator : MonoBehaviour
     /// <param name="gridSpawnLocation">The target location to spawn the level piece at.</param>
     /// <param name="id">The id to give this level piece.</param>
     /// <param name="orientation">The rotation of the level piece based of compass direction, north is 0 degrees, east is 90 and so on.</param>
-    private void SpawnLevelPiece(SpawnedLevelRoomData levelRoomData)
+    /// <returns>The room object that spawned.</returns>
+    private GameObject SpawnLevelPiece(SpawnedLevelRoomData levelRoomData)
     {
         GameObject nextRoom = Instantiate(levelRoomData.GetPrefab(), levelRoomData.GetSpawnPoint(), levelRoomData.Rotation);
 
@@ -350,6 +365,8 @@ public class LevelGenerator : MonoBehaviour
         nextRoom.name = $"[{levelRoomData.ID}] {nextRoom.name}";
 
         UpdateLevelData(levelRoomData);
+
+        return nextRoom;
     }
 
     /// <summary>
@@ -774,7 +791,12 @@ public class LevelGenerator : MonoBehaviour
         return spacesAfterDoorways >= minDoorwayCountToSucceed;
     }
 
-    private void AddAllRotatableRoomsToList(SO_LevelPiece[] levelPieces, ref List<RoomPiece> roomPieces)
+    public Vector3 GetPlayerSpawnLocation()
+    {
+        return playerSpawnLocation;
+    }
+
+    private static void AddAllRotatableRoomsToList(SO_LevelPiece[] levelPieces, ref List<RoomPiece> roomPieces, float unitSizeInMeters)
     {
         List<RoomPiece> rooms = new List<RoomPiece>();
 
@@ -783,7 +805,7 @@ public class LevelGenerator : MonoBehaviour
             // we need to get all four rotations.
             for (int i = 0; i <= 3; i++)
             {
-                RoomPiece room = new RoomPiece(levelPiece, 90 * i, LevelPieceCollection.UnitSizeInMeters);
+                RoomPiece room = new RoomPiece(levelPiece, 90 * i, unitSizeInMeters);
                 // print(HasUniqueDoorways(room, rooms));
                 if (HasUniqueDoorways(room, rooms))
                 {
@@ -796,7 +818,7 @@ public class LevelGenerator : MonoBehaviour
         roomPieces.AddRange(rooms);
     }
 
-    private bool HasUniqueDoorways(RoomPiece targetPiece, List<RoomPiece> roomPieces)
+    private static bool HasUniqueDoorways(RoomPiece targetPiece, List<RoomPiece> roomPieces)
     {
         if (roomPieces.Count <= 0) return true;
 
