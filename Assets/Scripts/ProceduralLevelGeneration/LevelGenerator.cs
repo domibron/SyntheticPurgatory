@@ -106,11 +106,11 @@ public class LevelGenerator : MonoBehaviour
         // clean up
         if (RoomGenerationCoroutine != null)
         {
-            onLevelGenerationComplete?.Invoke();
             RoomGenerationCoroutine = null;
             print(GetGridAsString());
             print(seed.ToString());
             print("Done generating");
+            onLevelGenerationComplete?.Invoke();
         }
     }
 
