@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 842285759}
   - component: {fileID: 842285762}
   - component: {fileID: 842285761}
+  - component: {fileID: 842285763}
   m_Layer: 0
   m_Name: Level Generator
   m_TagString: Untagged
@@ -290,8 +291,8 @@ MonoBehaviour:
   Seed: -1
   GridEdgeBuffer: 5
   MinimumRegularRoomCount: 3
-  XSize: 20
-  YSize: 20
+  XSize: 15
+  YSize: 15
   LevelPieceCollection: {fileID: 11400000, guid: 3396062d17b77b048a36e29113aecb89, type: 2}
 --- !u!114 &842285759
 MonoBehaviour:
@@ -350,6 +351,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa175731309dfe4399528f85811f1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!41 &842285763
+OcclusionPortal:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Open: 1
+  m_Center: {x: 200, y: 20, z: 200}
+  m_Size: {x: 100, y: 10, z: 100}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -10,12 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 7233999999206865309}
   - component: {fileID: 2661943088902248737}
+  - component: {fileID: -7218696491629243771}
   m_Layer: 0
   m_Name: P_CorridorCorner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7233999999206865309
 Transform:
@@ -75,6 +76,17 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     DoorwayData: []
     BoundingSize: {x: 0, y: 0}
+--- !u!192 &-7218696491629243771
+OcclusionArea:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2696347803522483219}
+  serializedVersion: 2
+  m_Size: {x: 10, y: 6, z: 10}
+  m_Center: {x: 4, y: 2, z: 4}
+  m_IsViewVolume: 1
 --- !u!1001 &590356350302623602
 PrefabInstance:
   m_ObjectHideFlags: 0
