@@ -32,6 +32,7 @@ public class NavMeshBaker : MonoBehaviour
     void UpdateNav()
     {
         navMeshSurface.BuildNavMesh(); // I hate this. Cant delay or wait, the game will just be frozen.
+        onNavMeshSurfaceGenerated?.Invoke();
     }
 
     // Update is called once per frame
