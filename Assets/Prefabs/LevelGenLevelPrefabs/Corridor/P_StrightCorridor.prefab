@@ -10,12 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 4080477659820378344}
   - component: {fileID: 2518220692386780814}
+  - component: {fileID: -5744098516891058539}
   m_Layer: 0
   m_Name: P_StrightCorridor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4080477659820378344
 Transform:
@@ -75,6 +76,17 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     DoorwayData: []
     BoundingSize: {x: 0, y: 0}
+--- !u!192 &-5744098516891058539
+OcclusionArea:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801806149886062658}
+  serializedVersion: 2
+  m_Size: {x: 10, y: 6, z: 10}
+  m_Center: {x: 4, y: 2, z: 4}
+  m_IsViewVolume: 1
 --- !u!1001 &184215886641649029
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -525,6 +537,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
@@ -995,6 +1011,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}

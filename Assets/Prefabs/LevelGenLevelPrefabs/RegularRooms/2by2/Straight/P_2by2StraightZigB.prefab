@@ -161,6 +161,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3567851125498231184}
   - component: {fileID: 7988481295292609891}
+  - component: {fileID: 6749096494590476603}
   m_Layer: 0
   m_Name: P_2by2StraightZigB
   m_TagString: Untagged
@@ -206,6 +207,17 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     DoorwayData: []
     BoundingSize: {x: 0, y: 0}
+--- !u!192 &6749096494590476603
+OcclusionArea:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7906132033842917766}
+  serializedVersion: 2
+  m_Size: {x: 18, y: 6, z: 18}
+  m_Center: {x: 8, y: 2, z: 8}
+  m_IsViewVolume: 1
 --- !u!1001 &140456028301522181
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3893,6 +3905,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedVertices.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -3964,6 +3980,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}

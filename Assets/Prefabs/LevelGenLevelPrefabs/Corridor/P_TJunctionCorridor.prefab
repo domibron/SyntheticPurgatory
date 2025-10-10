@@ -10,12 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1399809700436012766}
   - component: {fileID: 7932296914809061112}
+  - component: {fileID: -8831907285599666519}
   m_Layer: 0
   m_Name: P_TJunctionCorridor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1399809700436012766
 Transform:
@@ -72,6 +73,17 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     DoorwayData: []
     BoundingSize: {x: 0, y: 0}
+--- !u!192 &-8831907285599666519
+OcclusionArea:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611949297242465651}
+  serializedVersion: 2
+  m_Size: {x: 10, y: 6, z: 10}
+  m_Center: {x: 4, y: 2, z: 4}
+  m_IsViewVolume: 1
 --- !u!1001 &362019002582839792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -192,6 +204,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
@@ -390,6 +406,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
@@ -1286,6 +1306,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
       propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
+      propertyPath: m_SelectedFaces.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5186973990629315359, guid: 5899d6c48a6d5c5419b50511424dbca0, type: 3}
