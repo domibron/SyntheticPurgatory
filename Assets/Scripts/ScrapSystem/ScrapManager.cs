@@ -144,6 +144,16 @@ public class ScrapManager : MonoBehaviour
         collectScrap?.Invoke(amount);
     }
 
+    public GameObject SpawnScrap(int worth, Vector3 pos)
+    {
+        if (worth < 0) worth = Mathf.Abs(worth);
+        else if (worth == 0) worth = 1;
+
+        ScrapItemData scrapData = GetPrefabWithHighestWorth(worth, ScrapPrefabsWithWorth);
+
+        return Instantiate(scrapData.ScrapPrefab, pos, Quaternion.identity);
+    }
+
     void InvokeDroppedScrap(int amount)
     {
         droppedScrap?.Invoke(amount);
