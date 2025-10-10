@@ -84,7 +84,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (startRoom.GetComponent<StartLocation>() != null)
         {
-            print("Hit");
+            // print("Hit");
             playerSpawnLocation = startRoom.GetComponent<StartLocation>().GetSpawnLocation();
         }
         else
