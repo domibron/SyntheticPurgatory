@@ -53,7 +53,7 @@ public class Health : MonoBehaviour
     /// <summary>
     /// Called when adding to the health, the provided float is what to add to the health.
     /// </summary>
-    public event Action<float> onHealthChanged;
+    public event Action<float, float> onHealthChanged;
 
     protected virtual void Start()
     {
@@ -70,14 +70,14 @@ public class Health : MonoBehaviour
     }
 
     /// <summary>
-    /// Use this to add to or remove from the health.
+    /// Use this to add to or remove from the health. new, old
     /// </summary>
     /// <param name="amount">The value to add to the health.</param>
     public virtual void AddToHealth(float amount)
     {
-        currentHealth += amount;
 
-        if (amount != 0) InvokeOnHealthChanged(amount);
+        if (amount != 0) InvokeOnHealthChanged(currentHealth + amount, currentHealth);
+        currentHealth += amount;
 
 
         if (currentHealth > maxHealth) currentHealth = maxHealth;
@@ -122,9 +122,9 @@ public class Health : MonoBehaviour
     /// Calls the onAddToHealth event.
     /// </summary>
     /// <param name="amount">The amount to add to the current health value.</param>
-    protected void InvokeOnHealthChanged(float amount)
+    protected void InvokeOnHealthChanged(float newAmount, float oldHealth)
     {
-        onHealthChanged?.Invoke(amount);
+        onHealthChanged?.Invoke(newAmount, oldHealth);
     }
 
     /// <summary>
