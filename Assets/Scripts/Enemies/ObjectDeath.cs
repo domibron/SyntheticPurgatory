@@ -3,7 +3,7 @@ using UnityEngine;
 
 // By Vince Pressey
 
-public class EnemyDeath : MonoBehaviour
+public class ObjectDeath : MonoBehaviour
 {
     public event Action onDeathEvent;
 
@@ -27,15 +27,15 @@ public class EnemyDeath : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GetComponent<Health>().onDeath += KillEnemy;
+        GetComponent<Health>().onDeath += KillObject;
     }
 
     /// <summary>
     /// Initialize death scrap spawning then delete object
     /// </summary>
-    void KillEnemy()
+    void KillObject()
     {
         transform.GetComponent<ScrapDropper>().SpawnScrapGroup(ScrapDrop, sideForce, upForce); // Spawn Scrap
-        Destroy(gameObject); // Destroy enemy
+        Destroy(gameObject); // Destroy object
     }
 }
