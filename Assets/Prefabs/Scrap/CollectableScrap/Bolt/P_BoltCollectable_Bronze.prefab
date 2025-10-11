@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 7731745393705546603}
   - component: {fileID: 4866001148800543346}
   - component: {fileID: 8092809907619943794}
-  m_Layer: 0
+  - component: {fileID: 2053618523225766353}
+  m_Layer: 8
   m_Name: P_BoltCollectable_Bronze
   m_TagString: Scrap
   m_Icon: {fileID: 0}
@@ -74,7 +75,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &8092809907619943794
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -96,6 +97,20 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2053618523225766353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122366557261921073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891aa4422859be84591c36b9bcc10655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedObject: {fileID: 7731745393705546603}
+  disableTime: 0.5
 --- !u!1001 &8913451441795597149
 PrefabInstance:
   m_ObjectHideFlags: 0
