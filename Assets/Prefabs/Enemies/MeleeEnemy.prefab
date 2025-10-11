@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3668764079478542734}
   - component: {fileID: 8936433327460139543}
   - component: {fileID: 5636499128882319368}
+  - component: {fileID: 1999171437524782030}
   m_Layer: 9
   m_Name: MeleeEnemy
   m_TagString: Untagged
@@ -75,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c369e918ef61bcb418ac140dab0f87e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 60
 --- !u!114 &328645207216918543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,9 +107,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9901c98c21b71524dae00dacd5c61b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ScrapDrop: 5
   sideForce: 2.5
   upForce: 2
-  ScrapDrop: 5
 --- !u!114 &6057983245604984070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86233648f2d521d41875e4de529e83b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalHitScrap: 3
+  TotalHitScrap: 3
   sideForce: 1.5
   upForce: 3
 --- !u!195 &8936433327460139543
@@ -178,6 +179,33 @@ MonoBehaviour:
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
+--- !u!54 &1999171437524782030
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756158581593521815}
+  serializedVersion: 4
+  m_Mass: 15
+  m_Drag: 10
+  m_AngularDrag: 100
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &5253435429911172762
 GameObject:
   m_ObjectHideFlags: 0
