@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UnityEngine.Rendering.GPUSort;
 
 public class EnemyDeath : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class EnemyDeath : MonoBehaviour
 
     void KillEnemy()
     {
+        transform.GetComponent<ScrapDropper>().SpawnScrapGroup(63);
         Destroy(gameObject); // Destroy enemy
     }
 }
