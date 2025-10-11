@@ -102,8 +102,9 @@ public class HurtIndicatorAuto : MonoBehaviour
     /// Function to hook into onTakeDamage event on health scripts.
     /// </summary>
     /// <param name="amount">The amount of damage to take.</param>
-    protected virtual void TakenDamage(float amount)
+    protected virtual void TakenDamage(float newHealth, float oldHealth)
     {
+        float amount = newHealth - oldHealth;
         if (amount < 0)
             Flash();
     }

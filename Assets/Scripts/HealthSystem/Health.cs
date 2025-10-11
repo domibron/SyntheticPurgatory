@@ -107,6 +107,15 @@ public class Health : MonoBehaviour
         return currentHealth;
     }
 
+    /// <summary>
+    /// Returns the max health value.
+    /// </summary>
+    /// <returns>The max health value.</returns>
+    public virtual float ReturnMaxHealthValue()
+    {
+        return maxHealth;
+    }
+
     // ! These functions exist as you cannot call these events when inheriting.
 
     // /// <summary>

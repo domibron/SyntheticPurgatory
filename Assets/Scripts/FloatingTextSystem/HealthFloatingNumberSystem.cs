@@ -63,8 +63,10 @@ public class HealthFloatingNumberSystem : MonoBehaviour
         health.onHealthChanged += OnHealthChanged;
     }
 
-    protected virtual void OnHealthChanged(float amount) // TODO: redo for readability. Remove magic numbers
+    protected virtual void OnHealthChanged(float newHealth, float oldHealth) // TODO: redo for readability. Remove magic numbers
     {
+        float amount = newHealth - oldHealth;
+
         if (amount == 0) return; // we dont want 0 on screen.
 
         if (amount < 0) // did we take damage.

@@ -1,9 +1,14 @@
 using System;
 using UnityEngine;
 
+// By Vince Pressey
+
 public class PlayerDeath : MonoBehaviour
 {
     public event Action onDeathEvent;
+    /// <summary>
+    /// Object to activate upon death
+    /// </summary>
     public GameObject deathScreen;
 
 
