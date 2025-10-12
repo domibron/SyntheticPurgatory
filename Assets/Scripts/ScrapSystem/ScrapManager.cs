@@ -151,7 +151,10 @@ public class ScrapManager : MonoBehaviour
 
         ScrapItemData scrapData = GetPrefabWithHighestWorth(worth, ScrapPrefabsWithWorth);
 
-        return Instantiate(scrapData.ScrapPrefab, pos, Quaternion.identity);
+        GameObject scrapItem = Instantiate(scrapData.ScrapPrefab, pos, Quaternion.identity);
+        scrapItem.GetComponent<ScrapCollectable>()?.Initialize(scrapData.ScrapWorth);
+
+        return scrapItem;
     }
 
     void InvokeDroppedScrap(int amount)

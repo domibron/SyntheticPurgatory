@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1859945188022122444}
   - component: {fileID: 4461770416319400751}
   - component: {fileID: 4173164654083137730}
+  - component: {fileID: 7533897807845906704}
   m_Layer: 0
   m_Name: P_GameManager
   m_TagString: Untagged
@@ -66,3 +67,22 @@ MonoBehaviour:
   FlyDistanceBoost: 10
   DepositRate: 0.5
   maxInventoryScrap: 100
+--- !u!114 &7533897807845906704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666440648393459951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c71ac2b783f2da488ffe3613fbeb84b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseStats:
+  - Key: player
+    ScriptableObject: {fileID: 11400000, guid: 91e266c7eeadaef4bab3f5cad1ffdbe4, type: 2}
+  - Key: melee
+    ScriptableObject: {fileID: 11400000, guid: b543644531b1734498d30aa4e06876f4, type: 2}
+  - Key: ranged
+    ScriptableObject: {fileID: 11400000, guid: ac57a9d5f7545084aa3ec0e00cd4e75c, type: 2}
