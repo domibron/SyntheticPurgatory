@@ -15,7 +15,7 @@ public class PlayerCombat : MonoBehaviour
     float projectileSpeed = 10f;
 
     [SerializeField]
-    float projectileDamage = 20f;
+    float projectileDamage = 12f;
 
     [SerializeField]
     float projectileFireRate = 0.3f;
@@ -211,6 +211,7 @@ public class PlayerCombat : MonoBehaviour
         currentProjectileCooldown = projectileFireRate;
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
+        projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
 
         Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
 
