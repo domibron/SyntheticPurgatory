@@ -6,6 +6,12 @@ public class ScrapDropper : MonoBehaviour
 {
     ScrapManager scrapM;
 
+    /// <summary>
+    /// Offset of position for spawning scrap
+    /// </summary>
+    [SerializeField]
+    private Vector3 spawnOffset;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,10 +37,10 @@ public class ScrapDropper : MonoBehaviour
                 // Get second highest value scrap, assumes that it is halve the value of the previous
                 nextScrap = ScrapManager.GetPrefabWithHighestWorth(Mathf.FloorToInt(scrapTotal / 2), ScrapManager.Instance.ScrapPrefabsWithWorth);
 
-                GameObject newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position); // Spawns first scrap object
+                GameObject newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position + spawnOffset); // Spawns first scrap object
                 YeetObject(newScrap, xzForce, yForce);
 
-                newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position); // Spawns second scrap object
+                newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position + spawnOffset); // Spawns second scrap object
                 YeetObject(newScrap, xzForce, yForce);
 
                 scrapTotal -= nextScrap.ScrapWorth * 2; // Subtracts value of the two spawned scrap from total
@@ -43,7 +49,7 @@ public class ScrapDropper : MonoBehaviour
             }
             else // Normal scrap spawning method, overall works like binary
             {
-                GameObject newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position); // Spawns scrap object
+                GameObject newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position + spawnOffset); // Spawns scrap object
                 YeetObject(newScrap, xzForce, yForce);
 
                 scrapTotal -= nextScrap.ScrapWorth;

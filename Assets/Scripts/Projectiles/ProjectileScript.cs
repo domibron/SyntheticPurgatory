@@ -1,13 +1,21 @@
 using UnityEngine;
 
+// By Vincent Pressey
+
 public class ProjectileScript : MonoBehaviour
 {
+    /// <summary>
+    /// Damage dealt to object when projectile makes contact
+    /// </summary>
+    public float ProjectileDamage = 12;
+
+
     private void OnCollisionEnter(Collision collision)
     {
         Health healthscript;
         if (healthscript = collision.gameObject.GetComponent<Health>()) // Damage object if it has the health script attached
         {
-            healthscript.AddToHealth(-12);
+            healthscript.AddToHealth(-ProjectileDamage);
         }
 
         Destroy(gameObject);

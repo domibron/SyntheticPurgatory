@@ -9,9 +9,13 @@ public class HitScrapDropper : MonoBehaviour
     Health healthScript;
 
     /// <summary>
-    /// Total scrap dropped before death, triggered by damage and split evenly
+    /// Number of scrap dropped before death, triggered by damage and split evenly
     /// </summary>
     public int TotalHitScrap = 3;
+    /// <summary>
+    /// Value of each hit-scrap dropped
+    /// </summary>
+    public int hitScrapValue = 1;
     /// <summary>
     /// Value saved for exhausting hit-scrap supply in case of possible healing exploit
     /// </summary>

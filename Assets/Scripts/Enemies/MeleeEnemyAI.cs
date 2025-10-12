@@ -12,7 +12,6 @@ public class MeleeEnemyAI : MonoBehaviour
     /// <summary>
     /// Target of the enemy
     /// </summary>
-    [SerializeField]
     private GameObject goal;
 
 
@@ -61,6 +60,8 @@ public class MeleeEnemyAI : MonoBehaviour
 
     void Start()
     {
+        goal = GameObject.FindWithTag("Player");
+
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -68,6 +69,7 @@ public class MeleeEnemyAI : MonoBehaviour
     {
         MoveToTarget(); // Movement
 
+        curAttackCooldown -= Time.fixedDeltaTime;
         if (CheckCanAttack()) { InitiateAttack(); } // Attacking
 
     }
@@ -115,7 +117,6 @@ public class MeleeEnemyAI : MonoBehaviour
 
         //print("left: " + leftTreadSpeed + "   right: " + rightTreadSpeed);
         oldRotation = transform.rotation.eulerAngles; // Save old angle
-        curAttackCooldown -= Time.fixedDeltaTime;
     }
 
 
