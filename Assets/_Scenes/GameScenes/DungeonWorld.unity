@@ -250,10 +250,14 @@ GameObject:
   m_Component:
   - component: {fileID: 842285757}
   - component: {fileID: 842285758}
-  - component: {fileID: 842285759}
   - component: {fileID: 842285762}
+  - component: {fileID: 842285764}
   - component: {fileID: 842285761}
-  - component: {fileID: 842285763}
+  - component: {fileID: 842285759}
+  - component: {fileID: 842285766}
+  - component: {fileID: 842285765}
+  - component: {fileID: 842285767}
+  - component: {fileID: 842285768}
   m_Layer: 0
   m_Name: Level Generator
   m_TagString: Untagged
@@ -314,7 +318,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
@@ -351,16 +355,122 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa175731309dfe4399528f85811f1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!41 &842285763
-OcclusionPortal:
+  humanNavSurface: {fileID: 842285759}
+  meleeNavSurface: {fileID: 842285766}
+  rangedNavSurface: {fileID: 842285765}
+--- !u!114 &842285764
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 842285756}
-  m_Open: 1
-  m_Center: {x: 200, y: 20, z: 200}
-  m_Size: {x: 100, y: 10, z: 100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fce434a1a655e3478d1f62499823c2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangedEnemy: {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
+  MeleeEnemy: {fileID: 1756158581593521815, guid: 5455d20885edf97428cc927578495e4e, type: 3}
+--- !u!114 &842285765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 1479372276
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
+--- !u!114 &842285766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: -1372625422
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
+--- !u!114 &842285767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7b80c26ea979d246a257a81c7c7b6af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrapPrefabsWithWorth: {fileID: 11400000, guid: 2196a8e1d3781db4aa5cf80527fb462b, type: 2}
+  DepositScrapWithWorth: {fileID: 11400000, guid: 02d146b79da79964187f2864128e968d, type: 2}
+  MaxCollectionRange: 5
+  CollectItemRange: 1
+  FlyAccel: 15
+  FlyMaxSpeed: 30
+  FlyDistanceBoost: 10
+  DepositRate: 0.5
+  maxInventoryScrap: 10
+--- !u!114 &842285768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50899a524bcb97c48869588c963bb548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangedEnemy: {fileID: 0}
+  MeleeEnemy: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

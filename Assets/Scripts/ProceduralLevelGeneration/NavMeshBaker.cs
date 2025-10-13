@@ -9,7 +9,12 @@ using UnityEngine.AI;
 public class NavMeshBaker : MonoBehaviour
 {
     LevelGenerator lg;
-    NavMeshSurface navMeshSurface;
+    [SerializeField]
+    NavMeshSurface humanNavSurface;
+    [SerializeField]
+    NavMeshSurface meleeNavSurface;
+    [SerializeField]
+    NavMeshSurface rangedNavSurface;
 
     NavMeshData navMeshData;
 
@@ -21,7 +26,7 @@ public class NavMeshBaker : MonoBehaviour
         LevelGenerator lg = GetComponent<LevelGenerator>();
         lg.onLevelGenerationComplete += OnLevelGenComplete;
 
-        navMeshSurface = GetComponent<NavMeshSurface>();
+        // humanNavSurface = GetComponent<NavMeshSurface>();
     }
 
     private void OnLevelGenComplete()
@@ -31,7 +36,9 @@ public class NavMeshBaker : MonoBehaviour
 
     void UpdateNav()
     {
-        navMeshSurface.BuildNavMesh(); // I hate this. Cant delay or wait, the game will just be frozen.
+        humanNavSurface.BuildNavMesh(); // I hate this. Cant delay or wait, the game will just be frozen.
+        meleeNavSurface.BuildNavMesh();
+        rangedNavSurface.BuildNavMesh();
         // UnityEditor.StaticOcclusionCulling.Compute();
         onNavMeshSurfaceGenerated?.Invoke();
     }

@@ -1,14 +1,10 @@
-using System;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SpawnEnemies : MonoBehaviour
+public class ScrapSpawnSystem : MonoBehaviour
 {
     NavMeshBaker navMeshBaker;
-
-    public GameObject RangedEnemy;
-    public GameObject MeleeEnemy;
 
     LevelGenerator levelGenerator;
 
@@ -40,12 +36,12 @@ public class SpawnEnemies : MonoBehaviour
                 if (levelData[x, y] <= 0) continue;
 
                 // spawn enemies.
-                SpawnEnemiesForGrid(x, y, levelGenerator.LevelPieceCollection.UnitSizeInMeters);
+                SpawnRandomScrap(x, y, levelGenerator.LevelPieceCollection.UnitSizeInMeters);
             }
         }
     }
 
-    private void SpawnEnemiesForGrid(int x, int y, float gridSizeUnit)
+    private void SpawnRandomScrap(int x, int y, float gridSizeUnit)
     {
         Vector3 convertedCoordinated = new Vector3((x * gridSizeUnit) + (gridSizeUnit / 2f), transform.position.y, (y * gridSizeUnit) + (gridSizeUnit / 2f));
 
@@ -53,13 +49,14 @@ public class SpawnEnemies : MonoBehaviour
 
         if (UnityEngine.Random.Range(0f, 1f) < 0.5f) return;
 
+        int worth = UnityEngine.Random.Range(1, 32);
+
+
         bool res = NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, gridSizeUnit / 2f, navMeshSurface.layerMask);
 
         if (res)
         {
-            GameObject prefab = (UnityEngine.Random.Range(0, 1) == 1) ? RangedEnemy : MeleeEnemy;
-
-            Instantiate(prefab, hit.position + Vector3.up, Quaternion.identity);
+            ScrapManager.Instance.SpawnScrap(worth, hit.position + Vector3.up);
         }
     }
 }
