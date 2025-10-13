@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 // By Vince Pressey
 
@@ -20,6 +21,11 @@ public class RangedEnemyAI : MonoBehaviour
     /// </summary>
     [SerializeField]
     private Transform gunPosition;
+    /// <summary>
+    /// Gun object, rotation is controlled by the gunPosition
+    /// </summary>
+    [SerializeField]
+    private Transform gunObject;
     /// <summary>
     /// Projectile created when attacking
     /// </summary>
@@ -184,13 +190,22 @@ public class RangedEnemyAI : MonoBehaviour
 
 
     /// <summary>
-    /// Slowly turn towards the target object
+    /// Slowly turn towards the target object and adjust gun to target player's Y coord
     /// </summary>
     private void LookAtTarget()
     {
         Vector3 targetDir = goal.transform.position - gunPosition.position; // Get target angle to turn towards
         Vector3 newDir = Vector3.RotateTowards(gunPosition.forward, targetDir, 0.05f, 0.0f); // Calculate next angle
         transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+
+
+        // I hate math
+        Vector3 relativePos = goal.transform.position - gunObject.position;
+
+        Quaternion rotation = Quaternion.LookRotation(relativePos, new Vector3(0, 1, 0));
+        gunObject.transform.rotation = rotation * Quaternion.Euler(0, -90, 0);
+        gunObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, gunObject.transform.localRotation.eulerAngles.z));
+
     }
 
 
@@ -221,11 +236,7 @@ public class RangedEnemyAI : MonoBehaviour
     /// </summary>
     private void InitiateAttack()
     {
-        Vector3 projDir = new Vector3( // Make direction based off gun direction and player head's vertical position
-            gunPosition.forward.x,  // Get x direction of current gun forward
-            -(gunPosition.position - (goal.transform.position + Vector3.up / 1.3f)).normalized.y, // Aim towards player head
-            gunPosition.forward.z)  // Get z direction of current gun forward
-            .normalized;            // Normalize, apply multiplayer later
+        Vector3 projDir = gunObject.transform.right;
 
         GameObject projectile = Instantiate(projectileObject, gunPosition.position, Quaternion.identity); // Create projectile
         projectile.GetComponent<Rigidbody>().AddForce(projDir * projectileSpeed, ForceMode.VelocityChange); // Apply directional force
