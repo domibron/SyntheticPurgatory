@@ -10,10 +10,12 @@ public class ProjectileScript : MonoBehaviour
     public float ProjectileDamage = 12;
 
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
+        if (collider.isTrigger) { return; }
+
         Health healthscript;
-        if (healthscript = collision.gameObject.GetComponent<Health>()) // Damage object if it has the health script attached
+        if (healthscript = collider.gameObject.GetComponent<Health>()) // Damage object if it has the health script attached
         {
             healthscript.AddToHealth(-ProjectileDamage);
         }
