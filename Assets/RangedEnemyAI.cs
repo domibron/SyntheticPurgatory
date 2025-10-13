@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,6 +25,11 @@ public class RangedEnemyAI : MonoBehaviour
     /// </summary>
     [SerializeField]
     private GameObject projectileObject;
+
+    /// <summary>
+    /// Check if enemy has been alerted to player presence
+    /// </summary>
+    public bool Alerted = false;
 
     /// <summary>
     /// Max speed for the enemy
@@ -80,7 +86,7 @@ public class RangedEnemyAI : MonoBehaviour
     [Header("Attacking")]   // =============================================#
     public float ProjectileDamage = 15f;
     /// <summary>
-    /// Range of the Enemy
+    /// Range to be within before Enemy can start attacking
     /// </summary>
     [SerializeField]
     private float attackRange = 15f;
@@ -102,12 +108,16 @@ public class RangedEnemyAI : MonoBehaviour
 
     void Start()
     {
+        GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
+
         goal = GameObject.FindWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
     }
 
     private void FixedUpdate()
     {
+        if (!Alerted) { return; }
+
         MoveToTarget(); // Movement
 
         LookAtTarget(); // Aiming
@@ -225,5 +235,13 @@ public class RangedEnemyAI : MonoBehaviour
         curAttackCooldown = attackCooldown; // Restart attack cooldown
     }
 
+
+    /// <summary>
+    /// Called when first alerted
+    /// </summary>
+    private void BecomeAlerted(bool state)
+    {
+        Alerted = state;
+    }
 
 }

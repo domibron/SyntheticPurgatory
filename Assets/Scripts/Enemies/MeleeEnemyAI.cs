@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,6 +15,10 @@ public class MeleeEnemyAI : MonoBehaviour
     /// </summary>
     private GameObject goal;
 
+    /// <summary>
+    /// Check if enemy has been alerted to player presence
+    /// </summary>
+    public bool Alerted = false;
 
     /// <summary>
     /// Max speed for the enemy
@@ -33,7 +38,6 @@ public class MeleeEnemyAI : MonoBehaviour
     /// Stored rotation from previous fixed frame
     /// </summary>
     private Vector3 oldRotation;
-
 
     /// <summary>
     /// Range of the Enemy
@@ -56,17 +60,18 @@ public class MeleeEnemyAI : MonoBehaviour
     private float curAttackCooldown = 0;
 
 
-
-
     void Start()
     {
-        goal = GameObject.FindWithTag("Player");
+        GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
 
+        goal = GameObject.FindWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
     }
 
     private void FixedUpdate()
     {
+        if (!Alerted) { return; }
+
         MoveToTarget(); // Movement
 
         curAttackCooldown -= Time.fixedDeltaTime;
@@ -150,6 +155,7 @@ public class MeleeEnemyAI : MonoBehaviour
         return true;
     }
 
+
     /// <summary>
     /// Start the attack
     /// </summary>
@@ -162,6 +168,15 @@ public class MeleeEnemyAI : MonoBehaviour
         {
             healthscript.AddToHealth(-8);
         }
+    }
+
+
+    /// <summary>
+    /// Called when first alerted
+    /// </summary>
+    private void BecomeAlerted(bool state)
+    {
+        Alerted = state;
     }
 
 }
