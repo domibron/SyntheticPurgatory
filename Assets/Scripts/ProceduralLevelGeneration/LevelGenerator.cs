@@ -796,6 +796,25 @@ public class LevelGenerator : MonoBehaviour
         return playerSpawnLocation;
     }
 
+    /// <summary>
+    /// Gets a read only copy of the data. Expensive, I know.
+    /// </summary>
+    /// <returns>The level grid data aka a 2D array.</returns>
+    public int[,] GetLevelData()
+    {
+        int[,] returnedArray = new int[levelGrid.GetLength(X_ROW), levelGrid.GetLength(Y_ROW)];
+
+        for (int x = 0; x < levelGrid.GetLength(X_ROW); x++)
+        {
+            for (int y = 0; y < levelGrid.GetLength(Y_ROW); y++)
+            {
+                returnedArray[x, y] = levelGrid[x, y];
+            }
+        }
+
+        return returnedArray;
+    }
+
     private static void AddAllRotatableRoomsToList(SO_LevelPiece[] levelPieces, ref List<RoomPiece> roomPieces, float unitSizeInMeters)
     {
         List<RoomPiece> rooms = new List<RoomPiece>();
