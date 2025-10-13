@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7781285387532226289}
   - component: {fileID: 6057983245604984070}
   - component: {fileID: 3668764079478542734}
+  - component: {fileID: 6864082612702029254}
   - component: {fileID: 8936433327460139543}
   - component: {fileID: 5636499128882319368}
   - component: {fileID: 1999171437524782030}
@@ -76,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b73e2941c8b1c9940a1ba25856e7d290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goal: {fileID: 0}
+  Alerted: 0
   baseSpeed: 4
   turnReduction: 5
   attackRange: 2
@@ -122,6 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6964b388b7513134e922272fb6cf0f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &3668764079478542734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,8 +137,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TotalHitScrap: 3
+  hitScrapValue: 1
   sideForce: 1.5
   upForce: 3
+--- !u!114 &6864082612702029254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756158581593521815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf6d9f023c5d05448936a5028ee9549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewPointOffset: {x: 0, y: 0.5, z: 0}
+  detectionRange: 12
+  detectionTimer: 0.6
+  alertOthersRange: 20
+  AcceptDetectChaining: 1
+  MaxDetectionChain: 2
 --- !u!195 &8936433327460139543
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 1355763804615776122}
   - component: {fileID: 8981124634935467710}
   - component: {fileID: 7750138056243450060}
+  - component: {fileID: 5522001895329484108}
   - component: {fileID: 7822662017590029801}
   - component: {fileID: 4565909914219024183}
   - component: {fileID: 2343708388523650048}
@@ -110,8 +111,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunPosition: {fileID: 4166913377872658649}
   projectileObject: {fileID: 1360570209722618760, guid: 858b3283081f54f4faf52f281e1d78bb, type: 3}
-  baseSpeed: 3.5
-  projectileDamage: 15
+  Alerted: 0
+  BaseSpeed: 3.5
+  minFollowRange: 10
+  maxFleeDistance: 8
+  followSpeedMult: 1.5
+  fleeSpeedMult: 1
+  stuckSpeedMult: 1.5
+  EnableDodge: 1
+  DodgeSpeed: 0.333
+  ProjectileDamage: 15
   attackRange: 15
   attackCooldown: 1.5
   projectileSpeed: 10
@@ -172,6 +181,24 @@ MonoBehaviour:
   hitScrapValue: 1
   sideForce: 2
   upForce: 2
+--- !u!114 &5522001895329484108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427628415408339441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf6d9f023c5d05448936a5028ee9549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewPointOffset: {x: 0, y: 1.7, z: 0}
+  detectionRange: 17
+  detectionTimer: 1
+  alertOthersRange: 20
+  AcceptDetectChaining: 1
+  MaxDetectionChain: 2
 --- !u!195 &7822662017590029801
 NavMeshAgent:
   m_ObjectHideFlags: 0
