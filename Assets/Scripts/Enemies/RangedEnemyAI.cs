@@ -53,6 +53,11 @@ public class RangedEnemyAI : MonoBehaviour
     [SerializeField]
     private float maxFleeDistance = 8;
     /// <summary>
+    /// Distance at which AI needs to change location due to being stuck
+    /// </summary>
+    [SerializeField]
+    private float maxStuckDistance = 6;
+    /// <summary>
     /// Speed multiplier when following target
     /// </summary>
     [SerializeField]
@@ -116,7 +121,7 @@ public class RangedEnemyAI : MonoBehaviour
     {
         GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
 
-        goal = GameObject.FindWithTag("Player");
+        goal = Camera.main.gameObject;
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -152,7 +157,7 @@ public class RangedEnemyAI : MonoBehaviour
             if (NavMesh.SamplePosition(targetPos, out myNavHit, 100, -1)) // Check if target destination is on navmesh and store nearest point
             {
 
-                if (Vector3.Distance(myNavHit.position, targetPos) > 6 ) // Target is too close and destination is out of reach, likely stuck in corner
+                if (Vector3.Distance(myNavHit.position, targetPos) > maxStuckDistance) // Target is too close and destination is out of reach, likely stuck in corner
                 {
                     Vector3 oldPosition = (goal.transform.position - transform.position).normalized; 
                     agent.destination = goal.transform.position + (new Vector3(oldPosition.z, oldPosition.y, oldPosition.x) * 30); // Try another position

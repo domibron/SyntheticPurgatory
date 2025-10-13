@@ -111,7 +111,6 @@ public class EnemyDetection : MonoBehaviour
     /// <param name="activationDelay">Added delay for each linked group of enemies</param>
     public void BecomeAlert(bool alertOthers, int currentChain, float activationDelay)
     {
-        print(alertOthers);
         activated = true;
         if (alertOthers && currentChain > 0) { AlertOtherEnemies(currentChain, activationDelay + activateDelayAddition); }
 
