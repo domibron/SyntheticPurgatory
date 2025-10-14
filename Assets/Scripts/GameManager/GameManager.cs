@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get => instance; }
     private static GameManager instance;
 
-    private int DepositedScrap = 0;
+    private int depositedScrap = 0;
 
     void Awake()
     {
@@ -18,18 +18,34 @@ public class GameManager : MonoBehaviour
         else
         {
             instance = this;
+            DontDestroyOnLoad(this);
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void AddToDepositedScrap(int amount)
     {
-
+        depositedScrap += amount;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void RemoveFromDepositedScrap(int amount)
     {
+        depositedScrap -= amount;
+    }
 
+    public int GetCurrentScrapCount()
+    {
+        return depositedScrap;
+    }
+
+    public void ReturnToHubWorld()
+    {
+        // is player dead?
+        // minus lives
+        // else
+        // deposit scrap
+
+        ScrapManager.Instance.AddDepositedScrapToGameManager();
+
+        LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
     }
 }

@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,8 +9,8 @@ public class PlayerMovement : MonoBehaviour
     //Ground
     [SerializeField]
     float groundSpeed = 4f;
-    [SerializeField]
-    float runSpeed = 6f;
+    // [SerializeField]
+    // float runSpeed = 6f;
     [SerializeField]
     float grAccel = 20f;
 
@@ -89,6 +89,23 @@ public class PlayerMovement : MonoBehaviour
         jumpInput = InputSystem.actions.FindAction("Jump");
         crouchInput = InputSystem.actions.FindAction("Crouch");
         lookInput = InputSystem.actions.FindAction("Look");
+
+        // var bindings = BindingFlags.Public | BindingFlags.Instance;
+
+        // // PlayerStats stats = new PlayerStats();
+
+        // FieldInfo[] propertyInfos = typeof(PlayerStats).GetFields(bindings);
+
+        // foreach (var propertyInfo in propertyInfos)
+        // {
+        //     print(propertyInfo.Name);
+        // }
+
+        // propertyInfos[0].SetValue(this, 10);
+
+        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+
+        print(pStats.MaxHealth);
     }
 
     void Start()
