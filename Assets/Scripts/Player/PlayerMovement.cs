@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    /// <summary>
+    /// Disable all movement if enabled
+    /// </summary>
+    [SerializeField]
+    private bool IsDisabled = false;
 
     //Ground
     // [SerializeField]
@@ -103,7 +108,10 @@ public class PlayerMovement : MonoBehaviour
 
         PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
 
-        print(pStats.MaxHealth);
+        //print(pStats.MaxHealth);
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Start()
@@ -113,11 +121,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (IsDisabled) { rb.linearVelocity = Vector3.zero; return; }
+
         // col.material.dynamicFriction = 0f;
         PollInput();
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
 
         // camera stuff.
         camXRot -= lookDelta.y * sens;
@@ -139,6 +146,8 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (IsDisabled) { return; }
+
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
 
@@ -469,4 +478,9 @@ public class PlayerMovement : MonoBehaviour
     //     yield return new WaitForSeconds(1f);
     //     canSlideBoost = true;
     // }
+
+    public void DisablePlayerMovement(bool state)
+    {
+        IsDisabled = state;
+    }
 }

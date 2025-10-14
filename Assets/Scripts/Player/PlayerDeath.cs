@@ -9,17 +9,25 @@ public class PlayerDeath : MonoBehaviour
     /// <summary>
     /// Object to activate upon death
     /// </summary>
-    public GameObject deathScreen;
+    public DeathCanvas deathCanvasScript;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GetComponent<Health>().onDeath += EndGame;
+        GetComponent<Health>().onDeath += KillPlayer;
     }
 
-    void EndGame()
+    void KillPlayer()
     {
-        deathScreen.SetActive(true); // Activate death screen (WIP)
+        transform.GetComponent<PlayerMovement>().DisablePlayerMovement(true);
+        transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
+
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+
+        deathCanvasScript.ActivateCanvas(true); // Activate death screen
+        deathCanvasScript.ShowStats(ScrapManager.Instance.currentDepositedScrap, ScrapManager.Instance.currentInventoryScrap);
+
     }
 }
