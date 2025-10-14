@@ -55,7 +55,10 @@ public class ScrapManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GameManager.Instance.ReturnToHubWorld();
+        }
     }
 
     // * This is static.
@@ -132,6 +135,14 @@ public class ScrapManager : MonoBehaviour
 
         InvokeDepositedScrap(amount);
         // code goes here.
+    }
+
+    public void AddDepositedScrapToGameManager()
+    {
+        int leftOvers = currentInventoryScrap;
+        currentInventoryScrap = 0;
+
+        GameManager.Instance.AddToDepositedScrap(currentDepositedScrap + leftOvers);
     }
 
     public int GetScrapInInventory()

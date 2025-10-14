@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    public string HubWorldSceneName = "HubWorld";
+    // public string HubWorldSceneName = "HubWorld";
 
     public void StartNewGame()
     {
@@ -11,7 +11,7 @@ public class MainMenu : MonoBehaviour
 
         if (LevelLoading.Instance.IsLoading) return;
 
-        LevelLoading.Instance.LoadScene(HubWorldSceneName);
+        LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
     }
 
     public void Quit()

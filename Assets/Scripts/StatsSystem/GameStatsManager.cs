@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -27,6 +28,8 @@ public class GameStatsManager : MonoBehaviour
     [SerializeField]
     private StatData[] baseStats = new StatData[0];
 
+    private Dictionary<Stats, object> statClasses = new Dictionary<Stats, object>();
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -36,17 +39,87 @@ public class GameStatsManager : MonoBehaviour
         else
         {
             instance = this;
+            SetUpStats();
+        }
+    }
+
+    private void SetUpStats()
+    {
+        statClasses = new Dictionary<Stats, object>();
+
+        foreach (var e in Enum.GetNames(typeof(Stats)))
+        {
+            StatData statData = GetStatDataWithKey(e.ToLower());
+
+            if (statData == null)
+            {
+                Debug.LogError("Error trying to get stats with key: " + e.ToLower());
+                continue;
+            }
+
+            Type t = GetStatClassType((Stats)Enum.Parse(typeof(Stats), e));
+
+            statData.ScriptableObject.GetType();
+
+
+            object value = Convert.ChangeType(statData.ScriptableObject.GetStats(), t);
+
+            statClasses.Add((Stats)Enum.Parse(typeof(Stats), e), value);
         }
     }
 
     // TODO: have the game chip system to be involved later.
+
+    void Start()
+    {
+        // MeleeEnemyStats stats = GetStats<MeleeEnemyStats>(Stats.melee);
+        // stats.health = 999f;
+        // print(((MeleeEnemyStats)GetStatClass<MeleeEnemyStatsSO>(Stats.melee).GetStats()).health);
+        // print(stats.health);
+    }
+
+    public void UpdateStats<T>(Stats key, object newValue)
+    {
+        if (!statClasses.ContainsKey(key))
+        {
+            Debug.LogError("Error trying to get stats with key: " + key.ToString().ToLower());
+            return;
+        }
+
+        // copy data.
+        T copy = DeepCopy<T>((T)Convert.ChangeType(newValue, typeof(T)));
+
+        statClasses[key] = copy;
+    }
+
+    public T GetStats<T>(Stats key) where T : class
+    {
+        if (!statClasses.ContainsKey(key))
+        {
+            Debug.LogError("Error trying to get stats with key: " + key.ToString().ToLower());
+            return null;
+        }
+
+        object stats = statClasses[key];
+
+        T statsSO = (T)Convert.ChangeType(stats, typeof(T));
+
+        return DeepCopy<T>(statsSO);
+    }
+
+    public static T DeepCopy<T>(T original)
+    {
+        string json = JsonUtility.ToJson(original);
+        T copy = JsonUtility.FromJson<T>(json);
+        return copy;
+    }
 
     /// <summary>
     /// Gets the type of the stats.
     /// </summary>
     /// <param name="key">The key associated with the stats.</param>
     /// <returns>The class type.</returns>
-    public Type GetStatType(Stats key)
+    private Type GetStatClassType(Stats key)
     {
         StatData statData = GetStatDataWithKey(key.ToString().ToLower());
 
@@ -55,7 +128,7 @@ public class GameStatsManager : MonoBehaviour
             return null;
         }
 
-        return statData.ScriptableObject.GetType();
+        return statData.ScriptableObject.GetStats().GetType();
     }
 
     /// <summary>
@@ -64,7 +137,7 @@ public class GameStatsManager : MonoBehaviour
     /// <typeparam name="T">The stats class.</typeparam>
     /// <param name="key">The key associated with the class.</param>
     /// <returns>The referance to the class with the key or null.</returns>
-    public T GetStatClass<T>(Stats key) where T : class
+    private T GetStatClass<T>(Stats key) where T : class
     {
         StatData statData = GetStatDataWithKey(key.ToString().ToLower());
 
@@ -91,7 +164,7 @@ public class GameStatsManager : MonoBehaviour
     /// <typeparam name="T">The stats class.</typeparam>
     /// <param name="key">The key associated with the class. (Will turn into lowercase)</param>
     /// <returns>The referance to the class with the key or null.</returns>
-    public T GetStatClass<T>(string key) where T : class
+    private T GetStatClass<T>(string key) where T : class
     {
         StatData statData = GetStatDataWithKey(key);
 
