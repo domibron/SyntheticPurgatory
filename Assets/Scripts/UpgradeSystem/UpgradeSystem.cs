@@ -50,7 +50,7 @@ public class UpgradeSystem : MonoBehaviour
         foreach (var key in upgrades.Keys)
         {
             UpgradeItemUI upgradeItemUI = Instantiate(upgradeItem, upgradeItemSpawnPoint).GetComponent<UpgradeItemUI>();
-            upgradeItemUI.SetUp(upgrades[key].FieldInfo.Name, upgrades[key].FieldInfo.GetValue(upgrades[key].ClassData).ToString(), key, this);
+            upgradeItemUI.SetUp(upgrades[key].FieldInfo.Name, upgrades[key].FieldInfo.GetValue(upgrades[key].ClassData).ToString() + $" +{GetUpgradeAmount(key)}", GetUpgradeCost(key).ToString(), key, this);
         }
     }
 
@@ -67,7 +67,7 @@ public class UpgradeSystem : MonoBehaviour
 
 
         value = string.Empty;
-        // if (GameManager.Instance.GetCurrentScrapCount() < GetUpgradeCost(key)) return false; // min buy amount.
+        if (GameManager.Instance.GetCurrentScrapCount() < GetUpgradeCost(key)) return false; // min buy amount.
 
         if (className == nameof(PlayerStats)) // Add classes here too.
         {
@@ -79,7 +79,10 @@ public class UpgradeSystem : MonoBehaviour
 
 
 
-            value = upgrades[key].FieldInfo.GetValue(upgrades[key].ClassData).ToString();
+            value = upgrades[key].FieldInfo.GetValue(upgrades[key].ClassData).ToString() + " +" + GetUpgradeAmount(key);
+
+            GameManager.Instance.RemoveFromDepositedScrap(GetUpgradeCost(key));
+
             return true;
 
         }
@@ -98,31 +101,40 @@ public class UpgradeSystem : MonoBehaviour
 
         foreach (var upgradeAmount in upgradeAmountsSO.UpgradeAmounts)
         {
-            if (upgradeAmount.ClassName == className && upgradeAmount.VariableName == variableName)
+            if (upgradeAmount.ClassName == className)
             {
-                return upgradeAmount.IncreaseAmount;
+                foreach (var upgrade in upgradeAmount.UpgradeStats)
+                {
+                    if (upgrade.VariableName == variableName)
+                        return upgrade.IncreaseAmount;
+                }
             }
         }
 
+        Debug.LogWarning($"No entry for {key} need class {className} or {variableName} upgrade amount!");
         return 1f;
     }
 
-    private float GetUpgradeCost(string key)
+    private int GetUpgradeCost(string key)
     {
         if (upgradeAmountsSO.UpgradeAmounts.Count <= 0) return 1;
-
         string[] keys = key.Split('|');
         string className = keys[0];
         string variableName = keys[1];
 
         foreach (var upgradeAmount in upgradeAmountsSO.UpgradeAmounts)
         {
-            if (upgradeAmount.ClassName == className && upgradeAmount.VariableName == variableName)
+            if (upgradeAmount.ClassName == className)
             {
-                return upgradeAmount.UpgradeCost;
+                foreach (var upgrade in upgradeAmount.UpgradeStats)
+                {
+                    if (upgrade.VariableName == variableName)
+                        return upgrade.UpgradeCost;
+                }
             }
         }
 
+        Debug.LogWarning($"No entry for {key} need class {className} or {variableName} cost!");
         return 1;
     }
 

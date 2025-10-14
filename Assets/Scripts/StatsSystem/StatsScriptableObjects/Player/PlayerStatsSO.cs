@@ -9,9 +9,9 @@ public class PlayerStats : ICloneable
     public float MaxHealth = 100f;
 
     public float GroundSpeed = 6f;
+    public float AirSpeed = 3f;
     public float JumpSpeed = 9.2f;
     public float DashSpeed = 6f;
-    public float GravityScalar = 1f;
     public float SlideBoostForce = 5f;
     public float AirBoostForce = 5f;
 
@@ -30,9 +30,9 @@ public class PlayerStats : ICloneable
             MaxHealth = MaxHealth,
 
             GroundSpeed = GroundSpeed,
+            AirSpeed = AirSpeed,
             JumpSpeed = JumpSpeed,
             DashSpeed = DashSpeed,
-            GravityScalar = GravityScalar,
             SlideBoostForce = SlideBoostForce,
             AirBoostForce = AirBoostForce,
 

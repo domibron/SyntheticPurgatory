@@ -127,6 +127,14 @@ public class Health : MonoBehaviour
     //     onTakeDamage?.Invoke(amount);
     // }
 
+    public void SetMaxHealth(float value, bool setCurrentHealth = true)
+    {
+        maxHealth = value;
+
+        if (setCurrentHealth)
+            currentHealth = maxHealth;
+    }
+
     /// <summary>
     /// Calls the onAddToHealth event.
     /// </summary>

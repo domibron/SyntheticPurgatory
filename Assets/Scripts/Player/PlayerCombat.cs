@@ -14,13 +14,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField]
     float projectileSpeed = 10f;
 
-    [SerializeField]
+    // [SerializeField]
     float projectileDamage = 12f;
 
-    [SerializeField]
+    // [SerializeField]
     float projectileFireRate = 0.3f;
 
-    [SerializeField]
+    // [SerializeField]
     int projectileMagSize = 20;
 
     [SerializeField]
@@ -29,10 +29,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField]
     Vector3 meleeOffset = Vector3.forward;
 
-    [SerializeField]
+    // [SerializeField]
     float meleeAttackDelay = 0.5f;
 
-    [SerializeField]
+    // [SerializeField]
     float meleeDamage = 10f;
 
     [SerializeField]
@@ -41,11 +41,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField]
     Vector3 kickOffset = Vector3.forward;
 
-    [SerializeField]
-    float kickForce = 10f;
+    // [SerializeField]
+    float kickForce = 10f; // 
 
-    [SerializeField]
-    float kickAttackDelay = 0.5f;
+    // [SerializeField]
+    float kickAttackDelay = 0.5f; //
 
     int currentAmmoCount = 0;
 
@@ -92,6 +92,26 @@ public class PlayerCombat : MonoBehaviour
     {
         mainCamera = Camera.main.transform;
         // playerMovement = GetComponent<PlayerMovement>();
+    }
+
+    public void UpdateVariablesWithStats(PlayerStats stats)
+    {
+        if (stats == null)
+        {
+            Debug.LogError("No player stats! Using default values!");
+            stats = new PlayerStats();
+            // return;
+        }
+
+        projectileDamage = stats.ProjectileDamage;
+        projectileFireRate = stats.ProjectileFireRate;
+        projectileMagSize = stats.ProjectileMagSize;
+
+        meleeAttackDelay = stats.MeleeAttackDelay;
+        meleeDamage = stats.MeleeDamage;
+
+        kickForce = stats.KickForce;
+        kickAttackDelay = stats.KickAttackDelay;
     }
 
     // Update is called once per frame

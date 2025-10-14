@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
 
     //Ground
-    [SerializeField]
+    // [SerializeField]
     float groundSpeed = 4f;
     // [SerializeField]
     // float runSpeed = 6f;
@@ -15,15 +15,15 @@ public class PlayerMovement : MonoBehaviour
     float grAccel = 20f;
 
     //Air
-    [SerializeField]
+    // [SerializeField]
     float airSpeed = 3f;
     [SerializeField]
     float airAccel = 20f;
 
     //Jump
-    [SerializeField]
+    // [SerializeField]
     float jumpUpSpeed = 9.2f;
-    [SerializeField]
+    // [SerializeField]
     float dashSpeed = 6f;
 
     float wallFloorBarrier = 40f;
@@ -32,11 +32,11 @@ public class PlayerMovement : MonoBehaviour
     float gravityScalar = 1f;
 
     // Sliding
-    [SerializeField]
-    float SlideBoostForce = 5f;
+    // [SerializeField]
+    float slideBoostForce = 5f;
 
-    [SerializeField]
-    float AirBoostForce = 5f;
+    // [SerializeField]
+    float airBoostForce = 5f;
 
     public bool IsGrounded { get => grounded; }
 
@@ -237,6 +237,23 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    public void UpdateVariablesWithStats(PlayerStats stats)
+    {
+        if (stats == null)
+        {
+            Debug.LogError("No player stats! Using default values!");
+            stats = new PlayerStats();
+            // return;
+        }
+
+        groundSpeed = stats.GroundSpeed;
+        airSpeed = stats.AirSpeed;
+        jumpUpSpeed = stats.JumpSpeed;
+        dashSpeed = stats.DashSpeed;
+        slideBoostForce = stats.SlideBoostForce;
+        airBoostForce = stats.AirBoostForce;
+    }
+
     private void PollInput()
     {
         Vector2 inputVector = movementInput.ReadValue<Vector2>();
@@ -433,7 +450,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 boostDir = dir;
 
-        rb.AddForce(GetBoostVector(boostDir, SlideBoostForce), ForceMode.Impulse);
+        rb.AddForce(GetBoostVector(boostDir, slideBoostForce), ForceMode.Impulse);
 
         // if (canSlideBoost) StartCoroutine(HandleCrouchBoostCoolDown());
     }
@@ -446,7 +463,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 boostDir = dir;
 
-        rb.AddForce(GetBoostVector(boostDir, AirBoostForce), ForceMode.Impulse);
+        rb.AddForce(GetBoostVector(boostDir, airBoostForce), ForceMode.Impulse);
     }
 
     // IEnumerator HandleCrouchBoostCoolDown()

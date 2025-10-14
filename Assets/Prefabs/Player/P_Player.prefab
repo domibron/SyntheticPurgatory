@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5408013347087370563}
   - component: {fileID: 7812274978082621966}
   - component: {fileID: 6780135534344894972}
+  - component: {fileID: 547660062812337290}
   m_Layer: 3
   m_Name: P_Player
   m_TagString: Player
@@ -101,16 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507a45da5bfeff844af8d5ce72f6c867, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundSpeed: 4.5
-  runSpeed: 7
   grAccel: 20
   airSpeed: 3
   airAccel: 20
-  jumpUpSpeed: 6
-  dashSpeed: 6
   gravityScalar: 1.45
-  SlideBoostForce: 6.5
-  AirBoostForce: 6.2
   cameraTarget: {fileID: 7882557659218615182}
   orientation: {fileID: 7927393379924898325}
   sens: 0.1
@@ -129,17 +124,10 @@ MonoBehaviour:
   projectilePrefab: {fileID: 1360570209722618760, guid: 682636e8d1e210b40b10fa75d2485344, type: 3}
   projectileSpawnLocation: {fileID: 2359744327360319551}
   projectileSpeed: 20
-  projectileDamage: 20
-  projectileFireRate: 0.3
-  projectileMagSize: 20
   meleeBounds: {x: 1, y: 1.5, z: 1}
   meleeOffset: {x: 0, y: 0, z: 1}
-  meleeAttackDelay: 0.5
-  meleeDamage: 20
   kickBounds: {x: 1, y: 1.6, z: 1}
   kickOffset: {x: 0, y: 0, z: 1}
-  kickForce: 10
-  kickAttackDelay: 0.5
   showMeleeBox: 0
   showKickBox: 0
 --- !u!114 &5408013347087370563
@@ -274,6 +262,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathScreen: {fileID: 0}
+--- !u!114 &547660062812337290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138991948573154078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de3f5823c1b29654ea82a06c27e2532d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4863898153748189822
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ public class UpgradeItemUI : MonoBehaviour
 {
     public TMP_Text NameBox;
     public TMP_Text ValueBox;
+    public TMP_Text CostBox;
 
     private string upgradeKey;
 
@@ -22,10 +23,11 @@ public class UpgradeItemUI : MonoBehaviour
 
     }
 
-    public void SetUp(string name, string value, string upgradeKey, UpgradeSystem upgradeSystem)
+    public void SetUp(string name, string value, string cost, string upgradeKey, UpgradeSystem upgradeSystem)
     {
         NameBox.text = name;
-        ValueBox.text = "[" + value + "]";
+        ValueBox.text = "Value [" + value + "]";
+        CostBox.text = "Cost {" + cost + "}";
         this.upgradeKey = upgradeKey;
         this.upgradeSystem = upgradeSystem;
     }
