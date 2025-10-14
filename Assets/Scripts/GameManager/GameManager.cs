@@ -37,15 +37,22 @@ public class GameManager : MonoBehaviour
         return depositedScrap;
     }
 
-    public void ReturnToHubWorld()
+    public void ReturnToHubWorld(bool playerDied = false)
     {
         // is player dead?
         // minus lives
         // else
         // deposit scrap
-
-        ScrapManager.Instance.AddDepositedScrapToGameManager();
+        if (playerDied)
+        {
+            // remove from lives.
+        }
+        else
+        {
+            ScrapManager.Instance.AddDepositedScrapToGameManager();
+        }
 
         LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
     }
+
 }

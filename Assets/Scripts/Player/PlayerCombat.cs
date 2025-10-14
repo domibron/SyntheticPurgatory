@@ -215,7 +215,9 @@ public class PlayerCombat : MonoBehaviour
             // damage
             foreach (Collider c in hits)
             {
-                print(c.gameObject.name);
+                // print(c.gameObject.name);
+                if (c.gameObject.CompareTag(Constants.PlayerTag)) continue; // if player, go away.
+
                 c.transform.GetComponent<Health>()?.AddToHealth(-meleeDamage); // deal damage.
             }
         }

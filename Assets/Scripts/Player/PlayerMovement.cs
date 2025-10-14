@@ -23,8 +23,6 @@ public class PlayerMovement : MonoBehaviour
     //Jump
     // [SerializeField]
     float jumpUpSpeed = 9.2f;
-    // [SerializeField]
-    float dashSpeed = 6f;
 
     float wallFloorBarrier = 40f;
 
@@ -249,7 +247,6 @@ public class PlayerMovement : MonoBehaviour
         groundSpeed = stats.GroundSpeed;
         airSpeed = stats.AirSpeed;
         jumpUpSpeed = stats.JumpSpeed;
-        dashSpeed = stats.DashSpeed;
         slideBoostForce = stats.SlideBoostForce;
         airBoostForce = stats.AirBoostForce;
     }

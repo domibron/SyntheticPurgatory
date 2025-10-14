@@ -11,7 +11,6 @@ public class PlayerStats : ICloneable
     public float GroundSpeed = 6f;
     public float AirSpeed = 3f;
     public float JumpSpeed = 9.2f;
-    public float DashSpeed = 6f;
     public float SlideBoostForce = 5f;
     public float AirBoostForce = 5f;
 
@@ -32,7 +31,6 @@ public class PlayerStats : ICloneable
             GroundSpeed = GroundSpeed,
             AirSpeed = AirSpeed,
             JumpSpeed = JumpSpeed,
-            DashSpeed = DashSpeed,
             SlideBoostForce = SlideBoostForce,
             AirBoostForce = AirBoostForce,
 
