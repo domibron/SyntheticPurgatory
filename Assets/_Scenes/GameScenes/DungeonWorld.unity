@@ -119,6 +119,63 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &743609824
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 666440648393459951, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_Name
+      value: P_DungeonManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1859945188022122444, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0bce6a0542817c34989c6ab4071bd75f, type: 3}
 --- !u!1 &842285756
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +192,6 @@ GameObject:
   - component: {fileID: 842285759}
   - component: {fileID: 842285766}
   - component: {fileID: 842285765}
-  - component: {fileID: 842285767}
   - component: {fileID: 842285768}
   m_Layer: 0
   m_Name: Level Generator
@@ -174,8 +230,8 @@ MonoBehaviour:
   Seed: -1
   GridEdgeBuffer: 5
   MinimumRegularRoomCount: 3
-  XSize: 15
-  YSize: 15
+  XSize: 10
+  YSize: 10
   LevelPieceCollection: {fileID: 11400000, guid: 3396062d17b77b048a36e29113aecb89, type: 2}
 --- !u!114 &842285759
 MonoBehaviour:
@@ -315,27 +371,6 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
---- !u!114 &842285767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842285756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7b80c26ea979d246a257a81c7c7b6af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ScrapPrefabsWithWorth: {fileID: 11400000, guid: 2196a8e1d3781db4aa5cf80527fb462b, type: 2}
-  DepositScrapWithWorth: {fileID: 11400000, guid: 02d146b79da79964187f2864128e968d, type: 2}
-  MaxCollectionRange: 5
-  CollectItemRange: 1
-  FlyAccel: 15
-  FlyMaxSpeed: 30
-  FlyDistanceBoost: 10
-  DepositRate: 0.5
-  maxInventoryScrap: 10
 --- !u!114 &842285768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,3 +510,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 1801643279}
   - {fileID: 842285757}
+  - {fileID: 743609824}

@@ -78,6 +78,11 @@ public class GameStatsManager : MonoBehaviour
         // print(stats.health);
     }
 
+    public bool HasStats(Stats key)
+    {
+        return statClasses.ContainsKey(key);
+    }
+
     public void UpdateStats<T>(Stats key, object newValue)
     {
         if (!statClasses.ContainsKey(key))

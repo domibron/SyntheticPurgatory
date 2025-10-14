@@ -14,5 +14,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeAmounts:
   - ClassName: PlayerStats
-    VariableName: MaxHealth
-    IncreaseAmount: 15
+    UpgradeStats:
+    - VariableName: MaxHealth
+      IncreaseAmount: 10
+      UpgradeCost: 15
+    - VariableName: GroundSpeed
+      IncreaseAmount: 0.5
+      UpgradeCost: 30
+    - VariableName: AirSpeed
+      IncreaseAmount: 0.5
+      UpgradeCost: 40
+    - VariableName: JumpSpeed
+      IncreaseAmount: 0.1
+      UpgradeCost: 30
+    - VariableName: DashSpeed
+      IncreaseAmount: 0.5
+      UpgradeCost: 30
+    - VariableName: SlideBoostForce
+      IncreaseAmount: 0.5
+      UpgradeCost: 30
+    - VariableName: AirBoostForce
+      IncreaseAmount: 0.5
+      UpgradeCost: 30
+    - VariableName: ProjectileDamage
+      IncreaseAmount: 1
+      UpgradeCost: 30
+    - VariableName: ProjectileFireRate
+      IncreaseAmount: -0.01
+      UpgradeCost: 30
+    - VariableName: ProjectileMagSize
+      IncreaseAmount: 1
+      UpgradeCost: 30
+    - VariableName: MeleeAttackDelay
+      IncreaseAmount: -0.01
+      UpgradeCost: 30
+    - VariableName: MeleeDamage
+      IncreaseAmount: 1
+      UpgradeCost: 30
+    - VariableName: KickForce
+      IncreaseAmount: 1
+      UpgradeCost: 30
+    - VariableName: KickAttackDelay
+      IncreaseAmount: -0.01
+      UpgradeCost: 30
