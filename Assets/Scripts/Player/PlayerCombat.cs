@@ -4,6 +4,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    /// <summary>
+    /// Disable all combat abilities if enabled
+    /// </summary>
+    [SerializeField]
+    private bool IsDisabled = false;
 
     [SerializeField]
     GameObject projectilePrefab;
@@ -117,6 +122,8 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (IsDisabled) return; 
+
         if (currentKickCooldown > 0) currentKickCooldown -= Time.deltaTime;
         if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
         if (currentProjectileCooldown > 0) currentProjectileCooldown -= Time.deltaTime;
@@ -261,5 +268,10 @@ public class PlayerCombat : MonoBehaviour
         wantToMelee = meleeWeaponInput.IsPressed();
         wantToKick = KickInput.IsPressed();
         wantToReload = ReloadInput.IsPressed();
+    }
+
+    public void DisablePlayerCombat(bool state)
+    {
+        IsDisabled = state;
     }
 }

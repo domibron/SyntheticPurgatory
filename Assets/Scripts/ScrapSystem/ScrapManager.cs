@@ -24,9 +24,9 @@ public class ScrapManager : MonoBehaviour
 
     [SerializeField]
     int maxInventoryScrap = 10;
-    int currentInventoryScrap = 0;
+    public int currentInventoryScrap = 0;
 
-    int currentDepositedScrap = 0;
+    public int currentDepositedScrap = 0;
 
     public event Action<int> collectScrap;
     public event Action<int> droppedScrap;

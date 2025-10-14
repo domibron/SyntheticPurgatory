@@ -6,6 +6,9 @@ public class SpawnPlayer : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab;
 
+    [SerializeField]
+    private GameObject playerCanvas;
+
     private Vector3 playerSpawnLocation;
 
     private LevelGenerator levelGenerator;
@@ -22,7 +25,10 @@ public class SpawnPlayer : MonoBehaviour
     {
         if (playerPrefab != null)
         {
-            Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
+            GameObject canvasObject = Instantiate(playerCanvas);
+            GameObject playerObject = Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
+
+            playerObject.transform.GetComponent<PlayerDeath>().deathCanvasScript = canvasObject.transform.GetComponent<DeathCanvas>();
         }
     }
 
