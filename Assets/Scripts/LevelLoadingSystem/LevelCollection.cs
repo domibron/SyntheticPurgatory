@@ -2,8 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public static class LevelCollection
 {
+    public enum LevelKey
+    {
+        MainMenu,
+        HubWorld,
+        DungeonWorld,
+        BossWorld,
+        PersistantScene,
+    }
+
     private static Dictionary<string, string[]> AllLevels = new Dictionary<string, string[]>()
     {
         { "MainMenu", new string[] { "MainMenu" } },

@@ -57,7 +57,7 @@ public class SpawnEnemies : MonoBehaviour
 
         if (res)
         {
-            GameObject prefab = (UnityEngine.Random.Range(0, 1) == 1) ? RangedEnemy : MeleeEnemy;
+            GameObject prefab = (UnityEngine.Random.Range(0, 2) == 1) ? RangedEnemy : MeleeEnemy;
 
             Instantiate(prefab, hit.position + Vector3.up, Quaternion.identity);
         }

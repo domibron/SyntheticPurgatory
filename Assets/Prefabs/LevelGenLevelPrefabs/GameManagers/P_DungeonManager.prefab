@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &666440648393459951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1859945188022122444}
+  - component: {fileID: 4173164654083137730}
+  m_Layer: 0
+  m_Name: P_DungeonManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1859945188022122444
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666440648393459951}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4173164654083137730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666440648393459951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7b80c26ea979d246a257a81c7c7b6af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrapPrefabsWithWorth: {fileID: 11400000, guid: 2196a8e1d3781db4aa5cf80527fb462b, type: 2}
+  DepositScrapWithWorth: {fileID: 11400000, guid: 02d146b79da79964187f2864128e968d, type: 2}
+  MaxCollectionRange: 1.5
+  CollectItemRange: 1
+  FlyAccel: 15
+  FlyMaxSpeed: 30
+  FlyDistanceBoost: 10
+  DepositRate: 0.5
+  maxInventoryScrap: 100
