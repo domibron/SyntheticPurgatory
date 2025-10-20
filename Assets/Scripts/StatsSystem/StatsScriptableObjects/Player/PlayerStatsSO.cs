@@ -19,6 +19,7 @@ public class PlayerStats : ICloneable
     public float ProjectileDamage = 12f;
     public float ProjectileFireRate = 0.3f;
     public int ProjectileMagSize = 20;
+    public float ReloadTime = 2f;
     public float MeleeAttackDelay = 0.5f;
     public float MeleeDamage = 10f;
     public float KickForce = 10f;
