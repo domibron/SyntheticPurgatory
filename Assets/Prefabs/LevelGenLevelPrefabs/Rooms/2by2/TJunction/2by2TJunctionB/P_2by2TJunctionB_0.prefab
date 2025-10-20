@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3591933254909145916}
   - component: {fileID: 9066214292564177284}
-  - component: {fileID: -7362207481752625973}
+  - component: {fileID: 362984986988665011}
+  - component: {fileID: 2217940582689669834}
+  - component: {fileID: 4200843342945242758}
   m_Layer: 0
   m_Name: P_2by2TJunctionB_0
   m_TagString: Untagged
@@ -55,17 +57,60 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     DoorwayData: []
     BoundingSize: {x: 0, y: 0}
---- !u!192 &-7362207481752625973
-OcclusionArea:
+--- !u!65 &362984986988665011
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3399143289296092654}
-  serializedVersion: 2
-  m_Size: {x: 33, y: 10, z: 33}
-  m_Center: {x: 16, y: 3, z: 16}
-  m_IsViewVolume: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2217940582689669834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3399143289296092654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2efff79b6d7b28439a19b852a65046c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &4200843342945242758
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3399143289296092654}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 32, y: 20, z: 32}
+  m_Center: {x: 16, y: 0, z: 16}
 --- !u!1 &3788102296061908708
 GameObject:
   m_ObjectHideFlags: 0

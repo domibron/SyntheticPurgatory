@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7233999999206865309}
   - component: {fileID: 2661943088902248737}
-  - component: {fileID: -7218696491629243771}
+  - component: {fileID: 5232502494744629593}
+  - component: {fileID: 3565067104713832100}
   m_Layer: 0
   m_Name: P_CorridorCorner_0
   m_TagString: Untagged
@@ -55,17 +56,39 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     DoorwayData: []
     BoundingSize: {x: 0, y: 0}
---- !u!192 &-7218696491629243771
-OcclusionArea:
+--- !u!65 &5232502494744629593
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2696347803522483219}
-  serializedVersion: 2
-  m_Size: {x: 17, y: 10, z: 17}
-  m_Center: {x: 8, y: 3, z: 8}
-  m_IsViewVolume: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 16, y: 20, z: 16}
+  m_Center: {x: 8, y: 0, z: 8}
+--- !u!114 &3565067104713832100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2696347803522483219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2efff79b6d7b28439a19b852a65046c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5331411741876226712
 GameObject:
   m_ObjectHideFlags: 0
