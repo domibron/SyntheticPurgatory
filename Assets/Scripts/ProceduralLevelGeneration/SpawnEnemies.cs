@@ -37,7 +37,7 @@ public class SpawnEnemies : MonoBehaviour
         {
             for (int y = 0; y < levelData.GetLength(1); y++)
             {
-                if (levelData[x, y] <= 0) continue;
+                if (levelData[x, y] <= 1) continue;
 
                 // spawn enemies.
                 SpawnEnemiesForGrid(x, y, levelGenerator.LevelPieceCollection.UnitSizeInMeters);
