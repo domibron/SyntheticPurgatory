@@ -44,6 +44,9 @@ public class PlayerMovement : MonoBehaviour
     // [SerializeField]
     float airBoostForce = 5f;
 
+    private float groundFriction = 5f;
+    private float airFriction = 1f;
+
     public bool IsGrounded { get => grounded; }
 
     bool grounded;
@@ -229,7 +232,7 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 velToAdd = AirMovement(dir, groundSpeed, grAccel);
                 rb.AddForce(velToAdd, ForceMode.VelocityChange);
 
-                Vector3 friction = GetFrictionVector(groundSpeed, 5f); // TODO Magic number.
+                Vector3 friction = GetFrictionVector(groundSpeed, groundFriction);
                 rb.AddForce(friction, ForceMode.VelocityChange);
             }
             else
@@ -250,7 +253,9 @@ public class PlayerMovement : MonoBehaviour
             Vector3 velToAdd = AirMovement(dir, airSpeed, airAccel);
             rb.AddForce(velToAdd, ForceMode.VelocityChange);
 
-            if (isJumping) isJumping = false; // this is cursed.
+            Vector3 friction = GetFrictionVector(groundSpeed, airFriction);
+            rb.AddForce(friction, ForceMode.VelocityChange);
+            // if (isJumping) isJumping = false; // this is cursed.
         }
 
 
@@ -270,6 +275,8 @@ public class PlayerMovement : MonoBehaviour
         jumpUpSpeed = stats.JumpSpeed;
         slideBoostForce = stats.SlideBoostForce;
         airBoostForce = stats.AirBoostForce;
+        groundFriction = stats.GroundFriction;
+        airFriction = stats.AirFriction;
     }
 
     private float GetHalfHeight()
