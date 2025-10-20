@@ -165,6 +165,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (wantToCrouch)
         {
+
             col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 20f);
             if (!isCrouched)
             {
@@ -176,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
+            col.height = col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
             isCrouched = false;
             appliedSlideBoost = false;
         }
@@ -221,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
             // jumping
             if (wantToJump && !isJumping)
             {
-                rb.AddForce(groundNormalAverage * jumpUpSpeed, ForceMode.Impulse);
+                rb.AddForce(groundNormalAverage * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
                 isJumping = true;
             }
         }
@@ -244,7 +245,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (wantToJump && !isJumping)
             {
-                rb.AddForce(groundNormalAverage * jumpUpSpeed, ForceMode.Impulse);
+                rb.AddForce(groundNormalAverage * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
                 isJumping = true;
             }
         }
@@ -537,8 +538,12 @@ public class PlayerMovement : MonoBehaviour
         appliedAirBoost = true;
 
         Vector3 boostDir = dir;
+        Vector3 vel = rb.linearVelocity;
+        vel.y = 0f;
+        float dotProduct = Vector3.Dot(vel, boostDir.normalized);
 
-        rb.AddForce(GetBoostVector(boostDir, airBoostForce), ForceMode.Impulse);
+
+        rb.AddForce(GetBoostVector(boostDir, airBoostForce), ForceMode.VelocityChange);
     }
 
     // IEnumerator HandleCrouchBoostCoolDown()
