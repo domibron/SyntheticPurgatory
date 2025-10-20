@@ -230,7 +230,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507a45da5bfeff844af8d5ce72f6c867, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsDisabled: 0
+  isDisabled: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 83
   grAccel: 20
   airAccel: 20
   gravityScalar: 1.45
@@ -740,18 +743,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7882557659218615182}
     m_Modifications:
-    - target: {fileID: 4064758857489729959, guid: 86916fa7535f5ba4ebac7b2cd5f18ca8, type: 3}
-      propertyPath: m_Layer
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 4886924051689781398, guid: 86916fa7535f5ba4ebac7b2cd5f18ca8, type: 3}
-      propertyPath: m_Layer
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 7787600841145875479, guid: 86916fa7535f5ba4ebac7b2cd5f18ca8, type: 3}
-      propertyPath: m_Layer
-      value: 12
-      objectReference: {fileID: 0}
     - target: {fileID: 2455599300114341882, guid: 4d14b924d6cf8af40a1dbe097d1bf219, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.38969153
@@ -797,6 +788,18 @@ PrefabInstance:
       value: P_Player_Gun
       objectReference: {fileID: 0}
     - target: {fileID: 2981341313623065920, guid: 4d14b924d6cf8af40a1dbe097d1bf219, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4064758857489729959, guid: 86916fa7535f5ba4ebac7b2cd5f18ca8, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4886924051689781398, guid: 86916fa7535f5ba4ebac7b2cd5f18ca8, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7787600841145875479, guid: 86916fa7535f5ba4ebac7b2cd5f18ca8, type: 3}
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
