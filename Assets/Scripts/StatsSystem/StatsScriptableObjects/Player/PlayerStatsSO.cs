@@ -13,6 +13,8 @@ public class PlayerStats : ICloneable
     public float JumpSpeed = 9.2f;
     public float SlideBoostForce = 5f;
     public float AirBoostForce = 5f;
+    public float GroundFriction = 5f;
+    public float AirFriction = 1;
 
     public float ProjectileDamage = 12f;
     public float ProjectileFireRate = 0.3f;
