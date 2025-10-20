@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class RoomCulling : MonoBehaviour
 {
-    MeshRenderer[] meshRenderers;
+    List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
 
     Transform player;
 
@@ -18,6 +18,13 @@ public class RoomCulling : MonoBehaviour
         boxCollider.enabled = false;
     }
 
+    void OnValidate()
+    {
+        boxCollider = GetComponent<BoxCollider>();
+        if (boxCollider != null)
+            boxCollider.enabled = false;
+    }
+
     void Start()
     {
         player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
@@ -26,9 +33,20 @@ public class RoomCulling : MonoBehaviour
         // bounds.extents = transform.localRotation * bounds.extents; // rotate the extents.
         // bounds.center = transform.localRotation * bounds.center;
 
+        // TODO: remove meshes that can move.
 
 
-        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+
+        foreach (MeshRenderer renderer in renderers)
+        {
+            if (renderer.transform.GetComponent<Rigidbody>() != null)
+            {
+                continue;
+            }
+
+            meshRenderers.Add(renderer);
+        }
     }
 
     void Update()
@@ -66,9 +84,8 @@ public class RoomCulling : MonoBehaviour
 
         Vector3 lowerBounds = transform.position + boxCollider.center - (sizeRotated / 2f);
         Vector3 upperBounds = transform.position + boxCollider.center + (sizeRotated / 2f);
-        float maxDist = maxDistance / 2f;
 
-        if (OutsideLowerBounds(playerPos, lowerBounds, maxDist) || OutsideUpperBounds(playerPos, upperBounds, maxDist))
+        if (OutsideLowerBounds(playerPos, lowerBounds, maxDistance) || OutsideUpperBounds(playerPos, upperBounds, maxDistance))
         {
             return false;
         }
@@ -78,23 +95,23 @@ public class RoomCulling : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos()
-    {
-        BoxCollider bc = GetComponent<BoxCollider>();
-        Gizmos.DrawWireCube(transform.position + bc.center, bc.size);
+    // void OnDrawGizmos()
+    // {
+    //     BoxCollider bc = GetComponent<BoxCollider>();
+    //     Gizmos.DrawWireCube(transform.position + bc.center, bc.size);
 
-        bool isEven = (transform.rotation.eulerAngles.y <= 0.01f && transform.rotation.eulerAngles.y >= -0.01f) ? true : (Mathf.FloorToInt(transform.rotation.eulerAngles.y / 90f) % 2) == 0;
-        Vector3 sizeRotated = boxCollider.size;
+    //     bool isEven = (transform.rotation.eulerAngles.y <= 0.01f && transform.rotation.eulerAngles.y >= -0.01f) ? true : (Mathf.FloorToInt(transform.rotation.eulerAngles.y / 90f) % 2) == 0;
+    //     Vector3 sizeRotated = boxCollider.size;
 
-        if (!isEven)
-        {
-            sizeRotated.z = boxCollider.size.x;
-            sizeRotated.x = boxCollider.size.z;
-        }
+    //     if (!isEven)
+    //     {
+    //         sizeRotated.z = boxCollider.size.x;
+    //         sizeRotated.x = boxCollider.size.z;
+    //     }
 
-        Gizmos.DrawSphere(transform.position + boxCollider.center - (sizeRotated / 2f), 0.1f);
-        Gizmos.DrawSphere(transform.position + boxCollider.center + (sizeRotated / 2f), 0.1f);
-    }
+    //     Gizmos.DrawSphere(transform.position + boxCollider.center - (sizeRotated / 2f), 0.1f);
+    //     Gizmos.DrawSphere(transform.position + boxCollider.center + (sizeRotated / 2f), 0.1f);
+    // }
 
     bool OutsideLowerBounds(Vector3 playerPos, Vector3 lowerBounds, float maxDistanceFromRoom)
     {
