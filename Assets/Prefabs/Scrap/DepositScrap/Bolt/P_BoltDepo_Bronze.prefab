@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4084717243538317875}
   - component: {fileID: 4786955625983100183}
   - component: {fileID: 5479625908009679667}
+  - component: {fileID: -3232457162495988227}
   m_Layer: 7
   m_Name: P_BoltDepo_Bronze
   m_TagString: DepoScrap
@@ -82,6 +83,22 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-3232457162495988227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5088549280582564383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39cb960610c3c03489f54ebadb4f5b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeToWaitBeforeRemoving: 5
+  shouldEaseIn: 1
+  easeInTime: 1
+  easeOutTime: 1
 --- !u!1001 &5375658689665497969
 PrefabInstance:
   m_ObjectHideFlags: 0
