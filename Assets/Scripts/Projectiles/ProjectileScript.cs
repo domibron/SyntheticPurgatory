@@ -51,13 +51,14 @@ public class ProjectileScript : MonoBehaviour
         Health healthscript;
         if (healthscript = collider.gameObject.GetComponent<Health>()) // Damage object if it has the health script attached
         {
-            print("FSUFS");
             healthscript.AddToHealth(-ProjectileDamage);
+            SpawnFloatingText(1);
         }
 
         Destroy(gameObject);
 
     }
+
 
     public void SpawnFloatingText(float damageMult)
     {
@@ -72,7 +73,7 @@ public class ProjectileScript : MonoBehaviour
             gradient = strongSpotGradient;
         }
 
-        floatingTextSystem.SpawnText((damageMult * ProjectileDamage).ToString("F0"), gradient, 5);
+        floatingTextSystem.SpawnText((damageMult * ProjectileDamage).ToString("F0"), gradient, 4, -10);
     }
 
 
