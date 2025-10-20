@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,8 +26,13 @@ public class RoomCulling : MonoBehaviour
             boxCollider.enabled = false;
     }
 
-    void Start()
+    IEnumerator Start() // TODO, jank fix, will replace with proper que system. aka event hook.
     {
+        while (PlayerRefFetcher.Instance == null)
+        {
+            yield return null;
+        }
+
         player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
 
         // TODO: figure this out later, should not be a issue since rooms are square.
@@ -35,6 +41,7 @@ public class RoomCulling : MonoBehaviour
 
         // TODO: remove meshes that can move.
 
+        yield return new WaitForSeconds(1);
 
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
 
@@ -82,8 +89,8 @@ public class RoomCulling : MonoBehaviour
             sizeRotated.x = boxCollider.size.z;
         }
 
-        Vector3 lowerBounds = transform.position + boxCollider.center - (sizeRotated / 2f);
-        Vector3 upperBounds = transform.position + boxCollider.center + (sizeRotated / 2f);
+        Vector3 lowerBounds = transform.position + (transform.rotation * boxCollider.center) - (sizeRotated / 2f);
+        Vector3 upperBounds = transform.position + (transform.rotation * boxCollider.center) + (sizeRotated / 2f);
 
         if (OutsideLowerBounds(playerPos, lowerBounds, maxDistance) || OutsideUpperBounds(playerPos, upperBounds, maxDistance))
         {

@@ -106,7 +106,7 @@ public class MeleeEnemyAI : MonoBehaviour
 
 
         // Swap to alternative movement if close enough to target
-        if (Vector3.Distance(transform.position, goal.transform.position) < attackRange) 
+        if (Vector3.Distance(transform.position, goal.transform.position) < attackRange)
         {
             nextToSpeed = Mathf.Min(nextToSpeed + 0.02f, 1); // Increase rate of turning 
             agent.speed = 0; // Stop movement
