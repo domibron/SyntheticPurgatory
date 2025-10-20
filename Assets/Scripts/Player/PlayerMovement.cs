@@ -138,6 +138,10 @@ public class PlayerMovement : MonoBehaviour
         camXRot = Mathf.Clamp(camXRot, -80, 80);
 
         cameraTarget.localRotation = Quaternion.Euler(camXRot, 0, 0);
+        Vector3 camPos = cameraTarget.localPosition;
+        camPos.y = GetHalfHeight() - 0.15f;
+        cameraTarget.localPosition = camPos;
+
 
         orientation.Rotate(0, lookDelta.x * sens, 0);
     }
@@ -166,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
         if (wantToCrouch)
         {
 
-            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 20f);
+            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 20f);
             if (!isCrouched)
             {
                 CrouchBoost(); // so lazy
