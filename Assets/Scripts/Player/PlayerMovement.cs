@@ -9,7 +9,10 @@ public class PlayerMovement : MonoBehaviour
     /// Disable all movement if enabled
     /// </summary>
     [SerializeField]
-    private bool IsDisabled = false;
+    private bool isDisabled = false;
+
+    [SerializeField]
+    private LayerMask groundLayer = Physics.AllLayers;
 
     //Ground
     // [SerializeField]
@@ -106,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
         // propertyInfos[0].SetValue(this, 10);
 
-        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+        // PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
 
         //print(pStats.MaxHealth);
 
@@ -121,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (IsDisabled) { rb.linearVelocity = Vector3.zero; return; }
+        if (isDisabled) { rb.linearVelocity = Vector3.zero; return; }
 
         // col.material.dynamicFriction = 0f;
         PollInput();
@@ -146,10 +149,16 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (IsDisabled) { return; }
+        if (isDisabled) return;
 
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
+        CheckForGround();
+
+        if (grounded && !isOnSteepSlope)
+        {
+            isJumping = false;
+        }
 
         if (wantToCrouch)
         {
@@ -219,6 +228,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 Vector3 velToAdd = AirMovement(dir, groundSpeed, grAccel);
                 rb.AddForce(velToAdd, ForceMode.VelocityChange);
+
+                Vector3 friction = GetFrictionVector(groundSpeed, 5f); // TODO Magic number.
+                rb.AddForce(friction, ForceMode.VelocityChange);
             }
             else
             {
@@ -260,6 +272,11 @@ public class PlayerMovement : MonoBehaviour
         airBoostForce = stats.AirBoostForce;
     }
 
+    private float GetHalfHeight()
+    {
+        return Mathf.Max(col.height / 2f, col.radius);
+    }
+
     private void PollInput()
     {
         Vector2 inputVector = movementInput.ReadValue<Vector2>();
@@ -276,17 +293,39 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckForGround()
     {
-        Collider[] results = Physics.OverlapSphere(transform.position - Vector3.down * (col.height / 2f), col.radius - 0.03f); // TODO ground mask?
+        Collider[] results = Physics.OverlapSphere(transform.position - Vector3.down * GetHalfHeight(), col.radius - 0.05f, groundLayer); // TODO ground mask?
 
-        foreach (Collider collider in results)
+        bool didHit = Physics.Raycast(transform.position, -transform.up, out RaycastHit hitInfo, GetHalfHeight() + 0.05f, groundLayer);
+
+        if (results.Length > 0 || didHit)
         {
+            if (didHit)
+            {
+                float angle = Vector3.Angle(hitInfo.normal, Vector3.up);
 
+                grounded = true;
+                isOnSteepSlope = angle > wallFloorBarrier;
+                isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
+
+                return;
+            }
+            else
+            {
+                grounded = true;
+                isOnSteepSlope = false;
+                isOnSlightSlope = false;
+                return;
+            }
         }
+
+        grounded = false;
+        isOnSteepSlope = false;
+        isOnSlightSlope = false;
     }
 
     private bool WithinGroundRange(Vector3 point)
     {
-        Vector3 feetPos = transform.position - Vector3.down * (col.height / 2f);
+        Vector3 feetPos = transform.position - Vector3.down * GetHalfHeight();
 
         float radius = col.radius - 0.01f;
 
@@ -323,12 +362,13 @@ public class PlayerMovement : MonoBehaviour
             contactPos.y = transform.position.y;
 
 
-            if (Vector3.Distance(contactPos, transform.position) > col.radius) continue;
+            if (Vector3.Distance(contactPos, transform.position) > col.radius - 0.03f) continue;
 
             angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
 
 
             if (angle > 85) continue;
+
             validContacts++;
             slopeNormalAverage += contact.normal;
 
@@ -342,30 +382,30 @@ public class PlayerMovement : MonoBehaviour
             groundNormalAverage = slopeNormalAverage;
         }
 
-        angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
+        // angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
         // print(angle);
 
-        if (angle <= wallFloorBarrier)
-        {
-            grounded = true;
-            isOnSteepSlope = false;
-            if (angle > 1)
-            {
-                isOnSlightSlope = true;
-            }
-        }
-        else if (VectorToGround().magnitude > 0.2f)
-        {
-            grounded = false;
-            isOnSteepSlope = angle > wallFloorBarrier;
-            isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
-        }
-        else
-        {
-            grounded = false;
-            isOnSteepSlope = angle > wallFloorBarrier;
-            isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
-        }
+        // if (angle <= wallFloorBarrier)
+        // {
+        //     grounded = true;
+        //     isOnSteepSlope = false;
+        //     if (angle > 1)
+        //     {
+        //         isOnSlightSlope = true;
+        //     }
+        // }
+        // else if (VectorToGround().magnitude > 0.2f)
+        // {
+        //     grounded = false;
+        //     isOnSteepSlope = angle > wallFloorBarrier;
+        //     isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
+        // }
+        // else
+        // {
+        //     grounded = false;
+        //     isOnSteepSlope = angle > wallFloorBarrier;
+        //     isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
+        // }
 
     }
 
@@ -373,12 +413,34 @@ public class PlayerMovement : MonoBehaviour
     {
         // if (ground.Contains(collision.collider)) ground.Remove(collision.collider);
 
-        if (collision.contactCount == 0)
+        // if (collision.contactCount == 0)
+        // {
+        //     grounded = false;
+        //     isOnSteepSlope = false;
+        //     isOnSlightSlope = false;
+        // }
+    }
+
+    Vector3 GetFrictionVector(float maxSpeed, float friction)
+    {
+        if (rb.linearVelocity.magnitude <= maxSpeed)
         {
-            grounded = false;
-            isOnSteepSlope = false;
-            isOnSlightSlope = false;
+            return Vector3.zero;
         }
+
+        Vector3 counterDir = (-rb.linearVelocity).normalized;
+
+        Vector3 currentVelSpeedNoY = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        if (currentVelSpeedNoY.magnitude > maxSpeed) friction *= currentVelSpeedNoY.magnitude / maxSpeed; // Increase the accel when overspeed.
+
+        float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), counterDir); // Vector projection of Current velocity onto accelDir.
+        float accelVel = friction * Time.deltaTime; // Accelerated velocity in direction of movment
+
+        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
+        if (projVel + accelVel > maxSpeed)
+            accelVel = Mathf.Max(0f, maxSpeed - projVel);
+
+        return counterDir * accelVel;
     }
 
 
@@ -386,17 +448,17 @@ public class PlayerMovement : MonoBehaviour
     {
         wishDir = wishDir.normalized;
         Vector3 currentVelSpeedNoY = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        if (currentVelSpeedNoY.magnitude > maxSpeed) acceleration *= currentVelSpeedNoY.magnitude / maxSpeed; // what the fuck. increase the accel if overspeed. But you need to to counter?
+        if (currentVelSpeedNoY.magnitude > maxSpeed) acceleration *= currentVelSpeedNoY.magnitude / maxSpeed; // Increase the accel when overspeed.
 
-        Vector3 foceNeededForDesiredForce = wishDir * maxSpeed - currentVelSpeedNoY;
+        Vector3 forceNeededForDesiredVelocity = wishDir * maxSpeed - currentVelSpeedNoY;
 
-        if (foceNeededForDesiredForce.magnitude < 0.5f)
+        if (forceNeededForDesiredVelocity.magnitude < 0.5f)
         {
-            acceleration *= foceNeededForDesiredForce.magnitude / 0.5f; // slows down the accel? 
+            acceleration *= forceNeededForDesiredVelocity.magnitude / 0.5f; // slows down the accel? 
             //I presume because we reach our target speed. We want to override the current vel since we are on the ground.
         }
 
-        Vector3 accelForce = foceNeededForDesiredForce.normalized * acceleration; // turn the force needed into a acceleration.
+        Vector3 accelForce = forceNeededForDesiredVelocity.normalized * acceleration; // turn the force needed into a acceleration.
         float magn = accelForce.magnitude; // this makes no sense.
         accelForce = accelForce.normalized; // because you did this.
         accelForce *= magn; // already.
@@ -481,6 +543,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void DisablePlayerMovement(bool state)
     {
-        IsDisabled = state;
+        isDisabled = state;
     }
 }
