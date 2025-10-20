@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6662350372166360818}
   - component: {fileID: 7855819560866804403}
   - component: {fileID: 5543712688136995297}
-  - component: {fileID: 534791663556776753}
+  - component: {fileID: 6753891315997696996}
   m_Layer: 11
   m_Name: P_RangedProjectile
   m_TagString: Untagged
@@ -137,7 +137,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &534791663556776753
+--- !u!114 &6753891315997696996
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -149,4 +149,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c318bd3209c723c42ac780d9424d82d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  floatingTextSystem: {fileID: 0}
   ProjectileDamage: 12
+  weakSpotGradient: {fileID: 0}
+  normalGradient: {fileID: 0}
+  strongSpotGradient: {fileID: 0}
