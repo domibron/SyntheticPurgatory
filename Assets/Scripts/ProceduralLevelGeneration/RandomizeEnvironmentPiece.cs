@@ -21,6 +21,7 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     {
         // Choose random piece from given list then spawn at this object with same rotation
         Instantiate(levelpieces[Random.Range(0, levelpieces.Length - 1)], transform.position, transform.rotation, transform);
+
         Destroy(temporaryPiece); // Destroy the piece used for creation
         Destroy(this);
     }
