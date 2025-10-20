@@ -49,5 +49,6 @@ public class ScrollingTextureController : MonoBehaviour
         }
 
         material.SetTextureOffset("_MainTex", currentScroll);
+        material.SetTextureOffset("_NormalMap", currentScroll);
     }
 }

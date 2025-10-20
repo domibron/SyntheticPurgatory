@@ -8,7 +8,7 @@ public class PlayerCombat : MonoBehaviour
     /// Disable all combat abilities if enabled
     /// </summary>
     [SerializeField]
-    private bool IsDisabled = false;
+    private bool isDisabled = false;
 
     [SerializeField]
     GameObject projectilePrefab;
@@ -27,6 +27,12 @@ public class PlayerCombat : MonoBehaviour
 
     // [SerializeField]
     int projectileMagSize = 20;
+
+    float reloadTime = 2f;
+
+    float currentReloadTime = 0f;
+
+    bool isReloading = false;
 
     [SerializeField]
     Vector3 meleeBounds = Vector3.one;
@@ -67,7 +73,7 @@ public class PlayerCombat : MonoBehaviour
     bool wantToFireRanged = false;
     bool wantToMelee = false;
     bool wantToKick = false;
-    bool wantToReload = false;
+    // bool wantToReload = false;
 
     InputAction rangedWeaponInput;
     InputAction meleeWeaponInput;
@@ -80,8 +86,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField]
     bool showKickBox = false;
 
-    // TODO reload
+    Animator animator;
 
+
+    #region Awake
+    #endregion
     void Awake()
     {
         currentAmmoCount = projectileMagSize;
@@ -90,7 +99,12 @@ public class PlayerCombat : MonoBehaviour
         meleeWeaponInput = InputSystem.actions.FindAction("Melee");
         KickInput = InputSystem.actions.FindAction("Interact");
         ReloadInput = InputSystem.actions.FindAction("Reload");
+
+        animator = GetComponent<Animator>();
     }
+
+    #region Start
+    #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -98,6 +112,9 @@ public class PlayerCombat : MonoBehaviour
         mainCamera = Camera.main.transform;
         // playerMovement = GetComponent<PlayerMovement>();
     }
+
+    #region UpdateVariablesWithStats
+    #endregion
 
     public void UpdateVariablesWithStats(PlayerStats stats)
     {
@@ -117,16 +134,26 @@ public class PlayerCombat : MonoBehaviour
 
         kickForce = stats.KickForce;
         kickAttackDelay = stats.KickAttackDelay;
+        reloadTime = stats.ReloadTime;
     }
 
+    #region Update
+    #endregion
     // Update is called once per frame
     void Update()
     {
-        if (IsDisabled) return; 
+        if (isDisabled) return;
 
         if (currentKickCooldown > 0) currentKickCooldown -= Time.deltaTime;
         if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
         if (currentProjectileCooldown > 0) currentProjectileCooldown -= Time.deltaTime;
+
+        if (currentReloadTime > 0) currentReloadTime -= Time.deltaTime;
+        else if (currentKickCooldown <= 0 && isReloading)
+        {
+            currentAmmoCount = projectileMagSize;
+            isReloading = false;
+        }
 
         PollInput();
 
@@ -145,13 +172,15 @@ public class PlayerCombat : MonoBehaviour
             KickAttack();
         }
 
-        if (wantToReload && currentAmmoCount < projectileMagSize)
+        if (currentAmmoCount <= 0 && !isReloading)
         {
             Reload();
         }
 
     }
 
+    #region OnDrawGizmos
+    #endregion
     void OnDrawGizmos()
     {
         if (showMeleeBox && Camera.main != null)
@@ -181,12 +210,15 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    #region Reload
+    #endregion
     private void Reload()
     {
-        // TODO add delays and shit.
-        currentAmmoCount = projectileMagSize;
+        isReloading = true;
+        currentReloadTime = reloadTime;
     }
-
+    #region KickAttack
+    #endregion
     private void KickAttack()
     {
         // does knockback
@@ -209,11 +241,14 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
+    #region MeleeAttack
+    #endregion
     private void MeleeAttack()
     {
         // does damage
 
         // if (currentMeleeCooldown > 0) return;
+        animator.SetTrigger("Melee");
 
         Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * meleeOffset.z) + (mainCamera.right * meleeOffset.x) + (mainCamera.up * meleeOffset.y), meleeBounds / 2f, transform.rotation);
 
@@ -234,6 +269,8 @@ public class PlayerCombat : MonoBehaviour
         currentMeleeCooldown = meleeAttackDelay;
     }
 
+    #region FireProjectile
+    #endregion
     private void FireProjectile()
     {
         currentAmmoCount--;
@@ -262,16 +299,20 @@ public class PlayerCombat : MonoBehaviour
         // set damage and so on.
     }
 
+    #region PollInput
+    #endregion
     void PollInput()
     {
         wantToFireRanged = rangedWeaponInput.IsPressed();
         wantToMelee = meleeWeaponInput.IsPressed();
         wantToKick = KickInput.IsPressed();
-        wantToReload = ReloadInput.IsPressed();
+        // wantToReload = ReloadInput.IsPressed();
     }
 
+    #region DisablePlayerCombat
+    #endregion
     public void DisablePlayerCombat(bool state)
     {
-        IsDisabled = state;
+        isDisabled = state;
     }
 }
