@@ -19,10 +19,23 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     /// </summary>
     [SerializeField]
     private bool randomiseYRotation;
+    /// <summary>
+    /// Percentage chance for object to delete itself before generating anything
+    /// </summary>
+    [SerializeField, Range(0, 100)]
+    private float noActivationChance = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (noActivationChance > Random.Range(0, 99))
+        {
+            print(Random.Range(0, 99));
+            Destroy(temporaryPiece); // Destroy the piece used for creation
+            Destroy(this);
+            return;
+        }
+
         // Choose random piece from given list then spawn at this object with same rotation
         GameObject newobject = Instantiate(objectPrefabs[Random.Range(0, objectPrefabs.Length - 1)], transform.position, transform.rotation, transform);
         if (randomiseYRotation)
