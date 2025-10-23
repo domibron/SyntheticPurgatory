@@ -78,6 +78,8 @@ public class RoomCulling : MonoBehaviour
 
     bool PlayerWithinRange()
     {
+        if (player == null) return false;
+
         Vector3 playerPos = player.position;
 
         bool isEven = (transform.rotation.eulerAngles.y <= 0.01f && transform.rotation.eulerAngles.y >= -0.01f) ? true : (Mathf.FloorToInt(transform.rotation.eulerAngles.y / 90f) % 2) == 0;
