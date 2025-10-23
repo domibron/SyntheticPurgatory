@@ -23,6 +23,8 @@ public class EntityCulling : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (player == null) return;
+
         if (Vector3.Distance(player.position, transform.position) > maxDistance)
         {
             foreach (var renderer in meshRenderers)

@@ -14,6 +14,8 @@ public class LevelGenerator : MonoBehaviour
     public const int X_ROW = 0;
     public const int Y_ROW = 1;
 
+    public const int BLANK_ID = 0;
+
     [Min(0)]
     public int GridEdgeBuffer = 5;
 
@@ -34,7 +36,7 @@ public class LevelGenerator : MonoBehaviour
 
     private int currentID = 1;
 
-    private Coroutine RoomGenerationCoroutine;
+    private Coroutine roomGenerationCoroutine;
 
 
     List<RoomPiece> allRepeatableRooms = new List<RoomPiece>();
@@ -67,9 +69,23 @@ public class LevelGenerator : MonoBehaviour
     void Start()
     {
 
-        RoomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
+        roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
 
     }
+
+    // void Update()
+    // {
+    //     if (roomGenerationCoroutine != null)
+    //     {
+    //         return;
+    //     }
+
+    //     if (PlayerRefFetcher.Instance == null) return;
+
+    //     print(GetRoomIDFromCoordinates(GetRoomCoordinates(PlayerRefFetcher.Instance.GetPlayerRef().transform.position)));
+
+
+    // }
 
     private IEnumerator StartLevelGeneration()
     {
@@ -118,9 +134,9 @@ public class LevelGenerator : MonoBehaviour
         // }
 
         // clean up
-        if (RoomGenerationCoroutine != null)
+        if (roomGenerationCoroutine != null)
         {
-            RoomGenerationCoroutine = null;
+            roomGenerationCoroutine = null;
             print(GetGridAsString());
             print(seed.ToString());
             print("Done generating");
@@ -864,5 +880,25 @@ public class LevelGenerator : MonoBehaviour
         return isUnique;
     }
 
+
+    public Vector2Int GetRoomCoordinates(Vector3 worldCords)
+    {
+        worldCords /= LevelPieceCollection.UnitSizeInMeters;
+
+        Vector2Int intPosition = new Vector2Int(Mathf.FloorToInt(worldCords.x), Mathf.FloorToInt(worldCords.z));
+
+        return intPosition;
+    }
+
+    // TODO: Replace levelGrid[x,y] with this
+    public int GetRoomIDFromCoordinates(Vector2Int cords)
+    {
+        if (cords.x < 0 || cords.x >= levelGrid.GetLength(X_ROW) || cords.y < 0 || cords.y >= levelGrid.GetLength(Y_ROW))
+        {
+            return BLANK_ID; // out of bounds, return null id.
+        }
+
+        return levelGrid[cords.x, cords.y];
+    }
 
 }
