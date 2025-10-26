@@ -1,17 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
+public enum VisibleState
+{
+    Unload,
+    Minimal,
+    Medium,
+    Maximum,
+}
 
 [RequireComponent(typeof(BoxCollider))]
 public class RoomCulling : MonoBehaviour
 {
-    List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
+    List<MeshRenderer> wallsAndFloorMeshRenderers = new List<MeshRenderer>();
+    List<MeshRenderer> decorMeshRenderers = new List<MeshRenderer>();
+    List<EntityCulling> entityCullings = new List<EntityCulling>();
 
-    Transform player;
+    // Transform player;
 
-    float maxDistance = 64;
+    // float maxDistance = 64;
 
     BoxCollider boxCollider;
+
+    private bool isReady = false;
 
     void Awake()
     {
@@ -28,12 +41,12 @@ public class RoomCulling : MonoBehaviour
 
     IEnumerator Start() // TODO, jank fix, will replace with proper que system. aka event hook.
     {
-        while (PlayerRefFetcher.Instance == null)
-        {
-            yield return null;
-        }
+        // while (PlayerRefFetcher.Instance == null)
+        // {
+        //     yield return null;
+        // }
 
-        player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
+        // player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
 
         // TODO: figure this out later, should not be a issue since rooms are square.
         // bounds.extents = transform.localRotation * bounds.extents; // rotate the extents.
@@ -52,57 +65,151 @@ public class RoomCulling : MonoBehaviour
                 continue;
             }
 
-            meshRenderers.Add(renderer);
-        }
-    }
-
-    void Update()
-    {
-        if (PlayerWithinRange())
-        {
-            foreach (var meshRenderer in meshRenderers)
+            if (renderer.gameObject.CompareTag(Constants.WallTag) || renderer.gameObject.CompareTag(Constants.FloorTag))
             {
-                if (meshRenderer.enabled) continue;
-                meshRenderer.enabled = true;
+                wallsAndFloorMeshRenderers.Add(renderer);
             }
-        }
-        else
-        {
-            foreach (var meshRenderer in meshRenderers)
+            else if (renderer.gameObject.CompareTag(Constants.DecorationTag))
             {
-                if (!meshRenderer.enabled) continue;
-                meshRenderer.enabled = false;
+                decorMeshRenderers.Add(renderer);
             }
+
         }
+
+        EntityCulling[] gatheredEntityCullings = GetComponentsInChildren<EntityCulling>();
+
+        entityCullings.AddRange(gatheredEntityCullings);
+
+        foreach (EntityCulling entityCulling in entityCullings)
+        {
+            entityCulling.OverrideCulling();
+            entityCulling.TryOverrideMeshVisiblity(false);
+        }
+
+        isReady = true;
+
     }
 
-    bool PlayerWithinRange()
+    // void Update()
+    // {
+    //     if (PlayerWithinRange())
+    //     {
+    //         foreach (var meshRenderer in meshRenderers)
+    //         {
+    //             if (meshRenderer.enabled) continue;
+    //             meshRenderer.enabled = true;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         foreach (var meshRenderer in meshRenderers)
+    //         {
+    //             if (!meshRenderer.enabled) continue;
+    //             meshRenderer.enabled = false;
+    //         }
+    //     }
+    // }
+
+    public void SetRendererState(VisibleState state)
     {
-        if (player == null) return false;
-
-        Vector3 playerPos = player.position;
-
-        bool isEven = (transform.rotation.eulerAngles.y <= 0.01f && transform.rotation.eulerAngles.y >= -0.01f) ? true : (Mathf.FloorToInt(transform.rotation.eulerAngles.y / 90f) % 2) == 0;
-        Vector3 sizeRotated = boxCollider.size;
-
-        if (!isEven)
+        switch (state) // I do feel this is a bit bad, but eh, fuck it.
         {
-            sizeRotated.z = boxCollider.size.x;
-            sizeRotated.x = boxCollider.size.z;
-        }
-
-        Vector3 lowerBounds = transform.position + (transform.rotation * boxCollider.center) - (sizeRotated / 2f);
-        Vector3 upperBounds = transform.position + (transform.rotation * boxCollider.center) + (sizeRotated / 2f);
-
-        if (OutsideLowerBounds(playerPos, lowerBounds, maxDistance) || OutsideUpperBounds(playerPos, upperBounds, maxDistance))
-        {
-            return false;
-        }
-        else
-        {
-            return true;
+            case VisibleState.Unload: // everything else
+                SetWallsAndFloorRendererState(false);
+                SetDecorRendererState(false);
+                SetEntityCulling(false);
+                break;
+            case VisibleState.Minimal: // 2nd layer rooms
+                SetWallsAndFloorRendererState(true); // need to set LOD state.
+                SetDecorRendererState(false);
+                SetEntityCulling(false);
+                break;
+            case VisibleState.Medium: // 1st layer rooms
+                SetWallsAndFloorRendererState(true); // need to set LOD state.
+                SetDecorRendererState(true); // need two levels of detail. lower and higher
+                SetEntityCulling(true);
+                break;
+            case VisibleState.Maximum: // Current room
+                SetWallsAndFloorRendererState(true);
+                SetDecorRendererState(true);
+                SetEntityCulling(true);
+                break;
         }
     }
+
+    private void SetEntityCulling(bool isVusible = true)
+    {
+        StartCoroutine(SetEntityCullingRenderState(isVusible));
+    }
+
+    IEnumerator SetEntityCullingRenderState(bool isVusible)
+    {
+        foreach (EntityCulling entity in entityCullings)
+        {
+            if (entity == null) continue; // TODO: should have enemies or what ever not be collected.
+
+
+            entity.TryOverrideMeshVisiblity(isVusible);
+        }
+        yield return null;
+    }
+
+    private void SetWallsAndFloorRendererState(bool isVisible = true)
+    {
+        // print("render state " + isVisible);
+
+        StartCoroutine(SetRenderStateWhenReady(isVisible, wallsAndFloorMeshRenderers));
+    }
+
+    private void SetDecorRendererState(bool isVisible = true)
+    {
+        // print("render state " + isVisible);
+
+        StartCoroutine(SetRenderStateWhenReady(isVisible, decorMeshRenderers));
+    }
+
+    IEnumerator SetRenderStateWhenReady(bool isVisible, List<MeshRenderer> meshRenderers)
+    {
+
+        while (!isReady) yield return null; // wait until meshes are gathered.
+
+
+        foreach (var meshRenderer in meshRenderers)
+        {
+            if (meshRenderer.enabled == isVisible) continue;
+
+            meshRenderer.enabled = isVisible;
+        }
+
+    }
+
+    // bool PlayerWithinRange()
+    // {
+    //     if (player == null) return false;
+
+    //     Vector3 playerPos = player.position;
+
+    //     bool isEven = (transform.rotation.eulerAngles.y <= 0.01f && transform.rotation.eulerAngles.y >= -0.01f) ? true : (Mathf.FloorToInt(transform.rotation.eulerAngles.y / 90f) % 2) == 0;
+    //     Vector3 sizeRotated = boxCollider.size;
+
+    //     if (!isEven)
+    //     {
+    //         sizeRotated.z = boxCollider.size.x;
+    //         sizeRotated.x = boxCollider.size.z;
+    //     }
+
+    //     Vector3 lowerBounds = transform.position + (transform.rotation * boxCollider.center) - (sizeRotated / 2f);
+    //     Vector3 upperBounds = transform.position + (transform.rotation * boxCollider.center) + (sizeRotated / 2f);
+
+    //     if (OutsideLowerBounds(playerPos, lowerBounds, maxDistance) || OutsideUpperBounds(playerPos, upperBounds, maxDistance))
+    //     {
+    //         return false;
+    //     }
+    //     else
+    //     {
+    //         return true;
+    //     }
+    // }
 
     // void OnDrawGizmos()
     // {

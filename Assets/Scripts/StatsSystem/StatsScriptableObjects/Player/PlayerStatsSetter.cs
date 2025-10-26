@@ -20,7 +20,7 @@ public class PlayerStatsSetter : MonoBehaviour
 
     private void SetAllStats(PlayerStats stats)
     {
-        GetComponent<Health>().SetMaxHealth(stats.MaxHealth);
+        if (stats != null) GetComponent<Health>().SetMaxHealth(stats.MaxHealth);
         GetComponent<PlayerCombat>().UpdateVariablesWithStats(stats);
         GetComponent<PlayerMovement>().UpdateVariablesWithStats(stats);
     }

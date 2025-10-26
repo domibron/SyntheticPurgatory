@@ -58,4 +58,10 @@ public class Constants
     public const string DefaultLayer = "Default";
 
     // public const string CheckpointTag = "Checkpoint";
+
+    public const string WallTag = "Wall";
+
+    public const string FloorTag = "Floor";
+
+    public const string DecorationTag = "Decor";
 }

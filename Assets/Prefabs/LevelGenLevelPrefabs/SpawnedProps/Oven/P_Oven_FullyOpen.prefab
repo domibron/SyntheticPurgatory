@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5468071690246314464, guid: bf5c65182ce34fb49b0a5390c0c3df6f, type: 3}
       propertyPath: m_Name
-      value: P_Oven_PartialOpen Variant
+      value: P_Oven_FullyOpen
       objectReference: {fileID: 0}
     - target: {fileID: 7034239080934803411, guid: bf5c65182ce34fb49b0a5390c0c3df6f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -79,5 +79,25 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5468071690246314464, guid: bf5c65182ce34fb49b0a5390c0c3df6f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6945036988452001147}
   m_SourcePrefab: {fileID: 100100000, guid: bf5c65182ce34fb49b0a5390c0c3df6f, type: 3}
+--- !u!1 &5670863879278281432 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5468071690246314464, guid: bf5c65182ce34fb49b0a5390c0c3df6f, type: 3}
+  m_PrefabInstance: {fileID: 382958371927071544}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6945036988452001147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5670863879278281432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
