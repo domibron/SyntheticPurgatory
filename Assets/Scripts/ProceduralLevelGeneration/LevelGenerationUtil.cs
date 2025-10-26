@@ -116,6 +116,11 @@ public static class LevelGenerationUtil
         return degrees;
     }
 
+    /// <summary>
+    /// Will return north as positive Z and east as positive X.
+    /// </summary>
+    /// <param name="facingDirection">The compass facing directon of the door.</param>
+    /// <returns>Vector2Int representation of the facing direction.</returns>
     public static Vector2Int GetCompassDirectionAsVector2Int(CompassDirection facingDirection)
     {
         Vector2Int direction = Vector2Int.zero;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -374,6 +375,8 @@ public class LevelGenerator : MonoBehaviour
     private GameObject SpawnLevelPiece(SpawnedLevelRoomData levelRoomData)
     {
         GameObject nextRoom = Instantiate(levelRoomData.GetPrefab(), levelRoomData.GetSpawnPoint(), levelRoomData.Rotation);
+
+        levelRoomData.SetRoomObject(nextRoom); // * Added this recently. (cant wait for this to get old)
 
         nextRoom.GetComponent<LevelRoomDataDisplay>()?.SetUpRoom(levelRoomData);
 
@@ -881,7 +884,7 @@ public class LevelGenerator : MonoBehaviour
     }
 
 
-    public Vector2Int GetRoomCoordinates(Vector3 worldCords)
+    public Vector2Int GetGridCoordinates(Vector3 worldCords)
     {
         worldCords /= LevelPieceCollection.UnitSizeInMeters;
 
@@ -899,6 +902,19 @@ public class LevelGenerator : MonoBehaviour
         }
 
         return levelGrid[cords.x, cords.y];
+    }
+
+    public SpawnedLevelRoomData GetSpawnedLevelRoomData(int roomID)
+    {
+        if (levelData.ContainsKey(roomID))
+            return levelData[roomID];
+        else
+            return null;
+    }
+
+    public List<SpawnedLevelRoomData> GetAllSpawnedRoomData()
+    {
+        return levelData.Values.ToList();
     }
 
 }

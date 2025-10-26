@@ -18,6 +18,8 @@ public class SpawnedLevelRoomData
 
     private float UnitSizeInMeters;
 
+    private GameObject roomObject;
+
     public SpawnedLevelRoomData(int id, Vector2Int gridCoordinates, RoomPiece roomPiece)
     {
         UnitSizeInMeters = roomPiece.UnitSizeInMeters;
@@ -61,6 +63,16 @@ public class SpawnedLevelRoomData
             }
         }
 
+    }
+
+    public void SetRoomObject(GameObject roomObject)
+    {
+        this.roomObject = roomObject;
+    }
+
+    public GameObject GetRoomObject()
+    {
+        return roomObject;
     }
 
     public GameObject GetPrefab()

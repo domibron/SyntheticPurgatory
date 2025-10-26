@@ -10,6 +10,14 @@ public class EntityCulling : MonoBehaviour
 
     float maxDistance = 64;
 
+    bool overrideCulling = false;
+
+    Vector2Int gridCoordiantes = Vector2Int.zero;
+
+    LevelGenerator levelGenerator;
+
+    private bool isReady = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     IEnumerator Start()
     {
@@ -18,6 +26,12 @@ public class EntityCulling : MonoBehaviour
         player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
 
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
+
+        levelGenerator = LevelGenObjectRefGetter.Instance.GetReference().GetComponent<LevelGenerator>();
+
+        gridCoordiantes = levelGenerator.GetGridCoordinates(transform.position);
+
+        isReady = true;
     }
 
     // Update is called once per frame
@@ -25,19 +39,50 @@ public class EntityCulling : MonoBehaviour
     {
         if (player == null) return;
 
+        if (levelGenerator.GetGridCoordinates(transform.position) != gridCoordiantes)
+        {
+            overrideCulling = false; // object is on the move.
+        }
+
+
+        if (overrideCulling) return;
+
         if (Vector3.Distance(player.position, transform.position) > maxDistance)
         {
-            foreach (var renderer in meshRenderers)
-            {
-                renderer.enabled = false;
-            }
+            SetMeshVisiblity(false);
         }
         else
         {
-            foreach (var renderer in meshRenderers)
-            {
-                renderer.enabled = true;
-            }
+            SetMeshVisiblity(true);
         }
+    }
+
+    private void SetMeshVisiblity(bool isVisible = true)
+    {
+        StartCoroutine(TrySetMeshVisiblity(isVisible));
+    }
+
+
+    private IEnumerator TrySetMeshVisiblity(bool isVisible)
+    {
+        while (!isReady) yield return null;
+
+        foreach (var renderer in meshRenderers)
+        {
+            if (renderer.enabled != isVisible)
+                renderer.enabled = isVisible;
+        }
+    }
+
+    public void OverrideCulling()
+    {
+        overrideCulling = true;
+    }
+
+    public void TryOverrideMeshVisiblity(bool isVisible = false)
+    {
+        if (!overrideCulling) return;
+
+        SetMeshVisiblity(isVisible);
     }
 }
