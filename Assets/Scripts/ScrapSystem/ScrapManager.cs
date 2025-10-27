@@ -10,52 +10,67 @@ public class ScrapManager : MonoBehaviour
     public SO_ScrapWithWorth ScrapPrefabsWithWorth;
     public SO_ScrapWithWorth DepositScrapWithWorth;
 
-    public static ScrapManager Instance { get => instance; }
-    static ScrapManager instance;
+    public static ScrapManager Instance { get; private set; }
 
-    public float MaxCollectionRange = 5f; // TODO create a stats class that can be publicly access and read from and not editable during gameplay.
-    public float CollectItemRange = 1f;
+    // public CollectableStatsSO collectableStats;
 
-    public float FlyAccel = 15f;
-    public float FlyMaxSpeed = 30f;
-    public float FlyDistanceBoost = 10f;
+    // public float MaxCollectionRange = 5f; // TODO: create a stats class that can be publicly access and read from and not editable during gameplay.
+    // public float CollectItemRange = 1f;
 
-    public float DepositRate = 0.5f;
+    // public float FlyAccel = 15f;
+    // public float FlyMaxSpeed = 30f;
+    // public float FlyDistanceBoost = 10f;
 
-    [SerializeField]
-    int maxInventoryScrap = 10;
+    // public float DepositRate = 0.5f;
+
+    private int maxInventoryScrap = 0;
+
+    // [SerializeField]
+    // int maxInventoryScrap = 10;
     public int currentInventoryScrap = 0;
 
     public int currentDepositedScrap = 0;
 
-    public event Action<int> collectScrap;
+    public event Action<int> collectedScrap;
     public event Action<int> droppedScrap;
     public event Action<int> depositedScrap;
 
 
     void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Debug.LogWarning($"Detected multiple {nameof(ScrapManager)}, please make sure only one exsits at any given time.");
             Destroy(gameObject);
         }
         else
         {
-            instance = this;
+            Instance = this;
         }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            CollectableStats collectableStats = GameStatsManager.Instance.GetStats<CollectableStats>(Stats.collectable);
 
+            if (collectableStats == null)
+            {
+                Debug.LogError("Collectable stats are null?!", this);
+                // maxInventoryScrap = new CollectableStats().MaxInventoryScrap;
+                collectableStats = new();
+            }
+
+            maxInventoryScrap = collectableStats.MaxInventoryScrap;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape)) // TODO: remove.
         {
             GameManager.Instance.ReturnToHubWorld();
         }
@@ -137,12 +152,13 @@ public class ScrapManager : MonoBehaviour
         // code goes here.
     }
 
-    public void AddDepositedScrapToGameManager()
+    public int GetAllDepositedScrap()
     {
         int leftOvers = currentInventoryScrap;
         currentInventoryScrap = 0;
 
-        GameManager.Instance.AddToDepositedScrap(currentDepositedScrap + leftOvers);
+        // GameManager.Instance.AddToDepositedScrap(currentDepositedScrap + leftOvers);
+        return currentDepositedScrap + leftOvers;
     }
 
     public int GetScrapInInventory()
@@ -152,7 +168,7 @@ public class ScrapManager : MonoBehaviour
 
     void InvokeCollectedScrap(int amount)
     {
-        collectScrap?.Invoke(amount);
+        collectedScrap?.Invoke(amount);
     }
 
     public GameObject SpawnScrap(int worth, Vector3 pos)
