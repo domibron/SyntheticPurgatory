@@ -34,6 +34,8 @@ public class BaseCommands
 
     public static Command<float> setAttackDamage;
 
+    public static Command toggleDoors;
+
 
     public BaseCommands(DebugConsole console)
     {
@@ -322,6 +324,30 @@ public class BaseCommands
 
         // foreach
 
+        toggleDoors = new Command("toggledoors", "Toggles all the door's open states in the current room of the player.", "toggledoors", () =>
+        {
+            if (LevelGenObjectRefGetter.Instance == null)
+            {
+                console.TextToConsole("<color=red>Cannot find the level generator object</color>");
+                return;
+            }
+
+            GameObject levelGen = LevelGenObjectRefGetter.Instance.GetReference();
+
+            if (PlayerRefFetcher.Instance == null)
+            {
+                console.TextToConsole("<color=red>Cannot find the player</color>");
+                return;
+            }
+
+            GameObject player = PlayerRefFetcher.Instance.GetPlayerRef();
+
+            levelGen.GetComponent<DoorGenerator>().ToggleDoors(levelGen.GetComponent<LevelGenerator>().GetRoomIDFromCoordinates(levelGen.GetComponent<LevelGenerator>().GetGridCoordinates(player.transform.position)));
+
+            console.TextToConsole("Toggled the doors");
+        });
+
+
 
         List<object> commandsToAdd = new List<object>()
         {
@@ -339,6 +365,7 @@ public class BaseCommands
             // unlockAllAbilities,
             // removeHud,
             // setAttackDamage,
+            toggleDoors,
         };
 
         foreach (var command in commandsToAdd)
