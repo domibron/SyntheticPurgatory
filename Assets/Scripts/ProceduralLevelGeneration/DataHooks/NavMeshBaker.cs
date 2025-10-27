@@ -6,7 +6,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NavMeshBaker : MonoBehaviour
+public class NavMeshBaker : SequenceBase
 {
     LevelGenerator lg;
     [SerializeField]
@@ -19,12 +19,13 @@ public class NavMeshBaker : MonoBehaviour
     NavMeshData navMeshData;
 
     public event Action onNavMeshSurfaceGenerated;
+    public override event Action OnThisSequenceEnd;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        LevelGenerator lg = GetComponent<LevelGenerator>();
-        lg.onLevelGenerationComplete += OnLevelGenComplete;
+        // LevelGenerator lg = GetComponent<LevelGenerator>();
+        // lg.onLevelGenerationComplete += OnLevelGenComplete;
 
         // humanNavSurface = GetComponent<NavMeshSurface>();
     }
@@ -41,6 +42,7 @@ public class NavMeshBaker : MonoBehaviour
         rangedNavSurface.BuildNavMesh();
         // UnityEditor.StaticOcclusionCulling.Compute();
         onNavMeshSurfaceGenerated?.Invoke();
+        OnThisSequenceEnd?.Invoke();
     }
 
     // Update is called once per frame
@@ -49,5 +51,8 @@ public class NavMeshBaker : MonoBehaviour
 
     }
 
-
+    public override void StartSequence()
+    {
+        UpdateNav();
+    }
 }

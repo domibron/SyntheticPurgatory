@@ -46,7 +46,7 @@ public class DoorData
 }
 
 
-public class DoorGenerator : MonoBehaviour
+public class DoorGenerator : SequenceBase
 {
     public GameObject DoorPrefab; // will need to take variations
 
@@ -57,6 +57,7 @@ public class DoorGenerator : MonoBehaviour
     private int doorUUID = 1;
 
     public event Action OnDoorsGenerated;
+    public override event Action OnThisSequenceEnd;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -68,7 +69,7 @@ public class DoorGenerator : MonoBehaviour
             throw new NullReferenceException("LevelGenerator is null!");
         }
 
-        levelGenerator.onLevelGenerationComplete += OnLevelGenerated;
+        // levelGenerator.onLevelGenerationComplete += OnLevelGenerated;
     }
 
     void Update()
@@ -125,6 +126,7 @@ public class DoorGenerator : MonoBehaviour
         }
 
         OnDoorsGenerated?.Invoke();
+        OnThisSequenceEnd?.Invoke();
     }
 
 
@@ -225,5 +227,10 @@ public class DoorGenerator : MonoBehaviour
                 continue;
             }
         }
+    }
+
+    public override void StartSequence()
+    {
+        OnLevelGenerated();
     }
 }
