@@ -30,7 +30,7 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     {
         if (noActivationChance > Random.Range(0, 99))
         {
-            print(Random.Range(0, 99));
+            // print(Random.Range(0, 99));
             Destroy(temporaryPiece); // Destroy the piece used for creation
             Destroy(this);
             return;

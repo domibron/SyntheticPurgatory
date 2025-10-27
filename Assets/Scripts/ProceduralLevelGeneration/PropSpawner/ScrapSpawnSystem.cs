@@ -36,7 +36,7 @@ public class ScrapSpawnSystem : MonoBehaviour
                 if (levelData[x, y] <= 0) continue;
 
                 // spawn enemies.
-                SpawnRandomScrap(x, y, levelGenerator.LevelPieceCollection.UnitSizeInMeters);
+                SpawnRandomScrap(x, y, levelGenerator.GetUnitSizeInMeters());
             }
         }
     }
