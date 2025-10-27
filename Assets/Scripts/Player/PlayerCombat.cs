@@ -260,7 +260,7 @@ public class PlayerCombat : MonoBehaviour
                 // print(c.gameObject.name);
                 if (c.gameObject.CompareTag(Constants.PlayerTag)) continue; // if player, go away.
 
-                c.transform.GetComponent<Health>()?.AddToHealth(-meleeDamage); // deal damage.
+                c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, c.transform.position); // deal damage.
             }
         }
 

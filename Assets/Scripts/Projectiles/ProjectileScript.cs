@@ -5,16 +5,16 @@ using UnityEngine;
 
 public class ProjectileScript : MonoBehaviour
 {
-    public FloatingTextSystem floatingTextSystem;
+    // public FloatingTextSystem floatingTextSystem;
 
     /// <summary>
     /// Damage dealt to object when projectile makes contact
     /// </summary>
     public float ProjectileDamage = 12;
 
-    public TMP_ColorGradient weakSpotGradient;
-    public TMP_ColorGradient normalGradient;
-    public TMP_ColorGradient strongSpotGradient;
+    // public TMP_ColorGradient weakSpotGradient;
+    // public TMP_ColorGradient normalGradient;
+    // public TMP_ColorGradient strongSpotGradient;
 
     private bool hasHit;
 
@@ -27,54 +27,55 @@ public class ProjectileScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (hasHit) { return; }
+        if (hasHit) return;
 
         if (collider.isTrigger)
         {
 
-            EnemyDamageArea damageArea;
-            if (damageArea = collider.gameObject.GetComponent<EnemyDamageArea>()) // Damage object if it has the enemy damage area script attached
+            IDamageable damageArea = collider.gameObject.GetComponent<IDamageable>();
+            if (damageArea != null) // Damage object if it has the enemy damage area script attached
             {
                 hasHit = true;
 
-                damageArea.TakeDamage(-ProjectileDamage);
+                damageArea.TakeDamage(-ProjectileDamage, transform.position);
 
-                float dmgMult = damageArea.GetMultiplier();
-                SpawnFloatingText(dmgMult);
+                // float dmgMult = damageArea.GetMultiplier();
+                // SpawnFloatingText(dmgMult);
 
                 Destroy(gameObject);
             }
-            else { return; }
+            else return;
 
         }
 
-        Health healthscript;
-        if (healthscript = collider.gameObject.GetComponent<Health>()) // Damage object if it has the health script attached
-        {
-            healthscript.AddToHealth(-ProjectileDamage);
-            SpawnFloatingText(1);
-        }
+        // IDamageable healthscript;
+        // if (healthscript = collider.gameObject.GetComponent<IDamageable>()) // Damage object if it has the health script attached
+        // {
+
+        collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(-ProjectileDamage, transform.position);
+        // SpawnFloatingText(1);
+        // }
 
         Destroy(gameObject);
 
     }
 
 
-    public void SpawnFloatingText(float damageMult)
-    {
-        TMP_ColorGradient gradient = normalGradient;
+    // public void SpawnFloatingText(float damageMult)
+    // {
+    //     TMP_ColorGradient gradient = normalGradient;
 
-        if (damageMult > 1.3f)
-        {
-            gradient = weakSpotGradient;
-        }
-        else if (damageMult < 0.7f)
-        {
-            gradient = strongSpotGradient;
-        }
+    //     if (damageMult > 1.3f)
+    //     {
+    //         gradient = weakSpotGradient;
+    //     }
+    //     else if (damageMult < 0.7f)
+    //     {
+    //         gradient = strongSpotGradient;
+    //     }
 
-        floatingTextSystem.SpawnText((damageMult * ProjectileDamage).ToString("F0"), gradient, 4, -10);
-    }
+    //     floatingTextSystem.SpawnText((damageMult * ProjectileDamage).ToString("F0"), gradient, 4, -10);
+    // }
 
 
     public void DestroyObject()
