@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7855819560866804403}
   - component: {fileID: 5543712688136995297}
   - component: {fileID: 534791663556776753}
-  - component: {fileID: 7748192436099330323}
   m_Layer: 10
   m_Name: P_PlayerRangedProjectile
   m_TagString: Untagged
@@ -150,25 +149,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c318bd3209c723c42ac780d9424d82d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatingTextSystem: {fileID: 7748192436099330323}
   ProjectileDamage: 12
-  weakSpotGradient: {fileID: 11400000, guid: 74b5e3b0f0555ef49ae0e934cb81b437, type: 2}
-  normalGradient: {fileID: 11400000, guid: ef37bb2794c2d924c8bd58e30ffef81f, type: 2}
-  strongSpotGradient: {fileID: 11400000, guid: d74d743ea7a64984c8a28e04389b7c67, type: 2}
---- !u!114 &7748192436099330323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360570209722618760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60080a26aeea06947bcf521ea61149f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  magicNumberPrefab: {fileID: 7122786255667809930, guid: 5a049595a9d51de41a0ff67badff996b, type: 3}
-  MinDistance: 0
-  MaxDistance: 0
-  MaxRotationOffsetHorizontal: 0
-  MaxRotationOffsetVertical: 0

@@ -5,17 +5,12 @@ using UnityEngine;
 
 public class ProjectileScript : MonoBehaviour
 {
-    // public FloatingTextSystem floatingTextSystem;
-
     /// <summary>
     /// Damage dealt to object when projectile makes contact
     /// </summary>
+    [HideInInspector]
     public float ProjectileDamage = 12;
-
-    // public TMP_ColorGradient weakSpotGradient;
-    // public TMP_ColorGradient normalGradient;
-    // public TMP_ColorGradient strongSpotGradient;
-
+     
     private bool hasHit;
 
     private float lifeTime = 5;
@@ -39,44 +34,19 @@ public class ProjectileScript : MonoBehaviour
 
                 damageArea.TakeDamage(-ProjectileDamage, transform.position);
 
-                // float dmgMult = damageArea.GetMultiplier();
-                // SpawnFloatingText(dmgMult);
-
                 Destroy(gameObject);
+
+                return;
             }
             else return;
 
         }
 
-        // IDamageable healthscript;
-        // if (healthscript = collider.gameObject.GetComponent<IDamageable>()) // Damage object if it has the health script attached
-        // {
-
         collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(-ProjectileDamage, transform.position);
-        // SpawnFloatingText(1);
-        // }
 
         Destroy(gameObject);
 
     }
-
-
-    // public void SpawnFloatingText(float damageMult)
-    // {
-    //     TMP_ColorGradient gradient = normalGradient;
-
-    //     if (damageMult > 1.3f)
-    //     {
-    //         gradient = weakSpotGradient;
-    //     }
-    //     else if (damageMult < 0.7f)
-    //     {
-    //         gradient = strongSpotGradient;
-    //     }
-
-    //     floatingTextSystem.SpawnText((damageMult * ProjectileDamage).ToString("F0"), gradient, 4, -10);
-    // }
-
 
     public void DestroyObject()
     {

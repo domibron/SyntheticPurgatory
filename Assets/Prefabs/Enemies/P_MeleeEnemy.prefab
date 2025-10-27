@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 8936433327460139543}
   - component: {fileID: 5636499128882319368}
   - component: {fileID: 1999171437524782030}
+  - component: {fileID: 6837888478889072226}
   - component: {fileID: 2494591856015755940}
   m_Layer: 9
   m_Name: P_MeleeEnemy
@@ -226,6 +227,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6837888478889072226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756158581593521815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60080a26aeea06947bcf521ea61149f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magicNumberPrefab: {fileID: 7122786255667809930, guid: 5a049595a9d51de41a0ff67badff996b, type: 3}
+  MinDistance: 0
+  MaxDistance: 0
+  MaxRotationOffsetHorizontal: 0
+  MaxRotationOffsetVertical: 0
 --- !u!114 &2494591856015755940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,7 +266,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2193735456019928021}
   - component: {fileID: 3308718678499402373}
-  - component: {fileID: 6079936752137970682}
+  - component: {fileID: 683648185817587228}
   m_Layer: 9
   m_Name: CoreWeakspot
   m_TagString: Untagged
@@ -292,7 +310,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.45021176, y: 0.39704347, z: 0.23404217}
   m_Center: {x: 0.043947607, y: 0.06510365, z: 0.14900923}
---- !u!114 &6079936752137970682
+--- !u!114 &683648185817587228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -301,11 +319,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2324691687616851649}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 2
+  hitPointType: 2
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &6074150130508648669
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,7 +336,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7452134321183702449}
   - component: {fileID: 1251447294082906336}
-  - component: {fileID: 5178107333703250768}
+  - component: {fileID: 3456885026050054942}
   m_Layer: 9
   m_Name: EyeWeakspot
   m_TagString: Untagged
@@ -360,7 +380,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2620147, y: 0.22344875, z: 0.22541237}
   m_Center: {x: 0.052158207, y: 0.044962406, z: 0.07903576}
---- !u!114 &5178107333703250768
+--- !u!114 &3456885026050054942
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -369,11 +389,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6074150130508648669}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 1.4
+  hitPointType: 2
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1001 &323821662755237281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -530,7 +552,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4323694759102204623, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8613063925490047036}
+      addedObject: {fileID: 1426016865519399170}
     - targetCorrespondingSourceObject: {fileID: 4323694759102204623, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1916992700265893436}
@@ -551,61 +573,61 @@ PrefabInstance:
       addedObject: {fileID: 5410588269120240779}
     - targetCorrespondingSourceObject: {fileID: 1065713951867596109, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7827790342259732223}
+      addedObject: {fileID: 8846606097926150216}
     - targetCorrespondingSourceObject: {fileID: 3342401126887172678, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9213929386863439524}
     - targetCorrespondingSourceObject: {fileID: 3342401126887172678, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6579156427457849396}
+      addedObject: {fileID: 2812979811151561379}
     - targetCorrespondingSourceObject: {fileID: 2016496260675636747, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3717429064024749820}
     - targetCorrespondingSourceObject: {fileID: 2016496260675636747, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5597376268981445768}
+      addedObject: {fileID: 7560618279761116440}
     - targetCorrespondingSourceObject: {fileID: 5449298832005160835, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5906317112457093218}
     - targetCorrespondingSourceObject: {fileID: 5449298832005160835, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3682198328847558157}
+      addedObject: {fileID: 2952379784615843056}
     - targetCorrespondingSourceObject: {fileID: 2550693731822873781, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4666477313702198803}
     - targetCorrespondingSourceObject: {fileID: 2550693731822873781, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6320428474694060074}
+      addedObject: {fileID: 5392785909207891314}
     - targetCorrespondingSourceObject: {fileID: 1597688541728827278, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 571663896731719966}
     - targetCorrespondingSourceObject: {fileID: 1597688541728827278, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6575348485963156488}
+      addedObject: {fileID: 5103695953524643315}
     - targetCorrespondingSourceObject: {fileID: 3415164727965216468, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7994563953849577787}
     - targetCorrespondingSourceObject: {fileID: 3415164727965216468, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6156928070507909175}
+      addedObject: {fileID: 955975550141548627}
     - targetCorrespondingSourceObject: {fileID: 4991693116120542250, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8207073418787118180}
     - targetCorrespondingSourceObject: {fileID: 4991693116120542250, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7780881064409822182}
+      addedObject: {fileID: 8209179946569555625}
     - targetCorrespondingSourceObject: {fileID: 8474320052524101509, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1549130432654040918}
     - targetCorrespondingSourceObject: {fileID: 8474320052524101509, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8923974310813923713}
+      addedObject: {fileID: 3450179694282112345}
     - targetCorrespondingSourceObject: {fileID: 1677452378402051961, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5448054356318754292}
     - targetCorrespondingSourceObject: {fileID: 1677452378402051961, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7171007738605724554}
+      addedObject: {fileID: 6967020109472306474}
   m_SourcePrefab: {fileID: 100100000, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
 --- !u!1 &771346059277680876 stripped
 GameObject:
@@ -634,7 +656,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5689667270806088001, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &7827790342259732223
+--- !u!114 &8846606097926150216
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -643,11 +665,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 771346059277680876}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.65
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &1320209268203276847 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1597688541728827278, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -675,7 +699,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8417031080504203961, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &6575348485963156488
+--- !u!114 &5103695953524643315
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -684,11 +708,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1320209268203276847}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.65
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &1385402358566222552 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1677452378402051961, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -716,7 +742,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5956936243307637332, guid: 22304c80a97839d4b877480059f2554a, type: 3}
---- !u!114 &7171007738605724554
+--- !u!114 &6967020109472306474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -725,11 +751,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1385402358566222552}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 1
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &2270512111755174826 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2016496260675636747, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -757,7 +785,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -54668793273895180, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &5597376268981445768
+--- !u!114 &7560618279761116440
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -766,11 +794,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2270512111755174826}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.5
+  hitPointType: 0
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &2818004843145462036 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2550693731822873781, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -798,7 +828,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5526452959655747121, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &6320428474694060074
+--- !u!114 &5392785909207891314
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -807,11 +837,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2818004843145462036}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.65
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &3034557584387573735 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3342401126887172678, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -839,7 +871,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -5551871489664505167, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &6579156427457849396
+--- !u!114 &2812979811151561379
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -848,11 +880,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3034557584387573735}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.65
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &3106190922846913397 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3415164727965216468, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -880,7 +914,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -1965031794509487780, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &6156928070507909175
+--- !u!114 &955975550141548627
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -889,11 +923,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3106190922846913397}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.5
+  hitPointType: 0
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!4 &3689991547285880276 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3984289106362437749, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -904,7 +940,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4323694759102204623, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
   m_PrefabInstance: {fileID: 323821662755237281}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8613063925490047036
+--- !u!114 &1426016865519399170
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -913,11 +949,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4070879608878884718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.6
+  hitPointType: 0
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!65 &1916992700265893436
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1050,7 +1088,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -3921453099669388315, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &7780881064409822182
+--- !u!114 &8209179946569555625
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1059,11 +1097,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4699642993206526347}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.5
+  hitPointType: 0
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &5756091241486119458 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5449298832005160835, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -1091,7 +1131,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7623492245770707265, guid: f629212068eab1743b90cf2407a305a6, type: 3}
---- !u!114 &3682198328847558157
+--- !u!114 &2952379784615843056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1100,11 +1140,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5756091241486119458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 0.5
+  hitPointType: 0
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &8206868204517130788 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8474320052524101509, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -1132,7 +1174,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5956936243307637332, guid: 22304c80a97839d4b877480059f2554a, type: 3}
---- !u!114 &8923974310813923713
+--- !u!114 &3450179694282112345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1141,8 +1183,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8206868204517130788}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 285313f44c050dd47949344184b78837, type: 3}
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthScript: {fileID: 1536644213997405182}
-  damageMultiplier: 1
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}

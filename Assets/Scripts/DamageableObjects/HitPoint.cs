@@ -8,21 +8,19 @@ public class HitPoint : MonoBehaviour, IDamageable
     [SerializeField]
     private HitPointsDataSO hitPointsData;
 
+    [SerializeField]
     private FloatingTextSystem floatingTextSystem;
 
+    [SerializeField]
     private Health health;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        health = GetComponent<Health>();
-        floatingTextSystem = health.GetComponent<FloatingTextSystem>();
-    }
 
     void IDamageable.TakeDamage(float damage, Vector3 hitPosition)
     {
-        health.AddToHealth(-Mathf.Abs(damage));
+        float totalDamage = damage * hitPointsData.GetMultiplier(hitPointType);
 
-        floatingTextSystem.SpawnText(damage.ToString(), hitPointsData.GetGradient(hitPointType), targetSpawnPoint: hitPosition);
+        health.AddToHealth(-Mathf.Abs(totalDamage));
+
+        floatingTextSystem.SpawnText(Mathf.Abs(totalDamage).ToString("F0"), hitPointsData.GetGradient(hitPointType, false), 3, -10, hitPosition);
     }
 }
