@@ -72,15 +72,15 @@ public class DoorGenerator : SequenceBase
         // levelGenerator.onLevelGenerationComplete += OnLevelGenerated;
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            int roomID = levelGenerator.GetRoomIDFromCoordinates(levelGenerator.GetGridCoordinates(PlayerRefFetcher.Instance.transform.position));
+    // void Update()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.E))
+    //     {
+    //         int roomID = levelGenerator.GetRoomIDFromCoordinates(levelGenerator.GetGridCoordinates(PlayerRefFetcher.Instance.transform.position));
 
-            ToggleDoors(roomID);
-        }
-    }
+    //         ToggleDoors(roomID);
+    //     }
+    // }
 
     private void OnLevelGenerated()
     {
