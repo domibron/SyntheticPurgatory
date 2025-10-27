@@ -39,7 +39,7 @@ public class RoomCulling : MonoBehaviour
             boxCollider.enabled = false;
     }
 
-    IEnumerator Start() // TODO, jank fix, will replace with proper que system. aka event hook.
+    void Start() // TODO, jank fix, will replace with proper que system. aka event hook.
     {
         // while (PlayerRefFetcher.Instance == null)
         // {
@@ -54,8 +54,14 @@ public class RoomCulling : MonoBehaviour
 
         // TODO: remove meshes that can move.
 
-        yield return new WaitForSeconds(1);
+        // yield return new WaitForSeconds(1);
 
+        // SetUpRoomCulling();
+
+    }
+
+    public void SetupRoomCulling()
+    {
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
 
         foreach (MeshRenderer renderer in renderers)
@@ -87,7 +93,6 @@ public class RoomCulling : MonoBehaviour
         }
 
         isReady = true;
-
     }
 
     // void Update()

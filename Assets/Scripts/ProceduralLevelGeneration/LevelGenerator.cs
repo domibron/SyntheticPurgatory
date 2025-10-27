@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 
 
-public class LevelGenerator : MonoBehaviour
+public class LevelGenerator : SequenceBase
 {
     public int Seed = -1;
 
@@ -46,9 +46,11 @@ public class LevelGenerator : MonoBehaviour
     List<RoomPiece> allExitRooms = new List<RoomPiece>();
     List<RoomPiece> startRooms = new List<RoomPiece>();
 
+    // [Obsolete("Using sequences")]
     public event Action onLevelGenerationComplete;
     public event Action onLevelGenerationStart;
     public event Action onLevelGenerationDestroy;
+    public override event Action OnThisSequenceEnd;
 
     private Vector3 playerSpawnLocation;
 
@@ -71,7 +73,7 @@ public class LevelGenerator : MonoBehaviour
     void Start()
     {
 
-        roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
+        // roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
 
     }
 
@@ -142,6 +144,7 @@ public class LevelGenerator : MonoBehaviour
             print(GetGridAsString());
             print(seed.ToString());
             print("Done generating");
+            OnThisSequenceEnd?.Invoke();
             onLevelGenerationComplete?.Invoke();
         }
     }
@@ -923,4 +926,8 @@ public class LevelGenerator : MonoBehaviour
         return levelPieceCollection.UnitSizeInMeters;
     }
 
+    public override void StartSequence()
+    {
+        roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
+    }
 }

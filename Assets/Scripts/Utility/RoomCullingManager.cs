@@ -16,29 +16,44 @@ public class RoomCullingManager : MonoBehaviour
 
     Vector2Int lastCoordinates = new Vector2Int();
 
-
+    void Awake()
+    {
+        GetComponent<Sequencer>().OnSequencesEnd += SetUpCullingManager;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    IEnumerator Start()
+    void Start()
     {
         // yield return null;
 
         // levelGenerator.GetComponent<LevelGenerator>(); // TODO: figure out why this if fucked up.
 
 
-        while (PlayerRefFetcher.Instance == null)
-        {
-            yield return null;
-        }
+        // while (PlayerRefFetcher.Instance == null)
+        // {
+        //     yield return null;
+        // }
 
+        // player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
+
+        // UnloadAllRooms();
+
+        // Vector2Int currentRoomCoordinates = levelGenerator.GetGridCoordinates(player.position);
+        // lastCoordinates = currentRoomCoordinates;
+        // UpdateRoomCulling(currentRoomCoordinates);
+
+
+    }
+
+    private void SetUpCullingManager()
+    {
         player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
-
+        SetupAllRooms();
         UnloadAllRooms();
 
         Vector2Int currentRoomCoordinates = levelGenerator.GetGridCoordinates(player.position);
         lastCoordinates = currentRoomCoordinates;
         UpdateRoomCulling(currentRoomCoordinates);
-
     }
 
 
@@ -57,6 +72,16 @@ public class RoomCullingManager : MonoBehaviour
 
         UpdateRoomCulling(currentRoomCoordinates);
 
+    }
+
+    void SetupAllRooms()
+    {
+        List<SpawnedLevelRoomData> spawnedLevelRoomDatas = levelGenerator.GetAllSpawnedRoomData();
+        // print("list " + spawnedLevelRoomDatas.Count + "");
+        foreach (SpawnedLevelRoomData spawnedLevelRoom in spawnedLevelRoomDatas)
+        {
+            spawnedLevelRoom.GetRoomObject().GetComponent<RoomCulling>().SetupRoomCulling();
+        }
     }
 
     void UnloadAllRooms()

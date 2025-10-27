@@ -3,7 +3,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SpawnEnemies : MonoBehaviour
+public class SpawnEnemies : SequenceBase
 {
     NavMeshBaker navMeshBaker;
 
@@ -16,6 +16,8 @@ public class SpawnEnemies : MonoBehaviour
 
     NavMeshSurface navMeshSurface;
 
+    public override event Action OnThisSequenceEnd;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,7 +27,7 @@ public class SpawnEnemies : MonoBehaviour
 
         navMeshSurface = GetComponent<NavMeshSurface>();
 
-        navMeshBaker.onNavMeshSurfaceGenerated += OnNavMeshSurfaceGenerated;
+        // navMeshBaker.onNavMeshSurfaceGenerated += OnNavMeshSurfaceGenerated;
     }
 
     private void OnNavMeshSurfaceGenerated()
@@ -43,6 +45,8 @@ public class SpawnEnemies : MonoBehaviour
                 SpawnEnemiesForGrid(x, y, levelGenerator.GetUnitSizeInMeters());
             }
         }
+
+        OnThisSequenceEnd?.Invoke();
     }
 
     private void SpawnEnemiesForGrid(int x, int y, float gridSizeUnit)
@@ -61,5 +65,10 @@ public class SpawnEnemies : MonoBehaviour
 
             Instantiate(prefab, hit.position + Vector3.up, Quaternion.identity);
         }
+    }
+
+    public override void StartSequence()
+    {
+        OnNavMeshSurfaceGenerated();
     }
 }

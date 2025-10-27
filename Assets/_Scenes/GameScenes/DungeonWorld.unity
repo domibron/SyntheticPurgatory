@@ -185,17 +185,18 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 842285757}
+  - component: {fileID: 842285772}
   - component: {fileID: 842285758}
   - component: {fileID: 842285762}
+  - component: {fileID: 842285771}
   - component: {fileID: 842285764}
   - component: {fileID: 842285761}
   - component: {fileID: 842285768}
-  - component: {fileID: 842285769}
-  - component: {fileID: 842285770}
-  - component: {fileID: 842285771}
   - component: {fileID: 842285759}
   - component: {fileID: 842285766}
   - component: {fileID: 842285765}
+  - component: {fileID: 842285769}
+  - component: {fileID: 842285770}
   m_Layer: 0
   m_Name: Level Generator
   m_TagString: Untagged
@@ -425,6 +426,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DoorPrefab: {fileID: 419019982291685868, guid: 524ec586569740348a0d803a7f99671c, type: 3}
+--- !u!114 &842285772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b432f5d3bfcc7640b131b4fe8ae4b1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sequences:
+  - {fileID: 842285758}
+  - {fileID: 842285762}
+  - {fileID: 842285771}
+  - {fileID: 842285764}
+  - {fileID: 842285761}
 --- !u!1 &1801643276
 GameObject:
   m_ObjectHideFlags: 0
