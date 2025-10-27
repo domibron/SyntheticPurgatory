@@ -15,10 +15,24 @@ public class ScrapDeposit : MonoBehaviour
 
     private Transform playerTransform;
 
+    private float depositRate = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            CollectableStats collectableStats = GameStatsManager.Instance.GetStats<CollectableStats>(Stats.collectable);
 
+            if (collectableStats == null)
+            {
+                Debug.LogError("Collectable stats are null?!", this);
+                // maxInventoryScrap = new CollectableStats().MaxInventoryScrap;
+                collectableStats = new();
+            }
+
+            depositRate = collectableStats.DepositRate;
+        }
     }
 
     // Update is called once per frame
@@ -58,7 +72,7 @@ public class ScrapDeposit : MonoBehaviour
             scrapObject.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
 
             // start the delay timer.
-            currentDelay = ScrapManager.Instance.DepositRate;
+            currentDelay = depositRate;
         }
     }
 

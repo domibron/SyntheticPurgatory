@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382f52e2574c1dd45bd6e76e945803d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxLives: 3
 --- !u!114 &7383289994067013109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,9 +59,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats:
-  - Key: player
+  - Key: 0
     ScriptableObject: {fileID: 11400000, guid: 91e266c7eeadaef4bab3f5cad1ffdbe4, type: 2}
-  - Key: melee
+  - Key: 1
     ScriptableObject: {fileID: 11400000, guid: b543644531b1734498d30aa4e06876f4, type: 2}
-  - Key: ranged
+  - Key: 2
     ScriptableObject: {fileID: 11400000, guid: ac57a9d5f7545084aa3ec0e00cd4e75c, type: 2}
+  - Key: 5
+    ScriptableObject: {fileID: 11400000, guid: 1124548518d24a74f936724845d29329, type: 2}

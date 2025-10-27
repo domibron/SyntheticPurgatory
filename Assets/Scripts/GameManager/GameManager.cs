@@ -4,8 +4,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 
-    public static GameManager Instance { get => instance; }
-    private static GameManager instance;
+    public static GameManager Instance { get; private set; }
 
     private int depositedScrap = 0;
 
@@ -13,17 +12,26 @@ public class GameManager : MonoBehaviour
 
     private float currentTime = 1f;
     private bool inDungeon = false;
+    private int commonCards = 0;
+    private int rareCards = 0;
+    private int epicCards = 0;
+
+    [SerializeField]
+    private int maxLives = 3;
+
+    private int currentLives = 1;
 
     void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
         }
         else
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(this);
+            currentLives = maxLives;
         }
     }
 
@@ -70,10 +78,21 @@ public class GameManager : MonoBehaviour
         if (playerDied)
         {
             // remove from lives.
+            currentLives--; // you fucked up, get destroyed.
+            if (currentLives <= 0)
+            {
+                // End run
+                EndRun();
+            }
         }
         else
         {
-            ScrapManager.Instance.AddDepositedScrapToGameManager();
+            AddToDepositedScrap(ScrapManager.Instance.GetAllDepositedScrap());
+
+            // so bad, but fuck it.
+            commonCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Common);
+            rareCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Rare);
+            epicCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Epic);
         }
         ResetTimer();
         LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
@@ -83,4 +102,50 @@ public class GameManager : MonoBehaviour
     {
         return currentTime;
     }
+    public void EndRun()
+    {
+
+    }
+
+    public int GetCardCount(CardTeir cardTeir)
+    {
+        switch (cardTeir)
+        {
+            case CardTeir.Common:
+                return commonCards;
+            case CardTeir.Rare:
+                return rareCards;
+            case CardTeir.Epic:
+                return epicCards;
+            default:
+                return 0;
+        }
+    }
+
+    public void RemoveFrom(CardTeir cardTeir, int amountToTake)
+    {
+        switch (cardTeir)
+        {
+            case CardTeir.Common:
+                commonCards -= amountToTake;
+                break;
+            case CardTeir.Rare:
+                rareCards -= amountToTake;
+                break;
+            case CardTeir.Epic:
+                epicCards -= amountToTake;
+                break;
+        }
+    }
+
+    public int GetCurrentLives()
+    {
+        return currentLives;
+    }
+
+    public int GetMaxLives()
+    {
+        return maxLives;
+    }
+
 }

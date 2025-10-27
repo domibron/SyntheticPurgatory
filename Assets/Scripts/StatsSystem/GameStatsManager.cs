@@ -6,7 +6,7 @@ using UnityEngine;
 public class StatData
 {
     [Tooltip("This will be auto turned into lowercase and make sure only one item exsists with this key.")]
-    public string Key;
+    public Stats Key;
     public StatsCoreSO ScriptableObject;
 }
 
@@ -17,6 +17,7 @@ public enum Stats
     ranged,
     tank,
     boss,
+    collectable,
 }
 
 public class GameStatsManager : MonoBehaviour
@@ -47,24 +48,26 @@ public class GameStatsManager : MonoBehaviour
     {
         statClasses = new Dictionary<Stats, object>();
 
-        foreach (var e in Enum.GetNames(typeof(Stats)))
+        foreach (var e in Enum.GetValues(typeof(Stats)))
         {
-            StatData statData = GetStatDataWithKey(e.ToLower());
+            Stats statsKey = (Stats)e;
+
+            StatData statData = GetStatDataWithKey(statsKey);
 
             if (statData == null)
             {
-                Debug.LogError("Error trying to get stats with key: " + e.ToLower());
+                Debug.LogError("Error trying to get stats with key: " + statsKey);
                 continue;
             }
 
-            Type t = GetStatClassType((Stats)Enum.Parse(typeof(Stats), e));
+            Type t = GetStatClassType(statsKey);
 
             statData.ScriptableObject.GetType();
 
 
             object value = Convert.ChangeType(statData.ScriptableObject.GetStats(), t);
 
-            statClasses.Add((Stats)Enum.Parse(typeof(Stats), e), value);
+            statClasses.Add(statsKey, value);
         }
     }
 
@@ -126,7 +129,7 @@ public class GameStatsManager : MonoBehaviour
     /// <returns>The class type.</returns>
     private Type GetStatClassType(Stats key)
     {
-        StatData statData = GetStatDataWithKey(key.ToString().ToLower());
+        StatData statData = GetStatDataWithKey(key);
 
         if (statData == null)
         {
@@ -143,33 +146,6 @@ public class GameStatsManager : MonoBehaviour
     /// <param name="key">The key associated with the class.</param>
     /// <returns>The referance to the class with the key or null.</returns>
     private T GetStatClass<T>(Stats key) where T : class
-    {
-        StatData statData = GetStatDataWithKey(key.ToString().ToLower());
-
-        if (statData == null)
-        {
-            return null;
-        }
-
-        Type clasType = statData.ScriptableObject.GetType();
-
-        if (clasType != typeof(T))
-        {
-            return null;
-        }
-
-        object value = statData.ScriptableObject;
-
-        return (T)Convert.ChangeType(value, typeof(T));
-    }
-
-    /// <summary>
-    /// Get the referance to the data class. (This is a optional method, use the Stats enum ideally)
-    /// </summary>
-    /// <typeparam name="T">The stats class.</typeparam>
-    /// <param name="key">The key associated with the class. (Will turn into lowercase)</param>
-    /// <returns>The referance to the class with the key or null.</returns>
-    private T GetStatClass<T>(string key) where T : class
     {
         StatData statData = GetStatDataWithKey(key);
 
@@ -190,16 +166,43 @@ public class GameStatsManager : MonoBehaviour
         return (T)Convert.ChangeType(value, typeof(T));
     }
 
+    // /// <summary>
+    // /// Get the referance to the data class. (This is a optional method, use the Stats enum ideally)
+    // /// </summary>
+    // /// <typeparam name="T">The stats class.</typeparam>
+    // /// <param name="key">The key associated with the class. (Will turn into lowercase)</param>
+    // /// <returns>The referance to the class with the key or null.</returns>
+    // private T GetStatClass<T>(strSting key) where T : class
+    // {
+    //     StatData statData = GetStatDataWithKey(key);
+
+    //     if (statData == null)
+    //     {
+    //         return null;
+    //     }
+
+    //     Type clasType = statData.ScriptableObject.GetType();
+
+    //     if (clasType != typeof(T))
+    //     {
+    //         return null;
+    //     }
+
+    //     object value = statData.ScriptableObject;
+
+    //     return (T)Convert.ChangeType(value, typeof(T));
+    // }
+
     /// <summary>
     /// Gets the stats data with the given key or null.
     /// </summary>
     /// <param name="key">This will turn the key into lower case.</param>
     /// <returns>The StatData or Null.</returns>
-    private StatData GetStatDataWithKey(string key)
+    private StatData GetStatDataWithKey(Stats key)
     {
         foreach (var stat in baseStats)
         {
-            if (stat.Key.ToLower().Equals(key.ToLower()))
+            if (stat.Key == key)
             {
                 return stat;
             }
