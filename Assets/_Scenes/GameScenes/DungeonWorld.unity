@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.81960785, g: 0.62352943, b: 0.42352942, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.025
@@ -94,7 +94,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: dd1c063c22c2f634b85f31302c575fca, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -192,6 +192,7 @@ GameObject:
   - component: {fileID: 842285768}
   - component: {fileID: 842285769}
   - component: {fileID: 842285770}
+  - component: {fileID: 842285771}
   - component: {fileID: 842285759}
   - component: {fileID: 842285766}
   - component: {fileID: 842285765}
@@ -234,7 +235,7 @@ MonoBehaviour:
   MinimumRegularRoomCount: 3
   XSize: 12
   YSize: 12
-  LevelPieceCollection: {fileID: 11400000, guid: 3396062d17b77b048a36e29113aecb89, type: 2}
+  levelPieceCollection: {fileID: 11400000, guid: 3396062d17b77b048a36e29113aecb89, type: 2}
 --- !u!114 &842285759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,7 +382,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 842285756}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50899a524bcb97c48869588c963bb548, type: 3}
   m_Name: 
@@ -411,6 +412,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed9ca870a6c7ac45b4e8b5c29befa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &842285771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f570e19ee525c3498ae035841204c8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DoorPrefab: {fileID: 419019982291685868, guid: 524ec586569740348a0d803a7f99671c, type: 3}
 --- !u!1 &1801643276
 GameObject:
   m_ObjectHideFlags: 0

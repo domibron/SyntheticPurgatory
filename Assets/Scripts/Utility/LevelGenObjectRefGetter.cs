@@ -18,6 +18,6 @@ public class LevelGenObjectRefGetter : MonoBehaviour
 
     public GameObject GetReference()
     {
-        return this.gameObject;
+        return gameObject;
     }
 }

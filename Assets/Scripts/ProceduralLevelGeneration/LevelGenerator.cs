@@ -29,7 +29,8 @@ public class LevelGenerator : MonoBehaviour
     [Min(1)]
     public int YSize = 10;
 
-    public SO_LevelPieceCollection LevelPieceCollection;
+    [SerializeField]
+    private SO_LevelPieceCollection levelPieceCollection;
 
     private int[,] levelGrid = new int[10, 10];
 
@@ -155,15 +156,15 @@ public class LevelGenerator : MonoBehaviour
         allExitRooms.Clear();
         startRooms.Clear();
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.RegularRooms, ref allRepeatableRooms, LevelPieceCollection.UnitSizeInMeters);
-        AddAllRotatableRoomsToList(LevelPieceCollection.Corridors, ref allRepeatableRooms, LevelPieceCollection.UnitSizeInMeters);
+        AddAllRotatableRoomsToList(levelPieceCollection.RegularRooms, ref allRepeatableRooms, levelPieceCollection.UnitSizeInMeters);
+        AddAllRotatableRoomsToList(levelPieceCollection.Corridors, ref allRepeatableRooms, levelPieceCollection.UnitSizeInMeters);
 
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.EndCapRooms, ref allEndCaps, LevelPieceCollection.UnitSizeInMeters);
+        AddAllRotatableRoomsToList(levelPieceCollection.EndCapRooms, ref allEndCaps, levelPieceCollection.UnitSizeInMeters);
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.ExitRooms, ref allExitRooms, LevelPieceCollection.UnitSizeInMeters);
+        AddAllRotatableRoomsToList(levelPieceCollection.ExitRooms, ref allExitRooms, levelPieceCollection.UnitSizeInMeters);
 
-        AddAllRotatableRoomsToList(LevelPieceCollection.StartRooms, ref startRooms, LevelPieceCollection.UnitSizeInMeters); // we add to start rooms list
+        AddAllRotatableRoomsToList(levelPieceCollection.StartRooms, ref startRooms, levelPieceCollection.UnitSizeInMeters); // we add to start rooms list
     }
 
     /// <summary>
@@ -886,7 +887,7 @@ public class LevelGenerator : MonoBehaviour
 
     public Vector2Int GetGridCoordinates(Vector3 worldCords)
     {
-        worldCords /= LevelPieceCollection.UnitSizeInMeters;
+        worldCords /= levelPieceCollection.UnitSizeInMeters;
 
         Vector2Int intPosition = new Vector2Int(Mathf.FloorToInt(worldCords.x), Mathf.FloorToInt(worldCords.z));
 
@@ -915,6 +916,11 @@ public class LevelGenerator : MonoBehaviour
     public List<SpawnedLevelRoomData> GetAllSpawnedRoomData()
     {
         return levelData.Values.ToList();
+    }
+
+    public float GetUnitSizeInMeters()
+    {
+        return levelPieceCollection.UnitSizeInMeters;
     }
 
 }

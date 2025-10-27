@@ -49,6 +49,6 @@ public class DeathCanvas : MonoBehaviour
     /// </summary>
     public void ReturnToHUB()
     {
-        GameManager.Instance.ReturnToHubWorld();
+        GameManager.Instance.ReturnToHubWorld(true);
     }
 }

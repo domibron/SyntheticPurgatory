@@ -40,7 +40,7 @@ public class SpawnEnemies : MonoBehaviour
                 if (levelData[x, y] <= 1) continue;
 
                 // spawn enemies.
-                SpawnEnemiesForGrid(x, y, levelGenerator.LevelPieceCollection.UnitSizeInMeters);
+                SpawnEnemiesForGrid(x, y, levelGenerator.GetUnitSizeInMeters());
             }
         }
     }
