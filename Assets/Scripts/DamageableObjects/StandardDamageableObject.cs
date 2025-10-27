@@ -1,7 +1,15 @@
+using System;
+using TMPro;
 using UnityEngine;
+
+
 
 public class StandardDamageableObject : MonoBehaviour, IDamageable
 {
+    // [SerializeField] HitPointsDataSO hitPointsData;
+
+    // [SerializeField] HitPointType type;
+
     private Health health;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -14,5 +22,7 @@ public class StandardDamageableObject : MonoBehaviour, IDamageable
     {
         // floating numbers pop up.
         health.AddToHealth(-Mathf.Abs(damage));
+
+        // print(hitPointsData.GetGradient(type));
     }
 }
