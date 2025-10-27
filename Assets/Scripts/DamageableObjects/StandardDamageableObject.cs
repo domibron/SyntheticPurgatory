@@ -6,10 +6,6 @@ using UnityEngine;
 
 public class StandardDamageableObject : MonoBehaviour, IDamageable
 {
-    // [SerializeField] HitPointsDataSO hitPointsData;
-
-    // [SerializeField] HitPointType type;
-
     private Health health;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

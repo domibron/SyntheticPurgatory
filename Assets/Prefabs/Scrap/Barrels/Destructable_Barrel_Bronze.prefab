@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 4858192178450015649}
   - component: {fileID: 4933814812532915132}
   - component: {fileID: 5481178908069593136}
+  - component: {fileID: 3646870973740918178}
+  - component: {fileID: 5718870035908852188}
   m_Layer: 0
   m_Name: Destructable_Barrel_Bronze
   m_TagString: Untagged
@@ -192,6 +194,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3646870973740918178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581709180727947209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 5718870035908852188}
+  health: {fileID: 8974925264865158891}
+--- !u!114 &5718870035908852188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581709180727947209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60080a26aeea06947bcf521ea61149f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magicNumberPrefab: {fileID: 7122786255667809930, guid: 5a049595a9d51de41a0ff67badff996b, type: 3}
+  MinDistance: 0
+  MaxDistance: 0
+  MaxRotationOffsetHorizontal: 0
+  MaxRotationOffsetVertical: 0
 --- !u!1001 &4549750765960618172
 PrefabInstance:
   m_ObjectHideFlags: 0

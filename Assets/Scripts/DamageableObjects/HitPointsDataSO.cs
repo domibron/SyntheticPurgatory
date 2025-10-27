@@ -6,7 +6,7 @@ public enum HitPointType
 {
     armor,
     normal,
-    crit,
+    weak,
 }
 
 [Serializable]
@@ -14,6 +14,8 @@ public class HitPointClass
 {
     public HitPointType key;
     public TMP_ColorGradient gradient;
+    public TMP_ColorGradient critGradient;
+    public float multiplier;
 }
 
 [CreateAssetMenu(fileName = "SO_HitPointsData", menuName = "ScriptableObjects/HitPoints/HitPointsData")]
@@ -22,17 +24,31 @@ public class HitPointsDataSO : ScriptableObject
     [SerializeField]
     HitPointClass[] data;
 
-    public TMP_ColorGradient GetGradient(HitPointType key)
+    public TMP_ColorGradient GetGradient(HitPointType key, bool critical)
     {
-        foreach (HitPointClass dum in data)
+        foreach (HitPointClass hitPointData in data)
         {
-            if (dum.key == key)
+            if (hitPointData.key == key)
             {
-                return dum.gradient;
+                return critical ? hitPointData.critGradient : hitPointData.gradient;
             }
         }
 
         return null;
     }
+
+    public float GetMultiplier(HitPointType key)
+    {
+        foreach (HitPointClass hitPointData in data)
+        {
+            if (hitPointData.key == key)
+            {
+                return hitPointData.multiplier;
+            }
+        }
+
+        return 1;
+    }
+
 
 }
