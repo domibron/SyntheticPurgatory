@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 // By Vince Pressey
 
-public class MeleeEnemyAI : MonoBehaviour
+public class MeleeEnemyAI : BaseEnemy
 {
     /// <summary>
     /// NavmeshAgent component of the enemy
@@ -21,10 +21,10 @@ public class MeleeEnemyAI : MonoBehaviour
     public bool Alerted = false;
 
     /// <summary>
-    /// Max speed for the enemy
+    /// Normal speed of the enemy
     /// </summary>
     [Header("Movement"), SerializeField]
-    private float baseSpeed = 3.5f;
+    public float baseSpeed;
     /// <summary>
     /// Reduction of speed when turning
     /// </summary>
@@ -40,9 +40,14 @@ public class MeleeEnemyAI : MonoBehaviour
     private Vector3 oldRotation;
 
     /// <summary>
-    /// Range of the Enemy
+    /// Damage dealt on attack
     /// </summary>
     [Header("Attacking"), SerializeField]
+    private float damage;
+    /// <summary>
+    /// Range of the Enemy
+    /// </summary>
+    [SerializeField]
     private float attackRange = 1.5f;
     /// <summary>
     /// Max angle for attack from centre
@@ -66,10 +71,22 @@ public class MeleeEnemyAI : MonoBehaviour
 
         goal = GameObject.FindWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
+
     }
 
     private void FixedUpdate()
     {
+        if (enemyKnockedBack)
+        {
+            return;
+        }
+        else if (enemyStunned)
+        {
+            agent.destination = transform.position;
+            return;
+        }
+
+
         if (!Alerted) { return; }
 
         MoveToTarget(); // Movement
@@ -166,7 +183,7 @@ public class MeleeEnemyAI : MonoBehaviour
         Health healthscript;
         if (healthscript = goal.gameObject.GetComponent<Health>()) // Attack object if it has the health script attached
         {
-            healthscript.AddToHealth(-8);
+            healthscript.AddToHealth(-damage);
         }
     }
 
