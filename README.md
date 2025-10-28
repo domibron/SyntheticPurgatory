@@ -1,5 +1,5 @@
 # Synthetic Purgatory
-no peaking, jk.
+no peeking, jk.
 
 [![Build project](https://github.com/domibron/SyntheticPurgatory/actions/workflows/main.yml/badge.svg)](https://github.com/domibron/SyntheticPurgatory/actions/workflows/main.yml)
 
