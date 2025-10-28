@@ -34,11 +34,11 @@ public class UpgradeItemUI : MonoBehaviour
 
     public void OnClick()
     {
-        bool res = upgradeSystem.UpgradeItem(upgradeKey, out string newValue);
+        // bool res = upgradeSystem.UpgradeItem(upgradeKey, out string newValue);
 
-        if (res)
-        {
-            ValueBox.text = "[" + newValue + "]";
-        }
+        // if (res)
+        // {
+        //     ValueBox.text = "[" + newValue + "]";
+        // }
     }
 }

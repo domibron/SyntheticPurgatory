@@ -15,6 +15,8 @@ public class CollectableStats : ICloneable
 
     public int MaxInventoryScrap = 100;
 
+    public int ScrapRangeUpgradeAmount = 0;
+
     public object Clone()
     {
         return new CollectableStats
@@ -26,6 +28,8 @@ public class CollectableStats : ICloneable
             FlyDistanceBoost = FlyDistanceBoost,
             DepositRate = DepositRate,
             MaxInventoryScrap = MaxInventoryScrap,
+
+            ScrapRangeUpgradeAmount = ScrapRangeUpgradeAmount,
         };
     }
 
