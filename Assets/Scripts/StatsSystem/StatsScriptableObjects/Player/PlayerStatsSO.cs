@@ -25,6 +25,16 @@ public class PlayerStats : ICloneable
     public float KickForce = 10f;
     public float KickAttackDelay = 0.5f;
 
+    public float MeleeReach = 1.5f;
+    public float MeleeStaggeTime = 0.4f;
+    public float RegenerationSpeed = 1f;
+    public float RegenerationAmount = 1f;
+
+    public int SpeedUpgradeAmount = 1;
+    public int BoostUpgradeAmount = 1;
+    public int MeleeStaggerUpgradeAmount = 1;
+    public int MeleeReachUpgradeAmount = 1;
+
     public object Clone()
     {
         return new PlayerStats
@@ -44,6 +54,17 @@ public class PlayerStats : ICloneable
             MeleeDamage = MeleeDamage,
             KickForce = KickForce,
             KickAttackDelay = KickAttackDelay,
+
+            MeleeReach = MeleeReach,
+            MeleeStaggeTime = MeleeStaggeTime,
+            RegenerationSpeed = RegenerationSpeed,
+            RegenerationAmount = RegenerationAmount,
+
+            SpeedUpgradeAmount = SpeedUpgradeAmount,
+            BoostUpgradeAmount = BoostUpgradeAmount,
+            MeleeStaggerUpgradeAmount = MeleeStaggerUpgradeAmount,
+            MeleeReachUpgradeAmount = MeleeReachUpgradeAmount,
+
         };
     }
 

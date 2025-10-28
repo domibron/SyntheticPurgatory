@@ -142,19 +142,19 @@ public class RoomCulling : MonoBehaviour
         }
     }
 
-    private void SetEntityCulling(bool isVusible = true)
+    private void SetEntityCulling(bool isVisible = true)
     {
-        StartCoroutine(SetEntityCullingRenderState(isVusible));
+        StartCoroutine(SetEntityCullingRenderState(isVisible));
     }
 
-    IEnumerator SetEntityCullingRenderState(bool isVusible)
+    IEnumerator SetEntityCullingRenderState(bool isVisible)
     {
         foreach (EntityCulling entity in entityCullings)
         {
             if (entity == null) continue; // TODO: should have enemies or what ever not be collected.
 
 
-            entity.TryOverrideMeshVisiblity(isVusible);
+            entity.TryOverrideMeshVisiblity(isVisible);
         }
         yield return null;
     }
