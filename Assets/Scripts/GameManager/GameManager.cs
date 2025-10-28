@@ -9,6 +9,11 @@ public class GameManager : MonoBehaviour
 
     private int depositedScrap = 0;
 
+    public float TimePerLevel = 120f;
+
+    private float currentTime = 1f;
+    private bool inDungeon = false;
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -19,6 +24,14 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(this);
+        }
+    }
+
+    void Update()
+    {
+        if (inDungeon && currentTime > 0)
+        {
+            currentTime -= Time.deltaTime;
         }
     }
 
@@ -37,6 +50,17 @@ public class GameManager : MonoBehaviour
         return depositedScrap;
     }
 
+    public void StartTimer()
+    {
+        currentTime = TimePerLevel;
+        inDungeon = true;
+    }
+
+    public void ResetTimer()
+    {
+        inDungeon = false;
+    }
+
     public void ReturnToHubWorld(bool playerDied = false)
     {
         // is player dead?
@@ -51,8 +75,12 @@ public class GameManager : MonoBehaviour
         {
             ScrapManager.Instance.AddDepositedScrapToGameManager();
         }
-
+        ResetTimer();
         LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
     }
 
+    public float GetCurrentTime()
+    {
+        return currentTime;
+    }
 }

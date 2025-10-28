@@ -309,6 +309,16 @@ public class PlayerCombat : MonoBehaviour
         // wantToReload = ReloadInput.IsPressed();
     }
 
+    public int GetCurrentAmmo()
+    {
+        return currentAmmoCount;
+    }
+
+    public int GetMaxAmmo()
+    {
+        return projectileMagSize;
+    }
+
     #region DisablePlayerCombat
     #endregion
     public void DisablePlayerCombat(bool state)
