@@ -22,12 +22,12 @@ public class DamageKickedObject : MonoBehaviour
     /// Damage multiplier for when this object hits a surface without Health
     /// </summary>
     [Header("Damage"), SerializeField]
-    private float normalDamageMult = 3;
+    private float normalDamageMult = 2;
     /// <summary>
     /// Damage multiplier if an object with Health is hit, damage is dealt to both this and the other object
     /// </summary>
     [SerializeField]
-    private float sharedDamageMult = 8;
+    private float sharedDamageMult = 4;
     /// <summary>
     /// Cap at remaining HP of this object
     /// </summary>

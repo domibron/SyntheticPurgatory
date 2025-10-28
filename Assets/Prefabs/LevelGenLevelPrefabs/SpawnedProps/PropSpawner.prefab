@@ -46,17 +46,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPrefabs:
-  - {fileID: 4865803303245911188, guid: 406fdba40685a51489806e1fbf807fbd, type: 3}
-  - {fileID: 1266293096268078276, guid: d35d17956d96254469bea105eca344fc, type: 3}
-  - {fileID: 5060705819352189468, guid: b9cdd405ff3faee479b1e4b166c75f5d, type: 3}
-  - {fileID: 1147848543089316645, guid: 21a7a944984c1b94c8c519523fadda1d, type: 3}
-  - {fileID: 1937459071135613075, guid: 0e56b0d67297ff441aca61a996e27275, type: 3}
+  - {fileID: 2266391435775418236, guid: cc109bb27e32eef44abaa3fc8e3e145c, type: 3}
+  - {fileID: 3876715948415306836, guid: f40292e2a38adfd4caa6f06bf5f83265, type: 3}
+  - {fileID: 5994922062642089233, guid: 4f30c2cd75eeebf489076fc1fc7ee537, type: 3}
+  - {fileID: 94773098888472909, guid: ded7cb59f0ca9c244805295214307dce, type: 3}
+  - {fileID: 1961011469843939610, guid: e872c905852d7164998352140c673e5d, type: 3}
+  - {fileID: 4618191868572389394, guid: 6d4552e5cd7a60743a79b9679fcb3fee, type: 3}
+  - {fileID: 2449225764471204836, guid: 5670891d4b1b28e4aade57233dbbd421, type: 3}
+  - {fileID: 4542166608731419950, guid: d18c7b4c38a56b64384111fe57b26fa3, type: 3}
   - {fileID: 5468071690246314464, guid: bf5c65182ce34fb49b0a5390c0c3df6f, type: 3}
-  - {fileID: 160524925877914711, guid: c5361e1b8d783c149b020840fc5bc40f, type: 3}
   - {fileID: 5670863879278281432, guid: 7a794f982704a7742a858e2d09daa57a, type: 3}
+  - {fileID: 1937459071135613075, guid: 0e56b0d67297ff441aca61a996e27275, type: 3}
+  - {fileID: 160524925877914711, guid: c5361e1b8d783c149b020840fc5bc40f, type: 3}
   - {fileID: 2509569133607136983, guid: c0bdc93229839f148b01e80965bb73b6, type: 3}
+  - {fileID: 9068406151467340813, guid: 942ca493b44d14846b5ba655d5af636c, type: 3}
+  - {fileID: 2885305624815107103, guid: 9372262863eb7444ab2a4e13e970d39a, type: 3}
+  - {fileID: 3760163095814209307, guid: 1c15a621066212c4fa8bfd168f014213, type: 3}
+  - {fileID: 8272910727294916042, guid: 267b0fa78f584e040807afca7c853277, type: 3}
+  - {fileID: 7735564952991153714, guid: 299fec45a676f2a439e853beb1bd19b6, type: 3}
+  - {fileID: 7279553748883222987, guid: 2a360b566749dc14fbf9c804f1b6fd39, type: 3}
+  - {fileID: 3603595304737826926, guid: ddf60c34350a22140ad626cdcf450937, type: 3}
+  - {fileID: 4197405261011773237, guid: a7bf191625a79334ca626586f2d1e751, type: 3}
+  - {fileID: 522199396281642414, guid: f82ac838678f8f444b43e5d789ab980b, type: 3}
+  - {fileID: 7294765556430017850, guid: 2af72137c7a92e0409adda551990ab07, type: 3}
+  - {fileID: 6959202898563410224, guid: e7b403f3208564b4ca9f796734d08166, type: 3}
+  - {fileID: 6959202898563410224, guid: a45bdb06745ed6c41a907e7f7352781e, type: 3}
+  - {fileID: 6959202898563410224, guid: a87d11dca8d72c74aa62a5f41b5b78d2, type: 3}
+  - {fileID: 6959202898563410224, guid: b2a9662af8799e64ab9cb9645b95066f, type: 3}
+  - {fileID: 8001872208520410365, guid: b496d153e05223f409ab1e13ff9ed1dc, type: 3}
+  - {fileID: 1266293096268078276, guid: d35d17956d96254469bea105eca344fc, type: 3}
+  - {fileID: 1147848543089316645, guid: 21a7a944984c1b94c8c519523fadda1d, type: 3}
+  - {fileID: 4865803303245911188, guid: 406fdba40685a51489806e1fbf807fbd, type: 3}
+  - {fileID: 5060705819352189468, guid: b9cdd405ff3faee479b1e4b166c75f5d, type: 3}
+  - {fileID: 1737371588215607323, guid: 8acb304c734b817478304d4db6f99159, type: 3}
   temporaryPiece: {fileID: 5474104644744655728}
   randomiseYRotation: 1
+  noActivationChance: 10
 --- !u!1 &5474104644744655728
 GameObject:
   m_ObjectHideFlags: 0
@@ -68,6 +93,7 @@ GameObject:
   - component: {fileID: 3480073402047638695}
   - component: {fileID: 6755260984484098919}
   - component: {fileID: 8988688113065432978}
+  - component: {fileID: 1816327515107038}
   m_Layer: 0
   m_Name: SpawnArea
   m_TagString: Untagged
@@ -143,3 +169,23 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1816327515107038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5474104644744655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7855819560866804403}
   - component: {fileID: 5543712688136995297}
   - component: {fileID: 6753891315997696996}
+  - component: {fileID: 3094357892841581854}
   m_Layer: 11
   m_Name: P_RangedProjectile
   m_TagString: Untagged
@@ -67,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4509fce15bf1de342998e9b4861392a5, type: 2}
+  - {fileID: 2100000, guid: 535e92f5e50a92840ae0f5dda1b6d28f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -149,8 +150,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c318bd3209c723c42ac780d9424d82d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatingTextSystem: {fileID: 0}
   ProjectileDamage: 12
-  weakSpotGradient: {fileID: 0}
-  normalGradient: {fileID: 0}
-  strongSpotGradient: {fileID: 0}
+--- !u!114 &3094357892841581854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360570209722618760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39cb960610c3c03489f54ebadb4f5b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeToWaitBeforeRemoving: 5
+  shouldEaseIn: 1
+  easeInTime: 0.25
+  easeOutTime: 1
