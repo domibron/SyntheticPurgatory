@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 // By Vince Pressey
 
-public class RangedEnemyAI : MonoBehaviour
+public class RangedEnemyAI : BaseEnemy
 {
     /// <summary>
     /// NavmeshAgent component of the enemy
@@ -95,7 +94,7 @@ public class RangedEnemyAI : MonoBehaviour
     /// Range of the Enemy
     /// </summary>
     [Header("Attacking")]   // =============================================#
-    public float ProjectileDamage = 15f;
+    public float damage = 15f;
     /// <summary>
     /// Range to be within before Enemy can start attacking
     /// </summary>
@@ -127,6 +126,16 @@ public class RangedEnemyAI : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (enemyKnockedBack)
+        {
+            return;
+        }
+        else if (enemyStunned)
+        {
+            agent.destination = transform.position;
+            return;
+        }
+
         if (!Alerted) { return; }
 
         MoveToTarget(); // Movement
@@ -246,7 +255,7 @@ public class RangedEnemyAI : MonoBehaviour
         GameObject projectile = Instantiate(projectileObject, gunPosition.position, Quaternion.identity); // Create projectile
         projectile.GetComponent<Rigidbody>().AddForce(projDir * projectileSpeed, ForceMode.VelocityChange); // Apply directional force
 
-        projectile.GetComponent<ProjectileScript>().ProjectileDamage = ProjectileDamage; // Set damage of projectile
+        projectile.GetComponent<ProjectileScript>().ProjectileDamage = damage; // Set damage of projectile
 
         curAttackCooldown = attackCooldown; // Restart attack cooldown
     }

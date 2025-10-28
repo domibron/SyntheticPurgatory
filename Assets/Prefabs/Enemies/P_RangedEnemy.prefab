@@ -52,6 +52,7 @@ GameObject:
   - component: {fileID: 2343708388523650048}
   - component: {fileID: 6756714828978082946}
   - component: {fileID: -3394219356379998070}
+  - component: {fileID: 4516463004191535880}
   m_Layer: 9
   m_Name: P_RangedEnemy
   m_TagString: Untagged
@@ -110,6 +111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d66a675eff3af643b2b0adeb6d23988, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyKnockedBack: 0
+  enemyStunned: 0
   gunPosition: {fileID: 4166913377872658649}
   gunObject: {fileID: 8658656213578980143}
   projectileObject: {fileID: 1360570209722618760, guid: 858b3283081f54f4faf52f281e1d78bb, type: 3}
@@ -123,7 +126,7 @@ MonoBehaviour:
   stuckSpeedMult: 1.5
   EnableDodge: 1
   DodgeSpeed: 0.333
-  ProjectileDamage: 15
+  damage: 15
   attackRange: 15
   attackCooldown: 1.5
   projectileSpeed: 10
@@ -269,7 +272,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &6756714828978082946
 MonoBehaviour:
@@ -300,6 +303,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4516463004191535880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427628415408339441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ea1c519e264aa4ebe5ef0bda9c0841, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  disableNavAgent: 1
+  enemyClass: {fileID: 9169388589387901843}
 --- !u!1001 &3126943043658059284
 PrefabInstance:
   m_ObjectHideFlags: 0
