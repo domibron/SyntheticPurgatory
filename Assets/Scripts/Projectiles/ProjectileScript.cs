@@ -13,13 +13,6 @@ public class ProjectileScript : MonoBehaviour
      
     private bool hasHit;
 
-    private float lifeTime = 5;
-
-    private void Start()
-    {
-        Invoke("DestroyObject", lifeTime);
-    }
-
     private void OnTriggerEnter(Collider collider)
     {
         if (hasHit) return;
@@ -46,11 +39,6 @@ public class ProjectileScript : MonoBehaviour
 
         Destroy(gameObject);
 
-    }
-
-    public void DestroyObject()
-    {
-        Destroy(gameObject);
     }
 
 }

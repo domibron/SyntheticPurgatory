@@ -69,6 +69,7 @@ MonoBehaviour:
   - {fileID: 707244212348619483, guid: ad12617efce778d4aaca560bb54a8043, type: 3}
   temporaryPiece: {fileID: 5474104644744655728}
   randomiseYRotation: 1
+  noActivationChance: 5
 --- !u!1 &5474104644744655728
 GameObject:
   m_ObjectHideFlags: 0
@@ -80,6 +81,7 @@ GameObject:
   - component: {fileID: 3480073402047638695}
   - component: {fileID: 6755260984484098919}
   - component: {fileID: 8988688113065432978}
+  - component: {fileID: 731662540009370083}
   m_Layer: 0
   m_Name: SpawnArea
   m_TagString: Untagged
@@ -155,3 +157,23 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &731662540009370083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5474104644744655728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
