@@ -17,7 +17,7 @@ public enum Stats
     ranged,
     tank,
     boss,
-    collectable,
+    miscellaneous,
 }
 
 public class GameStatsManager : MonoBehaviour

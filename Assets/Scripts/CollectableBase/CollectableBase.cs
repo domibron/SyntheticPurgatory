@@ -23,7 +23,7 @@ public class CollectableBase : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            CollectableStats collectableStats = GameStatsManager.Instance.GetStats<CollectableStats>(Stats.collectable);
+            MiscellaneousStats collectableStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
             if (collectableStats == null)
             {

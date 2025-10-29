@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class CollectableStats : ICloneable
+public class MiscellaneousStats : ICloneable
 {
     public float MaxCollectionRange = 1.5f;
     public float CollectItemRange = 1f;
@@ -17,9 +17,13 @@ public class CollectableStats : ICloneable
 
     public int ScrapRangeUpgradeAmount = 0;
 
+    public float MaxLevelTime = 120f;
+
+    public float CriticalHitChance = 0.1f;
+
     public object Clone()
     {
-        return new CollectableStats
+        return new MiscellaneousStats
         {
             MaxCollectionRange = MaxCollectionRange,
             CollectItemRange = CollectItemRange,
@@ -35,14 +39,14 @@ public class CollectableStats : ICloneable
 
 }
 
-[CreateAssetMenu(menuName = "ScriptableObjects/Stats/Collectable", fileName = "SO_CollectableStats")]
-public class CollectableStatsSO : StatsCoreSO
+[CreateAssetMenu(menuName = "ScriptableObjects/Stats/Miscellaneous", fileName = "SO_MiscellaneousStats")]
+public class MiscellaneousStatsSO : StatsCoreSO
 {
     // Please make sure the variables that you want to access are not able to be modified.
     // Example below shows you one way to achive this.
 
     [SerializeField]
-    private CollectableStats stats;
+    private MiscellaneousStats stats;
 
     public override object GetStats()
     {

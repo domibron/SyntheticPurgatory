@@ -12,14 +12,32 @@ public class GameManager : MonoBehaviour
 
     private float currentTime = 1f;
     private bool inDungeon = false;
-    private int commonCards = 0;
-    private int rareCards = 0;
-    private int epicCards = 0;
 
     [SerializeField]
     private int maxLives = 3;
 
     private int currentLives = 1;
+
+    [SerializeField]
+    private int commonUpgradeAmount = 2;
+    [SerializeField]
+    private int commonDowngradeAmount = 1;
+
+    private int commonCards = 0;
+
+    [SerializeField]
+    private int rareUpgradeAmount = 4;
+    [SerializeField]
+    private int rareDowngradeAmount = 1;
+
+    private int rareCards = 0;
+
+    [SerializeField]
+    private int epicUpgradeAmount = 5;
+    [SerializeField]
+    private int epicDowngradeAmount = 0;
+
+    private int epicCards = 0;
 
     void Awake()
     {
@@ -40,6 +58,21 @@ public class GameManager : MonoBehaviour
         if (inDungeon && currentTime > 0)
         {
             currentTime -= Time.deltaTime;
+        }
+    }
+
+    public (int, int) GetUPandDOWNAmounts(CardTeir cardTeir)
+    {
+        switch (cardTeir)
+        {
+            case CardTeir.Common:
+                return (commonUpgradeAmount, commonDowngradeAmount);
+            case CardTeir.Rare:
+                return (rareUpgradeAmount, rareDowngradeAmount);
+            case CardTeir.Epic:
+                return (epicUpgradeAmount, epicDowngradeAmount);
+            default:
+                return (1, 0);
         }
     }
 
