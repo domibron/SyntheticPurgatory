@@ -403,6 +403,7 @@ GameObject:
   - component: {fileID: 64342294}
   - component: {fileID: 64342293}
   - component: {fileID: 64342292}
+  - component: {fileID: 64342295}
   m_Layer: 5
   m_Name: Button (2)
   m_TagString: Untagged
@@ -474,7 +475,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 64342293}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 64342295}
+        m_TargetAssemblyTypeName: UpgradeItemUI, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &64342293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,6 +526,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64342290}
   m_CullTransparentMesh: 1
+--- !u!114 &64342295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64342290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c03f06622440643afd2494d975a844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upgradeSystem: {fileID: 653946341}
+  upgradeType: 2
+  InfoText: {fileID: 91267642}
 --- !u!1 &86757293
 GameObject:
   m_ObjectHideFlags: 0
@@ -2118,7 +2146,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 653946335}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: deefb71c4dcc6a34eb2c873085a91adb, type: 3}
   m_Name: 
@@ -2138,9 +2166,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0f6b83084d0d64a848fa9e886a04e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upgradeItemSpawnPoint: {fileID: 1200707653}
-  upgradeItem: {fileID: 273887020983304066, guid: 84a605f4290d2e4408dbe42d1da3f7d3, type: 3}
-  upgradeAmountsSO: {fileID: 11400000, guid: ee930bdcdd7260c44aab7a051d897fb1, type: 2}
+  upgradeItemUIs:
+  - {fileID: 941808210}
+  - {fileID: 1117643422}
+  - {fileID: 64342295}
+  - {fileID: 944119300}
 --- !u!1 &694836972
 GameObject:
   m_ObjectHideFlags: 0
@@ -3042,6 +3072,7 @@ GameObject:
   - component: {fileID: 941808209}
   - component: {fileID: 941808208}
   - component: {fileID: 941808207}
+  - component: {fileID: 941808210}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -3113,7 +3144,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 941808208}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 941808210}
+        m_TargetAssemblyTypeName: UpgradeItemUI, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &941808208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3152,6 +3195,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 941808205}
   m_CullTransparentMesh: 1
+--- !u!114 &941808210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941808205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c03f06622440643afd2494d975a844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upgradeSystem: {fileID: 653946341}
+  upgradeType: 0
+  InfoText: {fileID: 984415863}
 --- !u!1 &944119295
 GameObject:
   m_ObjectHideFlags: 0
@@ -3164,6 +3222,7 @@ GameObject:
   - component: {fileID: 944119299}
   - component: {fileID: 944119298}
   - component: {fileID: 944119297}
+  - component: {fileID: 944119300}
   m_Layer: 5
   m_Name: Button (3)
   m_TagString: Untagged
@@ -3235,7 +3294,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 944119298}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 944119300}
+        m_TargetAssemblyTypeName: UpgradeItemUI, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &944119298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3274,6 +3345,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 944119295}
   m_CullTransparentMesh: 1
+--- !u!114 &944119300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944119295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c03f06622440643afd2494d975a844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upgradeSystem: {fileID: 653946341}
+  upgradeType: 3
+  InfoText: {fileID: 1048787754}
 --- !u!1 &984415861
 GameObject:
   m_ObjectHideFlags: 0
@@ -3950,6 +4036,7 @@ GameObject:
   - component: {fileID: 1117643421}
   - component: {fileID: 1117643420}
   - component: {fileID: 1117643419}
+  - component: {fileID: 1117643422}
   m_Layer: 5
   m_Name: Button (1)
   m_TagString: Untagged
@@ -4021,7 +4108,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1117643420}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1117643422}
+        m_TargetAssemblyTypeName: UpgradeItemUI, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1117643420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4060,6 +4159,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1117643417}
   m_CullTransparentMesh: 1
+--- !u!114 &1117643422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117643417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c03f06622440643afd2494d975a844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upgradeSystem: {fileID: 653946341}
+  upgradeType: 1
+  InfoText: {fileID: 1910886203}
 --- !u!1 &1124880631
 GameObject:
   m_ObjectHideFlags: 0
@@ -4614,7 +4728,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1310159306}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 652dc3e72e739b84e842266a641c983e, type: 3}
   m_Name: 

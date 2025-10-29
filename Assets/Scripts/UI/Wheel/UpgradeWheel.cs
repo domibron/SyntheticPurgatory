@@ -69,7 +69,7 @@ public class UpgradeWheel : MonoBehaviour
     private void WheelSpinEnd()
     {
         // get random upgrade from list.
-        WheelResult?.Invoke(UpgradeType.BaseStat);
+        WheelResult?.Invoke(UpgradeType.PlayerStats);
     }
 
 }

@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public enum UpgradeType
 {
-    BaseStat,
+    PlayerStats,
     Ranged,
     Melee,
     Misc,
 }
+
 
 
 
@@ -230,6 +232,27 @@ public class StatUpgrades
         }
     }
 
+    public string GetCurrentAsString(int id)
+    {
+        StatUpgradeType statUpgradeType = (StatUpgradeType)id;
+
+        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+
+        switch (statUpgradeType)
+        {
+            case StatUpgradeType.Health:
+                return pStats.MaxHealth.ToString("F0");
+            case StatUpgradeType.Regeneration:
+                return pStats.RegenerationAmount.ToString("F2");
+            case StatUpgradeType.Speed:
+                return pStats.GroundSpeed.ToString("F2");
+            case StatUpgradeType.SlideBoostForce:
+                return pStats.SlideBoostForce.ToString("F2");
+            default:
+                return "";
+        }
+    }
+
     public string GetDowngradeAmountAsString(int id, int amount)
     {
         StatUpgradeType statUpgradeType = (StatUpgradeType)id;
@@ -300,7 +323,7 @@ public class StatUpgrades
         GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, pStats);
     }
 
-    public void DownGrade(int id, int amount)
+    public void DownGradeWithID(int id, int amount)
     {
         StatUpgradeType statUpgradeType = (StatUpgradeType)id;
 
@@ -375,6 +398,27 @@ public class RangedUpgrades
         }
     }
 
+    public string GetCurrentAsString(int id)
+    {
+        CannonUpgradeType statUpgradeType = (CannonUpgradeType)id;
+
+        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+
+        switch (statUpgradeType)
+        {
+            case CannonUpgradeType.Damage:
+                return pStats.ProjectileDamage.ToString("F0");
+            case CannonUpgradeType.Firerate:
+                return pStats.ProjectileFireRate.ToString("F2");
+            case CannonUpgradeType.MagSize:
+                return pStats.ProjectileMagSize.ToString("F0");
+            case CannonUpgradeType.ReloadSpeed:
+                return pStats.ReloadTime.ToString("F2");
+            default:
+                return "";
+        }
+    }
+
     public string GetDowngradeAmountAsString(int id, int amount)
     {
         CannonUpgradeType statUpgradeType = (CannonUpgradeType)id;
@@ -441,7 +485,7 @@ public class RangedUpgrades
         GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, pStats);
     }
 
-    public void DownGrade(int id, int amount)
+    public void DownGradeWithID(int id, int amount)
     {
         CannonUpgradeType statUpgradeType = (CannonUpgradeType)id;
 
@@ -515,6 +559,31 @@ public class MeleeUpgrades
                 return (reach.GetLogAmount(pStats.MeleeReach, pStats.MeleeReachUpgradeAmount, amount) - pStats.MeleeReach).ToString("F2");
             case MeleeUpgradeType.Knockback:
                 return (knockback.UpgradeValue(pStats.KickForce, amount) - pStats.KickForce).ToString("F2");
+            default:
+                return "";
+        }
+    }
+
+    public string GetCurrentAsString(int id)
+    {
+        MeleeUpgradeType statUpgradeType = (MeleeUpgradeType)id;
+
+        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+
+        switch (statUpgradeType)
+        {
+            case MeleeUpgradeType.Damage:
+                return pStats.MeleeDamage.ToString("F2");
+            case MeleeUpgradeType.MeleeAttackTime:
+                return pStats.MeleeAttackDelay.ToString("F2");
+            case MeleeUpgradeType.KickAttackTime:
+                return pStats.KickAttackDelay.ToString("F2");
+            case MeleeUpgradeType.EnemyStagger:
+                return pStats.MeleeStaggeTime.ToString("F2");
+            case MeleeUpgradeType.Reach:
+                return pStats.MeleeReach.ToString("F2");
+            case MeleeUpgradeType.Knockback:
+                return pStats.KickForce.ToString("F2");
             default:
                 return "";
         }
@@ -602,7 +671,7 @@ public class MeleeUpgrades
         GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, pStats);
     }
 
-    public void DownGrade(int id, int amount)
+    public void DownGradeWithID(int id, int amount)
     {
         MeleeUpgradeType statUpgradeType = (MeleeUpgradeType)id;
 
@@ -639,10 +708,10 @@ public class MiscellaneousUpgrades
 {
     //public const UpgradeType upgradeType = UpgradeType.BaseStat;
 
-    StatUpgradeInfo healthInfo = new(8, -15, 10, null);
-    StatUpgradeInfo regenerationInfo = new(0.5f, -0.2f, 0f, null);
-    StatUpgradeInfo speedInfo = new(1, -0.4f, 1, null);
-    StatUpgradeInfo boostInfo = new(1.2f, -0.5f, 2, null);
+    StatUpgradeInfo scrapCarryMax = new(10, -10, 40, null);
+    StatUpgradeInfo itemCollectionRange = new(0.5f, -0.2f, 0.5f, 10f);
+    StatUpgradeInfo levelTimeLimit = new(2, -2, 20, 600);
+    StatUpgradeInfo criticalChance = new(0.01f, -0.02f, 0, 1); // decimal percentage
 
 
     public enum MiscellaneousUpgradeType
@@ -662,18 +731,39 @@ public class MiscellaneousUpgrades
     {
         MiscellaneousUpgradeType statUpgradeType = (MiscellaneousUpgradeType)id;
 
-        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+        MiscellaneousStats mStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
         switch (statUpgradeType)
         {
-            // case MiscellaneousUpgradeType.Health:
-            //     return (healthInfo.UpgradeValue(pStats.MaxHealth, amount) - pStats.MaxHealth).ToString("F0");
-            // case MiscellaneousUpgradeType.Regeneration:
-            //     return (regenerationInfo.UpgradeValue(pStats.RegenerationAmount, amount) - pStats.RegenerationAmount).ToString("F2");
-            // case MiscellaneousUpgradeType.Speed:
-            //     return (speedInfo.GetLogAmount(pStats.GroundSpeed, pStats.SpeedUpgradeAmount, amount) - pStats.GroundSpeed).ToString("F2");
-            // case MiscellaneousUpgradeType.SlideBoostForce:
-            //     return (boostInfo.GetLogAmount(pStats.SlideBoostForce, pStats.BoostUpgradeAmount, amount) - pStats.SlideBoostForce).ToString("F2");
+            case MiscellaneousUpgradeType.ScrapCarry:
+                return (scrapCarryMax.UpgradeValue(mStats.MaxInventoryScrap, amount) - mStats.MaxInventoryScrap).ToString("F0");
+            case MiscellaneousUpgradeType.ItemPickupRange:
+                return (itemCollectionRange.UpgradeValue(mStats.CollectItemRange, amount) - mStats.CollectItemRange).ToString("F2");
+            case MiscellaneousUpgradeType.TimeLimit:
+                return (levelTimeLimit.UpgradeValue(mStats.MaxLevelTime, amount) - mStats.MaxLevelTime).ToString("F2");
+            case MiscellaneousUpgradeType.CriticalChance:
+                return ((criticalChance.UpgradeValue(mStats.CriticalHitChance, amount) - mStats.CriticalHitChance) * 100f).ToString("F2");
+            default:
+                return "";
+        }
+    }
+
+    public string GetCurrentAsString(int id)
+    {
+        MiscellaneousUpgradeType statUpgradeType = (MiscellaneousUpgradeType)id;
+
+        MiscellaneousStats mStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
+
+        switch (statUpgradeType)
+        {
+            case MiscellaneousUpgradeType.ScrapCarry:
+                return mStats.MaxInventoryScrap.ToString("F0");
+            case MiscellaneousUpgradeType.ItemPickupRange:
+                return mStats.CollectItemRange.ToString("F2");
+            case MiscellaneousUpgradeType.TimeLimit:
+                return mStats.MaxLevelTime.ToString("F2");
+            case MiscellaneousUpgradeType.CriticalChance:
+                return mStats.CriticalHitChance.ToString("F2");
             default:
                 return "";
         }
@@ -683,18 +773,18 @@ public class MiscellaneousUpgrades
     {
         MiscellaneousUpgradeType statUpgradeType = (MiscellaneousUpgradeType)id;
 
-        PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+        MiscellaneousStats mStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
         switch (statUpgradeType)
         {
-            // case MiscellaneousUpgradeType.Health:
-            //     return (healthInfo.DowngradeValue(pStats.MaxHealth, amount) - pStats.MaxHealth).ToString("F0");
-            // case MiscellaneousUpgradeType.Regeneration:
-            //     return (regenerationInfo.DowngradeValue(pStats.RegenerationAmount, amount) - pStats.RegenerationAmount).ToString("F2");
-            // case MiscellaneousUpgradeType.Speed:
-            //     return (speedInfo.DowngradeValue(pStats.GroundSpeed, amount) - pStats.GroundSpeed).ToString("F2");
-            // case MiscellaneousUpgradeType.SlideBoostForce:
-            //     return (boostInfo.DowngradeValue(pStats.SlideBoostForce, amount) - pStats.SlideBoostForce).ToString("F2");
+            case MiscellaneousUpgradeType.ScrapCarry:
+                return (scrapCarryMax.DowngradeValue(mStats.MaxInventoryScrap, amount) - mStats.MaxInventoryScrap).ToString("F0");
+            case MiscellaneousUpgradeType.ItemPickupRange:
+                return (itemCollectionRange.DowngradeValue(mStats.CollectItemRange, amount) - mStats.CollectItemRange).ToString("F2");
+            case MiscellaneousUpgradeType.TimeLimit:
+                return (levelTimeLimit.DowngradeValue(mStats.MaxLevelTime, amount) - mStats.MaxLevelTime).ToString("F2");
+            case MiscellaneousUpgradeType.CriticalChance:
+                return ((criticalChance.DowngradeValue(mStats.CriticalHitChance, amount) - mStats.CriticalHitChance) * 100f).ToString("F2");
             default:
                 return "";
         }
@@ -706,14 +796,14 @@ public class MiscellaneousUpgrades
 
         switch (statUpgradeType)
         {
-            // case MiscellaneousUpgradeType.Health:
-            //     return "Max Health";
-            // case MiscellaneousUpgradeType.Regeneration:
-            //     return "Regeneration Rate";
-            // case MiscellaneousUpgradeType.Speed:
-            //     return "Speed";
-            // case MiscellaneousUpgradeType.SlideBoostForce:
-            //     return "Boost Amount";
+            case MiscellaneousUpgradeType.ScrapCarry:
+                return "Max Inventory Scrap";
+            case MiscellaneousUpgradeType.ItemPickupRange:
+                return "Item Pickup Range";
+            case MiscellaneousUpgradeType.TimeLimit:
+                return "Time Limit";
+            case MiscellaneousUpgradeType.CriticalChance:
+                return "Critical Hit Chance";
             default:
                 return "";
         }
@@ -724,58 +814,50 @@ public class MiscellaneousUpgrades
     {
         MiscellaneousUpgradeType statUpgradeType = (MiscellaneousUpgradeType)id;
 
-        // PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+        MiscellaneousStats mStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
-        // switch (statUpgradeType)
-        // {
-        //     case MiscellaneousUpgradeType.Health:
-        //         pStats.MaxHealth = healthInfo.UpgradeValue(pStats.MaxHealth, amount);
-        //         break;
-        //     case MiscellaneousUpgradeType.Regeneration:
-        //         pStats.RegenerationAmount = regenerationInfo.UpgradeValue(pStats.RegenerationAmount, amount);
-        //         break;
-        //     case MiscellaneousUpgradeType.Speed:
-        //         pStats.GroundSpeed = speedInfo.GetLogAmount(pStats.GroundSpeed, pStats.SpeedUpgradeAmount, amount);
-        //         pStats.AirSpeed = speedInfo.GetLogAmount(pStats.AirSpeed, pStats.SpeedUpgradeAmount, amount);
-        //         pStats.SpeedUpgradeAmount += amount;
-        //         break;
-        //     case MiscellaneousUpgradeType.SlideBoostForce:
-        //         pStats.SlideBoostForce = boostInfo.GetLogAmount(pStats.SlideBoostForce, pStats.BoostUpgradeAmount, amount);
-        //         pStats.AirBoostForce = boostInfo.GetLogAmount(pStats.AirBoostForce, pStats.BoostUpgradeAmount, amount);
-        //         pStats.BoostUpgradeAmount += amount;
-        //         break;
-        // }
+        switch (statUpgradeType)
+        {
+            case MiscellaneousUpgradeType.ScrapCarry:
+                mStats.MaxInventoryScrap = Mathf.FloorToInt(scrapCarryMax.UpgradeValue(mStats.MaxInventoryScrap, amount));
+                break;
+            case MiscellaneousUpgradeType.ItemPickupRange:
+                mStats.CollectItemRange = itemCollectionRange.UpgradeValue(mStats.CollectItemRange, amount);
+                break;
+            case MiscellaneousUpgradeType.TimeLimit:
+                mStats.MaxLevelTime = levelTimeLimit.UpgradeValue(mStats.MaxLevelTime, amount);
+                break;
+            case MiscellaneousUpgradeType.CriticalChance:
+                mStats.CriticalHitChance = criticalChance.UpgradeValue(mStats.CriticalHitChance, amount);
+                break;
+        }
 
-        // GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, pStats);
+        GameStatsManager.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, mStats);
     }
 
-    public void DownGrade(int id, int amount)
+    public void DownGradeWithID(int id, int amount)
     {
         MiscellaneousUpgradeType statUpgradeType = (MiscellaneousUpgradeType)id;
 
-        // PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+        MiscellaneousStats mStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
-        // switch (statUpgradeType)
-        // {
-        //     case MiscellaneousUpgradeType.Health:
-        //         pStats.MaxHealth = healthInfo.DowngradeValue(pStats.MaxHealth, amount);
-        //         break;
-        //     case MiscellaneousUpgradeType.Regeneration:
-        //         pStats.RegenerationAmount = regenerationInfo.DowngradeValue(pStats.RegenerationAmount, amount);
-        //         break;
-        //     case MiscellaneousUpgradeType.Speed:
-        //         pStats.GroundSpeed = speedInfo.DowngradeValue(pStats.GroundSpeed, amount);
-        //         pStats.AirSpeed = speedInfo.DowngradeValue(pStats.AirSpeed, amount);
-        //         pStats.SpeedUpgradeAmount -= amount;
-        //         break;
-        //     case MiscellaneousUpgradeType.SlideBoostForce:
-        //         pStats.SlideBoostForce = boostInfo.DowngradeValue(pStats.SlideBoostForce, amount);
-        //         pStats.AirBoostForce = boostInfo.DowngradeValue(pStats.AirBoostForce, amount);
-        //         pStats.BoostUpgradeAmount -= amount;
-        //         break;
-        // }
+        switch (statUpgradeType)
+        {
+            case MiscellaneousUpgradeType.ScrapCarry:
+                mStats.MaxInventoryScrap = Mathf.FloorToInt(scrapCarryMax.DowngradeValue(mStats.MaxInventoryScrap, amount));
+                break;
+            case MiscellaneousUpgradeType.ItemPickupRange:
+                mStats.CollectItemRange = itemCollectionRange.DowngradeValue(mStats.CollectItemRange, amount);
+                break;
+            case MiscellaneousUpgradeType.TimeLimit:
+                mStats.MaxLevelTime = levelTimeLimit.DowngradeValue(mStats.MaxLevelTime, amount);
+                break;
+            case MiscellaneousUpgradeType.CriticalChance:
+                mStats.CriticalHitChance = criticalChance.DowngradeValue(mStats.CriticalHitChance, amount);
+                break;
+        }
 
-        // GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, pStats);
+        GameStatsManager.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, mStats);
 
     }
 }
@@ -783,20 +865,22 @@ public class MiscellaneousUpgrades
 
 public class UpgradeSystem : MonoBehaviour
 {
+    [Serializable]
     private class UpgradeData
     {
-        UpgradeType upgradeType;
-        int upgradeID;
-        int upgradeAmount;
+        public UpgradeType UpgradeType;
+        public int UpgradeID;
+        public int UpgradeAmount;
 
         public UpgradeData(UpgradeType type, int id, int amount)
         {
-            upgradeType = type;
-            upgradeID = id;
-            upgradeAmount = amount;
+            UpgradeType = type;
+            UpgradeID = id;
+            UpgradeAmount = amount;
         }
     }
 
+    [Serializable]
     private class UpgradeChoice
     {
         public UpgradeData Upgrade;
@@ -809,12 +893,17 @@ public class UpgradeSystem : MonoBehaviour
         }
     }
 
-    StatUpgrades statUpgrades = new();
+    StatUpgrades playerStatUpgrades = new();
     RangedUpgrades rangedUpgrades = new();
     MeleeUpgrades meleeUpgrades = new();
     MiscellaneousUpgrades miscellaneousUpgrades = new();
 
+
     UpgradeChoice[] upgradeChoices;
+
+    [SerializeField]
+    UpgradeItemUI[] upgradeItemUIs;
+
 
     void Start()
     {
@@ -823,7 +912,291 @@ public class UpgradeSystem : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            int ran = UnityEngine.Random.Range(0, 3);
+            RandomUpgrades((CardTeir)ran);
+            print(((CardTeir)ran).ToString());
+        }
+    }
 
+    public void UpgradeSelected(UpgradeType upgradeType)
+    {
+        UpgradeChoice upgradeChoice = null;
+
+
+        foreach (UpgradeChoice choice in upgradeChoices)
+        {
+            if (choice.Upgrade.UpgradeType == upgradeType) upgradeChoice = choice;
+        }
+
+        UpgradeStat(upgradeChoice);
+    }
+
+    private void RandomUpgrades(CardTeir cardTeir)
+    {
+        // int upAmount;
+        // int downAmount;
+
+
+        (int upAmount, int downAmount) = GameManager.Instance.GetUPandDOWNAmounts(cardTeir);
+
+
+
+        upgradeChoices = GenerateUpgradeChoices(upAmount, downAmount);
+
+        for (int i = 0; i < 4; i++)
+        {
+            upgradeItemUIs[i].SetText(GetDisplayText(upgradeChoices[i]));
+        }
+    }
+
+    private string GetDisplayText(UpgradeChoice upgradeChoice)
+    {
+        string returnedText = "";
+
+        string upgradeName = "NAME";
+        string currentAmountForUpgradeType = "CURRENT AMOUNT";
+        string upgradeAmount = "INCRASE AMOUNT";
+
+        switch (upgradeChoice.Upgrade.UpgradeType)
+        {
+            case UpgradeType.PlayerStats:
+                upgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.UpgradeID);
+                currentAmountForUpgradeType = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.UpgradeID);
+                upgradeAmount = playerStatUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Ranged:
+                upgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.UpgradeID);
+                currentAmountForUpgradeType = rangedUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.UpgradeID);
+                upgradeAmount = rangedUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Melee:
+                upgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.UpgradeID);
+                currentAmountForUpgradeType = meleeUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.UpgradeID);
+                upgradeAmount = meleeUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Misc:
+                upgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.UpgradeID);
+                currentAmountForUpgradeType = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.UpgradeID);
+                upgradeAmount = miscellaneousUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+        }
+
+        bool isUpgradeNegative = upgradeAmount[0] == '-';
+
+        if (isUpgradeNegative) upgradeAmount = upgradeAmount.Substring(1);
+
+        char sign = (isUpgradeNegative ? '-' : '+');
+
+        returnedText += $"<color=green>+ {upgradeName} {currentAmountForUpgradeType} {sign} {upgradeAmount}</color>";
+
+
+        if (upgradeChoice.Downgrade.UpgradeAmount <= 0) return returnedText;
+
+        string downgradeName = "NAME";
+        string currentAmountForDowngradeType = "CURRENT AMOUNT";
+        string downgradeAmount = "DECREASE AMOUNT";
+
+        switch (upgradeChoice.Downgrade.UpgradeType)
+        {
+            case UpgradeType.PlayerStats:
+                downgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.UpgradeID);
+                currentAmountForDowngradeType = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.UpgradeID);
+                downgradeAmount = playerStatUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Ranged:
+                downgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.UpgradeID);
+                currentAmountForDowngradeType = rangedUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.UpgradeID);
+                downgradeAmount = rangedUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Melee:
+                downgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.UpgradeID);
+                currentAmountForDowngradeType = meleeUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.UpgradeID);
+                downgradeAmount = meleeUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Misc:
+                downgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.UpgradeID);
+                currentAmountForDowngradeType = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.UpgradeID);
+                downgradeAmount = miscellaneousUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+        }
+
+
+        bool isDowngradeNegative = downgradeAmount[0] == '-';
+
+        if (isDowngradeNegative) downgradeAmount = downgradeAmount.Substring(1);
+
+        sign = (isDowngradeNegative ? '-' : '+');
+
+        returnedText += $"\n\n<color=red>- {downgradeName} {currentAmountForDowngradeType} {sign} {downgradeAmount}</color>";
+
+        return returnedText;
+    }
+
+    private void UpgradeStat(UpgradeChoice upgradeChoice)
+    {
+        switch (upgradeChoice.Upgrade.UpgradeType)
+        {
+            case UpgradeType.PlayerStats:
+                playerStatUpgrades.UpgradeWithID(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Ranged:
+                rangedUpgrades.UpgradeWithID(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Melee:
+                meleeUpgrades.UpgradeWithID(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Misc:
+                miscellaneousUpgrades.UpgradeWithID(upgradeChoice.Upgrade.UpgradeID, upgradeChoice.Upgrade.UpgradeAmount);
+                break;
+        }
+
+        if (upgradeChoice.Downgrade.UpgradeAmount <= 0) return;
+
+        switch (upgradeChoice.Downgrade.UpgradeType)
+        {
+            case UpgradeType.PlayerStats:
+                playerStatUpgrades.DownGradeWithID(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Ranged:
+                rangedUpgrades.DownGradeWithID(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Melee:
+                meleeUpgrades.DownGradeWithID(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+            case UpgradeType.Misc:
+                miscellaneousUpgrades.DownGradeWithID(upgradeChoice.Downgrade.UpgradeID, upgradeChoice.Downgrade.UpgradeAmount);
+                break;
+        }
+    }
+
+
+    private UpgradeChoice[] GenerateUpgradeChoices(int upgradeAmount, int downgradeAmount)
+    {
+        UpgradeChoice[] choices = new UpgradeChoice[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            choices[i] = GetRandomBaseOnCatagory((UpgradeType)i, upgradeAmount, downgradeAmount);
+        }
+
+        return choices;
+    }
+
+    private UpgradeChoice GetRandomBaseOnCatagory(UpgradeType upgradeType, int upgradeAmount, int downgradeAmount)
+    {
+        return new UpgradeChoice(GetRandomUpgradeForType(upgradeType, upgradeAmount), GetDowngradeExcludingType(upgradeType, downgradeAmount));
+    }
+
+    private UpgradeData GetRandomUpgradeForType(UpgradeType upgradeType, int amount)
+    {
+        UpgradeData upgradeData = null;
+
+        switch (upgradeType)
+        {
+            case UpgradeType.Melee:
+                return upgradeData = new UpgradeData(UpgradeType.Melee, meleeUpgrades.GetRandomUpgradeID(), amount);
+            case UpgradeType.Misc:
+                return upgradeData = new UpgradeData(UpgradeType.Misc, miscellaneousUpgrades.GetRandomUpgradeID(), amount);
+            case UpgradeType.PlayerStats:
+                return upgradeData = new UpgradeData(UpgradeType.PlayerStats, playerStatUpgrades.GetRandomUpgradeID(), amount);
+            case UpgradeType.Ranged:
+                return upgradeData = new UpgradeData(UpgradeType.Ranged, rangedUpgrades.GetRandomUpgradeID(), amount);
+            default:
+                return null;
+        }
+    }
+
+    private UpgradeData GetDowngradeExcludingType(UpgradeType upgradeType, int amount)
+    {
+        int rand = UnityEngine.Random.Range(1, 4); // this only goes to 3 but we want that.
+        /*
+        1 - player stats
+        2 - range stats
+        3 - melee stats
+        4 - misc stats
+        */
+
+        switch (upgradeType)
+        {
+            case UpgradeType.Melee:
+                if (rand == 1)
+                {
+                    return GetDowngradeForType(UpgradeType.PlayerStats, amount);
+                }
+                else if (rand == 2)
+                {
+                    return GetDowngradeForType(UpgradeType.Ranged, amount);
+                }
+                else if (rand == 3)
+                {
+                    return GetDowngradeForType(UpgradeType.Misc, amount);
+                }
+                break;
+            case UpgradeType.Misc:
+                if (rand == 1)
+                {
+                    return GetDowngradeForType(UpgradeType.PlayerStats, amount);
+                }
+                else if (rand == 2)
+                {
+                    return GetDowngradeForType(UpgradeType.Ranged, amount);
+                }
+                else if (rand == 3)
+                {
+                    return GetDowngradeForType(UpgradeType.Melee, amount);
+                }
+                break;
+            case UpgradeType.PlayerStats:
+                if (rand == 1)
+                {
+                    return GetDowngradeForType(UpgradeType.Ranged, amount);
+                }
+                else if (rand == 2)
+                {
+                    return GetDowngradeForType(UpgradeType.Melee, amount);
+                }
+                else if (rand == 3)
+                {
+                    return GetDowngradeForType(UpgradeType.Misc, amount);
+                }
+                break;
+            case UpgradeType.Ranged:
+                if (rand == 1)
+                {
+                    return GetDowngradeForType(UpgradeType.PlayerStats, amount);
+                }
+                else if (rand == 2)
+                {
+                    return GetDowngradeForType(UpgradeType.Melee, amount);
+                }
+                else if (rand == 3)
+                {
+                    return GetDowngradeForType(UpgradeType.Misc, amount);
+                }
+                break;
+        }
+        return null;
+    }
+
+    private UpgradeData GetDowngradeForType(UpgradeType upgradeType, int amount)
+    {
+        UpgradeData upgradeData = null;
+
+        switch (upgradeType)
+        {
+            case UpgradeType.Melee:
+                return upgradeData = new UpgradeData(UpgradeType.Melee, meleeUpgrades.GetRandomUpgradeID(), amount);
+            case UpgradeType.Misc:
+                return upgradeData = new UpgradeData(UpgradeType.Misc, miscellaneousUpgrades.GetRandomUpgradeID(), amount);
+            case UpgradeType.PlayerStats:
+                return upgradeData = new UpgradeData(UpgradeType.PlayerStats, playerStatUpgrades.GetRandomUpgradeID(), amount);
+            case UpgradeType.Ranged:
+                return upgradeData = new UpgradeData(UpgradeType.Ranged, rangedUpgrades.GetRandomUpgradeID(), amount);
+            default:
+                return null;
+        }
     }
 }
 
