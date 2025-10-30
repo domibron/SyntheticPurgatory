@@ -1080,6 +1080,13 @@ public class UpgradeSystem : MonoBehaviour
     GameObject chooseUpgradeCardScreen;
 
     [SerializeField]
+    TMP_Text cardScrappedText;
+
+    private float fadeDuration = 1f;
+
+    private float currentFadeTime = 0f;
+
+    [SerializeField]
     GameObject upgradeChoicesScreen;
 
     [SerializeField]
@@ -1129,6 +1136,17 @@ public class UpgradeSystem : MonoBehaviour
             // int ran = UnityEngine.Random.Range(0, 3);
             // OpenCard((CardTeir)ran);
             // print(((CardTeir)ran).ToString());
+        }
+
+        if (currentFadeTime > 0)
+        {
+            cardScrappedText.gameObject.SetActive(true);
+            currentFadeTime -= Time.deltaTime;
+            cardScrappedText.alpha = EasingFunctions.EaseOutQuint(currentFadeTime / fadeDuration);
+        }
+        else
+        {
+            cardScrappedText.gameObject.SetActive(false);
         }
     }
 
@@ -1199,23 +1217,59 @@ public class UpgradeSystem : MonoBehaviour
         ShowScreen(ScreenType.ChooseUpgrade);
     }
 
-    public void ScrapCard()
+    public void ScrapCurrentCard()
     {
+        int giveAmount = 0;
+
         switch (currentCardTeir)
         {
             case CardTeir.Common:
-                GameManager.Instance.AddToDepositedScrap(commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty()));
+                giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
             case CardTeir.Rare:
-                GameManager.Instance.AddToDepositedScrap(rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty()));
+                giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
             case CardTeir.Epic:
-                GameManager.Instance.AddToDepositedScrap(epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty()));
+                giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
         }
 
+        GameManager.Instance.AddToDepositedScrap(giveAmount);
+
+        cardScrappedText.text = $"{currentCardTeir.ToString()} scrapped for {giveAmount}";
+        currentFadeTime = fadeDuration;
+
         // ShowScreen(ScreenType.Scraped);
         ShowScreen(ScreenType.OpenCard);
+    }
+
+    public void ScrapCard(CardTeir cardTeir)
+    {
+        if (GameManager.Instance.GetCardCount(cardTeir) < 1) return;
+
+        int giveAmount = 0;
+
+        switch (cardTeir)
+        {
+            case CardTeir.Common:
+                giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                break;
+            case CardTeir.Rare:
+                giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                break;
+            case CardTeir.Epic:
+                giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                break;
+        }
+
+        GameManager.Instance.RemoveFromStoredCards(cardTeir, 1);
+        GameManager.Instance.AddToDepositedScrap(giveAmount);
+
+        cardScrappedText.text = $"{currentCardTeir.ToString()} scrapped for {giveAmount}";
+        currentFadeTime = fadeDuration;
+
+        // ShowScreen(ScreenType.Scraped);
+        // ShowScreen(ScreenType.OpenCard);
     }
 
     public void GoToOpenScreen()
@@ -1399,7 +1453,7 @@ public class UpgradeSystem : MonoBehaviour
         }
 
 
-        returnedText += $"\n\n<color=red>- {downgradeName} (oldDowngradeCurrent) -> ({newCurrentForDowngrade})</color>";
+        returnedText += $"\n\n<color=red>- {downgradeName} ({oldDowngradeCurrent}) -> ({newCurrentForDowngrade})</color>";
 
         return returnedText;
     }

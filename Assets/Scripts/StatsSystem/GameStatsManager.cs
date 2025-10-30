@@ -29,6 +29,7 @@ public class GameStatsManager : MonoBehaviour
     [SerializeField]
     private StatData[] baseStats = new StatData[0];
 
+
     private Dictionary<Stats, object> statClasses = new Dictionary<Stats, object>();
 
     void Awake()
