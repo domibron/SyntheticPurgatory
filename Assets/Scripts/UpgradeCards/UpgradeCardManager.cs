@@ -18,6 +18,13 @@ public class UpgradeCardManager : MonoBehaviour
     private int currentT2Cards = 0;
     private int currentT3Cards = 0;
 
+    [SerializeField]
+    private GameObject commonCardPrefab;
+    [SerializeField]
+    private GameObject rareCardPrefab;
+    [SerializeField]
+    private GameObject epicCardPrefab;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -59,6 +66,21 @@ public class UpgradeCardManager : MonoBehaviour
                 return currentT3Cards;
             default:
                 return 0;
+        }
+    }
+
+    public GameObject GetUpgradeCardPrefab(CardTeir cardTeir)
+    {
+        switch (cardTeir)
+        {
+            case CardTeir.Common:
+                return commonCardPrefab;
+            case CardTeir.Rare:
+                return rareCardPrefab;
+            case CardTeir.Epic:
+                return epicCardPrefab;
+            default:
+                return null;
         }
     }
 }
