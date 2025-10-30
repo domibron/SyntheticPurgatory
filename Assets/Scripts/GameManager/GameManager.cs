@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
 
     private int epicCards = 0;
 
+    private int currentDifficulty = 0;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -128,6 +130,7 @@ public class GameManager : MonoBehaviour
             epicCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Epic);
         }
         ResetTimer();
+        currentDifficulty++;
         LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
     }
 
@@ -138,6 +141,11 @@ public class GameManager : MonoBehaviour
     public void EndRun()
     {
 
+    }
+
+    public int GetCurrentDifficlty()
+    {
+        return currentDifficulty;
     }
 
     public int GetCardCount(CardTeir cardTeir)
@@ -155,7 +163,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RemoveFrom(CardTeir cardTeir, int amountToTake)
+    public void RemoveFromStoredCards(CardTeir cardTeir, int amountToTake)
     {
         switch (cardTeir)
         {
@@ -167,6 +175,22 @@ public class GameManager : MonoBehaviour
                 break;
             case CardTeir.Epic:
                 epicCards -= amountToTake;
+                break;
+        }
+    }
+
+    public void AddToStoredCards(CardTeir cardTeir, int amountToAdd)
+    {
+        switch (cardTeir)
+        {
+            case CardTeir.Common:
+                commonCards += amountToAdd;
+                break;
+            case CardTeir.Rare:
+                rareCards += amountToAdd;
+                break;
+            case CardTeir.Epic:
+                epicCards += amountToAdd;
                 break;
         }
     }

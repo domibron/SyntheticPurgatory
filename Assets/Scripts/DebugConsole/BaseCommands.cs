@@ -35,7 +35,8 @@ public class BaseCommands
     public static Command<float> setAttackDamage;
 
     public static Command toggleDoors;
-
+    public static Command<int> giveScrap;
+    public static Command<int, int> giveUpgradeCard;
 
     public BaseCommands(DebugConsole console)
     {
@@ -347,6 +348,47 @@ public class BaseCommands
             console.TextToConsole("Toggled the doors");
         });
 
+        giveScrap = new Command<int>("givescrap", "Gives the desired amount of scrap into inventory.", "givescrap <int>", (scrap) =>
+        {
+            if (GameManager.Instance == null)
+            {
+                console.TextToConsole("<color=red>Cannot find the game manager</color>");
+                return;
+            }
+
+
+            GameManager.Instance.AddToDepositedScrap(scrap);
+
+            console.TextToConsole($"Gave {scrap}. Current amount is {GameManager.Instance.GetCurrentScrapCount()}");
+
+        });
+
+        giveUpgradeCard = new Command<int, int>("giveupcard", "Gives the desired amount of the upgrade card.", "giveupcard <int card type> <int amount>", (type, amount) =>
+        {
+            if (GameManager.Instance == null)
+            {
+                console.TextToConsole("<color=red>Cannot find the game manager</color>");
+                return;
+            }
+
+            CardTeir? cardTeir = null;
+
+
+
+            cardTeir = (CardTeir)type;
+
+            if (!Enum.IsDefined(typeof(CardTeir), (CardTeir)type))
+            {
+                console.TextToConsole("<color=red>Not a valid card type</color>");
+                return;
+            }
+
+
+            GameManager.Instance.AddToStoredCards(cardTeir.Value, amount);
+
+            console.TextToConsole($"Gave {amount} of {cardTeir.Value.ToString()}. Current amount is {GameManager.Instance.GetCardCount(cardTeir.Value)}");
+        });
+
 
 
         List<object> commandsToAdd = new List<object>()
@@ -366,6 +408,8 @@ public class BaseCommands
             // removeHud,
             // setAttackDamage,
             toggleDoors,
+            giveScrap,
+            giveUpgradeCard,
         };
 
         foreach (var command in commandsToAdd)
