@@ -12,6 +12,9 @@ public class OpenCardUI : MonoBehaviour
     [SerializeField]
     private TMP_Text cardCost;
 
+    [SerializeField]
+    private TMP_Text cardAmount;
+
     public void OnClick()
     {
         upgradeSystem.OpenCard(cardTeir);
@@ -20,5 +23,11 @@ public class OpenCardUI : MonoBehaviour
     void Update()
     {
         cardCost.text = upgradeSystem.GetCardOpenCost(cardTeir).ToString() + " Scrap";
+        cardAmount.text = GameManager.Instance.GetCardCount(cardTeir).ToString();
+    }
+
+    public void OnScrapCard()
+    {
+        upgradeSystem.ScrapCard(cardTeir);
     }
 }
