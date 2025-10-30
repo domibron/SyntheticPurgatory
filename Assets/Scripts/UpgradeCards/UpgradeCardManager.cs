@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+
 
 public enum CardTeir
 {
