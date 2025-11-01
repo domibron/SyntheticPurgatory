@@ -63,6 +63,10 @@ public class MeleeEnemyAI : BaseEnemy
     /// Current Cooldown of attack
     /// </summary>
     private float curAttackCooldown = 0;
+    /// <summary>
+    /// Variable for checking if enemy is currently attacking
+    /// </summary>
+    private bool isAttacking;
 
 
     void Start()
@@ -89,7 +93,7 @@ public class MeleeEnemyAI : BaseEnemy
 
         if (!Alerted) { return; }
 
-        MoveToTarget(); // Movement
+        MoveToTarget(isAttacking ? baseSpeed / 16 : baseSpeed); // Movement
 
         curAttackCooldown -= Time.fixedDeltaTime;
         if (CheckCanAttack()) { InitiateAttack(); } // Attacking
@@ -99,9 +103,13 @@ public class MeleeEnemyAI : BaseEnemy
     /// <summary>
     /// Moves the object towards the target using navmesh, stops and turn when close to the target
     /// </summary>
-    public void MoveToTarget()
+    public void MoveToTarget(float aimedBaseSpeed)
     {
         agent.destination = goal.transform.position; // Set destination to goal's current position
+        if (isAttacking)
+        {
+            agent.destination = (transform.position * 7 + goal.transform.position) / 8;
+        }
 
 
         // Variables for seperate tread speeds
@@ -119,7 +127,7 @@ public class MeleeEnemyAI : BaseEnemy
         }
 
         // Set new speed based on speed of the treads
-        agent.speed = Mathf.Min(baseSpeed * (leftTreadSpeed + rightTreadSpeed) / turnReduction, baseSpeed);
+        agent.speed = Mathf.Min(aimedBaseSpeed * (leftTreadSpeed + rightTreadSpeed) / turnReduction, aimedBaseSpeed);
 
 
         // Swap to alternative movement if close enough to target
@@ -168,6 +176,12 @@ public class MeleeEnemyAI : BaseEnemy
             return false;
         }
 
+        // Check if already attacking
+        if (isAttacking)
+        {
+            return false;
+        }
+
         // Return true if all checks weren't triggered
         return true;
     }
@@ -178,14 +192,39 @@ public class MeleeEnemyAI : BaseEnemy
     /// </summary>
     public void InitiateAttack()
     {
-        curAttackCooldown = attackCooldown; // Reset attack cooldown
+
+        print("attacking");
 
         Health healthscript;
         if (healthscript = goal.gameObject.GetComponent<Health>()) // Attack object if it has the health script attached
         {
-            healthscript.AddToHealth(-damage);
+            StartCoroutine(AttackSequence());
+            isAttacking = true;
+            print("started");
         }
     }
+
+    private IEnumerator AttackSequence()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        Collider[] hits = Physics.OverlapBox(transform.position + transform.forward, new Vector3(0.5f, 1.3f, 0.7f), Quaternion.identity);
+        foreach (Collider hit in hits)
+        {
+            if (hit.gameObject == goal)
+            {
+                goal.GetComponent<Health>().AddToHealth(-damage);
+                print(goal.GetComponent<Health>());
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        curAttackCooldown = attackCooldown; // Reset attack cooldown
+        isAttacking = false;
+
+    }
+
 
 
     /// <summary>

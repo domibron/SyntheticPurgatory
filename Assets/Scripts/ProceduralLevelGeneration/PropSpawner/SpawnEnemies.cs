@@ -7,8 +7,9 @@ public class SpawnEnemies : SequenceBase
 {
     NavMeshBaker navMeshBaker;
 
-    public GameObject RangedEnemy;
-    public GameObject MeleeEnemy;
+    public GameObject[] EnemyList;
+    //public GameObject RangedEnemy;
+    //public GameObject MeleeEnemy;
 
     LevelGenerator levelGenerator;
 
@@ -61,9 +62,11 @@ public class SpawnEnemies : SequenceBase
 
         if (res)
         {
-            GameObject prefab = (UnityEngine.Random.Range(0, 2) == 1) ? RangedEnemy : MeleeEnemy;
+            //GameObject prefab = (UnityEngine.Random.Range(0, 2) == 1) ? RangedEnemy : MeleeEnemy;
+            //Instantiate(prefab, hit.position + Vector3.up, Quaternion.identity);
 
-            Instantiate(prefab, hit.position + Vector3.up, Quaternion.identity);
+            Instantiate(EnemyList[UnityEngine.Random.Range(0, EnemyList.Length - 1)], hit.position + Vector3.up, Quaternion.identity);
+
         }
     }
 

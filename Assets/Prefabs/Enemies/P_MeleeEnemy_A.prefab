@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6233635240962316276}
   - component: {fileID: 3291576566208639172}
+  - component: {fileID: 4598592756767948647}
   - component: {fileID: 328645207216918543}
   - component: {fileID: 1536644213997405182}
   - component: {fileID: 7781285387532226289}
@@ -23,7 +24,7 @@ GameObject:
   - component: {fileID: 2494591856015755940}
   - component: {fileID: 8368313451598693076}
   m_Layer: 9
-  m_Name: P_MeleeEnemy
+  m_Name: P_MeleeEnemy_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,6 +67,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.9, y: 1.1, z: 0.6}
   m_Center: {x: 0, y: 0.55, z: 0}
+--- !u!114 &4598592756767948647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756158581593521815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0988b935a88ac74b9a875863aeb8f39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyKnockedBack: 0
+  enemyStunned: 0
 --- !u!114 &328645207216918543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,9 +96,9 @@ MonoBehaviour:
   enemyKnockedBack: 0
   enemyStunned: 0
   Alerted: 0
-  baseSpeed: 6
+  baseSpeed: 5
   turnReduction: 5
-  damage: 0
+  damage: 18
   attackRange: 2
   attackCone: 0.3
   attackCooldown: 1
