@@ -310,8 +310,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fce434a1a655e3478d1f62499823c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RangedEnemy: {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
-  MeleeEnemy: {fileID: 1756158581593521815, guid: 5455d20885edf97428cc927578495e4e, type: 3}
+  EnemyList:
+  - {fileID: 1756158581593521815, guid: 5455d20885edf97428cc927578495e4e, type: 3}
+  - {fileID: 5514008251998027403, guid: a5a8870271a2bde498c0e941757aac71, type: 3}
+  - {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
+  - {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
 --- !u!114 &842285765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +375,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.2
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
