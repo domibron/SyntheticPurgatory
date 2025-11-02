@@ -67,6 +67,13 @@ public class MeleeEnemyAI : BaseEnemy
     /// Variable for checking if enemy is currently attacking
     /// </summary>
     private bool isAttacking;
+    /// <summary>
+    /// Use alternative attack where they laucnh themselves at target
+    /// </summary>
+    [SerializeField]
+    private bool launchAtTarget;
+
+    private bool launching;
 
 
     void Start()
@@ -192,7 +199,16 @@ public class MeleeEnemyAI : BaseEnemy
     /// </summary>
     public void InitiateAttack()
     {
+        if (launchAtTarget)
+        {
+            launching = true;
+            KnockbackAI(1);
 
+            Vector3 targetDir = goal.transform.position - transform.position;
+            GetComponent<Rigidbody>().AddForce(targetDir * 4 + Vector3.up, ForceMode.VelocityChange);
+
+            return;
+        }
         print("attacking");
 
         Health healthscript;
