@@ -1,7 +1,5 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class BaseEnemy : MonoBehaviour
 {
@@ -102,12 +100,15 @@ public class BaseEnemy : MonoBehaviour
 
     private void GetUp()
     {
-        transform.position = Vector3.MoveTowards(transform.position, targetGetupPosition, 0.01f);
-        if (transform.position == targetGetupPosition)
-        {
-            isGettingUp = false;
-            agent.enabled = true;
-            enemyKnockedBack = false;
-        }
+        isGettingUp = false;
+        agent.enabled = true;
+        enemyKnockedBack = false;
+        //transform.position = Vector3.MoveTowards(transform.position, targetGetupPosition, 0.01f);
+        //if (transform.position == targetGetupPosition)
+        //{
+        //    isGettingUp = false;
+        //    agent.enabled = true;
+        //    enemyKnockedBack = false;
+        //}
     }
 }
