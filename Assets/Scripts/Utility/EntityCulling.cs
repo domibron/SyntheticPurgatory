@@ -27,16 +27,28 @@ public class EntityCulling : MonoBehaviour
 
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
 
-        levelGenerator = LevelGenObjectRefGetter.Instance.GetReference().GetComponent<LevelGenerator>();
+        if (LevelGenObjectRefGetter.Instance == null)
+        {
+            Debug.LogWarning("LevelGenObjectRefGetter could not be found!");
 
-        gridCoordiantes = levelGenerator.GetGridCoordinates(transform.position);
+        }
+        else
+        {
+            levelGenerator = LevelGenObjectRefGetter.Instance.GetReference().GetComponent<LevelGenerator>();
 
-        isReady = true;
+            gridCoordiantes = levelGenerator.GetGridCoordinates(transform.position);
+
+            isReady = true;
+
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (levelGenerator == null) return;
+
         if (player == null) return;
 
         if (levelGenerator.GetGridCoordinates(transform.position) != gridCoordiantes)

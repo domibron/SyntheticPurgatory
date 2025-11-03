@@ -66,6 +66,40 @@ public class PlayerCombat : MonoBehaviour
     float currentMeleeCooldown = 0f;
     float currentKickCooldown = 0f;
 
+    // NEW CANNON
+    // Charging
+    bool isRecharging = false; // UI display or something.
+
+    bool cursorGoingRight = true;
+
+    int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
+    float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
+    float currentChargeBar = 1f;
+
+    float cursorScrollSpeed = 1;
+
+    float currentCursorPosition = 0.5f;
+
+    bool isChargeOnLeftSide = false;
+    float chargeUpPos = 0.3f;
+    float chargeSize = 0.2f; // full width is 0.5f since the bars are split in half.
+
+    int missDenominator = 4;
+
+    bool hasPressedCharge = false;
+
+    float rechargeRatePerShot = 0.1f; // 1th of a second.
+
+    // mainly used for the player's hud.
+    public Action OnChargeSuccess;
+    public Action OnChargeFail;
+    public Action OnShowChargeBar;
+    public Action OnHideChargeBar;
+
+    // Firing
+
+
+
 
     // PlayerMovement playerMovement;
     Transform mainCamera;
@@ -73,12 +107,17 @@ public class PlayerCombat : MonoBehaviour
     bool wantToFireRanged = false;
     bool wantToMelee = false;
     bool wantToKick = false;
+
+    bool wantLeftCharge = false;
+    bool wantRightCharge = false;
     // bool wantToReload = false;
 
     InputAction rangedWeaponInput;
     InputAction meleeWeaponInput;
-    InputAction KickInput;
+    InputAction kickInput;
     InputAction ReloadInput;
+    InputAction leftChargeInput;
+    InputAction rightChargeInput;
 
     [SerializeField]
     bool showMeleeBox = false;
@@ -97,10 +136,16 @@ public class PlayerCombat : MonoBehaviour
 
         rangedWeaponInput = InputSystem.actions.FindAction("Attack");
         meleeWeaponInput = InputSystem.actions.FindAction("Melee");
-        KickInput = InputSystem.actions.FindAction("Interact");
+        kickInput = InputSystem.actions.FindAction("Interact");
         ReloadInput = InputSystem.actions.FindAction("Reload");
+        leftChargeInput = InputSystem.actions.FindAction("LeftCharge");
+        rightChargeInput = InputSystem.actions.FindAction("RightCharge");
+
 
         animator = GetComponent<Animator>();
+
+        // TODO: Move to stats read write thingy. // EPIK COMMENT
+        chargePerShot = 1f / (float)shotsPerFullCharge;
     }
 
     #region Start
@@ -135,6 +180,8 @@ public class PlayerCombat : MonoBehaviour
         kickForce = stats.KickForce;
         kickAttackDelay = stats.KickAttackDelay;
         reloadTime = stats.ReloadTime;
+
+        // TODO: calc charge heere.
     }
 
     #region Update
@@ -157,6 +204,16 @@ public class PlayerCombat : MonoBehaviour
 
         PollInput();
 
+        // Cursor stuff for charging.
+
+        WeaponCharging();
+
+
+
+        // end of cursor stuff
+
+
+
         if (wantToFireRanged && currentAmmoCount > 0 && currentProjectileCooldown <= 0)
         {
             FireProjectile();
@@ -177,6 +234,182 @@ public class PlayerCombat : MonoBehaviour
             Reload();
         }
 
+    }
+
+    private void WeaponCharging()
+    {
+        if (!isRecharging)
+        {
+            if (wantLeftCharge || wantRightCharge) // TODO: have input determine charge location.
+            {
+                ResetCharge();
+                isRecharging = true;
+            }
+        }
+
+
+        // passive recharge for the losers that cant hit any skill checks.
+        if (currentChargeBar < 1)
+        {
+            currentChargeBar += Time.deltaTime * chargePerShot * rechargeRatePerShot;
+        }
+
+        // Cursor movement.
+        if (cursorGoingRight)
+        {
+            currentCursorPosition += Time.deltaTime * cursorScrollSpeed;
+        }
+        else
+        {
+            currentCursorPosition -= Time.deltaTime * cursorScrollSpeed;
+        }
+
+
+        if (currentCursorPosition >= 1)
+        {
+            currentCursorPosition = 1;
+            cursorGoingRight = false;
+        }
+        else if (currentCursorPosition <= 0)
+        {
+            currentCursorPosition = 0;
+            cursorGoingRight = true;
+        }
+
+
+        if (hasPressedCharge && !wantLeftCharge && !wantRightCharge) hasPressedCharge = false;
+
+        if (wantLeftCharge && !hasPressedCharge && isChargeOnLeftSide && currentCursorPosition < 0.5f)
+        {
+            if (IsCursourOverCheck())
+            {
+                // we pass
+                currentChargeBar += chargePerShot;
+                cursorGoingRight = true;
+            }
+            else
+            {
+                currentChargeBar += chargePerShot / (float)missDenominator;
+
+            }
+
+
+            if (currentCursorPosition < 0.5f)
+                isChargeOnLeftSide = false;
+            else
+                isChargeOnLeftSide = true;
+
+            hasPressedCharge = true;
+            SetNewChargePos(isChargeOnLeftSide);
+            // cursorGoingRight = !cursorGoingRight;
+        }
+
+        if (wantRightCharge && !hasPressedCharge && !isChargeOnLeftSide && currentCursorPosition > 0.5f)
+        {
+            if (IsCursourOverCheck())
+            {
+                // we pass
+                currentChargeBar += chargePerShot;
+                cursorGoingRight = false;
+            }
+            else
+            {
+                currentChargeBar += chargePerShot / (float)missDenominator;
+            }
+
+            if (currentCursorPosition < 0.5f)
+                isChargeOnLeftSide = false;
+            else
+                isChargeOnLeftSide = true;
+
+            hasPressedCharge = true;
+            SetNewChargePos(isChargeOnLeftSide);
+            // cursorGoingRight = !cursorGoingRight;
+        }
+
+        if (wantLeftCharge && wantRightCharge)
+        {
+            currentChargeBar = 0f;
+        }
+
+        if (currentChargeBar > 1)
+        {
+            currentChargeBar = 1f;
+        }
+        else if (currentChargeBar < 0f)
+        {
+            currentChargeBar = 0f;
+        }
+    }
+
+    float GetChargeSize()
+    {
+        return 0.2f;
+    }
+
+    void SetNewChargePos(bool generateOnLeft)
+    {
+        chargeSize = GetChargeSize(); // 
+        float halfOfChargeSize = chargeSize / 2f;
+
+        if (generateOnLeft)
+        {
+            chargeUpPos = UnityEngine.Random.Range(0 + halfOfChargeSize, 0.5f - halfOfChargeSize);
+        }
+        else
+        {
+            chargeUpPos = UnityEngine.Random.Range(0.5f + halfOfChargeSize, 1f - halfOfChargeSize);
+        }
+
+        // set transforms and such but that will be handled elsewhere.
+    }
+
+    void ResetCharge()
+    {
+        currentCursorPosition = 0.5f;
+        cursorGoingRight = true;
+        isChargeOnLeftSide = false;
+        hasPressedCharge = false;
+        SetNewChargePos(isChargeOnLeftSide);
+    }
+
+
+    bool IsCursourOverCheck()
+    {
+        float lowerBound = chargeUpPos - (chargeSize / 2f);
+        float upperBound = chargeUpPos + (chargeSize / 2f);
+
+        if (currentCursorPosition >= lowerBound && currentCursorPosition <= upperBound)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsChargeOnLeftSide()
+    {
+        return isChargeOnLeftSide;
+    }
+
+    public float GetCursorPos()
+    {
+        return currentCursorPosition;
+    }
+
+    public float GetChargeUpSize()
+    {
+        return chargeSize;
+    }
+
+    public float GetChargeUpPos()
+    {
+        return chargeUpPos;
+    }
+
+    public float GetChargeAmount()
+    {
+        return currentChargeBar;
     }
 
     #region OnDrawGizmos
@@ -305,8 +538,10 @@ public class PlayerCombat : MonoBehaviour
     {
         wantToFireRanged = rangedWeaponInput.IsPressed();
         wantToMelee = meleeWeaponInput.IsPressed();
-        wantToKick = KickInput.IsPressed();
+        wantToKick = kickInput.IsPressed();
         // wantToReload = ReloadInput.IsPressed();
+        wantLeftCharge = leftChargeInput.IsPressed();
+        wantRightCharge = rightChargeInput.IsPressed();
     }
 
     public int GetCurrentAmmo()

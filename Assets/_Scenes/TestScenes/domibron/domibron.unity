@@ -1751,6 +1751,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ea1c519e264aa4ebe5ef0bda9c0841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableNavAgent: 0
+  enemyClass: {fileID: 0}
 --- !u!1001 &733228855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4974,11 +4976,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats:
-  - Key: player
+  - Key: 0
     ScriptableObject: {fileID: 11400000, guid: 91e266c7eeadaef4bab3f5cad1ffdbe4, type: 2}
-  - Key: melee
+  - Key: 0
     ScriptableObject: {fileID: 11400000, guid: b543644531b1734498d30aa4e06876f4, type: 2}
-  - Key: ranged
+  - Key: 0
     ScriptableObject: {fileID: 11400000, guid: ac57a9d5f7545084aa3ec0e00cd4e75c, type: 2}
 --- !u!1 &1587663732
 GameObject:
