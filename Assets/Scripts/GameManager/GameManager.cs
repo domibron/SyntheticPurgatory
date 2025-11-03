@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
 
     private int currentDifficulty = 0;
 
+    private bool pause = false;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -60,6 +62,11 @@ public class GameManager : MonoBehaviour
         if (inDungeon && currentTime > 0)
         {
             currentTime -= Time.deltaTime;
+        }
+        else if (inDungeon && currentTime <= 0 && !pause)
+        {
+            pause = true;
+            PlayerRefFetcher.Instance?.GetPlayerRef()?.GetComponent<PlayerDeath>()?.KillPlayer();
         }
     }
 
@@ -97,6 +104,7 @@ public class GameManager : MonoBehaviour
     {
         currentTime = TimePerLevel;
         inDungeon = true;
+        pause = false;
     }
 
     public void ResetTimer()

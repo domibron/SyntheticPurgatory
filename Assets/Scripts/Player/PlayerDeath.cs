@@ -18,7 +18,7 @@ public class PlayerDeath : MonoBehaviour
         GetComponent<Health>().onDeath += KillPlayer;
     }
 
-    void KillPlayer()
+    public void KillPlayer()
     {
         transform.GetComponent<PlayerMovement>().DisablePlayerMovement(true);
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
