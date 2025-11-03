@@ -70,10 +70,10 @@ public class ScrapManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) // TODO: remove.
-        {
-            GameManager.Instance.ReturnToHubWorld();
-        }
+        // if (Input.GetKeyDown(KeyCode.Escape)) // TODO: remove.
+        // {
+        //     GameManager.Instance.ReturnToHubWorld();
+        // }
     }
 
     // * This is static.
