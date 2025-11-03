@@ -30,9 +30,9 @@ public class PlayerCombat : MonoBehaviour
 
     float reloadTime = 2f;
 
-    float currentReloadTime = 0f;
+    // float currentReloadTime = 0f;
 
-    bool isReloading = false;
+    // bool isReloading = false;
 
     [SerializeField]
     Vector3 meleeBounds = Vector3.one;
@@ -58,7 +58,7 @@ public class PlayerCombat : MonoBehaviour
     // [SerializeField]
     float kickAttackDelay = 0.5f; //
 
-    int currentAmmoCount = 0;
+    // int currentAmmoCount = 0;s
 
     // float currentKickCooldown = 0;
 
@@ -110,7 +110,7 @@ public class PlayerCombat : MonoBehaviour
 
     bool wantLeftCharge = false;
     bool wantRightCharge = false;
-    // bool wantToReload = false;
+    bool wantToReload = false;
 
     InputAction rangedWeaponInput;
     InputAction meleeWeaponInput;
@@ -132,7 +132,7 @@ public class PlayerCombat : MonoBehaviour
     #endregion
     void Awake()
     {
-        currentAmmoCount = projectileMagSize;
+        // currentAmmoCount = projectileMagSize;
 
         rangedWeaponInput = InputSystem.actions.FindAction("Attack");
         meleeWeaponInput = InputSystem.actions.FindAction("Melee");
@@ -195,12 +195,12 @@ public class PlayerCombat : MonoBehaviour
         if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
         if (currentProjectileCooldown > 0) currentProjectileCooldown -= Time.deltaTime;
 
-        if (currentReloadTime > 0) currentReloadTime -= Time.deltaTime;
-        else if (currentKickCooldown <= 0 && isReloading)
-        {
-            currentAmmoCount = projectileMagSize;
-            isReloading = false;
-        }
+        // if (currentReloadTime > 0) currentReloadTime -= Time.deltaTime;
+        // else if (currentKickCooldown <= 0 && isReloading)
+        // {
+        //     currentAmmoCount = projectileMagSize;
+        //     isReloading = false;
+        // }
 
         PollInput();
 
@@ -214,8 +214,13 @@ public class PlayerCombat : MonoBehaviour
 
 
 
-        if (wantToFireRanged && currentAmmoCount > 0 && currentProjectileCooldown <= 0)
+        if (wantToFireRanged && currentChargeBar > 0 && currentProjectileCooldown <= 0)
         {
+            if (isRecharging)
+            {
+                HideRechargeBar();
+            }
+
             FireProjectile();
         }
 
@@ -229,23 +234,46 @@ public class PlayerCombat : MonoBehaviour
             KickAttack();
         }
 
-        if (currentAmmoCount <= 0 && !isReloading)
+        if (currentChargeBar <= 0 && !isRecharging)
         {
-            Reload();
+            // Reload();
+            ShowRechargeBar();
         }
 
+    }
+
+    private void ShowRechargeBar()
+    {
+        ResetCharge();
+        isRecharging = true;
+        OnShowChargeBar?.Invoke();
+    }
+
+    private void HideRechargeBar()
+    {
+        isRecharging = false;
+        OnHideChargeBar?.Invoke();
     }
 
     private void WeaponCharging()
     {
         if (!isRecharging)
         {
-            if (wantLeftCharge || wantRightCharge) // TODO: have input determine charge location.
+            if (wantToReload || wantLeftCharge) // TODO: have input determine charge location.
             {
-                ResetCharge();
-                isRecharging = true;
+                ShowRechargeBar();
+            }
+            else
+            {
+                return;
             }
         }
+        else if (currentChargeBar >= 1)
+        {
+            HideRechargeBar();
+            return;
+        }
+
 
 
         // passive recharge for the losers that cant hit any skill checks.
@@ -327,10 +355,10 @@ public class PlayerCombat : MonoBehaviour
             // cursorGoingRight = !cursorGoingRight;
         }
 
-        if (wantLeftCharge && wantRightCharge)
-        {
-            currentChargeBar = 0f;
-        }
+        // if (wantLeftCharge && wantRightCharge)
+        // {
+        //     currentChargeBar = 0f;
+        // }
 
         if (currentChargeBar > 1)
         {
@@ -443,13 +471,13 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    #region Reload
-    #endregion
-    private void Reload()
-    {
-        isReloading = true;
-        currentReloadTime = reloadTime;
-    }
+    // #region Reload
+    // #endregion
+    // private void Reload()
+    // {
+    //     isReloading = true;
+    //     currentReloadTime = reloadTime;
+    // }
     #region KickAttack
     #endregion
     private void KickAttack()
@@ -506,7 +534,8 @@ public class PlayerCombat : MonoBehaviour
     #endregion
     private void FireProjectile()
     {
-        currentAmmoCount--;
+        // currentAmmoCount--;
+        currentChargeBar -= chargePerShot;
         currentProjectileCooldown = projectileFireRate;
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
@@ -539,15 +568,15 @@ public class PlayerCombat : MonoBehaviour
         wantToFireRanged = rangedWeaponInput.IsPressed();
         wantToMelee = meleeWeaponInput.IsPressed();
         wantToKick = kickInput.IsPressed();
-        // wantToReload = ReloadInput.IsPressed();
+        wantToReload = ReloadInput.IsPressed();
         wantLeftCharge = leftChargeInput.IsPressed();
         wantRightCharge = rightChargeInput.IsPressed();
     }
 
-    public int GetCurrentAmmo()
-    {
-        return currentAmmoCount;
-    }
+    // public int GetCurrentAmmo()
+    // {
+    //     return currentAmmoCount;
+    // }
 
     public int GetMaxAmmo()
     {
