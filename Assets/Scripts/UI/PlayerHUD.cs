@@ -30,6 +30,24 @@ public class PlayerHUD : MonoBehaviour
 
     private float savedAlpha = 0f;
 
+    [SerializeField]
+    private Image chargeCursor;
+
+    [SerializeField]
+    private Image chargeUpSegment;
+
+    [SerializeField]
+    private Image chargeBar;
+
+
+    [SerializeField]
+    private GameObject weaponChargeBar;
+
+    [SerializeField]
+    private Image weaponChargeBarFill;
+
+    [SerializeField]
+    private Image basicPassIndicator;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -43,6 +61,21 @@ public class PlayerHUD : MonoBehaviour
         gameManager.StartTimer(); // TODO: move to level generator.
 
         savedAlpha = damageVignette.color.a;
+
+        playerCombat.OnShowChargeBar += OnShowChargeBar;
+        playerCombat.OnHideChargeBar += OnHideChargeBar;
+        OnHideChargeBar();
+    }
+
+    private void OnHideChargeBar()
+    {
+        weaponChargeBar.SetActive(false);
+    }
+
+    private void OnShowChargeBar()
+    {
+        weaponChargeBar.SetActive(true);
+
     }
 
     private void OnHealthChanged(float newAmount, float oldAmount)
@@ -50,6 +83,7 @@ public class PlayerHUD : MonoBehaviour
         if (newAmount - oldAmount < 0)
         {
             currentApearTime = apearTime;
+
         }
     }
 
@@ -58,10 +92,26 @@ public class PlayerHUD : MonoBehaviour
     {
         ammoText.text = playerCombat.GetCurrentAmmo().ToString() + "/" + playerCombat.GetMaxAmmo().ToString();
         healthBarFill.fillAmount = playerHealth.GetHealthNormalized();
-        currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
+
+        if (GameManager.Instance != null)
+            currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
 
         if (currentApearTime > 0) currentApearTime -= Time.deltaTime;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, Mathf.Lerp(0, savedAlpha, currentApearTime / apearTime));
+
+
+        float halfwidth = chargeBar.rectTransform.sizeDelta.x / 2f;
+
+
+        chargeCursor.rectTransform.localPosition = new Vector3((2f * playerCombat.GetCursorPos() - 1f) * halfwidth, 0, 0);
+
+        chargeUpSegment.rectTransform.sizeDelta = new Vector2(playerCombat.GetChargeUpSize() * (halfwidth * 2f), chargeUpSegment.rectTransform.sizeDelta.y);
+        chargeUpSegment.rectTransform.localPosition = new Vector3((2f * playerCombat.GetChargeUpPos() - 1f) * halfwidth, 0, 0);
+
+        weaponChargeBarFill.fillAmount = playerCombat.GetChargeAmount();
+
+        basicPassIndicator.rectTransform.sizeDelta = new Vector2(halfwidth, basicPassIndicator.rectTransform.sizeDelta.y);
+        basicPassIndicator.rectTransform.localPosition = new Vector3((playerCombat.IsChargeOnLeftSide() ? -halfwidth / 2f : halfwidth / 2f), 0, 0);
     }
 
 
