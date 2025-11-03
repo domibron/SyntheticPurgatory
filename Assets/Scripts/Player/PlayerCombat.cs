@@ -28,7 +28,7 @@ public class PlayerCombat : MonoBehaviour
     // [SerializeField]
     int projectileMagSize = 20;
 
-    float reloadTime = 2f;
+    // float reloadTime = 2f;
 
     // float currentReloadTime = 0f;
 
@@ -68,35 +68,51 @@ public class PlayerCombat : MonoBehaviour
 
     // NEW CANNON
     // Charging
-    bool isRecharging = false; // UI display or something.
+    bool isRecharging = false;
 
-    bool cursorGoingRight = true;
+    // bool cursorGoingRight = true;
 
-    int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
-    float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
+    // int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
+    // float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
     float currentChargeBar = 1f;
+    float rechargeRate = 0.2f;
 
-    float cursorScrollSpeed = 1;
+    float chargeDegradePerShot = 0.1111111111f; // 10 shots before standard.
 
-    float currentCursorPosition = 0.5f;
+    float standardSecondsPerShot = 0.5f;
+    float chargedSecondsPerShot = 0.1f;
 
-    bool isChargeOnLeftSide = false;
-    float chargeUpPos = 0.3f;
-    float chargeSize = 0.2f; // full width is 0.5f since the bars are split in half.
+    float delayAfterFireBeforeRecharging = 0.4f;
+    float rechargeDelay = 0f;
 
-    int missDenominator = 4;
+    [SerializeField]
+    private Transform gunSpinBit;
 
-    bool hasPressedCharge = false;
+    private float velocity = 0f;
 
-    float rechargeRatePerShot = 0.1f; // 1th of a second.
+    [SerializeField]
+    private float spinRate = 20f;
 
-    // mainly used for the player's hud.
-    public Action OnChargeSuccess;
-    public Action OnChargeFail;
-    public Action OnShowChargeBar;
-    public Action OnHideChargeBar;
+    // float cursorScrollSpeed = 1;
 
-    // Firing
+    // float currentCursorPosition = 0.5f;
+
+    // bool isChargeOnLeftSide = false;
+    // float chargeUpPos = 0.3f;
+    // float chargeSize = 0.2f; // full width is 0.5f since the bars are split in half.
+
+    // int missDenominator = 4;
+
+    // bool hasPressedCharge = false;
+
+    // float rechargeRatePerShot = 0.1f; // 1th of a second.
+
+    // // mainly used for the player's hud.
+    // public Action OnChargeSuccess;
+    // public Action OnChargeFail;
+    // public Action OnShowChargeBar;
+    // public Action OnHideChargeBar;
+
 
 
 
@@ -144,8 +160,8 @@ public class PlayerCombat : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
-        // TODO: Move to stats read write thingy. // EPIK COMMENT
-        chargePerShot = 1f / (float)shotsPerFullCharge;
+        // // TODO: Move to stats read write thingy. // EPIK COMMENT
+        // chargePerShot = 1f / (float)shotsPerFullCharge;s
     }
 
     #region Start
@@ -179,7 +195,8 @@ public class PlayerCombat : MonoBehaviour
 
         kickForce = stats.KickForce;
         kickAttackDelay = stats.KickAttackDelay;
-        reloadTime = stats.ReloadTime;
+        // reloadTime = stats.ReloadTime;
+        // rechargeRate = stats.ReloadTime;
 
         // TODO: calc charge heere.
     }
@@ -204,25 +221,32 @@ public class PlayerCombat : MonoBehaviour
 
         PollInput();
 
-        // Cursor stuff for charging.
 
         WeaponCharging();
 
 
 
-        // end of cursor stuff
 
-
-
-        if (wantToFireRanged && currentChargeBar > 0 && currentProjectileCooldown <= 0)
+        if (wantToFireRanged)
         {
-            if (isRecharging)
-            {
-                HideRechargeBar();
-            }
+            rechargeDelay = delayAfterFireBeforeRecharging;
 
-            FireProjectile();
+            velocity = 1;
+
+            if (currentProjectileCooldown <= 0)
+            {
+                FireProjectile();
+            }
         }
+        else
+        {
+            velocity -= Time.deltaTime * 10f * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar));
+        }
+
+        velocity = Mathf.Clamp01(velocity);
+        // TODO: fix later
+        gunSpinBit.Rotate(Vector3.forward * velocity * spinRate); // * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar)));
+
 
         if (wantToMelee && currentMeleeCooldown <= 0)
         {
@@ -234,205 +258,31 @@ public class PlayerCombat : MonoBehaviour
             KickAttack();
         }
 
-        if (currentChargeBar <= 0 && !isRecharging)
-        {
-            // Reload();
-            ShowRechargeBar();
-        }
+        // if (currentChargeBar <= 0 && !isRecharging)
+        // {
+        //     // Reload();
+        //     // ShowRechargeBar();
+        // }
 
-    }
-
-    private void ShowRechargeBar()
-    {
-        ResetCharge();
-        isRecharging = true;
-        OnShowChargeBar?.Invoke();
-    }
-
-    private void HideRechargeBar()
-    {
-        isRecharging = false;
-        OnHideChargeBar?.Invoke();
     }
 
     private void WeaponCharging()
     {
-        if (!isRecharging)
+        if (rechargeDelay <= 0)
         {
-            if (wantToReload || wantLeftCharge) // TODO: have input determine charge location.
-            {
-                ShowRechargeBar();
-            }
-            else
-            {
-                return;
-            }
+            isRecharging = true;
         }
-        else if (currentChargeBar >= 1)
+        else if (rechargeDelay > 0)
         {
-            HideRechargeBar();
-            return;
+            rechargeDelay -= Time.deltaTime;
+            isRecharging = false;
         }
 
-
-
-        // passive recharge for the losers that cant hit any skill checks.
-        if (currentChargeBar < 1)
+        if (isRecharging)
         {
-            currentChargeBar += Time.deltaTime * chargePerShot * rechargeRatePerShot;
+            currentChargeBar += Time.deltaTime * rechargeRate;
         }
-
-        // Cursor movement.
-        if (cursorGoingRight)
-        {
-            currentCursorPosition += Time.deltaTime * cursorScrollSpeed;
-        }
-        else
-        {
-            currentCursorPosition -= Time.deltaTime * cursorScrollSpeed;
-        }
-
-
-        if (currentCursorPosition >= 1)
-        {
-            currentCursorPosition = 1;
-            cursorGoingRight = false;
-        }
-        else if (currentCursorPosition <= 0)
-        {
-            currentCursorPosition = 0;
-            cursorGoingRight = true;
-        }
-
-
-        if (hasPressedCharge && !wantLeftCharge && !wantRightCharge) hasPressedCharge = false;
-
-        if (wantLeftCharge && !hasPressedCharge && isChargeOnLeftSide && currentCursorPosition < 0.5f)
-        {
-            if (IsCursourOverCheck())
-            {
-                // we pass
-                currentChargeBar += chargePerShot;
-                cursorGoingRight = true;
-            }
-            else
-            {
-                currentChargeBar += chargePerShot / (float)missDenominator;
-
-            }
-
-
-            if (currentCursorPosition < 0.5f)
-                isChargeOnLeftSide = false;
-            else
-                isChargeOnLeftSide = true;
-
-            hasPressedCharge = true;
-            SetNewChargePos(isChargeOnLeftSide);
-            // cursorGoingRight = !cursorGoingRight;
-        }
-
-        if (wantRightCharge && !hasPressedCharge && !isChargeOnLeftSide && currentCursorPosition > 0.5f)
-        {
-            if (IsCursourOverCheck())
-            {
-                // we pass
-                currentChargeBar += chargePerShot;
-                cursorGoingRight = false;
-            }
-            else
-            {
-                currentChargeBar += chargePerShot / (float)missDenominator;
-            }
-
-            if (currentCursorPosition < 0.5f)
-                isChargeOnLeftSide = false;
-            else
-                isChargeOnLeftSide = true;
-
-            hasPressedCharge = true;
-            SetNewChargePos(isChargeOnLeftSide);
-            // cursorGoingRight = !cursorGoingRight;
-        }
-
-        // if (wantLeftCharge && wantRightCharge)
-        // {
-        //     currentChargeBar = 0f;
-        // }
-
-        if (currentChargeBar > 1)
-        {
-            currentChargeBar = 1f;
-        }
-        else if (currentChargeBar < 0f)
-        {
-            currentChargeBar = 0f;
-        }
-    }
-
-    float GetChargeSize()
-    {
-        return 0.2f;
-    }
-
-    void SetNewChargePos(bool generateOnLeft)
-    {
-        chargeSize = GetChargeSize(); // 
-        float halfOfChargeSize = chargeSize / 2f;
-
-        if (generateOnLeft)
-        {
-            chargeUpPos = UnityEngine.Random.Range(0 + halfOfChargeSize, 0.5f - halfOfChargeSize);
-        }
-        else
-        {
-            chargeUpPos = UnityEngine.Random.Range(0.5f + halfOfChargeSize, 1f - halfOfChargeSize);
-        }
-
-        // set transforms and such but that will be handled elsewhere.
-    }
-
-    void ResetCharge()
-    {
-        currentCursorPosition = 0.5f;
-        cursorGoingRight = true;
-        isChargeOnLeftSide = false;
-        hasPressedCharge = false;
-        SetNewChargePos(isChargeOnLeftSide);
-    }
-
-
-    bool IsCursourOverCheck()
-    {
-        float lowerBound = chargeUpPos - (chargeSize / 2f);
-        float upperBound = chargeUpPos + (chargeSize / 2f);
-
-        if (currentCursorPosition >= lowerBound && currentCursorPosition <= upperBound)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool IsChargeOnLeftSide()
-    {
-        return isChargeOnLeftSide;
-    }
-
-    public float GetCursorPos()
-    {
-        return currentCursorPosition;
-    }
-
-    public float GetChargeUpSize()
-    {
-        return chargeSize;
-    }
-
-    public float GetChargeUpPos()
-    {
-        return chargeUpPos;
+        currentChargeBar = Mathf.Clamp01(currentChargeBar);
     }
 
     public float GetChargeAmount()
@@ -535,8 +385,9 @@ public class PlayerCombat : MonoBehaviour
     private void FireProjectile()
     {
         // currentAmmoCount--;
-        currentChargeBar -= chargePerShot;
-        currentProjectileCooldown = projectileFireRate;
+        currentChargeBar -= chargeDegradePerShot;
+        // currentProjectileCooldown = projectileFireRate;
+        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar));
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
