@@ -54,4 +54,15 @@ public static class LevelCollection
         if (AllLevels.ContainsKey(key)) return AllLevels[key];
         else return null;
     }
+
+    public static bool DoesSceneMatchStoredKey(string sceneName, string key)
+    {
+        if (!AllLevels.ContainsKey(key)) return false;
+
+        if (AllLevels[key].Contains(sceneName)) return true;
+
+        return false;
+
+
+    }
 }
