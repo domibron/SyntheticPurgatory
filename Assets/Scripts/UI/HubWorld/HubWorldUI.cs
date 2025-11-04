@@ -57,6 +57,11 @@ public class HubWorldUI : MonoBehaviour
         UpgradeUI.SetActive(false);
     }
 
+    public void LoadBossLevel(){
+        if (LevelLoading.Instance != null)
+            LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.BossWorld.ToString());
+    }
+
     public void Quit()
     {
         Application.Quit();
