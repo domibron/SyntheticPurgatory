@@ -37,6 +37,7 @@ public class TankEnemyAI : BaseEnemy
     [SerializeField]
     private float maxChargeSpeed = 8;
 
+    [SerializeField]
     private float chargeActivationTime = 1f;
 
     private float chargeCharge = 0;
