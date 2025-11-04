@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 5481178908069593136}
   - component: {fileID: 3646870973740918178}
   - component: {fileID: 5718870035908852188}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Destructable_Barrel_Bronze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,6 +104,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ea1c519e264aa4ebe5ef0bda9c0841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableNavAgent: 0
+  enemyClass: {fileID: 0}
 --- !u!114 &1205268038597720294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,6 +280,10 @@ PrefabInstance:
     - target: {fileID: 3260000949682903041, guid: 7160ae7688e4bfa4eb2a20dab7f5a178, type: 3}
       propertyPath: m_Name
       value: Barrel_Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 3260000949682903041, guid: 7160ae7688e4bfa4eb2a20dab7f5a178, type: 3}
+      propertyPath: m_Layer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

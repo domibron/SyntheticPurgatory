@@ -195,6 +195,7 @@ GameObject:
   - component: {fileID: 842285759}
   - component: {fileID: 842285766}
   - component: {fileID: 842285765}
+  - component: {fileID: 842285773}
   - component: {fileID: 842285769}
   - component: {fileID: 842285770}
   m_Layer: 0
@@ -298,6 +299,7 @@ MonoBehaviour:
   humanNavSurface: {fileID: 842285759}
   meleeNavSurface: {fileID: 842285766}
   rangedNavSurface: {fileID: 842285765}
+  tankNavSurface: {fileID: 842285773}
 --- !u!114 &842285764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,6 +317,7 @@ MonoBehaviour:
   - {fileID: 5514008251998027403, guid: a5a8870271a2bde498c0e941757aac71, type: 3}
   - {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
   - {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
+  - {fileID: 8359612339840335319, guid: e510bf98c9946f846ae2daeb8469be82, type: 3}
 --- !u!114 &842285765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,6 +450,38 @@ MonoBehaviour:
   - {fileID: 842285771}
   - {fileID: 842285764}
   - {fileID: 842285761}
+--- !u!114 &842285773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842285756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: -902729914
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.41666666
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1 &1801643276
 GameObject:
   m_ObjectHideFlags: 0
