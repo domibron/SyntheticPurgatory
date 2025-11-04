@@ -65,7 +65,7 @@ public class SpawnEnemies : SequenceBase
             //GameObject prefab = (UnityEngine.Random.Range(0, 2) == 1) ? RangedEnemy : MeleeEnemy;
             //Instantiate(prefab, hit.position + Vector3.up, Quaternion.identity);
 
-            Instantiate(EnemyList[UnityEngine.Random.Range(0, EnemyList.Length - 1)], hit.position + Vector3.up, Quaternion.identity);
+            Instantiate(EnemyList[UnityEngine.Random.Range(0, EnemyList.Length)], hit.position + Vector3.up, Quaternion.identity);
 
         }
     }

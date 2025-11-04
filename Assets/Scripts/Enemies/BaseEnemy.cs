@@ -98,7 +98,7 @@ public class BaseEnemy : MonoBehaviour
 
     }
 
-    private void GetUp()
+    public virtual void GetUp()
     {
         isGettingUp = false;
         agent.enabled = true;

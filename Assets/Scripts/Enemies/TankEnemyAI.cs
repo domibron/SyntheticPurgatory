@@ -2,7 +2,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TankEnemyAI : MonoBehaviour
+//By Dr. Frankenstein
+//This code bad currently, will fix later~
+
+public class TankEnemyAI : BaseEnemy
 {
     /// <summary>
     /// NavmeshAgent component of the enemy
@@ -19,17 +22,37 @@ public class TankEnemyAI : MonoBehaviour
     /// Check if enemy has been alerted to player presence
     /// </summary>
     public bool Alerted = false;
+    /// <summary>
+    /// Stored rotation from previous fixed frame
+    /// </summary>
+    private Vector3 oldRotation;
 
     private bool isCharging;
+    /// <summary>
+    /// Max speed for the enemy
+    /// </summary>
+    [Header("Movement")]   // =============================================#
+    public float BaseSpeed = 3.5f;
 
     [SerializeField]
-    private float maxChargeSpeed;
+    private float maxChargeSpeed = 8;
 
-    private float chargeActivationTime = 2;
+    private float chargeActivationTime = 1f;
 
     private float chargeCharge = 0;
 
     private float currentChargeSpeed = 40;
+    /// <summary>
+    /// Offset from the pivot point to start the raycast from
+    /// </summary>
+    [SerializeField]
+    private Vector3 viewPointOffset;
+
+    private float chargeFinishTime = 0.6f;
+
+    private float turnReductionMult = 1;
+
+    private float regularTurnSpeed = 60;
 
     void Start()
     {
@@ -38,51 +61,136 @@ public class TankEnemyAI : MonoBehaviour
         goal = GameObject.FindWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
-
-        Invoke("ChargeAtTarget", 6);
     }
 
 
 
     void FixedUpdate()
     {
+
+        if (enemyKnockedBack)
+        {
+            return;
+        }
+        else if (enemyStunned)
+        {
+            agent.destination = transform.position;
+            return;
+        }
+        if (!Alerted) { return; }
+
+        Vector3 targetDir;
+        Vector3 newDir;
+
         if (isCharging) 
-        { 
+        {
+            if (rb.linearVelocity.magnitude < 0.5f) { return; }
 
-            rb.AddForce(transform.forward * currentChargeSpeed, ForceMode.Acceleration);
-
-            if (rb.linearVelocity.magnitude > currentChargeSpeed)
+            if (rb.linearVelocity.magnitude > 2)
             {
-                rb.linearVelocity = rb.linearVelocity.normalized * maxChargeSpeed;
+                targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
+                newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.008f, 0.0f); // Calculate next angle
+                transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
             }
-            
+
+            Vector3 targetVel = transform.forward * currentChargeSpeed;
+            rb.linearVelocity = new Vector3(targetVel.x, rb.linearVelocity.y, targetVel.z);
+
+            return;
+        }
+        else if (!agent.isActiveAndEnabled)
+        {
             return;
         }
 
-        if (agent.remainingDistance < 9)
-        {
-            float nextToSpeed = 4; //Mathf.Min(nextToSpeed + 0.02f, 1); // Increase rate of turning 
-            agent.speed = 0; // Stop movement
+            targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
+        newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.03f, 0.0f); // Calculate next angle
+        transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
 
-            Vector3 targetDir = goal.transform.position - transform.position; // Get target angle to turn towards
-            Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, nextToSpeed * 0.04f, 0.0f); // Calculate next angle
-            transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+        if (agent.remainingDistance < 12)
+        {
+            agent.speed = 0.1f;
+        }
+        else
+        {
+
+            agent.speed = BaseSpeed / turnReductionMult;
         }
 
-        if (agent.remainingDistance < 10 && chargeCharge < chargeActivationTime)
+
+
+        if (chargeCharge < chargeActivationTime && agent.remainingDistance < 12)
         {
-            chargeCharge += Time.fixedDeltaTime;
-            if (chargeCharge > chargeActivationTime)
+            LayerMask obstacles = LayerMask.GetMask("Default", "Ground", "Player"); // Set layers the raycast can be stopped by
+
+            RaycastHit hit; // Get any objects between enemy and target, if not get player (provided they are within reach)
+            Physics.SphereCast(transform.position + viewPointOffset, 0.75f, transform.forward, out hit, 12, obstacles);
+            if (hit.rigidbody != null) // Make sure something was hit before continuing
             {
-                StartCoroutine(ChargeAtTarget());
+                if (hit.rigidbody.CompareTag("Player")) // If object found is player
+                {
+                    chargeCharge += Time.fixedDeltaTime;
+
+                }
+                else
+                {
+                    chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
+                }
+
             }
-            return;
+            else
+            {
+                chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
+            }
         }
 
-        chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
 
-        agent.destination = goal.transform.position;
+
+        if (chargeCharge > chargeActivationTime)
+        {
+            StartCoroutine(ChargeAtTarget());
+        }
+
+        float angularVelocity = transform.rotation.eulerAngles.y - oldRotation.y; // Get angle difference from previous frame
+        turnReductionMult = 1 + (angularVelocity * 2);
+        //agent.angularSpeed = regularTurnSpeed * turnReductionMult * 2;
+
+        if (agent.isActiveAndEnabled)
+        {
+            agent.destination = goal.transform.position;
+        }
+
+        oldRotation = transform.rotation.eulerAngles; // Save old angle
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isCharging || rb.linearVelocity.magnitude < 2)
+        {
+            return;
+        }
+        
+        if (collision.transform.GetComponent<KickableObject>())
+        {
+            Vector3 kickDir = collision.transform.position - transform.position;
+            collision.transform.GetComponent<IKickable>()?.KickObject(kickDir * rb.linearVelocity.magnitude / 4, ForceMode.VelocityChange);
+        }
+        else if (collision.transform.GetComponent<Health>())
+        {
+            collision.transform.GetComponent<Health>().AddToHealth(-15);
+        }
+        else
+        {
+            if (rb.linearVelocity.magnitude < 0.5f)
+            {
+                StopCharge();
+            }
+
+        }
+
+    }
+
+
 
     private IEnumerator ChargeAtTarget()
     {
@@ -90,29 +198,64 @@ public class TankEnemyAI : MonoBehaviour
         isCharging = true;
         agent.enabled = false;
         rb.angularDamping = 100;
-        currentChargeSpeed = maxChargeSpeed;
+        rb.linearDamping = 0;
+        rb.linearVelocity = Vector3.zero;
+        currentChargeSpeed = maxChargeSpeed / 4;
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.1f);
 
-        while (rb.linearVelocity.magnitude > 1)
+        while (currentChargeSpeed < maxChargeSpeed)
         {
             totalChargeTime += 0.1f;
-            if(totalChargeTime > 1.5f)
+            if(totalChargeTime > 0.5f)
             {
-                currentChargeSpeed = Mathf.Max(currentChargeSpeed - 5f, 0);
-                rb.linearVelocity = Vector3.zero;
+                currentChargeSpeed = Mathf.Min(currentChargeSpeed + 0.3f, maxChargeSpeed);
+
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.01f);
         }
 
-        isCharging = false;
-        agent.enabled = true;
-        rb.angularDamping = 15;
-        chargeCharge = 0;
+        yield return new WaitForSeconds(0.3f);
 
+        totalChargeTime = 0;
+        while (currentChargeSpeed > 0)
+        {
+            totalChargeTime += 0.1f;
+            if (totalChargeTime > 0.5f)
+            {
+                currentChargeSpeed = Mathf.Max(currentChargeSpeed - 0.3f, 0);
+
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
+
+
+        StopCharge();
     }
 
+    private void StopCharge()
+    {
+        NavMeshHit myNavHit;
+        NavMesh.SamplePosition(transform.position - viewPointOffset, out myNavHit, 100, -1);
+        if (myNavHit.distance < 2)
+        {
+            rb.linearVelocity = Vector3.zero;
+            StopCoroutine(ChargeAtTarget());
+            isCharging = false;
+            agent.enabled = true;
+            rb.angularDamping = 15;
+            rb.linearDamping = 20;
+            chargeCharge = 0;
+            StunAI(true, chargeFinishTime);
+        }
+        else
+        {
+            isCharging = false;
+            rb.freezeRotation = false;
+            rb.angularDamping = 0;
 
+        }
+    }
 
 
 

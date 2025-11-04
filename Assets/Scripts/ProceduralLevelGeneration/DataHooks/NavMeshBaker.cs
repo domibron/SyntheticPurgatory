@@ -15,6 +15,8 @@ public class NavMeshBaker : SequenceBase
     NavMeshSurface meleeNavSurface;
     [SerializeField]
     NavMeshSurface rangedNavSurface;
+    [SerializeField]
+    NavMeshSurface tankNavSurface;
 
     NavMeshData navMeshData;
 
@@ -40,6 +42,7 @@ public class NavMeshBaker : SequenceBase
         humanNavSurface.BuildNavMesh(); // I hate this. Cant delay or wait, the game will just be frozen.
         meleeNavSurface.BuildNavMesh();
         rangedNavSurface.BuildNavMesh();
+        tankNavSurface.BuildNavMesh();
         // UnityEditor.StaticOcclusionCulling.Compute();
         onNavMeshSurfaceGenerated?.Invoke();
         OnThisSequenceEnd?.Invoke();

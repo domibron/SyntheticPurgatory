@@ -74,7 +74,9 @@ public class MeleeEnemyAI : BaseEnemy
     private bool launchAtTarget;
 
     private bool launching;
-
+    private bool hasHitPlayer;
+    private float launchCooldown = 2f;
+    private float curLaunchCooldown;
 
     void Start()
     {
@@ -105,6 +107,7 @@ public class MeleeEnemyAI : BaseEnemy
         curAttackCooldown -= Time.fixedDeltaTime;
         if (CheckCanAttack()) { InitiateAttack(); } // Attacking
 
+        curLaunchCooldown -= Time.fixedDeltaTime;
     }
 
     /// <summary>
@@ -189,6 +192,14 @@ public class MeleeEnemyAI : BaseEnemy
             return false;
         }
 
+        if (launchAtTarget)
+        {
+            if (curLaunchCooldown > 0)
+            {
+                return false;
+            }
+        }
+        
         // Return true if all checks weren't triggered
         return true;
     }
@@ -201,11 +212,12 @@ public class MeleeEnemyAI : BaseEnemy
     {
         if (launchAtTarget)
         {
+            hasHitPlayer = false;
             launching = true;
             KnockbackAI(1);
 
-            Vector3 targetDir = goal.transform.position - transform.position;
-            GetComponent<Rigidbody>().AddForce(targetDir * 4 + Vector3.up, ForceMode.VelocityChange);
+            Vector3 targetDir = (goal.transform.position - transform.position) * 4 + Vector3.up;
+            GetComponent<Rigidbody>().AddForce(targetDir.normalized * 10, ForceMode.VelocityChange);
 
             return;
         }
@@ -241,6 +253,24 @@ public class MeleeEnemyAI : BaseEnemy
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (launchAtTarget)
+        {
+            if (collision.transform.CompareTag("Player") && !hasHitPlayer)
+            {
+                collision.transform.GetComponent<Health>().AddToHealth(-damage);
+                hasHitPlayer = true;
+            }
+        }
+
+    }
+
+    public override void GetUp()
+    {
+        base.GetUp();
+        curLaunchCooldown = launchCooldown;
+    }
 
 
     /// <summary>
