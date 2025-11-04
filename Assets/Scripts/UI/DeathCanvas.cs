@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 // By Vincent Pressey
 
@@ -20,6 +21,7 @@ public class DeathCanvas : MonoBehaviour
     /// </summary>
     [SerializeField]
     private TMP_Text lostScrapStatText;
+
 
 
     /// <summary>
@@ -49,6 +51,15 @@ public class DeathCanvas : MonoBehaviour
     /// </summary>
     public void ReturnToHUB()
     {
-        GameManager.Instance.ReturnToHubWorld(true);
+        // TODO: temp stuff.
+        if (LevelCollection.DoesSceneMatchStoredKey(SceneManager.GetActiveScene().name, LevelCollection.LevelKey.BossWorld.ToString()))
+        {
+            LevelLoading.Instance.LoadMainMenu();
+        }
+        else
+        {
+
+            GameManager.Instance.ReturnToHubWorld(true);
+        }
     }
 }
