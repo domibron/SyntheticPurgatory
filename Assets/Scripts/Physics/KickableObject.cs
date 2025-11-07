@@ -8,7 +8,7 @@ public class KickableObject : MonoBehaviour, IKickable
     private bool disableNavAgent;
 
     [SerializeField]
-    private BaseEnemy enemyClass; 
+    private BaseEnemy enemyClass; // TODO: rmeove.
 
     void Awake()
     {
@@ -21,7 +21,7 @@ public class KickableObject : MonoBehaviour, IKickable
 
         if (disableNavAgent)
         {
-            enemyClass.KnockbackAI();
+            enemyClass.KnockbackAI(); // TODO: Move into the AI system itself, this class is only for rigidbodies not AI.
 
             // Alter given force to have forced upward direction and to account for the mass of the object
             alteredForceDir = new Vector3(forceAndDir.x * 5 / (rb.mass / 2), Mathf.Max(forceAndDir.y, 5), forceAndDir.z * 5 / (rb.mass / 2));
