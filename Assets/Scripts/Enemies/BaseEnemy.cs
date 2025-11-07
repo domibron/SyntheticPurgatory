@@ -8,21 +8,21 @@ public class BaseEnemy : MonoBehaviour
     //public float baseSpeed;
     //public float health;
 
-    private Rigidbody rb;
-    private NavMeshAgent agent;
+    protected Rigidbody rb;
+    protected NavMeshAgent agent;
 
     public bool enemyKnockedBack;
     public bool enemyStunned;
-    private float knockbackTimer;
+    protected float knockbackTimer;
 
-    private float baseAngularDamping;
-    private float baseLinearDamping;
+    protected float baseAngularDamping;
+    protected float baseLinearDamping;
 
-    private bool isGettingUp;
-    private Vector3 targetGetupPosition;
+    protected bool isGettingUp;
+    protected Vector3 targetGetupPosition;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    protected virtual void Awake()
     {
         rb = transform.GetComponent<Rigidbody>();
         baseAngularDamping = rb.angularDamping;
@@ -31,7 +31,7 @@ public class BaseEnemy : MonoBehaviour
         agent = transform.GetComponent<NavMeshAgent>();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (isGettingUp)
         {
@@ -72,7 +72,7 @@ public class BaseEnemy : MonoBehaviour
         agent.enabled = false;
 
     }
-    private void OnCollisionStay(Collision collision)
+    protected virtual void OnCollisionStay(Collision collision)
     {
         if (enemyKnockedBack && knockbackTimer < 0 && rb.linearVelocity.y > -0.1f)
         {
