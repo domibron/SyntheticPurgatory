@@ -4,25 +4,38 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class Crane : MonoBehaviour
 {
-    [SerializeField]
+    [Header("Crane Target"), SerializeField]
     private Transform targetPoint;
 
+    [SerializeField]
+    private Transform followPoint;
 
-    [Space, SerializeField]
+
+
+    [Header("Crane Lerping"), SerializeField]
     bool enableLerping = true;
 
     [SerializeField]
     float rate = 1f;
 
-    [SerializeField]
-    private Transform followPoint;
+    [Space, SerializeField]
+    bool lerpRotation = true;
 
     [SerializeField]
+    float rotationRateDegreesPerSecond = 10f;
+
+
+
+    [Header("Crane Top"), SerializeField]
     private Transform craneTop;
 
+    [SerializeField]
+    private float rotationOffset = 180f;
 
 
-    [Space, SerializeField]
+
+
+    [Header("Crane Arm"), SerializeField]
     bool allowExtension = true;
 
     [SerializeField]
@@ -39,7 +52,7 @@ public class Crane : MonoBehaviour
 
 
 
-    [Space, SerializeField]
+    [Header("Crane Carriage"), SerializeField]
     private Transform carriage;
 
     [SerializeField]
@@ -50,21 +63,42 @@ public class Crane : MonoBehaviour
 
 
 
-    private Vector3 targetPos;
+    [Header("Crane Boom (The Hook)"), SerializeField]
+    private Transform boom;
+
+    [SerializeField]
+    private Transform boomMin; // Top of boom.
+
+    [SerializeField]
+    private bool boomHasMax = false;
+
+    [SerializeField]
+    private float boomMaxDropDistance = 50f;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
 
-    }
+    [Space, SerializeField]
+    private Transform boomCable;
+
+
+
 
     // Update is called once per frame
     void Update()
     {
         if (enableLerping)
         {
-            followPoint.position = Vector3.Lerp(followPoint.position, targetPoint.position, rate * Time.deltaTime);
+
+            Vector3 moveAmount = (targetPoint.position - followPoint.position).normalized * rate * Time.deltaTime;
+
+            if (Vector3.Distance(followPoint.position, targetPoint.position) < moveAmount.magnitude)
+            {
+                followPoint.position = targetPoint.position;
+            }
+            else
+            {
+                followPoint.position += moveAmount;
+            }
         }
         else
         {
@@ -72,33 +106,41 @@ public class Crane : MonoBehaviour
         }
 
 
-        targetPos = followPoint.position - transform.position;
+        Vector3 targetPos = followPoint.position - transform.position;
 
         // top rotation.
         float angle = Mathf.Atan2(targetPos.z, targetPos.x);
 
-        craneTop.rotation = Quaternion.Euler(0, -(Mathf.Rad2Deg * angle) + 180f, 0);
+        if (lerpRotation)
+        {
+            craneTop.rotation = Quaternion.RotateTowards(craneTop.rotation, Quaternion.Euler(0, -(Mathf.Rad2Deg * angle) + rotationOffset, 0), rotationRateDegreesPerSecond * Time.deltaTime);
+        }
+        else
+        {
+            craneTop.rotation = Quaternion.Euler(0, -(Mathf.Rad2Deg * angle) + rotationOffset, 0);
+        }
 
 
-        // presume x is move direction. Hard coded but gets the job done.
+        // Get bounds for the crane arms.
         extendableArm.localPosition = extendableArmMin.localPosition;
         Vector3 carriageMaxWhenRetracted = extendableArm.localPosition + carriageMax.localPosition;
 
-        extendableArm.localPosition = extendableArmMax.localPosition;
+        if (allowExtension)
+        {
+            extendableArm.localPosition = extendableArmMax.localPosition;
+        }
+        else
+        {
+            extendableArm.localPosition = extendableArmMin.localPosition;
+        }
         Vector3 carriageFullMax = extendableArm.localPosition + carriageMax.localPosition;
 
 
-        // carriage
+        // set the carriage before the arm, we can adjust arm to the carriage.
         float targetDistanceFromCrane = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(targetPos, 0));
-
 
         float carrageMinDist = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(carriageMin.localPosition, 0));
         float carrageMaxDist = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(carriageFullMax, 0));
-
-
-
-
-        // use max extension to create a lerp, so some dist calc to convert, turn into percentage then lerp.
 
         if (targetDistanceFromCrane <= carrageMinDist)
         {
@@ -113,29 +155,70 @@ public class Crane : MonoBehaviour
             carriage.localPosition = carriageMin.localPosition + (-Vector3.right * (carrageMaxDist - carrageMinDist));
         }
 
+        // Crane arms.
+        if (allowExtension)
+        {
+            // Extendable Arm
+            // is the carriage less than the middle point. I did not abs the values hense the > and not the <.
+            // We are presuming +X is the forward direction (+Z is default, I am aware, just made crane wrong and I WILL NOT FIX IT).
+            if (carriage.localPosition.x >= carriageMaxWhenRetracted.x + extensionStartDistance)
+            {
+                extendableArm.localPosition = extendableArmMin.localPosition;
+            }
+            else if (carriage.localPosition.x < carriageMaxWhenRetracted.x + extensionStartDistance && carriage.localPosition.x > carriageFullMax.x)
+            {
+                float howMuchToExtendBy = carriage.localPosition.x - (carriageMaxWhenRetracted.x + extensionStartDistance);
 
+                if (howMuchToExtendBy > extendableArmMin.localPosition.x) howMuchToExtendBy = extendableArmMin.localPosition.x;
+                else if (howMuchToExtendBy < extendableArmMax.localPosition.x) howMuchToExtendBy = extendableArmMax.localPosition.x;
 
-        // Extendable Arm
-        // is the carriage less than the middle point. I did not abs the values hense the > and not the <.
-        if (carriage.localPosition.x >= carriageMaxWhenRetracted.x + extensionStartDistance)
+                extendableArm.localPosition = new Vector3(howMuchToExtendBy, extendableArm.localPosition.y, extendableArm.localPosition.z);
+            }
+            else if (carriage.localPosition.x <= carriageFullMax.x)
+            {
+                extendableArm.localPosition = extendableArmMax.localPosition;
+            }
+        }
+        else
         {
             extendableArm.localPosition = extendableArmMin.localPosition;
         }
-        else if (carriage.localPosition.x < carriageMaxWhenRetracted.x + extensionStartDistance && carriage.localPosition.x > carriageFullMax.x)
-        {
-            float howMuchToExtendBy = carriage.localPosition.x - (carriageMaxWhenRetracted.x + extensionStartDistance);
 
-            if (howMuchToExtendBy > extendableArmMin.localPosition.x) howMuchToExtendBy = extendableArmMin.localPosition.x;
-            else if (howMuchToExtendBy < extendableArmMax.localPosition.x) howMuchToExtendBy = extendableArmMax.localPosition.x;
 
-            extendableArm.localPosition = new Vector3(howMuchToExtendBy, extendableArm.localPosition.y, extendableArm.localPosition.z);
-        }
-        else if (carriage.localPosition.x <= carriageFullMax.x)
+
+        // Boom (the claw)
+        float targetY = followPoint.position.y;
+
+
+        if (targetY < boomMin.position.y)
         {
-            extendableArm.localPosition = extendableArmMax.localPosition;
+            float boomDropAmount = boomMin.position.y - targetY;
+
+            if (boomHasMax && boomDropAmount > boomMaxDropDistance)
+            {
+                boom.position = new Vector3(boom.position.x, boomMin.position.y - boomMaxDropDistance, boom.position.z);
+            }
+            else
+            {
+                boom.position = new Vector3(boom.position.x, boomMin.position.y - boomDropAmount, boom.position.z);
+            }
         }
+        else if (targetY >= boomMin.position.y)
+        {
+
+            boom.position = boomMin.position;
+        }
+
+        boomCable.localPosition = boom.localPosition / 2f; // we can ignore the carriage pos since its 0,0,0 and we dont need to calc that.
+        boomCable.localScale = new Vector3(boomCable.localScale.x, boom.localPosition.y / 2f, boomCable.localScale.z); // real fucking lazy but it does the job.
     }
 
+    /// <summary>
+    /// Simple function to create a new vector with the provided vector but with the new y.
+    /// </summary>
+    /// <param name="target">The vector to create new vector from.</param>
+    /// <param name="y">The new y value for the vector.</param>
+    /// <returns>The vector with the given y value</returns>
     private Vector3 GetVectorWithLevelY(Vector3 target, float y)
     {
         return new Vector3(target.x, y, target.z);
