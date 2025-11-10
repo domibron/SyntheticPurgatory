@@ -13,6 +13,7 @@ public class MeleeEnemyStats : ICloneable
         return new MeleeEnemyStats
         {
             health = health,
+
         };
     }
 

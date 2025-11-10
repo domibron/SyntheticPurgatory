@@ -1,8 +1,9 @@
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
+# if UNITY_EDITOR
+using UnityEditor;
 [CustomEditor(typeof(BakeAllNav))]
 public class BakeAllNavGUI : UnityEditor.Editor
 {
@@ -24,7 +25,7 @@ public class BakeAllNavGUI : UnityEditor.Editor
         }
     }
 }
-
+#endif
 public class BakeAllNav : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
