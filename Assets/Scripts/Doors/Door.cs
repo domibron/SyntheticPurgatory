@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public enum DoorOverrideState
@@ -52,17 +53,17 @@ public class Door : MonoBehaviour
 
     public void ToggleDoorState()
     {
-        isDoorOpen = !isDoorOpen;
+        StartCoroutine(RandomDoorDelay(!isDoorOpen));
     }
 
     public void OpenDoor()
     {
-        isDoorOpen = true;
+        StartCoroutine(RandomDoorDelay(true));
     }
 
     public void CloseDoor()
     {
-        isDoorOpen = false;
+        StartCoroutine(RandomDoorDelay(false));
     }
 
     public void OverrideClose()
@@ -73,5 +74,12 @@ public class Door : MonoBehaviour
     public void OverrideOpen()
     {
         doorOverrideState = DoorOverrideState.Open;
+    }
+
+    IEnumerator RandomDoorDelay(bool doorState, float maxPossibleDelay = 0.35f)
+    {
+        print("doing");
+        yield return new WaitForSeconds(Random.Range(0, maxPossibleDelay));
+        isDoorOpen = doorState;
     }
 }

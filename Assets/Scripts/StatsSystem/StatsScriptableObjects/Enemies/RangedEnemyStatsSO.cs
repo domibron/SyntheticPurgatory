@@ -7,6 +7,17 @@ using UnityEngine;
 public class RangedEnemyStats : ICloneable
 {
     public float health = 0f;
+    
+    public float damage = 0f;
+    public float attackRange = 0f;
+    public float attackSpeed = 0f;
+
+    public float baseSpeed = 0f;
+    public float followSpeed = 0f;
+    public float fleeSpeed = 0f;
+    public float stuckSpeed = 0f;
+    public float dodgeSpeed = 0f;
+
 
     public object Clone()
     {
