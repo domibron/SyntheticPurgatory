@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 public class BossAI : BaseEnemy
@@ -13,7 +14,7 @@ public class BossAI : BaseEnemy
         MeleeLunge,
         FireProjectile,
         EnterArena,
-        ExitArena,
+        EnterControlRoom,
     }
 
     CurrentState currentState = CurrentState.OperateButtons;
@@ -36,9 +37,20 @@ public class BossAI : BaseEnemy
     [SerializeField]
     private BossArenaAttack[] arenaAttacks;
 
+    [SerializeField]
+    private LayerMask ground;
 
     private bool isMeleeLunging = false;
+    private bool isFiringGun = false;
 
+    private float defaultSpeed = 0f;
+
+    [SerializeField]
+    private GameObject bossProjectile;
+
+    [SerializeField]
+    private float gunCooldown = 3f;
+    private float currentGunCooldown = 0f;
 
     private event Action<CurrentState, CurrentState> onCurrentStateChanged;
 
@@ -47,14 +59,25 @@ public class BossAI : BaseEnemy
     {
         SetUpAttacks();
 
+        defaultSpeed = agent.speed;
+
         // store the player ref.
         player = PlayerRefFetcher.Instance.transform;
+
+        GetComponent<Health>().onDeath += OnHealth;
+    }
+
+    private void OnHealth()
+    {
+        Destroy(this.gameObject);
+        print("Win!!!!");
     }
 
     protected override void Update()
     {
         base.Update();
 
+        if (currentGunCooldown > 0) currentGunCooldown -= Time.deltaTime;
 
     }
 
@@ -89,14 +112,17 @@ public class BossAI : BaseEnemy
             case CurrentState.EnterArena:
                 ExitControlRoom();
                 break;
-            case CurrentState.ExitArena:
+            case CurrentState.EnterControlRoom:
                 EnterControlRoom();
                 break;
             case CurrentState.ThinkingOfAttack:
                 ThinkingOfAttack();
                 break;
             case CurrentState.MeleeLunge:
-                if (isMeleeLunging) StartCoroutine(MeleeLunge());
+                if (!isMeleeLunging) StartCoroutine(MeleeLunge());
+                break;
+            case CurrentState.FireProjectile:
+                if (!isFiringGun) StartCoroutine(FireGun());
                 break;
         }
 
@@ -105,7 +131,7 @@ public class BossAI : BaseEnemy
 
     private void SetCurrentState(CurrentState newState)
     {
-        onCurrentStateChanged.Invoke(currentState, newState);
+        onCurrentStateChanged?.Invoke(currentState, newState);
         currentState = newState;
     }
 
@@ -113,11 +139,69 @@ public class BossAI : BaseEnemy
 
     private void ThinkingOfAttack()
     {
+        agent.destination = player.position;
+
         float playerDistance = Vector3.Distance(player.position, transform.position);
         if (playerDistance < 5f) // lunge distance.
         {
             SetCurrentState(CurrentState.MeleeLunge);
         }
+        else if (!Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground")) && currentGunCooldown <= 0f)
+        {
+            // TODO: this please, check the fucking layers please. Later, later
+            SetCurrentState(CurrentState.FireProjectile);
+        }
+        else if (agent.remainingDistance < 1f)
+        {
+            // Dumbass mode enabled.
+            UnityEngine.AI.NavMesh.SamplePosition(transform.position + UnityEngine.Random.insideUnitSphere * 5f, out NavMeshHit hit, 10f, NavMesh.AllAreas);
+            agent.destination = hit.position;
+        }
+
+        // else // TODO: this is shit, fix this terrible shit.
+        // {
+        //     SetCurrentState(CurrentState.EnterControlRoom);
+        // }
+    }
+
+
+    private IEnumerator FireGun()
+    {
+        isFiringGun = true;
+        agent.speed = 0f;
+
+        // charge up the attack
+        float timer = 1f;
+        while (timer > 0)
+        {
+            yield return new WaitForEndOfFrame();
+            timer -= Time.deltaTime;
+            transform.rotation = Quaternion.LookRotation(new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position, Vector3.up);
+            // print("timer wait " + timer);
+        }
+
+        // fire!
+        transform.rotation = Quaternion.LookRotation(new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position, Vector3.up);
+        GameObject projectile = Instantiate(bossProjectile, transform.position + transform.up + transform.forward, Quaternion.identity);
+        projectile.GetComponent<ProjectileScript>().ProjectileDamage = 20f;
+
+        Vector3 dirNeeded = (player.position - projectile.transform.position).normalized;
+        projectile.GetComponent<Rigidbody>()?.AddForce(dirNeeded * 20f, ForceMode.VelocityChange);
+
+        // recover
+        timer = 1f;
+        while (timer > 0)
+        {
+            yield return new WaitForEndOfFrame();
+            timer -= Time.deltaTime;
+            // print("timer recover " + timer);
+        }
+
+        currentGunCooldown = gunCooldown;
+        agent.speed = defaultSpeed;
+        isFiringGun = false;
+        SetCurrentState(CurrentState.ThinkingOfAttack);
+        yield return null;
     }
 
 
@@ -126,12 +210,24 @@ public class BossAI : BaseEnemy
         // setup
         isMeleeLunging = true;
 
+        float quitTimer = 5f;
+
         // Get close.
         while (agent.remainingDistance > 5f)
         {
             agent.destination = player.position;
-            yield return null;
+            yield return new WaitForEndOfFrame();
+            quitTimer -= Time.deltaTime;
+
+            if (quitTimer <= 0)
+            {
+                SetCurrentState(CurrentState.ThinkingOfAttack); // Rethink your actions!
+                yield break; // Get the fuck out
+            }
+            // print("distance");
         }
+
+        agent.destination = transform.position;
 
         // charge up attack
         agent.speed = 0.1f;
@@ -142,31 +238,102 @@ public class BossAI : BaseEnemy
         {
             yield return new WaitForEndOfFrame();
             timer -= Time.deltaTime;
+            transform.rotation = Quaternion.LookRotation(new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position, Vector3.up);
+            // print("timer wait " + timer);
         }
+
+        agent.enabled = false;
 
         // lunge at the player
         Vector3 lungeTarget = player.position;
+        float force = Vector3.Distance(transform.position, lungeTarget) * 2f;
+        float angleNeeded = MathematicsUtility.GetAngleForFireProjectile(transform.position, lungeTarget, force, ArcType.DirectCurve);
 
-        float angleNeeded = MathematicsUtility.GetAngleForFireProjectile(transform.position, lungeTarget, Vector3.Distance(transform.position, lungeTarget) * 4f, ArcType.HighCurve);
+        Vector3 playerPosWithYSameAsUs = new Vector3(player.position.x, transform.position.y, player.position.z);
 
-        // rb.AddForce()
+        transform.rotation = Quaternion.LookRotation(playerPosWithYSameAsUs - transform.position, Vector3.up);
 
-        while (true)
+        Vector3 dir = playerPosWithYSameAsUs - transform.position;
+        dir.y = 0f;
+
+        Vector3 directionRight = Quaternion.AngleAxis(-90, Vector3.up) * dir;
+
+        Vector3 jumpAngle = Quaternion.AngleAxis(angleNeeded, directionRight) * (playerPosWithYSameAsUs - transform.position);
+
+        rb.AddForce(-rb.linearVelocity + (jumpAngle.normalized * force), ForceMode.VelocityChange);
+        print(rb.linearVelocity);
+        // while (true)
+        // {
+        //     if (Vector3.Distance(transform.position, lungeTarget) < 1f) break;
+        //     yield return new WaitForEndOfFrame();
+        // }
+
+        while (Physics.CheckSphere(transform.position, 0.3f, ground)) yield return new WaitForEndOfFrame();
+
+        do
         {
-            if (Vector3.Distance(transform.position, lungeTarget) < 1f) break;
             yield return new WaitForEndOfFrame();
         }
+        while (!Physics.CheckSphere(transform.position, 0.3f, ground) && !Physics.CheckBox(transform.position + (transform.forward * 0.5f),
+            new Vector3(1f, 2f, 0.5f), transform.rotation, LayerMask.GetMask(Constants.PlayerLayer)));
+
+        // so bad. we already checked for this.
+        if (Physics.CheckSphere(transform.position, 0.3f, ground))
+        {
+            // print("BOOM!");
+            GroundSlam();
+        }
+        else if (Physics.CheckBox(transform.position + (transform.forward * 0.5f),
+            new Vector3(1f, 2f, 0.5f), transform.rotation, LayerMask.GetMask(Constants.PlayerLayer)))
+        {
+            LungeHitPlayer();
+        }
+
+        rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
 
         // recover
+        timer = 1f;
+        while (timer > 0)
+        {
+            yield return new WaitForEndOfFrame();
+            timer -= Time.deltaTime;
+            // print("timer recover " + timer);
+        }
 
+
+        // while (!agent.isActiveAndEnabled)
+        // {
+        //     yield return new WaitForEndOfFrame();
+        //     agent.enabled = false;
+        //     yield return new WaitForEndOfFrame();
+        //     agent.enabled = true;
+        // }
+
+        print("End of melee");
+        UnityEngine.AI.NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas);
+
+        transform.position = hit.position;
+        agent.enabled = true;
 
         // end
-        SetCurrentState(CurrentState.ThinkingOfAttack);
+        agent.speed = defaultSpeed;
         isMeleeLunging = false;
-
+        SetCurrentState(CurrentState.ThinkingOfAttack);
         yield return null;
     }
 
+    private void GroundSlam()
+    {
+        if (Vector3.Distance(transform.position, player.position) < 4f)
+        {
+            player.GetComponent<Health>()?.AddToHealth(-30f);
+        }
+    }
+
+    private void LungeHitPlayer()
+    {
+        player.GetComponent<Health>()?.AddToHealth(-50f);
+    }
 
     private void EnterControlRoom()
     {
@@ -211,7 +378,8 @@ public class BossAI : BaseEnemy
     {
         if (arenaAttacks.Length <= 0)
         {
-            throw new NullReferenceException("There are no arena attacks!");
+            Debug.LogError("There are no arena attacks!");
+            return;
         }
 
         foreach (var attack in arenaAttacks)
@@ -224,7 +392,9 @@ public class BossAI : BaseEnemy
     {
         if (arenaAttacks.Length <= 0)
         {
-            throw new NullReferenceException("There are no arena attacks!");
+            AttackConcluded();
+            Debug.LogError("There are no arena attacks!");
+            return;
         }
 
         int attackIndex = UnityEngine.Random.Range(0, arenaAttacks.Length);

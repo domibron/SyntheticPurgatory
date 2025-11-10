@@ -59,6 +59,46 @@ public class DebugConsole : MonoBehaviour
 
 		// InitCommands();
 		baseCommands = new BaseCommands(instance);
+
+		Application.logMessageReceived += MessageRecived;
+
+	}
+
+	private void MessageRecived(string condition, string stackTrace, LogType type)
+	{
+		string suffix = "";
+
+		switch (type)
+		{
+			case LogType.Error:
+				suffix = "<color=red>ERROR: ";
+				break;
+			case LogType.Exception:
+				suffix = "<color=red>EXCEPTION: ";
+				break;
+			case LogType.Assert:
+				suffix = "<color=red>ASSERT: ";
+				break;
+			case LogType.Warning:
+				suffix = "<color=yellow>WARNING: ";
+				break;
+			case LogType.Log:
+				suffix = "<color=white>LOG: ";
+				break;
+		}
+
+		TextToConsole(suffix + condition + "\n" + stackTrace);
+
+	}
+
+	void OnDisable()
+	{
+		Application.logMessageReceived -= MessageRecived;
+	}
+
+	void OnEnable()
+	{
+		Application.logMessageReceived += MessageRecived;
 	}
 
 	// Start is called before the first frame update
