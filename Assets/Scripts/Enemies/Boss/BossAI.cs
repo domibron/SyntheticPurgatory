@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 
@@ -8,8 +9,8 @@ public class BossAI : BaseEnemy
     private enum CurrentState
     {
         OperateButtons,
-        KeepDistance,
-        MeleeCharge,
+        ThinkingOfAttack,
+        MeleeLunge,
         FireProjectile,
         EnterArena,
         ExitArena,
@@ -34,6 +35,10 @@ public class BossAI : BaseEnemy
 
     [SerializeField]
     private BossArenaAttack[] arenaAttacks;
+
+
+    private bool isMeleeLunging = false;
+
 
     private event Action<CurrentState, CurrentState> onCurrentStateChanged;
 
@@ -87,6 +92,12 @@ public class BossAI : BaseEnemy
             case CurrentState.ExitArena:
                 EnterControlRoom();
                 break;
+            case CurrentState.ThinkingOfAttack:
+                ThinkingOfAttack();
+                break;
+            case CurrentState.MeleeLunge:
+                if (isMeleeLunging) StartCoroutine(MeleeLunge());
+                break;
         }
 
     }
@@ -100,7 +111,61 @@ public class BossAI : BaseEnemy
 
 
 
+    private void ThinkingOfAttack()
+    {
+        float playerDistance = Vector3.Distance(player.position, transform.position);
+        if (playerDistance < 5f) // lunge distance.
+        {
+            SetCurrentState(CurrentState.MeleeLunge);
+        }
+    }
 
+
+    private IEnumerator MeleeLunge()
+    {
+        // setup
+        isMeleeLunging = true;
+
+        // Get close.
+        while (agent.remainingDistance > 5f)
+        {
+            agent.destination = player.position;
+            yield return null;
+        }
+
+        // charge up attack
+        agent.speed = 0.1f;
+        yield return new WaitForEndOfFrame();
+
+        float timer = 1f;
+        while (timer > 0)
+        {
+            yield return new WaitForEndOfFrame();
+            timer -= Time.deltaTime;
+        }
+
+        // lunge at the player
+        Vector3 lungeTarget = player.position;
+
+        float angleNeeded = MathematicsUtility.GetAngleForFireProjectile(transform.position, lungeTarget, Vector3.Distance(transform.position, lungeTarget) * 4f, ArcType.HighCurve);
+
+        // rb.AddForce()
+
+        while (true)
+        {
+            if (Vector3.Distance(transform.position, lungeTarget) < 1f) break;
+            yield return new WaitForEndOfFrame();
+        }
+
+        // recover
+
+
+        // end
+        SetCurrentState(CurrentState.ThinkingOfAttack);
+        isMeleeLunging = false;
+
+        yield return null;
+    }
 
 
     private void EnterControlRoom()
@@ -117,8 +182,12 @@ public class BossAI : BaseEnemy
     // Get the fuck out of control room // GET OUT! ~ Tuco Salamanca
     private void ExitControlRoom()
     {
-
         agent.SetDestination(player.position);
+
+        if (!inControlRoom)
+        {
+            SetCurrentState(CurrentState.ThinkingOfAttack);
+        }
     }
 
 
