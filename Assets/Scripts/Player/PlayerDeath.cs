@@ -17,7 +17,7 @@ public class PlayerDeath : MonoBehaviour
     {
         GetComponent<Health>().onDeath += KillPlayer;
     }
-    
+
     public void KillPlayer()
     {
         transform.GetComponent<PlayerMovement>().DisablePlayerMovement(true);
@@ -27,7 +27,8 @@ public class PlayerDeath : MonoBehaviour
         Cursor.visible = true;
 
         deathCanvasScript.ActivateCanvas(true); // Activate death screen
-        deathCanvasScript.ShowStats(ScrapManager.Instance.currentDepositedScrap, ScrapManager.Instance.currentInventoryScrap);
+        if (ScrapManager.Instance != null)
+            deathCanvasScript.ShowStats(ScrapManager.Instance.currentDepositedScrap, ScrapManager.Instance.currentInventoryScrap);
 
     }
 }
