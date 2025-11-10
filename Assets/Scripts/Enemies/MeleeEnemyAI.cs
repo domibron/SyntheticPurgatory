@@ -11,9 +11,14 @@ public class MeleeEnemyAI : BaseEnemy
     /// </summary>
     private NavMeshAgent agent;
     /// <summary>
-    /// Target of the enemy
+    /// Target object for the enemy
     /// </summary>
     private GameObject goal;
+    /// <summary>
+    /// Target Location of the enemy
+    /// </summary>
+    private GameObject goalPos;
+
 
     /// <summary>
     /// Check if enemy has been alerted to player presence
@@ -75,14 +80,25 @@ public class MeleeEnemyAI : BaseEnemy
 
     private bool launching;
     private bool hasHitPlayer;
-    private float launchCooldown = 2f;
+    private float launchCooldown = 1f;
     private float curLaunchCooldown;
+
+    [SerializeField]
+    private GameObject[] leftWheels;
+
+    [SerializeField]
+    private GameObject[] rightWheels;
+
+    [SerializeField]
+    private Animator animator;
 
     void Start()
     {
         GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
 
-        goal = GameObject.FindWithTag("Player");
+        goal = GameObject.FindGameObjectWithTag(Constants.PlayerTag);
+        goalPos = Camera.main.gameObject;
+
         agent = GetComponent<NavMeshAgent>();
 
     }
@@ -100,7 +116,10 @@ public class MeleeEnemyAI : BaseEnemy
         }
 
 
-        if (!Alerted) { return; }
+        if (!Alerted)
+        { 
+            return; 
+        }
 
         MoveToTarget(isAttacking ? baseSpeed / 16 : baseSpeed); // Movement
 
@@ -115,10 +134,10 @@ public class MeleeEnemyAI : BaseEnemy
     /// </summary>
     public void MoveToTarget(float aimedBaseSpeed)
     {
-        agent.destination = goal.transform.position; // Set destination to goal's current position
+        agent.destination = goalPos.transform.position; // Set destination to goal's current position
         if (isAttacking)
         {
-            agent.destination = (transform.position * 7 + goal.transform.position) / 8;
+            agent.destination = (transform.position * 7 + goalPos.transform.position) / 8;
         }
 
 
@@ -141,12 +160,12 @@ public class MeleeEnemyAI : BaseEnemy
 
 
         // Swap to alternative movement if close enough to target
-        if (Vector3.Distance(transform.position, goal.transform.position) < attackRange)
+        if (Vector3.Distance(transform.position, goalPos.transform.position) < attackRange)
         {
             nextToSpeed = Mathf.Min(nextToSpeed + 0.02f, 1); // Increase rate of turning 
             agent.speed = 0; // Stop movement
 
-            Vector3 targetDir = goal.transform.position - transform.position; // Get target angle to turn towards
+            Vector3 targetDir = goalPos.transform.position - transform.position; // Get target angle to turn towards
             Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, nextToSpeed * 0.04f, 0.0f); // Calculate next angle
             transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
         }
@@ -155,8 +174,11 @@ public class MeleeEnemyAI : BaseEnemy
             nextToSpeed = Mathf.Max(nextToSpeed - 0.05f, 0); // Decrease rate of turning 
         }
 
-        //print("left: " + leftTreadSpeed + "   right: " + rightTreadSpeed);
+
+        angularVelocity = transform.rotation.eulerAngles.y - oldRotation.y;
         oldRotation = transform.rotation.eulerAngles; // Save old angle
+
+        RotateWheels(Mathf.Clamp(angularVelocity + agent.speed / 2, -1, 1), Mathf.Clamp(-angularVelocity + agent.speed / 2, -1, 1));
     }
 
 
@@ -167,13 +189,13 @@ public class MeleeEnemyAI : BaseEnemy
     public bool CheckCanAttack()
     {
         // Check if target within attacking distance
-        if (Vector3.Distance(transform.position, goal.transform.position) > attackRange)
+        if (Vector3.Distance(transform.position, goalPos.transform.position) > attackRange)
         {
             return false;
         }
 
         // Calculate angle between object forward and target
-        Vector3 direction = goal.transform.position - transform.position;
+        Vector3 direction = goalPos.transform.position - transform.position;
         Quaternion toRotation = Quaternion.FromToRotation(transform.forward, direction);
         if (toRotation.y > attackCone || toRotation.y < -attackCone)
         {
@@ -216,25 +238,26 @@ public class MeleeEnemyAI : BaseEnemy
             launching = true;
             KnockbackAI(1);
 
-            Vector3 targetDir = (goal.transform.position - transform.position) * 4 + Vector3.up;
-            GetComponent<Rigidbody>().AddForce(targetDir.normalized * 10, ForceMode.VelocityChange);
+            float distance = Vector3.Distance(goalPos.transform.position, transform.position);
+            Vector3 targetDir = (goalPos.transform.position - transform.position) + Vector3.up / 2 * distance;
+            GetComponent<Rigidbody>().AddForce(targetDir.normalized * Mathf.Clamp(distance * 2, 6, 8), ForceMode.VelocityChange);
 
             return;
         }
-        print("attacking");
 
         Health healthscript;
         if (healthscript = goal.gameObject.GetComponent<Health>()) // Attack object if it has the health script attached
         {
             StartCoroutine(AttackSequence());
             isAttacking = true;
-            print("started");
         }
     }
 
     private IEnumerator AttackSequence()
     {
-        yield return new WaitForSeconds(0.25f);
+        if (animator) animator.SetTrigger("Attack");
+
+        yield return new WaitForSeconds(0.4f);
 
         Collider[] hits = Physics.OverlapBox(transform.position + transform.forward, new Vector3(0.5f, 1.3f, 0.7f), Quaternion.identity);
         foreach (Collider hit in hits)
@@ -242,11 +265,10 @@ public class MeleeEnemyAI : BaseEnemy
             if (hit.gameObject == goal)
             {
                 goal.GetComponent<Health>().AddToHealth(-damage);
-                print(goal.GetComponent<Health>());
             }
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7f);
 
         curAttackCooldown = attackCooldown; // Reset attack cooldown
         isAttacking = false;
@@ -272,12 +294,46 @@ public class MeleeEnemyAI : BaseEnemy
         curLaunchCooldown = launchCooldown;
     }
 
+    /// <summary>
+    /// Spin the attached tread/wheel objects
+    /// </summary>
+    /// <param name="leftSpeed">Speed of the left tread/wheel</param>
+    /// <param name="rightSpeed">Speed of the right tread/wheel</param>
+    private void RotateWheels(float leftSpeed, float rightSpeed)
+    {
+        foreach (GameObject wheel in leftWheels)
+        {
+            if (wheel.GetComponent<ScrollingTextureController>())
+            {
+                wheel.GetComponent<ScrollingTextureController>().ScrollSpeed = leftSpeed;
+            }
+            else
+            {
+                wheel.GetComponent<SimpleSpin>().spinSpeed = leftSpeed;
+            }
+                
+        }
+
+        foreach (GameObject wheel in rightWheels)
+        {
+            if (wheel.GetComponent<ScrollingTextureController>())
+            {
+                wheel.GetComponent<ScrollingTextureController>().ScrollSpeed = rightSpeed;
+            }
+            else
+            {
+                wheel.GetComponent<SimpleSpin>().spinSpeed = rightSpeed;
+            }
+        }
+
+    }
 
     /// <summary>
     /// Called when first alerted
     /// </summary>
     private void BecomeAlerted(bool state)
     {
+        if (animator) animator.SetBool("Passive", false);
         Alerted = state;
     }
 

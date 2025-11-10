@@ -48,26 +48,31 @@ public class TankEnemyAI : BaseEnemy
     [SerializeField]
     private Vector3 viewPointOffset;
 
-    private float chargeFinishTime = 0.6f;
+    private float chargeFinishTime = 1f;
 
     private float turnReductionMult = 1;
 
     private float regularTurnSpeed = 60;
+
+    private float previousSpeed;
+
+    private float chargingMinTime = 0.1f;
+    private float currentCharging = 0;
 
     void Start()
     {
         GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
 
         goal = GameObject.FindWithTag("Player");
-        agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
+
     }
 
 
 
     void FixedUpdate()
     {
-
         if (enemyKnockedBack)
         {
             return;
@@ -84,7 +89,9 @@ public class TankEnemyAI : BaseEnemy
 
         if (isCharging) 
         {
-            if (rb.linearVelocity.magnitude < 0.5f) { return; }
+            currentCharging += Time.deltaTime;
+
+            if (rb.linearVelocity.magnitude < 0.5f && currentCharging < chargingMinTime) { return; }
 
             if (rb.linearVelocity.magnitude > 2)
             {
@@ -103,34 +110,21 @@ public class TankEnemyAI : BaseEnemy
             return;
         }
 
-            targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
-        newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.03f, 0.0f); // Calculate next angle
-        transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
-
-        if (agent.remainingDistance < 12)
-        {
-            agent.speed = 0.1f;
-        }
-        else
-        {
-
-            agent.speed = BaseSpeed / turnReductionMult;
-        }
-
-
+        bool detectSucceeded = false;
 
         if (chargeCharge < chargeActivationTime && agent.remainingDistance < 12)
         {
-            LayerMask obstacles = LayerMask.GetMask("Default", "Ground", "Player"); // Set layers the raycast can be stopped by
+            LayerMask obstacles = LayerMask.GetMask(Constants.DefaultLayer, Constants.PlayerLayer); // Set layers the raycast can be stopped by
+            //Vector3 detectDirection = new Vector3(transform.forward.x, Mathf.Clamp(goal.transform.position.y - transform.position.y, -5, 4), transform.forward.z);
 
             RaycastHit hit; // Get any objects between enemy and target, if not get player (provided they are within reach)
             Physics.SphereCast(transform.position + viewPointOffset, 0.75f, transform.forward, out hit, 12, obstacles);
             if (hit.rigidbody != null) // Make sure something was hit before continuing
             {
-                if (hit.rigidbody.CompareTag("Player")) // If object found is player
+                if (hit.rigidbody.CompareTag(Constants.PlayerTag)) // If object found is player
                 {
                     chargeCharge += Time.fixedDeltaTime;
-
+                    detectSucceeded = true;
                 }
                 else
                 {
@@ -142,8 +136,29 @@ public class TankEnemyAI : BaseEnemy
             {
                 chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
             }
+
         }
 
+
+
+        targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
+        newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.03f, 0.0f); // Calculate next angle
+        transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+
+        if (agent.remainingDistance < 12)
+        {
+            agent.speed = 0.1f;
+            if (!detectSucceeded)
+            {
+                agent.speed = BaseSpeed;
+            }
+        }
+        else
+        {
+
+            agent.speed = BaseSpeed / turnReductionMult;
+        }
+        
 
 
         if (chargeCharge > chargeActivationTime)
@@ -161,7 +176,20 @@ public class TankEnemyAI : BaseEnemy
         }
 
         oldRotation = transform.rotation.eulerAngles; // Save old angle
+        previousSpeed = rb.linearVelocity.magnitude;
     }
+
+
+    //private void OnDrawGizmos()
+    //{
+    //    Vector3 detectDirection = new Vector3(transform.forward.x, Mathf.Clamp(goal.transform.position.y - transform.position.y, -5, 4), transform.forward.z);
+    //    Gizmos.DrawLine(transform.position + viewPointOffset, transform.position + viewPointOffset + (detectDirection.normalized) * 3);
+    //}
+
+
+
+
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -183,7 +211,7 @@ public class TankEnemyAI : BaseEnemy
         {
             if (rb.linearVelocity.magnitude < 0.5f)
             {
-                StopCharge();
+                StopCharge(Mathf.Min(previousSpeed / 6 , 1));
             }
 
         }
@@ -230,23 +258,24 @@ public class TankEnemyAI : BaseEnemy
         }
 
 
-        StopCharge();
+        StopCharge(0);
     }
 
-    private void StopCharge()
+    private void StopCharge(float stunTime)
     {
         NavMeshHit myNavHit;
         NavMesh.SamplePosition(transform.position - viewPointOffset, out myNavHit, 100, -1);
         if (myNavHit.distance < 2)
         {
-            rb.linearVelocity = Vector3.zero;
             StopCoroutine(ChargeAtTarget());
             isCharging = false;
             agent.enabled = true;
             rb.angularDamping = 15;
             rb.linearDamping = 20;
+            rb.linearVelocity = -transform.up;
             chargeCharge = 0;
-            StunAI(true, chargeFinishTime);
+            currentCharging = 0;
+            StunAI(true, stunTime);
         }
         else
         {

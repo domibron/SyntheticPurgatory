@@ -62,8 +62,6 @@ public class BaseEnemy : MonoBehaviour
 
     public void KnockbackAI(float minimumTime = 0.3f)
     {
-        print("knockback");
-
         rb.useGravity = true;
         rb.angularDamping = 0;
         rb.linearDamping = 0;
@@ -87,8 +85,6 @@ public class BaseEnemy : MonoBehaviour
                 rb.useGravity = false;
                 rb.angularDamping = baseAngularDamping;
                 rb.linearDamping = baseLinearDamping;
-
-                print("unknocked");
 
                 targetGetupPosition = new Vector3(transform.position.x, hit.point.y, transform.position.z);
                 isGettingUp = true;
