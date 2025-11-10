@@ -50,7 +50,12 @@ public class EnemyGroupSpawner : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
+    {
+        LevelGenObjectRefGetter.Instance.GetComponent<Sequencer>().OnSequencesEnd += SpawnEnemies;
+    }
+
+    void SpawnEnemies()
     {
         if (noActivationChance > Random.Range(0, 99))
         {
