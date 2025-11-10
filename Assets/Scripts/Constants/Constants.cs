@@ -25,6 +25,8 @@ public class Constants
     /// </summary>
     public const string EnemyLayer = "Enemy";
 
+    public const string BossTag = "Boss";
+
     #endregion
 
     #region  Player stuff
