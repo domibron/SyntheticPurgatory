@@ -39,7 +39,7 @@ public class Crane : MonoBehaviour
     bool allowExtension = true;
 
     [SerializeField]
-    float extensionStartDistance = 10f; // 5m from end of inner arm
+    float extensionStartDistance = 10f; // 10m from end of inner arm
 
     [SerializeField]
     private Transform extendableArm;
@@ -124,6 +124,7 @@ public class Crane : MonoBehaviour
         // Get bounds for the crane arms.
         extendableArm.localPosition = extendableArmMin.localPosition;
         Vector3 carriageMaxWhenRetracted = extendableArm.localPosition + carriageMax.localPosition;
+        Vector3 armRetractedPoint = extendableArm.localPosition;
 
         if (allowExtension)
         {
@@ -160,15 +161,25 @@ public class Crane : MonoBehaviour
         {
             // Extendable Arm
             // is the carriage less than the middle point. I did not abs the values hense the > and not the <.
-            // We are presuming +X is the forward direction (+Z is default, I am aware, just made crane wrong and I WILL NOT FIX IT).
+            // We are presuming -X is the forward direction (+Z is default, I am aware, just made crane wrong and I REFUSE TO FIX IT).
             if (carriage.localPosition.x >= carriageMaxWhenRetracted.x + extensionStartDistance)
             {
                 extendableArm.localPosition = extendableArmMin.localPosition;
             }
             else if (carriage.localPosition.x < carriageMaxWhenRetracted.x + extensionStartDistance && carriage.localPosition.x > carriageFullMax.x)
             {
-                float howMuchToExtendBy = carriage.localPosition.x - (carriageMaxWhenRetracted.x + extensionStartDistance);
+                // So much is happening, so we take the distance the carriage is from the max point when retracted, we account for a offset (armRetractedPoint),
+                // the we add the extension offset.
+                /// D==[]====x---o-
+                ///    |     ^ retracted max
+                ///    |         ^ carriage point
+                /// calculate offset of o from x.
+                /// add extension offset.
+                float howMuchToExtendBy = carriage.localPosition.x - (carriageMaxWhenRetracted.x - armRetractedPoint.x) - extensionStartDistance;
+                // arm will extend when the carriage meets the retracted max - offset (we + because we are working in negatives).
 
+
+                // check to see if we exceed the bounds after moving.
                 if (howMuchToExtendBy > extendableArmMin.localPosition.x) howMuchToExtendBy = extendableArmMin.localPosition.x;
                 else if (howMuchToExtendBy < extendableArmMax.localPosition.x) howMuchToExtendBy = extendableArmMax.localPosition.x;
 

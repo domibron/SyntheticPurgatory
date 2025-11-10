@@ -3,7 +3,7 @@ using UnityEngine;
 public class UpgradeCardSpawner : MonoBehaviour
 {
     [SerializeField]
-    CardTeir carTier;
+    CardTeir cardTeir;
 
     [SerializeField]
     private bool spawnOnStart = false;
@@ -13,7 +13,7 @@ public class UpgradeCardSpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        upgradeCardToSpawn = UpgradeCardManager.Instance?.GetUpgradeCardPrefab(carTier);
+        upgradeCardToSpawn = UpgradeCardManager.Instance?.GetUpgradeCardPrefab(cardTeir);
 
         if (spawnOnStart)
         {
