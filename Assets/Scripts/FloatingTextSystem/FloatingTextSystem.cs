@@ -52,8 +52,9 @@ public class FloatingTextSystem : MonoBehaviour
 
 
     #region Start
-    void Start()
+    IEnumerator Start()
     {
+        while (Camera.main == null) yield return new WaitForEndOfFrame();
         cameraTransform = Camera.main.transform;
         //StartCoroutine(spawnNum());
     }
