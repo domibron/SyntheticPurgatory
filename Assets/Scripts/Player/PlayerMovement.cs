@@ -89,6 +89,9 @@ public class PlayerMovement : MonoBehaviour
     InputAction crouchInput;
     InputAction lookInput;
 
+    private bool showVel = false;
+
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -149,6 +152,7 @@ public class PlayerMovement : MonoBehaviour
     void OnGUI()
     {
         // GUILayoutOption[] layout = { GUILayout.MinHeight(Screen.height / 10) };
+        if (!showVel) return;
 
         GUILayout.Label($"<color=red><size={Screen.height / 20}>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
         GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + rb.linearVelocity.magnitude.ToString("F2"));
