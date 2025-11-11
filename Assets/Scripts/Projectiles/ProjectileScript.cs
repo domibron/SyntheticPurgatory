@@ -10,7 +10,7 @@ public class ProjectileScript : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public float ProjectileDamage = 12;
-     
+
     private bool hasHit;
 
     private void OnTriggerEnter(Collider collider)
@@ -36,6 +36,8 @@ public class ProjectileScript : MonoBehaviour
         }
 
         collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(-ProjectileDamage, transform.position);
+
+        collider.gameObject.GetComponent<IShootable>()?.HitObject();
 
         Destroy(gameObject);
 
