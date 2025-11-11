@@ -82,4 +82,9 @@ public class Door : MonoBehaviour
         yield return new WaitForSeconds(Random.Range(0, maxPossibleDelay));
         isDoorOpen = doorState;
     }
+
+    public bool IsDoorOpen()
+    {
+        return isDoorOpen;
+    }
 }
