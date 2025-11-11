@@ -47,7 +47,6 @@ public class PlayerHUD : MonoBehaviour
         playerHealth.onHealthChanged += OnHealthChanged;
 
         gameManager = GameManager.Instance;
-        if (gameManager != null) gameManager.StartTimer(); // TODO: move to level generator.
 
         savedAlpha = damageVignette.color.a;
 
@@ -69,7 +68,12 @@ public class PlayerHUD : MonoBehaviour
         healthBarFill.fillAmount = playerHealth.GetHealthNormalized();
 
         if (GameManager.Instance != null)
-            currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
+        {
+            if (!GameManager.Instance.IsTimerHidden())
+                currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
+            else
+                currentTimeText.text = "";
+        }
 
         if (currentApearTime > 0) currentApearTime -= Time.deltaTime;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, Mathf.Lerp(0, savedAlpha, currentApearTime / apearTime));
