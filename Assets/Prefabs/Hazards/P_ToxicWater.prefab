@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 835038155935022503}
   - component: {fileID: 891641125430594650}
   - component: {fileID: 2777015565677946377}
+  - component: {fileID: 5597321938886023639}
   m_Layer: 0
   m_Name: P_ToxicWater
   m_TagString: Floor
@@ -68,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bc6afd40c51a89743b152c1eb4914cbb, type: 2}
+  - {fileID: 2100000, guid: 8b8f6d7ce81a5104d9bf4cd2bd8e83df, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -157,3 +158,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5597321938886023639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2874593586763184456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 1, y: 1}
+  ScrollSpeed: 0.05
+  IsScrolling: 1
+  IsReversed: 0

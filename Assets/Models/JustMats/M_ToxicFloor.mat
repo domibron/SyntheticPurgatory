@@ -34,10 +34,10 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2450
+  m_CustomRenderQueue: 3000
   stringTagMap:
-    IgnoreProjection: False
-    RenderType: TransparentCutout
+    IgnoreProjection: true
+    RenderType: Transparent
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -53,7 +53,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _CullMode: 0
+    - _SPRDefaultUnlitColorMask: 0
+    - _SRPDefaultUnlitColMode: 2
+    - _TransparentEnabled: 1
+    - _Tweak_transparency: -0.4
+    - _ZOverDrawMode: 1
+    - _ZWriteMode: 0
     m_Colors:
     - _Emissive_Color: {r: 0.37924525, g: 0.37924525, b: 0.37924525, a: 1}
   m_BuildTextureStacks: []
