@@ -78,7 +78,6 @@ public class Door : MonoBehaviour
 
     IEnumerator RandomDoorDelay(bool doorState, float maxPossibleDelay = 0.35f)
     {
-        print("doing");
         yield return new WaitForSeconds(Random.Range(0, maxPossibleDelay));
         isDoorOpen = doorState;
     }

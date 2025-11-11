@@ -44,6 +44,8 @@ public class DamageKickedObject : MonoBehaviour
      
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.transform.CompareTag(Constants.PlayerTag)) { return; }
+
         float objectVel = rb.linearVelocity.magnitude;
         if (objectVel > minVelocity) // Only deal damage if over certain velocity threshold
         {
