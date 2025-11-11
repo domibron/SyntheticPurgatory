@@ -51,7 +51,7 @@ public class Health : MonoBehaviour
     // public event Action<float> onTakeDamage;
 
     /// <summary>
-    /// Called when adding to the health, the provided float is what to add to the health.
+    /// Called when adding to the health, the provided float is what to add to the health. new, old.
     /// </summary>
     public event Action<float, float> onHealthChanged;
 
