@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,6 +43,8 @@ public class GameManager : MonoBehaviour
     private int currentDifficulty = 0;
 
     private bool pause = false;
+
+    private bool timerHidden = false;
 
     void Awake()
     {
@@ -110,6 +113,7 @@ public class GameManager : MonoBehaviour
     public void ResetTimer()
     {
         inDungeon = false;
+        timerHidden = false;
     }
 
     public void ReturnToHubWorld(bool playerDied = false)
@@ -213,4 +217,13 @@ public class GameManager : MonoBehaviour
         return maxLives;
     }
 
+    public void HideTimer()
+    {
+        timerHidden = true;
+    }
+
+    public bool IsTimerHidden()
+    {
+        return timerHidden;
+    }
 }
