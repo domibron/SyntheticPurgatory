@@ -4,7 +4,11 @@ public interface ICraneGrabbable
 {
     public void DropObject();
 
-    public void PickUpObject();
+    public void PickUpObject(Transform craneHook);
 
-    public Vector3 GetGrabPoint();
+    public Transform GetGrabPoint();
+
+    public Transform GetPlacementPoint();
+
+    public bool GetIsOnHook();
 }

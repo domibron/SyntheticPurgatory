@@ -234,7 +234,7 @@ Transform:
   m_GameObject: {fileID: 1528406402779393260}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.06667328, y: -12.5, z: -0.0007132888}
+  m_LocalPosition: {x: -0.0076141357, y: -12.5, z: 0.000000059604645}
   m_LocalScale: {x: 0.1, y: -12.5, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2377,7 +2377,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f494a58536ec2d846b89a2a5666eac7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPoint: {fileID: 4194138080262308550}
+  currentTargetPoint: {fileID: 4194138080262308550}
+  defaultTargetPoint: {fileID: 4194138080262308550}
   followPoint: {fileID: 2985567398306798595}
   enableLerping: 1
   rate: 50
@@ -2395,9 +2396,13 @@ MonoBehaviour:
   carriageMax: {fileID: 706217023590204775}
   boom: {fileID: 1868900007572217497}
   boomMin: {fileID: 1202274233202679975}
+  boomCable: {fileID: 571737789349789579}
   boomHasMax: 0
   boomMaxDropDistance: 50
-  boomCable: {fileID: 571737789349789579}
+  isOverridingDropAmountBoom: 0
+  boomDropOverrideAmount: 40
+  isOverridingBoomOffset: 0
+  boomHeightOffsetAmount: 3
 --- !u!1 &8799349742781063102
 GameObject:
   m_ObjectHideFlags: 0
@@ -2509,7 +2514,7 @@ Transform:
   m_GameObject: {fileID: 8882454068041008604}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.13334656, y: -25, z: -0.0014265776}
+  m_LocalPosition: {x: -0.0152282715, y: -25, z: 0.00000011920929}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

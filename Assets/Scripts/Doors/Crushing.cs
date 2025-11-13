@@ -32,10 +32,10 @@ public class Crushing : MonoBehaviour
     {
         if (!isActive) return;
 
-        print(other.name);
+        // print(other.name);
         if (detectedColliders.Contains(other))
         {
-            print("ATGQEAAEGA");
+            // print("ATGQEAAEGA");
             other.GetComponent<Health>()?.AddToHealth(-damage);
             detectedColliders.Remove(other);
         }
@@ -47,7 +47,7 @@ public class Crushing : MonoBehaviour
 
     public void RemoveCollider(Collider other)
     {
-        print("KILL ME");
+        // print("KILL ME");
         if (detectedColliders.Contains(other))
         {
             detectedColliders.Remove(other);
