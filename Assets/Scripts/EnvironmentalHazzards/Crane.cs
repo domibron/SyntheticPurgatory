@@ -1,11 +1,15 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class Crane : MonoBehaviour
 {
     [Header("Crane Target"), SerializeField]
-    private Transform targetPoint;
+    private Transform currentTargetPoint;
+
+    [SerializeField]
+    private Transform defaultTargetPoint;
 
     [SerializeField]
     private Transform followPoint;
@@ -70,30 +74,93 @@ public class Crane : MonoBehaviour
     private Transform boomMin; // Top of boom.
 
     [SerializeField]
+    private Transform boomCable;
+
+
+    [Space, SerializeField]
     private bool boomHasMax = false;
 
     [SerializeField]
     private float boomMaxDropDistance = 50f;
 
 
+    [Space, SerializeField]
+    private bool isOverridingDropAmountBoom = false;
+
+    [SerializeField]
+    private float boomDropOverrideAmount = 0;
+
 
     [Space, SerializeField]
-    private Transform boomCable;
+    private bool isOverridingBoomOffset = false;
+
+    [SerializeField]
+    private float boomHeightOffsetAmount = 0; // how much to rise the boom to account for offset.
 
 
+    private bool isUpdatingCrane = true;
 
+    private Vector3 actualTarget;
 
     // Update is called once per frame
     void Update()
     {
+        if (isUpdatingCrane)
+        {
+            // print($"{GetDistanceFromTargetWithOffsets()}\n{GetDistanceFromRealTarget()}\n{GetYDistance()}\n{GetXZDistance()}");
+            UpdateCrane();
+        }
+    }
+
+    #region Crane Updating Functions
+    private void UpdateCrane()
+    {
+        FixCurrentTargetIfNull();
+
+        Vector3 targetPos = LerpFollowPointAndGetTarget();
+
+        UpdateCraneRotation(targetPos);
+
+        // carriage needs to be updated before arm so arm can adjust to the carriage.
+        GetCarriageBounds(out Vector3 carriageMaxWhenRetracted, out Vector3 armRetractedPoint, out Vector3 carriageFullMax);
+
+        UpdateCarriage(targetPos, carriageFullMax);
+
+        UpdateCraneExtendableArm(carriageMaxWhenRetracted, armRetractedPoint, carriageFullMax);
+
+        UpdateCraneBoom();
+    }
+
+    private void FixCurrentTargetIfNull()
+    {
+        if (currentTargetPoint == null)
+        {
+            Debug.LogWarning($"{nameof(currentTargetPoint)} is null. Fixing.");
+            currentTargetPoint = defaultTargetPoint;
+        }
+    }
+
+    private Vector3 LerpFollowPointAndGetTarget()
+    {
+        Vector3 currentTargetPos = currentTargetPoint.position;
+
+        if (isOverridingDropAmountBoom) // might need to control speed or be able to detect if the boom is at target pos.
+        {
+            float newYPos = boomMin.position.y - boomDropOverrideAmount;
+
+            currentTargetPos.y = newYPos;
+        }
+
+        actualTarget = currentTargetPos; // saving the output for some checks. because we modify the current target but we need to save the value somewhere.
+
         if (enableLerping)
         {
 
-            Vector3 moveAmount = (targetPoint.position - followPoint.position).normalized * rate * Time.deltaTime;
+            Vector3 moveAmount = (currentTargetPos - followPoint.position).normalized * rate * Time.deltaTime;
 
-            if (Vector3.Distance(followPoint.position, targetPoint.position) < moveAmount.magnitude)
+            if (Vector3.Distance(followPoint.position, currentTargetPos) < moveAmount.magnitude)
             {
-                followPoint.position = targetPoint.position;
+                followPoint.position = currentTargetPos;
             }
             else
             {
@@ -102,12 +169,18 @@ public class Crane : MonoBehaviour
         }
         else
         {
-            followPoint.position = targetPoint.position;
+            followPoint.position = currentTargetPos;
         }
 
 
-        Vector3 targetPos = followPoint.position - transform.position;
 
+        // convert to local.
+        Vector3 targetPos = followPoint.position - transform.position;
+        return targetPos;
+    }
+
+    private void UpdateCraneRotation(Vector3 targetPos)
+    {
         // top rotation.
         float angle = Mathf.Atan2(targetPos.z, targetPos.x);
 
@@ -119,13 +192,14 @@ public class Crane : MonoBehaviour
         {
             craneTop.rotation = Quaternion.Euler(0, -(Mathf.Rad2Deg * angle) + rotationOffset, 0);
         }
+    }
 
-
+    private void GetCarriageBounds(out Vector3 carriageMaxWhenRetracted, out Vector3 armRetractedPoint, out Vector3 carriageFullMax)
+    {
         // Get bounds for the crane arms.
         extendableArm.localPosition = extendableArmMin.localPosition;
-        Vector3 carriageMaxWhenRetracted = extendableArm.localPosition + carriageMax.localPosition;
-        Vector3 armRetractedPoint = extendableArm.localPosition;
-
+        carriageMaxWhenRetracted = extendableArm.localPosition + carriageMax.localPosition;
+        armRetractedPoint = extendableArm.localPosition;
         if (allowExtension)
         {
             extendableArm.localPosition = extendableArmMax.localPosition;
@@ -134,33 +208,40 @@ public class Crane : MonoBehaviour
         {
             extendableArm.localPosition = extendableArmMin.localPosition;
         }
-        Vector3 carriageFullMax = extendableArm.localPosition + carriageMax.localPosition;
+        carriageFullMax = extendableArm.localPosition + carriageMax.localPosition;
+    }
 
+    private void UpdateCarriage(Vector3 targetPos, Vector3 carriageFullMax)
+    {
+        // TODO: make this lerp and not cause the carriage to go in and out when the crane is rotating.
 
         // set the carriage before the arm, we can adjust arm to the carriage.
         float targetDistanceFromCrane = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(targetPos, 0));
 
-        float carrageMinDist = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(carriageMin.localPosition, 0));
-        float carrageMaxDist = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(carriageFullMax, 0));
+        float carriageMinDist = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(carriageMin.localPosition, 0));
+        float carriageMaxDist = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(carriageFullMax, 0));
 
-        if (targetDistanceFromCrane <= carrageMinDist)
+        if (targetDistanceFromCrane <= carriageMinDist)
         {
             carriage.localPosition = carriageMin.localPosition;
         }
-        else if (targetDistanceFromCrane > carrageMinDist - extensionStartDistance && targetDistanceFromCrane < carrageMaxDist)
+        else if (targetDistanceFromCrane > carriageMinDist - extensionStartDistance && targetDistanceFromCrane < carriageMaxDist)
         {
-            carriage.localPosition = carriageMin.localPosition + (-Vector3.right * (targetDistanceFromCrane - carrageMinDist));
+            carriage.localPosition = carriageMin.localPosition + (-Vector3.right * (targetDistanceFromCrane - carriageMinDist));
         }
-        else if (targetDistanceFromCrane >= carrageMaxDist)
+        else if (targetDistanceFromCrane >= carriageMaxDist)
         {
-            carriage.localPosition = carriageMin.localPosition + (-Vector3.right * (carrageMaxDist - carrageMinDist));
+            carriage.localPosition = carriageMin.localPosition + (-Vector3.right * (carriageMaxDist - carriageMinDist));
         }
+    }
 
+    private void UpdateCraneExtendableArm(Vector3 carriageMaxWhenRetracted, Vector3 armRetractedPoint, Vector3 carriageFullMax)
+    {
         // Crane arms.
         if (allowExtension)
         {
             // Extendable Arm
-            // is the carriage less than the middle point. I did not abs the values hense the > and not the <.
+            // is the carriage less than the middle point. I did not abs the values hence the > and not the <.
             // We are presuming -X is the forward direction (+Z is default, I am aware, just made crane wrong and I REFUSE TO FIX IT).
             if (carriage.localPosition.x >= carriageMaxWhenRetracted.x + extensionStartDistance)
             {
@@ -194,16 +275,18 @@ public class Crane : MonoBehaviour
         {
             extendableArm.localPosition = extendableArmMin.localPosition;
         }
+    }
 
-
-
+    private void UpdateCraneBoom()
+    {
         // Boom (the claw)
         float targetY = followPoint.position.y;
 
+        // get the drop amount with offset if enabled.
+        float boomDropAmount = boomMin.position.y - (targetY + (isOverridingBoomOffset ? boomHeightOffsetAmount : 0f));
 
-        if (targetY < boomMin.position.y)
+        if (boomDropAmount > 0)
         {
-            float boomDropAmount = boomMin.position.y - targetY;
 
             if (boomHasMax && boomDropAmount > boomMaxDropDistance)
             {
@@ -214,15 +297,17 @@ public class Crane : MonoBehaviour
                 boom.position = new Vector3(boom.position.x, boomMin.position.y - boomDropAmount, boom.position.z);
             }
         }
-        else if (targetY >= boomMin.position.y)
+        else if (boomDropAmount <= 0)
         {
 
             boom.position = boomMin.position;
         }
 
-        boomCable.localPosition = boom.localPosition / 2f; // we can ignore the carriage pos since its 0,0,0 and we dont need to calc that.
+        boomCable.localPosition = boom.localPosition / 2f; // we can ignore the carriage pos since its 0,0,0 and we don't need to calc that.
         boomCable.localScale = new Vector3(boomCable.localScale.x, boom.localPosition.y / 2f, boomCable.localScale.z); // real fucking lazy but it does the job.
     }
+
+    #endregion
 
     /// <summary>
     /// Simple function to create a new vector with the provided vector but with the new y.
@@ -230,8 +315,73 @@ public class Crane : MonoBehaviour
     /// <param name="target">The vector to create new vector from.</param>
     /// <param name="y">The new y value for the vector.</param>
     /// <returns>The vector with the given y value</returns>
-    private Vector3 GetVectorWithLevelY(Vector3 target, float y)
+    private Vector3 GetVectorWithLevelY(Vector3 target, float y) // TODO: move into a util class.
     {
         return new Vector3(target.x, y, target.z);
     }
+
+
+    #region Public Control Functions
+
+    public void SetTargetPoint(Vector3 position)
+    {
+        currentTargetPoint = defaultTargetPoint;
+        defaultTargetPoint.position = position;
+    }
+
+    public void SetTargetPoint(Transform transform)
+    {
+        if (transform == null)
+        {
+            currentTargetPoint = defaultTargetPoint;
+            return;
+        }
+
+        currentTargetPoint = transform;
+    }
+
+    public Transform GetHookTransform()
+    {
+        return boom;
+    }
+
+    public void OverrideBoomDropDist(bool isOverriding = true, float boomDropAmount = 0)
+    {
+        isOverridingDropAmountBoom = isOverriding;
+        boomDropOverrideAmount = boomDropAmount;
+    }
+
+    public void OverrideBoomOffset(bool isOverriding = true, float boomOffsetAmount = 0)
+    {
+        if (boomOffsetAmount == 0)
+        {
+            isOverridingBoomOffset = false;
+            return;
+        }
+
+        isOverridingBoomOffset = isOverriding;
+        boomHeightOffsetAmount = boomOffsetAmount;
+    }
+
+    public float GetDistanceFromTargetWithOffsets()
+    {
+        return Vector3.Distance(actualTarget, followPoint.position);
+    }
+
+    public float GetDistanceFromRealTarget()
+    {
+        return Vector3.Distance(currentTargetPoint.position, followPoint.position);
+    }
+
+    public float GetYDistance()
+    {
+        return Mathf.Abs(actualTarget.y - followPoint.position.y);
+    }
+
+    public float GetXZDistance()
+    {
+        return Vector3.Distance(GetVectorWithLevelY(actualTarget, 0), GetVectorWithLevelY(followPoint.position, 0));
+    }
+
+    #endregion
 }

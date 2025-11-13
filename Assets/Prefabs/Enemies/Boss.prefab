@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 572888061648109767}
   - component: {fileID: 4423898340952435041}
   - component: {fileID: 3707416984729077131}
+  - component: {fileID: 2484577062712518179}
   - component: {fileID: 4808000218965682286}
   - component: {fileID: 254693823770095049}
   - component: {fileID: 7307343574459912920}
@@ -193,6 +194,33 @@ MonoBehaviour:
   hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
   floatingTextSystem: {fileID: 4423898340952435041}
   health: {fileID: 572888061648109767}
+--- !u!114 &2484577062712518179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1303000234867677999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f6f058753daa254ab30c9b63a2ab931, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnDeathEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: OnBossDeath, Assembly-CSharp
+        m_MethodName: BossDied
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!195 &4808000218965682286
 NavMeshAgent:
   m_ObjectHideFlags: 0
