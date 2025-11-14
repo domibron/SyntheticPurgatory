@@ -89,9 +89,48 @@ public class ArenaWallsManager : MonoBehaviour
     [SerializeField]
     float wallHeight = 3.064f;
 
+    private List<CraneController> allCranes = new List<CraneController>();
+
+
+
     void Start()
     {
+        for (int i = 0; i < containerLayout.containerRows.Length; i++)
+        {
+            for (int j = 0; j < containerLayout.containerRows[i].containerPlacementPoint.Length; j++)
+            {
+                if (allCranes.Contains(containerLayout.containerRows[i].containerPlacementPoint[j].craneControllerResponsible)) continue;
+
+                allCranes.Add(containerLayout.containerRows[i].containerPlacementPoint[j].craneControllerResponsible);
+            }
+        }
+
+
         StartCoroutine(PregenWithContainers());
+        // StartCoroutine(JuggleContainerWalls());
+    }
+
+    private float GetRandomWaitTime()
+    {
+        return UnityEngine.Random.Range(0f, 1f);
+    }
+
+    private IEnumerator ResetAllCranes()
+    {
+        List<CraneController> cranesToReset = allCranes;
+
+        while (cranesToReset.Count > 0)
+        {
+            int craneIndex = UnityEngine.Random.Range(0, cranesToReset.Count);
+
+            if (cranesToReset[craneIndex].ResetCrane())
+            {
+                cranesToReset.RemoveAt(craneIndex);
+            }
+            yield return new WaitForEndOfFrame();
+        }
+
+        yield return null;
     }
 
     private IEnumerator PregenWithContainers()
@@ -125,6 +164,7 @@ public class ArenaWallsManager : MonoBehaviour
 
         print("Completed Wall Generation");
 
+        StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
     private IEnumerator JuggleContainerWalls()
@@ -153,7 +193,7 @@ public class ArenaWallsManager : MonoBehaviour
                 {
                     if (containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].GetContainerCount() <= newLayout[randomChoice.x, randomChoice.y])
                         placements.Remove(randomChoice);
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(GetRandomWaitTime());
                 }
             }
             else
@@ -162,7 +202,7 @@ public class ArenaWallsManager : MonoBehaviour
                 {
                     if (containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].GetContainerCount() >= newLayout[randomChoice.x, randomChoice.y])
                         placements.Remove(randomChoice);
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(GetRandomWaitTime());
                 }
             }
 
@@ -173,7 +213,7 @@ public class ArenaWallsManager : MonoBehaviour
         gridPlacement = newLayout;
 
         print("Juggled");
-
+        StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
     private IEnumerator PlaceContainerWalls(bool generateNewGrid = false)
@@ -203,7 +243,7 @@ public class ArenaWallsManager : MonoBehaviour
             {
                 if (containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].GetContainerCount() >= totalWallLayers)
                     placements.Remove(randomChoice);
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(GetRandomWaitTime());
             }
 
             yield return new WaitForEndOfFrame();
@@ -237,7 +277,7 @@ public class ArenaWallsManager : MonoBehaviour
             {
                 if (!containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].StillHaveContainers())
                     placements.Remove(randomChoice);
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(GetRandomWaitTime());
             }
 
             yield return new WaitForEndOfFrame();

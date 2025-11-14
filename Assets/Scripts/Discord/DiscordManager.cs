@@ -17,6 +17,18 @@ public class DiscordManager : MonoBehaviour
         discord.Dispose();
     }
 
+    // This prevents all types of exit, requiring task manager to kill the application.
+    // [RuntimeInitializeOnLoadMethod]
+    // static void StopExit()
+    // {
+    //     Application.wantsToQuit += OnApplicationQuit;
+    // }
+
+    // private static bool OnApplicationQuit()
+    // {
+    //     return false;
+    // }
+
     public void ChangeActivity()
     {
         var activityManager = discord.GetActivityManager();

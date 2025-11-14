@@ -34,6 +34,13 @@ public class CraneController : MonoBehaviour
     [SerializeField]
     private AudioSource creaking;
 
+    [SerializeField]
+    private LightFlash craneLightFlash;
+
+    const float FLOATING_POINT_FUCKERY = 0.1f;
+
+    private float lastJob = 0f;
+
     // private GameObject currentContainer;
 
     // private float lastMoveCheck = 0f;
@@ -54,6 +61,55 @@ public class CraneController : MonoBehaviour
         // else if (lastMoveCheck > 0) lastMoveCheck -= Time.deltaTime;
 
         // if (crane.GetDistanceFromTargetWithOffsets() > 0) lastMoveCheck = 5f;
+
+        if (!inJob && lastJob > 0) lastJob -= Time.deltaTime;
+        if (!inJob && lastJob <= 0) ResetCrane();
+        else if (inJob) lastJob = 1f;
+    }
+
+    private void JobStart()
+    {
+        inJob = true;
+        alarm.Play();
+        craneLightFlash.StartFlashing();
+    }
+
+    private void JobEnd()
+    {
+        currentContainer = null;
+
+        craneLightFlash.StopFlashing();
+
+
+        // print("completed");
+        inJob = false;
+        OnJobCompleted?.Invoke();
+    }
+
+
+    public bool ResetCrane()
+    {
+        if (inJob) return false;
+        StartCoroutine(ResetCraneJob());
+        return true;
+    }
+
+
+    private IEnumerator ResetCraneJob()
+    {
+        inJob = true;
+
+        yield return new WaitForEndOfFrame();
+        crane.SetTargetPoint(restingPoint);
+        yield return new WaitForEndOfFrame();
+
+        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        OnJobCompleted?.Invoke();
+        inJob = false;
     }
 
     public bool PlaceContainerWall(Vector3 targetPoint, out GameObject container)
@@ -71,9 +127,7 @@ public class CraneController : MonoBehaviour
 
     private IEnumerator GetAndPlaceContainerWall(Vector3 targetPoint)
     {
-        inJob = true;
-        float floatingPointFuckery = 0.1f;
-        alarm.Play();
+        JobStart();
 
         // lastMoveCheck = 5f;
 
@@ -90,7 +144,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -101,7 +155,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(craneGrabbable.GetGrabPoint());
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > floatingPointFuckery)
+        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -114,7 +168,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -133,7 +187,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0); // then override in a frame
         yield return new WaitForEndOfFrame(); // then we can wait another frame.
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -143,7 +197,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(targetPoint + new Vector3(0, craneGrabbable.GetGrabPoint().position.y - craneGrabbable.GetPlacementPoint().position.y, 0));
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > floatingPointFuckery)
+        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -155,7 +209,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -171,14 +225,14 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
 
         // print("heading to resting point");
-        crane.SetTargetPoint(restingPoint);
-        yield return new WaitForEndOfFrame();
+        // crane.SetTargetPoint(restingPoint);
+        // yield return new WaitForEndOfFrame();
 
         // while (crane.GetXZDistance() > floatingPointFuckery)
         // {
@@ -188,11 +242,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
         // audioSource.Stop();
 
-        currentContainer = null;
-
-        // print("completed");
-        inJob = false;
-        OnJobCompleted?.Invoke();
+        JobEnd();
 
     }
 
@@ -206,9 +256,7 @@ public class CraneController : MonoBehaviour
 
     private IEnumerator GetAndRemoveContainerWall(GameObject container)
     {
-        inJob = true;
-        float floatingPointFuckery = 0.1f;
-        alarm.Play();
+        JobStart();
 
         // lastMoveCheck = 5f;
 
@@ -225,7 +273,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -236,7 +284,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(craneGrabbable.GetGrabPoint());
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > floatingPointFuckery)
+        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -249,7 +297,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -268,7 +316,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0); // then override in a frame
         yield return new WaitForEndOfFrame(); // then we can wait another frame.
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -278,7 +326,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(containerSpawnPoint.position + new Vector3(0, craneGrabbable.GetGrabPoint().position.y - craneGrabbable.GetPlacementPoint().position.y, 0));
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > floatingPointFuckery)
+        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -290,7 +338,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -306,14 +354,14 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > floatingPointFuckery)
+        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
         {
             yield return new WaitForEndOfFrame();
         }
 
         // print("heading to resting point");
-        crane.SetTargetPoint(restingPoint);
-        yield return new WaitForEndOfFrame();
+        // crane.SetTargetPoint(restingPoint);
+        // yield return new WaitForEndOfFrame();
 
         RemoveContainer(container);
 
@@ -326,8 +374,7 @@ public class CraneController : MonoBehaviour
         // audioSource.Stop();
 
         // print("completed");
-        inJob = false;
-        OnJobCompleted?.Invoke();
+        JobEnd();
 
     }
 

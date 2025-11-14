@@ -11,7 +11,9 @@ public class ScrollingTextureController : MonoBehaviour
 
     public bool IsReversed = false;
 
-    // [SerializeField]
+    [SerializeField]
+    private int materialIndex = 0;
+
     private Material material;
 
     private Vector2 currentScroll;
@@ -19,7 +21,16 @@ public class ScrollingTextureController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        material = GetComponent<MeshRenderer>().material;
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+
+        if (materialIndex >= meshRenderer.materials.Length)
+        {
+            Debug.LogWarning("Material index is out of bounds!", this);
+            material = GetComponent<MeshRenderer>().material;
+            return;
+        }
+
+        material = GetComponent<MeshRenderer>().materials[materialIndex];
     }
 
     // Update is called once per frame

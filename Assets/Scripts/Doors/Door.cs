@@ -58,12 +58,12 @@ public class Door : MonoBehaviour
 
     public void OpenDoor()
     {
-        StartCoroutine(RandomDoorDelay(true));
+        StartCoroutine(RandomDoorDelay(true)); // race conditions!
     }
 
     public void CloseDoor()
     {
-        StartCoroutine(RandomDoorDelay(false));
+        StartCoroutine(RandomDoorDelay(false)); // race conditions!
     }
 
     public void OverrideClose()

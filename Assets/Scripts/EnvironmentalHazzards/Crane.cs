@@ -303,8 +303,8 @@ public class Crane : MonoBehaviour
             boom.position = boomMin.position;
         }
 
-        boomCable.localPosition = boom.localPosition / 2f; // we can ignore the carriage pos since its 0,0,0 and we don't need to calc that.
-        boomCable.localScale = new Vector3(boomCable.localScale.x, boom.localPosition.y / 2f, boomCable.localScale.z); // real fucking lazy but it does the job.
+        boomCable.localPosition = (boom.localPosition + Vector3.up) / 2f; // we can ignore the carriage pos since its 0,0,0 and we don't need to calc that.
+        boomCable.localScale = new Vector3(boomCable.localScale.x, (boom.localPosition.y + 1f) / 2f, boomCable.localScale.z); // real fucking lazy but it does the job.
     }
 
     #endregion
