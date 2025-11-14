@@ -60,11 +60,9 @@ public class DebugConsole : MonoBehaviour
 		// InitCommands();
 		baseCommands = new BaseCommands(instance);
 
-		Application.logMessageReceived += MessageRecived;
-
 	}
 
-	private void MessageRecived(string condition, string stackTrace, LogType type)
+	private void MessageReceived(string condition, string stackTrace, LogType type)
 	{
 		string suffix = "";
 
@@ -87,18 +85,25 @@ public class DebugConsole : MonoBehaviour
 				break;
 		}
 
-		TextToConsole(suffix + condition + "\n" + stackTrace);
+		string message = suffix + condition;
+
+#if UNITY_EDITOR || DEBUG
+		if (type != LogType.Log)
+			message += "\n" + stackTrace;
+#endif
+
+		TextToConsole(message);
 
 	}
 
 	void OnDisable()
 	{
-		Application.logMessageReceived -= MessageRecived;
+		Application.logMessageReceived -= MessageReceived;
 	}
 
 	void OnEnable()
 	{
-		Application.logMessageReceived += MessageRecived;
+		Application.logMessageReceived += MessageReceived;
 	}
 
 	// Start is called before the first frame update

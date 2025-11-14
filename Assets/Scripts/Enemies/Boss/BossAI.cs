@@ -139,7 +139,6 @@ public class BossAI : BaseEnemy
 
     private void ThinkingOfAttack()
     {
-        agent.destination = player.position;
 
         float playerDistance = Vector3.Distance(player.position, transform.position);
         if (playerDistance < 5f) // lunge distance.
@@ -151,12 +150,17 @@ public class BossAI : BaseEnemy
             // TODO: this please, check the fucking layers please. Later, later
             SetCurrentState(CurrentState.FireProjectile);
         }
+        else if (UnityEngine.AI.NavMesh.SamplePosition(player.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+        {
+            agent.destination = player.position;
+        }
         else if (agent.remainingDistance < 1f)
         {
             // Dumbass mode enabled.
-            UnityEngine.AI.NavMesh.SamplePosition(transform.position + UnityEngine.Random.insideUnitSphere * 5f, out NavMeshHit hit, 10f, NavMesh.AllAreas);
+            UnityEngine.AI.NavMesh.SamplePosition(transform.position + UnityEngine.Random.insideUnitSphere.normalized * 5f, out hit, 10f, NavMesh.AllAreas);
             agent.destination = hit.position;
         }
+
 
         // else // TODO: this is shit, fix this terrible shit.
         // {
