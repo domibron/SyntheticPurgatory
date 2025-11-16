@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CardCollectable : CollectableBase
 {
-    public CardTeir cardTeir = CardTeir.Common;
+    public CardTier cardTeir = CardTier.Common;
 
     protected override void CollectItem()
     {

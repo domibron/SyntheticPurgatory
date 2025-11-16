@@ -7,8 +7,7 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// Disable all combat abilities if enabled
     /// </summary>
-    [SerializeField]
-    private bool isDisabled = false;
+    public bool IsDisabled = false;
 
     [SerializeField]
     GameObject projectilePrefab;
@@ -206,7 +205,7 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDisabled) return;
+        if (IsDisabled) return;
 
         if (currentKickCooldown > 0) currentKickCooldown -= Time.deltaTime;
         if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
@@ -438,6 +437,6 @@ public class PlayerCombat : MonoBehaviour
     #endregion
     public void DisablePlayerCombat(bool state)
     {
-        isDisabled = state;
+        IsDisabled = state;
     }
 }

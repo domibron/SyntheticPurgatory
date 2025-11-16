@@ -43,7 +43,6 @@ public class BaseEnemy : MonoBehaviour
 
     public void StunAI(bool stunned, float stunTime)
     {
-        print("stunned");
 
         enemyStunned = stunned;
 
@@ -54,7 +53,6 @@ public class BaseEnemy : MonoBehaviour
     }
     public void ClearStun()
     {
-        print("unstun");
         enemyStunned = false;
     }
 

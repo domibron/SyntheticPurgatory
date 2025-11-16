@@ -49,7 +49,7 @@ public class PlayerHUD : MonoBehaviour
         gameManager = GameManager.Instance;
 
         savedAlpha = damageVignette.color.a;
-
+        damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, 0);
     }
 
     private void OnHealthChanged(float newAmount, float oldAmount)

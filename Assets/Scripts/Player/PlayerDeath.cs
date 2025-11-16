@@ -20,7 +20,7 @@ public class PlayerDeath : MonoBehaviour
 
     public void KillPlayer()
     {
-        transform.GetComponent<PlayerMovement>().DisablePlayerMovement(true);
+        transform.GetComponent<PlayerMovement>().DisablePlayerMovement(2);
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
 
         Cursor.lockState = CursorLockMode.Confined;
