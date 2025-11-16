@@ -44,6 +44,8 @@ public class DamageKickedObject : MonoBehaviour
      
     private void OnCollisionEnter(Collision collision)
     {
+        if (rb == null) { return; }
+
         if (collision.transform.CompareTag(Constants.PlayerTag)) { return; }
 
         float objectVel = rb.linearVelocity.magnitude;

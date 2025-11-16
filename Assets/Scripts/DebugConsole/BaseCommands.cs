@@ -371,13 +371,13 @@ public class BaseCommands
                 return;
             }
 
-            CardTeir? cardTeir = null;
+            CardTier? cardTeir = null;
 
 
 
-            cardTeir = (CardTeir)type;
+            cardTeir = (CardTier)type;
 
-            if (!Enum.IsDefined(typeof(CardTeir), (CardTeir)type))
+            if (!Enum.IsDefined(typeof(CardTier), (CardTier)type))
             {
                 console.TextToConsole("<color=red>Not a valid card type</color>");
                 return;

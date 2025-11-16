@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-public enum CardTeir
+public enum CardTier
 {
     Common,
     Rare,
@@ -37,47 +37,47 @@ public class UpgradeCardManager : MonoBehaviour
         Instance = this;
     }
 
-    public void CollectUpgradeCard(CardTeir cardTeir)
+    public void CollectUpgradeCard(CardTier cardTeir)
     {
 
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 currentT1Cards++;
                 break;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 currentT2Cards++;
                 break;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 currentT3Cards++;
                 break;
         }
     }
 
-    public int GetAllCardCountOfType(CardTeir cardTeir)
+    public int GetAllCardCountOfType(CardTier cardTeir)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 return currentT1Cards;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 return currentT2Cards;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 return currentT3Cards;
             default:
                 return 0;
         }
     }
 
-    public GameObject GetUpgradeCardPrefab(CardTeir cardTeir)
+    public GameObject GetUpgradeCardPrefab(CardTier cardTeir)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 return commonCardPrefab;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 return rareCardPrefab;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 return epicCardPrefab;
             default:
                 return null;

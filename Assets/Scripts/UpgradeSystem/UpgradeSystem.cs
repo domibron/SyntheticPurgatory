@@ -1071,7 +1071,7 @@ public class UpgradeSystem : MonoBehaviour
 
     UpgradeChoice[] upgradeChoices;
 
-    CardTeir currentCardTeir;
+    CardTier currentCardTeir;
 
     [SerializeField]
     UpgradeItemUI[] upgradeItemUIs;
@@ -1150,15 +1150,15 @@ public class UpgradeSystem : MonoBehaviour
         }
     }
 
-    public int GetCardOpenCost(CardTeir cardTeir)
+    public int GetCardOpenCost(CardTier cardTeir)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 return commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 return rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 return epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
         }
 
@@ -1204,7 +1204,7 @@ public class UpgradeSystem : MonoBehaviour
         UpgradeStat(upgradeChoice);
     }
 
-    public void OpenCard(CardTeir cardTeir)
+    public void OpenCard(CardTier cardTeir)
     {
         if (GameManager.Instance.GetCurrentScrapCount() < GetCardOpenCost(cardTeir)) return; // cant open the card
 
@@ -1223,13 +1223,13 @@ public class UpgradeSystem : MonoBehaviour
 
         switch (currentCardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
         }
@@ -1243,7 +1243,7 @@ public class UpgradeSystem : MonoBehaviour
         ShowScreen(ScreenType.OpenCard);
     }
 
-    public void ScrapCard(CardTeir cardTeir)
+    public void ScrapCard(CardTier cardTeir)
     {
         if (GameManager.Instance.GetCardCount(cardTeir) < 1) return;
 
@@ -1251,13 +1251,13 @@ public class UpgradeSystem : MonoBehaviour
 
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
                 break;
         }
@@ -1277,7 +1277,7 @@ public class UpgradeSystem : MonoBehaviour
         ShowScreen(ScreenType.OpenCard);
     }
 
-    private void RandomUpgrades(CardTeir cardTeir)
+    private void RandomUpgrades(CardTier cardTeir)
     {
         // int upAmount;
         // int downAmount;

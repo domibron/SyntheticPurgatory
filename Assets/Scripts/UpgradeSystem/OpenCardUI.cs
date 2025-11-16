@@ -7,7 +7,7 @@ public class OpenCardUI : MonoBehaviour
     private UpgradeSystem upgradeSystem;
 
     [SerializeField]
-    private CardTeir cardTeir;
+    private CardTier cardTeir;
 
     [SerializeField]
     private TMP_Text cardCost;

@@ -8,8 +8,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Disable all movement if enabled
     /// </summary>
-    [SerializeField]
-    private bool isDisabled = false;
+    public int DisabledType = 0;
 
     [SerializeField]
     private LayerMask groundLayer = Physics.AllLayers;
@@ -130,7 +129,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (isDisabled) { rb.linearVelocity = Vector3.zero; return; }
+        if (DisabledType == 1) { return; }
+        if (DisabledType == 2) { rb.linearVelocity = Vector3.zero; return; }
 
         // col.material.dynamicFriction = 0f;
         PollInput();
@@ -160,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isDisabled) return;
+        if (DisabledType > 0) return;
 
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
@@ -561,8 +561,8 @@ public class PlayerMovement : MonoBehaviour
     //     canSlideBoost = true;
     // }
 
-    public void DisablePlayerMovement(bool state)
+    public void DisablePlayerMovement(int state)
     {
-        isDisabled = state;
+        DisabledType = state;
     }
 }

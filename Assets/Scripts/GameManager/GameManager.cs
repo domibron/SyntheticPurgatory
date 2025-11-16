@@ -73,15 +73,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public (int, int) GetUPandDOWNAmounts(CardTeir cardTeir)
+    public (int, int) GetUPandDOWNAmounts(CardTier cardTeir)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 return (commonUpgradeAmount, commonDowngradeAmount);
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 return (rareUpgradeAmount, rareDowngradeAmount);
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 return (epicUpgradeAmount, epicDowngradeAmount);
             default:
                 return (1, 0);
@@ -137,9 +137,9 @@ public class GameManager : MonoBehaviour
             AddToDepositedScrap(ScrapManager.Instance.GetAllDepositedScrap());
 
             // so bad, but fuck it.
-            commonCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Common);
-            rareCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Rare);
-            epicCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTeir.Epic);
+            commonCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTier.Common);
+            rareCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTier.Rare);
+            epicCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTier.Epic);
         }
         ResetTimer();
         currentDifficulty++;
@@ -160,48 +160,48 @@ public class GameManager : MonoBehaviour
         return currentDifficulty;
     }
 
-    public int GetCardCount(CardTeir cardTeir)
+    public int GetCardCount(CardTier cardTeir)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 return commonCards;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 return rareCards;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 return epicCards;
             default:
                 return 0;
         }
     }
 
-    public void RemoveFromStoredCards(CardTeir cardTeir, int amountToTake)
+    public void RemoveFromStoredCards(CardTier cardTeir, int amountToTake)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 commonCards -= amountToTake;
                 break;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 rareCards -= amountToTake;
                 break;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 epicCards -= amountToTake;
                 break;
         }
     }
 
-    public void AddToStoredCards(CardTeir cardTeir, int amountToAdd)
+    public void AddToStoredCards(CardTier cardTeir, int amountToAdd)
     {
         switch (cardTeir)
         {
-            case CardTeir.Common:
+            case CardTier.Common:
                 commonCards += amountToAdd;
                 break;
-            case CardTeir.Rare:
+            case CardTier.Rare:
                 rareCards += amountToAdd;
                 break;
-            case CardTeir.Epic:
+            case CardTier.Epic:
                 epicCards += amountToAdd;
                 break;
         }

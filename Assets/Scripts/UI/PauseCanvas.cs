@@ -1,0 +1,156 @@
+using System.Collections;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+
+public class PauseCanvas : MonoBehaviour
+{
+    private GameObject playerObject;
+
+    private PlayerMovement playerMovement;
+    private PlayerCombat playerCombat;
+    private CameraController playerCamera;
+
+    /// <summary>
+    /// Object on the canvas that contains all the pause canvas GUI
+    /// </summary>
+    [SerializeField]
+    private GameObject pauseCanvasCollection;
+    /// <summary>
+    /// Object on the canvas that contains all the death canvas GUI
+    /// </summary>
+    [SerializeField]
+    private GameObject deathCanvasCollection;
+    /// <summary>
+    /// Object on the canvas that contains all the death canvas GUI
+    /// </summary>
+    [SerializeField]
+    private GameObject settingsCanvasCollection;
+
+    InputAction pauseInput;
+    bool settingsCloseBuffer = false;
+
+    private int unpausedPlayerMoveState;
+    private bool unpausedPlayerCombatState;
+    private bool unpausedCameraState;
+
+
+    void Start()
+    {
+        pauseInput = InputSystem.actions.FindAction("Pause");
+
+        pauseInput.started += AlternateState;
+
+        playerObject = PlayerRefFetcher.Instance.GetPlayerRef();
+        playerMovement = playerObject.GetComponent<PlayerMovement>();
+        playerCombat = playerObject.GetComponent<PlayerCombat>();
+        playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
+
+    }
+
+    private void AlternateState(InputAction.CallbackContext context)
+    {
+        if (pauseCanvasCollection == null) { return; }
+        if (settingsCloseBuffer) { return; }
+
+        ActivateCanvas(!pauseCanvasCollection.gameObject.activeSelf);
+    }
+
+
+    /// <summary>
+    /// Activate and enable visibility of the Pause canvas
+    /// </summary>
+    /// <param name="state">Whether to turn on or off the pause canvas</param>
+    public void ActivateCanvas(bool state)
+    {
+        if (settingsCloseBuffer) { return; } // Avoid switching if settings were just closed
+
+        if (settingsCanvasCollection.gameObject.activeSelf) // Do not allow switching if settings are open
+        {
+            return;
+        }
+
+        if (deathCanvasCollection.gameObject.activeSelf) // Don't allow player to open pause menu when on death screen
+        {
+            if (!state) // Allow ability to close pause screen if player somehow dies when pause screen opens
+            {
+                pauseCanvasCollection.SetActive(false);
+            }
+            return;
+        }
+
+        if (state)
+        {
+            OpenPauseMenu();
+        }
+        else
+        {
+            ResumeGame();
+        }
+    }
+
+    public void OpenPauseMenu()
+    {
+        unpausedPlayerMoveState = playerMovement.DisabledType;
+        unpausedPlayerCombatState = playerCombat.IsDisabled;
+        unpausedCameraState = playerCamera.IsDisabled;
+
+        playerMovement.DisablePlayerMovement(1);
+        playerCombat.DisablePlayerCombat(true);
+        playerCamera.DisableCameraInput(true);
+
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+
+        Time.timeScale = 0;
+
+        pauseCanvasCollection.SetActive(true);
+
+    }
+
+    public void ResumeGame()
+    {
+        playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
+        playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
+        playerCamera.DisableCameraInput(unpausedCameraState);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        Time.timeScale = 1;
+
+        pauseCanvasCollection.SetActive(false);
+    }
+
+    public IEnumerator SettingsClosedDelay()
+    {
+        settingsCloseBuffer = true;
+
+        yield return new WaitForSecondsRealtime(0.1f);
+
+        settingsCloseBuffer = false;
+    }
+
+
+
+    /// <summary>
+    /// Return back to hub
+    /// </summary>
+    public void ReturnToMainMenu()
+    {
+        playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
+        playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
+        playerCamera.DisableCameraInput(unpausedCameraState);
+
+        Time.timeScale = 1;
+
+        LevelLoading.Instance.LoadMainMenu();
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+}
