@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class DroppablePlatform : MonoBehaviour
 {
@@ -28,6 +29,11 @@ public class DroppablePlatform : MonoBehaviour
     // TODO: make it vel so the platforms speed up when falling to add polish.
     private Vector3 vel;
 
+    [SerializeField]
+    NavMeshObstacle navMeshObstacle;
+
+    [SerializeField]
+    Bounds bounds;
 
     private enum PlatformState
     {
@@ -60,9 +66,11 @@ public class DroppablePlatform : MonoBehaviour
         {
             case PlatformState.Hidden:
                 platform.gameObject.SetActive(false);
+                if (navMeshObstacle != null) navMeshObstacle.enabled = false;
                 break;
             case PlatformState.Dropping:
                 platform.gameObject.SetActive(true);
+                if (navMeshObstacle != null) navMeshObstacle.enabled = false;
                 if (Vector3.Distance(platform.localPosition, defaultPos) >= maxDistanceBeforeHiding && hideAfterDistance)
                 {
                     platformState = PlatformState.Hidden;
@@ -78,6 +86,7 @@ public class DroppablePlatform : MonoBehaviour
                 if (platform.localPosition.y - defaultPos.y >= defaultPos.y)
                 {
                     platformState = PlatformState.None;
+                    if (navMeshObstacle != null) navMeshObstacle.enabled = true;
                     break;
                 }
 
@@ -86,6 +95,7 @@ public class DroppablePlatform : MonoBehaviour
                 break;
             case PlatformState.None:
                 platform.gameObject.SetActive(true);
+                if (navMeshObstacle != null) navMeshObstacle.enabled = true;
                 platform.localPosition = defaultPos;
                 break;
         }
@@ -112,5 +122,15 @@ public class DroppablePlatform : MonoBehaviour
     public bool HasDropped()
     {
         return platformState == PlatformState.Dropping || platformState == PlatformState.Hidden;
+    }
+
+    public Bounds GetBounds()
+    {
+        return bounds;
+    }
+
+    public Vector3 GetWorldPosition()
+    {
+        return transform.position;
     }
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5644973291238786564}
   - component: {fileID: 556858653220444854}
+  - component: {fileID: 6512198137461863564}
   m_Layer: 0
   m_Name: FallingFloorTile
   m_TagString: Untagged
@@ -51,6 +52,26 @@ MonoBehaviour:
   fallRate: 120
   riseRate: 120
   platform: {fileID: 7775299716793444424}
+  navMeshObstacle: {fileID: 6512198137461863564}
+  bounds:
+    m_Center: {x: 4, y: 0, z: -4}
+    m_Extent: {x: 8, y: 0, z: 8}
+--- !u!208 &6512198137461863564
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4435628700326544682}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 4, y: 0.1, z: 4}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 0
+  m_Center: {x: 4, y: 0, z: -4}
+  m_TimeToStationary: 0.5
 --- !u!1 &6966146447676502770
 GameObject:
   m_ObjectHideFlags: 0
