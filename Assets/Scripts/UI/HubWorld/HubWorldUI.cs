@@ -47,14 +47,14 @@ public class HubWorldUI : MonoBehaviour
 
     public void OpenUpgradeScreen()
     {
-        MainUI.SetActive(false);
-        UpgradeUI.SetActive(true);
+        //MainUI.SetActive(false);
+        //UpgradeUI.SetActive(true);
     }
 
     public void OpenMainScene()
     {
-        MainUI.SetActive(true);
-        UpgradeUI.SetActive(false);
+        //MainUI.SetActive(true);
+        //UpgradeUI.SetActive(false);
     }
 
     public void LoadBossLevel(){

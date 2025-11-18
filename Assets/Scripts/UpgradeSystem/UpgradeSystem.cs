@@ -1071,7 +1071,7 @@ public class UpgradeSystem : MonoBehaviour
 
     UpgradeChoice[] upgradeChoices;
 
-    CardTier currentCardTeir;
+    CardTier currentCardTier;
 
     [SerializeField]
     UpgradeItemUI[] upgradeItemUIs;
@@ -1138,7 +1138,7 @@ public class UpgradeSystem : MonoBehaviour
             // print(((CardTeir)ran).ToString());
         }
 
-        if (currentFadeTime > 0)
+        if (currentFadeTime > 0) // Needs rework for new format
         {
             cardScrappedText.gameObject.SetActive(true);
             currentFadeTime -= Time.deltaTime;
@@ -1191,9 +1191,11 @@ public class UpgradeSystem : MonoBehaviour
     {
         UpgradeChoice upgradeChoice = null;
 
+        print(upgradeChoices.Length);
 
         foreach (UpgradeChoice choice in upgradeChoices)
         {
+            print("gabba" + choice);
             if (choice.Upgrade.UpgradeType == upgradeType) upgradeChoice = choice;
         }
 
@@ -1204,16 +1206,17 @@ public class UpgradeSystem : MonoBehaviour
         UpgradeStat(upgradeChoice);
     }
 
-    public void OpenCard(CardTier cardTeir)
+    public void OpenCard(CardTier cardTier)
     {
-        if (GameManager.Instance.GetCurrentScrapCount() < GetCardOpenCost(cardTeir)) return; // cant open the card
+        if (GameManager.Instance.GetCurrentScrapCount() < GetCardOpenCost(cardTier)) return; // cant open the card
 
-        if (GameManager.Instance.GetCardCount(cardTeir) < 1) return; // if we have none of said card type.
+        if (GameManager.Instance.GetCardCount(cardTier) < 1) return; // if we have none of said card type.
 
-        currentCardTeir = cardTeir;
-        GameManager.Instance.RemoveFromDepositedScrap(GetCardOpenCost(currentCardTeir));
-        RandomUpgrades(cardTeir);
-        scrapThisCardText.text = "Worth: " + GetCardOpenCost(currentCardTeir).ToString() + " Scrap";
+        currentCardTier = cardTier;
+        GameManager.Instance.RemoveFromDepositedScrap(GetCardOpenCost(currentCardTier));
+        GameManager.Instance.RemoveFromStoredCards(currentCardTier, 1);
+        RandomUpgrades(currentCardTier);
+        scrapThisCardText.text = "Worth: " + GetCardOpenCost(currentCardTier).ToString() + " Scrap";
         ShowScreen(ScreenType.ChooseUpgrade);
     }
 
@@ -1221,7 +1224,7 @@ public class UpgradeSystem : MonoBehaviour
     {
         int giveAmount = 0;
 
-        switch (currentCardTeir)
+        switch (currentCardTier)
         {
             case CardTier.Common:
                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
@@ -1236,20 +1239,18 @@ public class UpgradeSystem : MonoBehaviour
 
         GameManager.Instance.AddToDepositedScrap(giveAmount);
 
-        cardScrappedText.text = $"{currentCardTeir.ToString()} scrapped for {giveAmount}";
+        cardScrappedText.text = $"{currentCardTier.ToString()} scrapped for {giveAmount}";
         currentFadeTime = fadeDuration;
-
-        // ShowScreen(ScreenType.Scraped);
         ShowScreen(ScreenType.OpenCard);
     }
 
-    public void ScrapCard(CardTier cardTeir)
+    public void ScrapCard(CardTier cardTier)
     {
-        if (GameManager.Instance.GetCardCount(cardTeir) < 1) return;
+        if (GameManager.Instance.GetCardCount(cardTier) < 1) return;
 
         int giveAmount = 0;
 
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
@@ -1262,14 +1263,11 @@ public class UpgradeSystem : MonoBehaviour
                 break;
         }
 
-        GameManager.Instance.RemoveFromStoredCards(cardTeir, 1);
+        GameManager.Instance.RemoveFromStoredCards(cardTier, 1);
         GameManager.Instance.AddToDepositedScrap(giveAmount);
 
-        cardScrappedText.text = $"{currentCardTeir.ToString()} scrapped for {giveAmount}";
+        cardScrappedText.text = $"{currentCardTier.ToString()} scrapped for {giveAmount}";
         currentFadeTime = fadeDuration;
-
-        // ShowScreen(ScreenType.Scraped);
-        // ShowScreen(ScreenType.OpenCard);
     }
 
     public void GoToOpenScreen()

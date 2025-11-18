@@ -117,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
         // PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
 
         //print(pStats.MaxHealth);
-
+        
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }

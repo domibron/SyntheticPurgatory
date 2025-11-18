@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance { get; private set; }
+
+    private int worldSeed = -1;
+    private int levelSeed = -1;
 
     private int depositedScrap = 0;
 
@@ -146,6 +151,50 @@ public class GameManager : MonoBehaviour
         LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
     }
 
+
+    public void SetWorldSeed(int newSeed, bool setLevelSeed)
+    {
+        worldSeed = newSeed;
+
+        if (setLevelSeed) { SetLevelSeed(newSeed); }
+
+        Random.InitState(worldSeed);
+    }
+
+    public int GetWorldSeed()
+    {
+        return worldSeed;
+    }
+
+    public void SetLevelSeed(int newSeed)
+    {
+        levelSeed = newSeed;
+    }
+
+    public int GetLevelSeed()
+    {
+        return levelSeed;
+    }
+
+    public int GenerateNextSeed()
+    {
+        if (GetWorldSeed() == -1)
+        {
+            int timeStampSeed = (int)new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
+
+            SetWorldSeed(timeStampSeed, true);
+        }
+        Random.InitState(GetLevelSeed());
+
+        SetLevelSeed(Random.Range(-999999999, 999999999));
+
+        //print("world seed: " + GetWorldSeed() + "     " + "randomlevel: " + GetLevelSeed());
+        
+        return GetLevelSeed();
+
+    }
+
+
     public float GetCurrentTime()
     {
         return currentTime;
@@ -210,6 +259,12 @@ public class GameManager : MonoBehaviour
     public int GetCurrentLives()
     {
         return currentLives;
+    }
+
+    public void SetMaxLives(int amount)
+    {
+        maxLives = amount;
+        currentLives = amount;
     }
 
     public int GetMaxLives()

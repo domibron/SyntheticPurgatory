@@ -238,13 +238,12 @@ public class LevelGenerator : SequenceBase
 
     private int InitializeNewSeed()
     {
+        Seed = GameManager.Instance.GenerateNextSeed();
+        Random.InitState(Seed);
+
         levelGrid = new int[XSize + GridEdgeBuffer + GridEdgeBuffer, YSize + GridEdgeBuffer + GridEdgeBuffer];
 
-        int timeStampSeed = (int)new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
-        if (Seed != -1) timeStampSeed = Seed;
-        // print("Current seed: " + timeStampSeed);
-        Random.InitState(timeStampSeed);
-        return timeStampSeed;
+        return Seed;
     }
 
     private GameObject SpawnStartRoom(int idForStartRoom)

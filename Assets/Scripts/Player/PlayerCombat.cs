@@ -345,7 +345,7 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
-        Debug.Log("Kick!");
+        //Debug.Log("Kick!");
 
         currentKickCooldown = kickAttackDelay;
 

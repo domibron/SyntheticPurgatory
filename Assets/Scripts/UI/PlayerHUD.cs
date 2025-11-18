@@ -30,7 +30,7 @@ public class PlayerHUD : MonoBehaviour
 
     private float savedAlpha = 0f;
 
-
+    private bool playerDied = false;
 
 
 
@@ -57,7 +57,11 @@ public class PlayerHUD : MonoBehaviour
         if (newAmount - oldAmount < 0)
         {
             currentApearTime = apearTime;
+        }
 
+        if (newAmount <= 0)
+        {
+            playerDied = true;
         }
     }
 
@@ -66,6 +70,8 @@ public class PlayerHUD : MonoBehaviour
     {
         // ammoText.text = "REMOVED MECHANIC";
         healthBarFill.fillAmount = playerHealth.GetHealthNormalized();
+
+        if (playerDied) { return; }
 
         if (GameManager.Instance != null)
         {

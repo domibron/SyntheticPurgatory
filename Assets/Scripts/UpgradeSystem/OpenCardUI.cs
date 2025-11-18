@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OpenCardUI : MonoBehaviour
 {
@@ -7,7 +8,10 @@ public class OpenCardUI : MonoBehaviour
     private UpgradeSystem upgradeSystem;
 
     [SerializeField]
-    private CardTier cardTeir;
+    private Button button;
+
+    [SerializeField]
+    private CardTier cardTier;
 
     [SerializeField]
     private TMP_Text cardCost;
@@ -15,19 +19,21 @@ public class OpenCardUI : MonoBehaviour
     [SerializeField]
     private TMP_Text cardAmount;
 
-    public void OnClick()
-    {
-        upgradeSystem.OpenCard(cardTeir);
-    }
 
     void Update()
     {
-        cardCost.text = upgradeSystem.GetCardOpenCost(cardTeir).ToString() + " Scrap";
-        cardAmount.text = GameManager.Instance.GetCardCount(cardTeir).ToString();
+        cardCost.text = upgradeSystem.GetCardOpenCost(cardTier).ToString() + " Scrap";
+        cardAmount.text = GameManager.Instance.GetCardCount(cardTier).ToString();
+
+        if (GameManager.Instance.GetCardCount(cardTier) <= 0)
+        {
+            button.interactable = false;
+        }
     }
 
-    public void OnScrapCard()
+    public CardTier GetCardTier()
     {
-        upgradeSystem.ScrapCard(cardTeir);
+        return cardTier;
     }
+
 }
