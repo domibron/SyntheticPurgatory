@@ -515,7 +515,7 @@
                     "id": "5b3fdb0b-4579-483d-8e43-dff3f64bb980",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Hold(duration=999,pressPoint=999),Tap(duration=999)",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
@@ -872,10 +872,21 @@
                 {
                     "name": "",
                     "id": "1c22a46a-ab94-41ae-8b3b-92065a3fb55a",
-                    "path": "*/{Cancel}",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d3d9765-81db-4073-9731-1684d96831f0",
+                    "path": "<Gamepad>/{Back}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false

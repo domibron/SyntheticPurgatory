@@ -14,6 +14,7 @@ public class DiscordManager : MonoBehaviour
 
     void OnDisable()
     {
+        if (discord != null)
         discord.Dispose();
     }
 
@@ -31,6 +32,8 @@ public class DiscordManager : MonoBehaviour
 
     public void ChangeActivity()
     {
+        if (discord == null) return;
+
         var activityManager = discord.GetActivityManager();
         var activity = new Discord.Activity
         {
@@ -54,6 +57,7 @@ public class DiscordManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (discord == null) return;
         discord.RunCallbacks();
     }
 }
