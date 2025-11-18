@@ -62,6 +62,11 @@ public class Dozer : MonoBehaviour
 
     private bool isAttacking = false;
 
+    [SerializeField]
+    DroppablePlatform[] droppablePlatformsInPath;
+
+    // private bool isOverridingGate = false;
+
     // public event Func<bool> OnJobCompleted;
     public event Action OnJobCompleted;
 
@@ -82,10 +87,33 @@ public class Dozer : MonoBehaviour
     public bool TryToStartAttack()
     {
         // TODO: Check if floor tiles are still intact.
-        if (isAttacking) return false;
+        if (isAttacking || !CanDoAttack()) return false;
 
         StartCoroutine(DoDozerAttack());
         return true;
+    }
+
+    private bool CanDoAttack()
+    {
+        foreach (var platform in droppablePlatformsInPath)
+        {
+            if (platform.HasDropped()) return false;
+        }
+
+        Collider[] colliders = Physics.OverlapBox(transform.position + Vector3.up * 4f, new Vector3(40f, 8f, 8f));
+
+        if (colliders.Length <= 0) return true;
+
+        foreach (var collider in colliders)
+        {
+            if (collider.isTrigger && collider.gameObject.CompareTag("ContainerChecker"))
+            {
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     private IEnumerator DoDozerAttack()
@@ -201,12 +229,16 @@ public class Dozer : MonoBehaviour
 
     private void TurnOffMonitors()
     {
-        leftMonitor.EndFlash();
-        rightMonitor.EndFlash();
+        leftMonitor.EndMonitor();
+        rightMonitor.EndMonitor();
     }
 
     private void StartFlash(bool isLeftSide)
     {
+        leftMonitor.ResetBGColor();
+        rightMonitor.ResetBGColor();
+
+
         if (isLeftSide)
         {
             leftMonitor.StartFlash();

@@ -39,4 +39,14 @@ public class BakeAllNav : MonoBehaviour
     {
 
     }
+
+    public void BakeAll()
+    {
+        NavMeshSurface[] navmeshes = GetComponents<NavMeshSurface>();
+
+        foreach (var nav in navmeshes)
+        {
+            nav.BuildNavMesh();
+        }
+    }
 }

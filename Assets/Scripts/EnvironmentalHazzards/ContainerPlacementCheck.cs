@@ -7,13 +7,10 @@ public class ContainerPlacementCheck : MonoBehaviour
     BoxCollider boxCollider;
 
     [SerializeField]
-    Transform backLeftCorner;
-
-    [SerializeField]
-    Transform frontRightCorner;
-
-    [SerializeField]
     LayerMask layerMask;
+
+    [SerializeField]
+    FallingTileArenaManager fallingTileArenaManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,6 +23,7 @@ public class ContainerPlacementCheck : MonoBehaviour
     {
         // Physics.CheckBox
 
+        // print(SampleContainerPosition(transform.position));
 
     }
 
@@ -35,8 +33,25 @@ public class ContainerPlacementCheck : MonoBehaviour
 
         Collider[] colliders = Physics.OverlapBox(transform.position + boxCollider.center, boxCollider.size / 2f, transform.rotation, layerMask);
 
-        if (colliders.Length > 0) return false;
+        if (colliders.Length > 0)
+        {
+            foreach (Collider collider in colliders)
+            {
+                if (collider.gameObject.CompareTag(Constants.DecorationTag) || collider.gameObject.CompareTag(Constants.WallTag))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return true; // ! TEMP
+        if (fallingTileArenaManager.CheckTilesFallenInArea(transform.position + boxCollider.center, boxCollider.size / 2f))
+        {
+            // print("Tiles failed");
+            return false;
+        }
+
+
+
+        return true;
     }
 }

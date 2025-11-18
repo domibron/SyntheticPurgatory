@@ -27,6 +27,7 @@ public class DroppableObject : MonoBehaviour, ICraneGrabbable
         if (keepOriginalRotation && onHook)
         {
             transform.rotation = originalRotation;
+            transform.localPosition = -grabPoint.localPosition;
         }
     }
 

@@ -66,4 +66,6 @@ public class Constants
     public const string FloorTag = "Floor";
 
     public const string DecorationTag = "Decor";
+
+    public const string CollapsibleFloorTag = "CollapsibleFloor";
 }

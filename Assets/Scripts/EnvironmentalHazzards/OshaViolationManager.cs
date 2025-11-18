@@ -16,8 +16,14 @@ public class OshaViolationManager : MonoBehaviour
     [SerializeField]
     private float coolDown = 3f;
 
+    [SerializeField]
+    EnemySpawnAtGates[] enemySpawnAtGates;
 
     private float currentCoolDown = 0f;
+
+    private int currentCompletedEnemySpawnCount = 0;
+
+    bool spawnedEnemies = false; // ! DEBUG REMOVE // TODO: REMOVE
 
     void Awake()
     {
@@ -25,21 +31,61 @@ public class OshaViolationManager : MonoBehaviour
         {
             dozer.OnJobCompleted += OnJobCompleted;
         }
+
+
+        foreach (EnemySpawnAtGates enemySpawn in enemySpawnAtGates)
+        {
+            enemySpawn.OnJobCompleted += OnEnemySpawnFinished;
+        }
     }
 
     void Update()
     {
+        if (!spawnedEnemies)
+        {
+            StartAEnemySpawnAttack();
+            return;
+        }
+        // return;
         if (currentCoolDown > 0) currentCoolDown -= Time.deltaTime;
 
-        StartAnAttack(); // ! DEBUG CODE
+        StartADozerAttack(); // ! DEBUG CODE
     }
 
-    public bool StartAnAttack()
+    public bool StartAEnemySpawnAttack()
+    {
+        if (inJob) return false;
+        currentCompletedEnemySpawnCount = 0;
+        StartCoroutine(StartEnemySpawnAttack());
+
+        return true;
+    }
+
+    public bool StartADozerAttack()
     {
         if (inJob || currentCoolDown > 0) return false;
 
         StartCoroutine(StartDozerAttack());
         return true;
+    }
+
+    private IEnumerator StartEnemySpawnAttack()
+    {
+        inJob = true;
+
+        foreach (EnemySpawnAtGates enemySpawn in enemySpawnAtGates)
+        {
+            enemySpawn.StartEnemyAttack();
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 1f));
+        }
+
+        while (currentCompletedEnemySpawnCount < enemySpawnAtGates.Length)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        inJob = false;
+        spawnedEnemies = true;
     }
 
     private IEnumerator StartDozerAttack()
@@ -59,5 +105,10 @@ public class OshaViolationManager : MonoBehaviour
     {
         inJob = false;
         currentCoolDown = coolDown;
+    }
+
+    private void OnEnemySpawnFinished()
+    {
+        currentCompletedEnemySpawnCount++;
     }
 }

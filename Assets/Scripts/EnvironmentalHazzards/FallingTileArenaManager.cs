@@ -33,10 +33,13 @@ public class FallingTileArenaManager : MonoBehaviour
             Vector3 tilePos = tile.GetWorldPosition();
             Vector3 tileBackRight = tilePos + boundsOfOneTile.extents;
             Vector3 tileFrontLeft = tilePos - boundsOfOneTile.extents;
-            // if (tileBackRight.x < frontLeft.x && tileBackRight.z < frontLeft.z && tileFrontLeft)
+            if ((tileBackRight.x < frontLeft.x && tileBackRight.z < frontLeft.z) || (tileFrontLeft.x > backRight.x && tileFrontLeft.z > backRight.z))
+            {
+                if (tile.HasDropped()) return true;
+            }
         }
 
-        return true;
+        return false;
 
     }
 
