@@ -66,11 +66,11 @@ public class DroppablePlatform : MonoBehaviour
         {
             case PlatformState.Hidden:
                 platform.gameObject.SetActive(false);
-                if (navMeshObstacle != null) navMeshObstacle.enabled = false;
+                if (navMeshObstacle != null) navMeshObstacle.enabled = true;
                 break;
             case PlatformState.Dropping:
                 platform.gameObject.SetActive(true);
-                if (navMeshObstacle != null) navMeshObstacle.enabled = false;
+                if (navMeshObstacle != null) navMeshObstacle.enabled = true;
                 if (Vector3.Distance(platform.localPosition, defaultPos) >= maxDistanceBeforeHiding && hideAfterDistance)
                 {
                     platformState = PlatformState.Hidden;
@@ -86,7 +86,7 @@ public class DroppablePlatform : MonoBehaviour
                 if (platform.localPosition.y - defaultPos.y >= defaultPos.y)
                 {
                     platformState = PlatformState.None;
-                    if (navMeshObstacle != null) navMeshObstacle.enabled = true;
+                    if (navMeshObstacle != null) navMeshObstacle.enabled = false;
                     break;
                 }
 
@@ -95,7 +95,7 @@ public class DroppablePlatform : MonoBehaviour
                 break;
             case PlatformState.None:
                 platform.gameObject.SetActive(true);
-                if (navMeshObstacle != null) navMeshObstacle.enabled = true;
+                if (navMeshObstacle != null) navMeshObstacle.enabled = false;
                 platform.localPosition = defaultPos;
                 break;
         }

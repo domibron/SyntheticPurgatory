@@ -164,7 +164,7 @@ public class ArenaWallsManager : MonoBehaviour
 
         print("Completed Wall Generation");
 
-        StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
+        // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
     private IEnumerator JuggleContainerWalls()
@@ -213,7 +213,7 @@ public class ArenaWallsManager : MonoBehaviour
         gridPlacement = newLayout;
 
         print("Juggled");
-        StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
+        // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
     private IEnumerator PlaceContainerWalls(bool generateNewGrid = false)

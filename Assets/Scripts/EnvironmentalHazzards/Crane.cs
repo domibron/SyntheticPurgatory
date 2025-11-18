@@ -365,22 +365,22 @@ public class Crane : MonoBehaviour
 
     public float GetDistanceFromTargetWithOffsets()
     {
-        return Vector3.Distance(actualTarget, followPoint.position);
+        return Vector3.Distance(actualTarget, boom.position);
     }
 
     public float GetDistanceFromRealTarget()
     {
-        return Vector3.Distance(currentTargetPoint.position, followPoint.position);
+        return Vector3.Distance(currentTargetPoint.position, boom.position);
     }
 
     public float GetYDistance()
     {
-        return Mathf.Abs(actualTarget.y - followPoint.position.y);
+        return Mathf.Abs(actualTarget.y - boom.position.y);
     }
 
     public float GetXZDistance()
     {
-        return Vector3.Distance(GetVectorWithLevelY(actualTarget, 0), GetVectorWithLevelY(followPoint.position, 0));
+        return Vector3.Distance(GetVectorWithLevelY(actualTarget, 0), GetVectorWithLevelY(boom.position, 0));
     }
 
     #endregion
