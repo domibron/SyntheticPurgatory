@@ -62,6 +62,14 @@ public class PauseCanvas : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
+        }
+    }
+
     private void AlternateState(InputAction.CallbackContext context)
     {
         if (pauseCanvasCollection == null) { return; }
@@ -107,11 +115,13 @@ public class PauseCanvas : MonoBehaviour
     {
         unpausedPlayerMoveState = playerMovement.DisabledType;
         unpausedPlayerCombatState = playerCombat.IsDisabled;
+        if (playerCamera != null)
         unpausedCameraState = playerCamera.IsDisabled;
 
         playerMovement.DisablePlayerMovement(1);
         playerCombat.DisablePlayerCombat(true);
-        playerCamera.DisableCameraInput(true);
+        if (playerCamera != null)
+            playerCamera.DisableCameraInput(true);
 
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
@@ -126,7 +136,8 @@ public class PauseCanvas : MonoBehaviour
     {
         playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
-        playerCamera.DisableCameraInput(unpausedCameraState);
+        if (playerCamera != null)
+            playerCamera.DisableCameraInput(unpausedCameraState);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -155,7 +166,8 @@ public class PauseCanvas : MonoBehaviour
     {
         playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
-        playerCamera.DisableCameraInput(unpausedCameraState);
+        if (playerCamera != null)
+            playerCamera.DisableCameraInput(unpausedCameraState);
 
         Time.timeScale = 1;
 

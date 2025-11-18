@@ -87,7 +87,7 @@ public class DebugConsole : MonoBehaviour
 
 		string message = suffix + condition;
 
-#if UNITY_EDITOR || DEBUG
+#if UNITY_EDITOR || DEBUG || true
 		if (type != LogType.Log)
 			message += "\n" + stackTrace;
 #endif
