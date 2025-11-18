@@ -60,7 +60,6 @@ public class DamageKickedObject : MonoBehaviour
                 otherObjectHealth.AddToHealth(sharedDamage); // Deal damage to other object
                 healthScript.AddToHealth(sharedDamage); // Deal damage to this object
 
-                print(sharedDamage);
                 rb.linearVelocity = rb.linearVelocity / contactVelReduction; // Lower velocity to prevent more damage from object rolling
             }
             else // If collided with a regular surface

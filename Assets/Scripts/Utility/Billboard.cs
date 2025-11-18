@@ -24,22 +24,16 @@ public class Billboard : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		try
-		{
-			camTransform = Camera.main.transform;
-		}
-		catch (NullReferenceException)
-		{
-			Debug.LogError("Main camera was not detected!", this);
-		}
-	}
+		SetTargetCamera();
+    }
 
 	// Update is called once per frame
 	void Update()
 	{
 		if (camTransform == null)
 		{
-			return;
+			SetTargetCamera();
+            return;
 		}
 
 		if (!invertDirection)
@@ -48,7 +42,20 @@ public class Billboard : MonoBehaviour
 		}
 		else
 		{
+			
 			transform.LookAt(transform.position - (camTransform.position - transform.position));
 		}
 	}
+
+	public void SetTargetCamera()
+	{
+        try
+        {
+            camTransform = Camera.main.transform;
+        }
+        catch (NullReferenceException)
+        {
+            //Debug.LogError("Main camera was not detected!", this);
+        }
+    }
 }

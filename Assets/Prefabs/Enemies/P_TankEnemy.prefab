@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c369e918ef61bcb418ac140dab0f87e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 350
+  maxHealth: 300
 --- !u!114 &751287950081389879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,8 +187,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 3, z: 1}
-  m_Center: {x: 0, y: 1.5, z: -0.5}
+  m_Size: {x: 2, y: 2.8814607, z: 1}
+  m_Center: {x: 0, y: 1.4407303, z: -0.5}
 --- !u!65 &4642664360452056280
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -208,8 +208,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1.75, z: 1}
-  m_Center: {x: 0, y: 2.125, z: 0.5}
+  m_Size: {x: 2, y: 1.6314611, z: 1}
+  m_Center: {x: 0, y: 2.06573, z: 0.5}
 --- !u!114 &2086787015045803007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 8359612339840335319}
   m_Enabled: 1
   m_AgentTypeID: -902729914
-  m_Radius: 1.25
+  m_Radius: 1.2
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 40
@@ -313,6 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alsoDisablePhysics: 1
 --- !u!1001 &2290290669783790073
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -356,6 +357,18 @@ PrefabInstance:
     - target: {fileID: 839749314569819992, guid: 044a749c8e94b69448e399b64874336c, type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 978746529353656832, guid: 044a749c8e94b69448e399b64874336c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 978746529353656832, guid: 044a749c8e94b69448e399b64874336c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 978746529353656832, guid: 044a749c8e94b69448e399b64874336c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 978746529353656832, guid: 044a749c8e94b69448e399b64874336c, type: 3}
       propertyPath: m_LocalPosition.x

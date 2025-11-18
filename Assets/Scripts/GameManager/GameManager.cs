@@ -188,7 +188,7 @@ public class GameManager : MonoBehaviour
 
         SetLevelSeed(Random.Range(-999999999, 999999999));
 
-        //print("world seed: " + GetWorldSeed() + "     " + "randomlevel: " + GetLevelSeed());
+        print("world seed: " + GetWorldSeed() + "     " + "randomlevel: " + GetLevelSeed());
         
         return GetLevelSeed();
 

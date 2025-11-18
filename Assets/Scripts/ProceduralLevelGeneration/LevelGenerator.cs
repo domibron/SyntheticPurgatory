@@ -141,8 +141,8 @@ public class LevelGenerator : SequenceBase
         if (roomGenerationCoroutine != null)
         {
             roomGenerationCoroutine = null;
-            print(GetGridAsString());
-            print(seed.ToString());
+            //print(GetGridAsString());
+            //print(seed.ToString());
             print("Done generating");
             OnThisSequenceEnd?.Invoke();
             onLevelGenerationComplete?.Invoke();
