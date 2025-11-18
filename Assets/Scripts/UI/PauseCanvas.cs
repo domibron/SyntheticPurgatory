@@ -11,6 +11,7 @@ public class PauseCanvas : MonoBehaviour
 
     private PlayerMovement playerMovement;
     private PlayerCombat playerCombat;
+    [SerializeField]
     private CameraController playerCamera;
 
     /// <summary>
@@ -52,7 +53,12 @@ public class PauseCanvas : MonoBehaviour
         playerObject = PlayerRefFetcher.Instance.GetPlayerRef();
         playerMovement = playerObject.GetComponent<PlayerMovement>();
         playerCombat = playerObject.GetComponent<PlayerCombat>();
-        playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
+
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
+        }
+        
 
     }
 
