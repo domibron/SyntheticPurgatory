@@ -6,12 +6,11 @@ public class MainMenu : MonoBehaviour
 
     public void StartNewGame()
     {
-        // should have a little menu for chips but we load into the level for now.
         if (LevelLoading.Instance == null) return;
 
         if (LevelLoading.Instance.IsLoading) return;
 
-        LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.HubWorld.ToString());
+        LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.SetupScreen.ToString());
     }
 
     public void Quit()

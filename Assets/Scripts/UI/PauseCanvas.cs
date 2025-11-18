@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+
 public class PauseCanvas : MonoBehaviour
 {
     private GameObject playerObject;
@@ -22,6 +23,12 @@ public class PauseCanvas : MonoBehaviour
     /// </summary>
     [SerializeField]
     private GameObject deathCanvasCollection;
+    /// <summary>
+    /// Object on the canvas that contains all the death canvas GUI
+    /// </summary>
+    [SerializeField]
+    private GameObject endStateCanvasCollection;
+
     /// <summary>
     /// Object on the canvas that contains all the death canvas GUI
     /// </summary>
@@ -71,7 +78,7 @@ public class PauseCanvas : MonoBehaviour
             return;
         }
 
-        if (deathCanvasCollection.gameObject.activeSelf) // Don't allow player to open pause menu when on death screen
+        if (deathCanvasCollection.gameObject.activeSelf || endStateCanvasCollection.gameObject.activeSelf) // Don't allow player to open pause menu when on death/end screen
         {
             if (!state) // Allow ability to close pause screen if player somehow dies when pause screen opens
             {
@@ -115,8 +122,9 @@ public class PauseCanvas : MonoBehaviour
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
         playerCamera.DisableCameraInput(unpausedCameraState);
 
-        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
 
         Time.timeScale = 1;
 
