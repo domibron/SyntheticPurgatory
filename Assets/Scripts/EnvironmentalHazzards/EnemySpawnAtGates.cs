@@ -81,6 +81,8 @@ public class EnemySpawnAtGates : MonoBehaviour
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.3f, 3f));
         }
 
+        yield return new WaitForSeconds(1f);
+
         while (leftGateHold || rightGateHold) yield return new WaitForEndOfFrame();
 
         OnJobCompleted?.Invoke();

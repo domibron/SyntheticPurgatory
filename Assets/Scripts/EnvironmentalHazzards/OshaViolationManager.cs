@@ -23,7 +23,7 @@ public class OshaViolationManager : MonoBehaviour
 
     private int currentCompletedEnemySpawnCount = 0;
 
-    bool spawnedEnemies = false; // ! DEBUG REMOVE // TODO: REMOVE
+    // bool spawnedEnemies = false; // ! DEBUG REMOVE // TODO: REMOVE
 
     void Awake()
     {
@@ -41,15 +41,15 @@ public class OshaViolationManager : MonoBehaviour
 
     void Update()
     {
-        if (!spawnedEnemies)
-        {
-            StartAEnemySpawnAttack();
-            return;
-        }
+        // if (!spawnedEnemies)
+        // {
+        //     StartAEnemySpawnAttack();
+        //     return;
+        // }
         // return;
         if (currentCoolDown > 0) currentCoolDown -= Time.deltaTime;
 
-        StartADozerAttack(); // ! DEBUG CODE
+        // StartADozerAttack(); // ! DEBUG CODE
     }
 
     public bool StartAEnemySpawnAttack()
@@ -85,7 +85,7 @@ public class OshaViolationManager : MonoBehaviour
         }
 
         inJob = false;
-        spawnedEnemies = true;
+        // spawnedEnemies = true;
     }
 
     private IEnumerator StartDozerAttack()

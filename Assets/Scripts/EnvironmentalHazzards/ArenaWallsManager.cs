@@ -91,7 +91,9 @@ public class ArenaWallsManager : MonoBehaviour
 
     private List<CraneController> allCranes = new List<CraneController>();
 
+    private bool inJob = false;
 
+    public event Action OnJobCompleted;
 
     void Start()
     {
@@ -167,8 +169,17 @@ public class ArenaWallsManager : MonoBehaviour
         // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
+    public bool StartJuggleJob()
+    {
+        if (inJob) return false;
+        StartCoroutine(JuggleContainerWalls());
+
+        return true;
+    }
+
     private IEnumerator JuggleContainerWalls()
     {
+        inJob = true;
         int[,] newLayout = GenerateData(totalWallLayers);
 
         List<Vector2Int> placements = new List<Vector2Int>();
@@ -211,6 +222,8 @@ public class ArenaWallsManager : MonoBehaviour
         }
 
         gridPlacement = newLayout;
+        inJob = false;
+        OnJobCompleted?.Invoke();
 
         print("Juggled");
         // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE

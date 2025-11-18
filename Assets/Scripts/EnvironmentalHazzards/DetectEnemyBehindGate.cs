@@ -8,23 +8,35 @@ public class DetectEnemyBehindGate : MonoBehaviour
     [SerializeField]
     bool isLeftGate = false;
 
-    private int count = 0;
+    [SerializeField]
+    BoxCollider boxCollider;
+
+    // private int count = 0;
+
+    void Start()
+    {
+        boxCollider = GetComponent<BoxCollider>();
+    }
 
     void Update()
     {
-        UpdateState(count > 0);
+        // UpdateState(count > 0);
+
+        Collider[] colliders = Physics.OverlapBox(transform.position + boxCollider.center, boxCollider.size / 2f, transform.rotation, LayerMask.GetMask(Constants.EnemyLayer));
+
+        UpdateState(colliders.Length > 0);
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        // UpdateState(true);
-        count++;
-    }
+    // void OnTriggerEnter(Collider other)
+    // {
+    //     // UpdateState(true);
+    //     count++;
+    // }
 
-    void OnTriggerExit(Collider other)
-    {
-        count--;
-    }
+    // void OnTriggerExit(Collider other)
+    // {
+    //     count--;
+    // }
 
 
 

@@ -18,6 +18,11 @@ public class EntityCulling : MonoBehaviour
 
     private bool isReady = false;
 
+    [SerializeField]
+    private bool alsoDisablePhysics = true;
+
+    private Rigidbody rb;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     IEnumerator Start()
     {
@@ -26,6 +31,9 @@ public class EntityCulling : MonoBehaviour
         player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
 
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
+
+        rb = GetComponent<Rigidbody>();
+
 
         if (LevelGenObjectRefGetter.Instance == null)
         {
@@ -83,6 +91,11 @@ public class EntityCulling : MonoBehaviour
         {
             if (renderer.enabled != isVisible)
                 renderer.enabled = isVisible;
+        }
+
+        if (rb != null && alsoDisablePhysics)
+        {
+            rb.isKinematic = !isVisible;
         }
     }
 

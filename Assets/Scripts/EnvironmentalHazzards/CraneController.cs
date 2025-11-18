@@ -72,7 +72,7 @@ public class CraneController : MonoBehaviour
 
         // if (crane.GetDistanceFromTargetWithOffsets() > 0) lastMoveCheck = 5f;
 
-        StartDropContainerJob();
+        // StartDropContainerJob();
 
         if (!inJob && lastJob > 0) lastJob -= Time.deltaTime;
         if (!inJob && lastJob <= 0) ResetCrane();

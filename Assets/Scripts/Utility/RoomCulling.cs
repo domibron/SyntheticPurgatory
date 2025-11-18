@@ -181,6 +181,7 @@ public class RoomCulling : MonoBehaviour
 
         foreach (var meshRenderer in meshRenderers)
         {
+            if (meshRenderer == null) continue;
             if (meshRenderer.enabled == isVisible) continue;
 
             meshRenderer.enabled = isVisible;

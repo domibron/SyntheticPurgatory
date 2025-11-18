@@ -58,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 486378615705568059}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: -48.31}
+  m_LocalPosition: {x: 0, y: 6, z: -48.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySpawnAtGates: {fileID: 4986057264130040596}
   isLeftGate: 1
+  boxCollider: {fileID: 0}
 --- !u!1 &651335146343653323
 GameObject:
   m_ObjectHideFlags: 0
@@ -659,7 +660,6 @@ MonoBehaviour:
   rightAlarm: {fileID: 3964139132228588938}
   oshaViolationManager: {fileID: 0}
   enemyPrefabs:
-  - {fileID: 8359612339840335319, guid: e510bf98c9946f846ae2daeb8469be82, type: 3}
   - {fileID: 5514008251998027403, guid: a5a8870271a2bde498c0e941757aac71, type: 3}
   - {fileID: 1756158581593521815, guid: 5455d20885edf97428cc927578495e4e, type: 3}
   - {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
@@ -920,6 +920,7 @@ GameObject:
   - component: {fileID: 3413893847318992897}
   - component: {fileID: 3378772244292078370}
   - component: {fileID: 5657413654643651967}
+  - component: {fileID: 2716989684195637563}
   m_Layer: 0
   m_Name: Shutter
   m_TagString: Untagged
@@ -1045,6 +1046,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   crushing: {fileID: 4572966799400307219}
+--- !u!114 &2716989684195637563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3417976717582688662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &3426364037245626569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1956,7 +1977,7 @@ Transform:
   m_GameObject: {fileID: 7277104540524952870}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 48.31}
+  m_LocalPosition: {x: 0, y: 6, z: 48.16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1997,6 +2018,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySpawnAtGates: {fileID: 4986057264130040596}
   isLeftGate: 0
+  boxCollider: {fileID: 0}
 --- !u!1 &8215801400224184940
 GameObject:
   m_ObjectHideFlags: 0
@@ -2130,6 +2152,7 @@ GameObject:
   - component: {fileID: 6078950772034268130}
   - component: {fileID: 937580715088637128}
   - component: {fileID: 4540693322145213530}
+  - component: {fileID: 3454788667585436931}
   m_Layer: 0
   m_Name: Shutter
   m_TagString: Untagged
@@ -2255,6 +2278,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   crushing: {fileID: 4572966799400307219}
+--- !u!114 &3454788667585436931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8706472933671301271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &9059621779881457164
 GameObject:
   m_ObjectHideFlags: 0
