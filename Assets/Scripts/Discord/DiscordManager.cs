@@ -1,8 +1,10 @@
 using System;
 using UnityEngine;
+// using Discord;
 
 public class DiscordManager : MonoBehaviour
 {
+#if false
     Discord.Discord discord;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -15,7 +17,7 @@ public class DiscordManager : MonoBehaviour
     void OnDisable()
     {
         if (discord != null)
-        discord.Dispose();
+            discord.Dispose();
     }
 
     // This prevents all types of exit, requiring task manager to kill the application.
@@ -60,4 +62,5 @@ public class DiscordManager : MonoBehaviour
         if (discord == null) return;
         discord.RunCallbacks();
     }
+#endif
 }
