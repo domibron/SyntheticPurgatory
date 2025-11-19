@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 public class BuildProject : MonoBehaviour
@@ -12,6 +13,10 @@ public class BuildProject : MonoBehaviour
     [MenuItem("Build/Windows Development Build")]
     public static void BuildForWindowsDev()
     {
-        BuildPipeline.BuildPlayer(EnabledLevels(), "Build/Game.exe", BuildTarget.StandaloneWindows, BuildOptions.Development);
+        BuildReport buildReport = BuildPipeline.BuildPlayer(EnabledLevels(), "Build/Game.exe", BuildTarget.StandaloneWindows, BuildOptions.Development);
+        BuildSummary buildSummary = buildReport.summary;
+
+        Debug.Log(buildSummary.result.ToString());
+
     }
 }
