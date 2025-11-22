@@ -28,8 +28,24 @@ public class PlayerDeath : MonoBehaviour
         transform.GetComponent<PlayerMovement>().DisablePlayerMovement(2);
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
 
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+
+        if (InputManager.Instance != null)
+        {
+            if (InputManager.Instance.GetCurrentInputDevice() == InputManager.InputDeviceType.Keyboard)
+            {
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.visible = false;
+            }
+        }
+        else
+        {
+            Cursor.visible = true;
+        }
 
         if (GameManager.Instance.GetCurrentLives() > 1)
         {
