@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class HubWorldUI : MonoBehaviour
 {
@@ -9,8 +10,33 @@ public class HubWorldUI : MonoBehaviour
 
     public TMP_Text ScrapText;
 
-    public GameObject MainUI;
-    public GameObject UpgradeUI;
+    // public GameObject MainUI;
+    // public GameObject UpgradeUI;
+
+    void OnEnable()
+    {
+        if (InputManager.Instance != null)
+            InputManager.Instance.onDeviceChanged += OnDeviceChanged;
+    }
+
+    void OnDestroy()
+    {
+        if (InputManager.Instance != null)
+            InputManager.Instance.onDeviceChanged -= OnDeviceChanged;
+    }
+
+    private void OnDeviceChanged(InputManager.InputDeviceType newDevice, InputManager.InputDeviceType oldDevice)
+    {
+        if (newDevice == InputManager.InputDeviceType.Gamepad)
+        {
+            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.visible = true;
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -57,7 +83,8 @@ public class HubWorldUI : MonoBehaviour
         //UpgradeUI.SetActive(false);
     }
 
-    public void LoadBossLevel(){
+    public void LoadBossLevel()
+    {
         if (LevelLoading.Instance != null)
             LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.BossWorld.ToString());
     }

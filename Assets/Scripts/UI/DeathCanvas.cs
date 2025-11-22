@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 // By Vincent Pressey
 
@@ -22,7 +23,33 @@ public class DeathCanvas : MonoBehaviour
     [SerializeField]
     private TMP_Text lostScrapStatText;
 
+    void OnEnable()
+    {
+        if (InputManager.Instance != null)
+            InputManager.Instance.onDeviceChanged += OnDeviceChanged;
+    }
 
+    void OnDestroy()
+    {
+        if (InputManager.Instance != null)
+            InputManager.Instance.onDeviceChanged -= OnDeviceChanged;
+    }
+
+    private void OnDeviceChanged(InputManager.InputDeviceType newDevice, InputManager.InputDeviceType oldDevice)
+    {
+        if (!deathCanvasCollection.activeSelf) return;
+
+
+        if (newDevice == InputManager.InputDeviceType.Gamepad)
+        {
+            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.visible = true;
+        }
+    }
 
     /// <summary>
     /// Activate and enable visibility of the death canvas

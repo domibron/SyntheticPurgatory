@@ -72,8 +72,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     Transform orientation;
 
-    [SerializeField]
-    float sens = 1f;
+    // [SerializeField]
+    const float MOUSE_SENS_MULT = 0.01f;
+    const float GAMEPAD_SENS_MULT = 10f;
 
     Vector2 lookDelta = Vector2.zero;
     float camXRot = 0f;
@@ -117,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
         // PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
 
         //print(pStats.MaxHealth);
-        
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -136,17 +137,47 @@ public class PlayerMovement : MonoBehaviour
         PollInput();
 
         // camera stuff.
-        camXRot -= lookDelta.y * sens;
+        bool useMouseLook = true;
+        bool invertYLook = false;
+        float xSense = 1f;
+        float ySense = 1f;
+
+        if (InputManager.Instance != null)
+        {
+            if (InputManager.Instance.GetCurrentInputDevice() == InputManager.InputDeviceType.Gamepad)
+                useMouseLook = false;
+
+            if (useMouseLook)
+            {
+                invertYLook = SettingsMenu.GetMouseInvertY();
+
+                xSense = SettingsMenu.GetMouseXSens() * MOUSE_SENS_MULT;
+                ySense = SettingsMenu.GetMouseYSens() * MOUSE_SENS_MULT;
+            }
+            else
+            {
+                invertYLook = SettingsMenu.GetGamepadInvertY();
+
+                xSense = SettingsMenu.GetGamepadXSens() * GAMEPAD_SENS_MULT;
+                ySense = SettingsMenu.GetGamepadYSens() * GAMEPAD_SENS_MULT;
+            }
+        }
+
+
+        if (invertYLook)
+            camXRot += lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
+        else
+            camXRot -= lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
 
         camXRot = Mathf.Clamp(camXRot, -80, 80);
 
         cameraTarget.localRotation = Quaternion.Euler(camXRot, 0, 0);
+        orientation.Rotate(0, lookDelta.x * ySense * (useMouseLook ? 1f : Time.deltaTime), 0);
+
+
         Vector3 camPos = cameraTarget.localPosition;
         camPos.y = GetHalfHeight() - 0.15f;
         cameraTarget.localPosition = camPos;
-
-
-        orientation.Rotate(0, lookDelta.x * sens, 0);
     }
 
     void OnGUI()

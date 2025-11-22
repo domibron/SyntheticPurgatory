@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,7 @@ public class SettingsMenu : MonoBehaviour
     private PauseCanvas pauseCanvas;
 
     InputAction pauseInput;
+    InputAction closeInput;
 
     [SerializeField]
     private GameObject gameplayPage;
@@ -33,11 +35,34 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField]
     private GameObject controlsPage;
 
+    [SerializeField]
+    private GameObject defaultSelectedObject;
+
+    [SerializeField]
+    private AudioMixer mixer;
+
     [Serializable]
     public struct ScreenResolution
     {
         public int width;
         public int height;
+
+        public ScreenResolution(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+        }
+
+        public ScreenResolution(Resolution resolution)
+        {
+            width = resolution.width;
+            height = resolution.height;
+        }
+
+        public override string ToString()
+        {
+            return $"{width.ToString()}x{height.ToString()}";
+        }
     }
 
 
@@ -46,15 +71,34 @@ public class SettingsMenu : MonoBehaviour
         settingsCanvasCollection = transform.GetChild(0).gameObject;
 
         pauseInput = InputSystem.actions.FindAction("Pause");
+        closeInput = InputSystem.actions.FindAction("Close");
 
-        pauseInput.started += KeyCloseSettings;
+
+        pauseInput.started += KeyOpenSettings;
+        // closeInput.started += KeyCloseSettings;
 
         OpenGameplaySettings(); // want to make sure only one UI panel is up. a little reset as you will.
+        CloseSettings();
+
+    }
+
+    void Start()
+    {
+    }
+
+
+    private void KeyOpenSettings(InputAction.CallbackContext context)
+    {
+        if (settingsCanvasCollection.activeSelf) return;
+        if (context.performed)
+            OpenSettings();
     }
 
     private void KeyCloseSettings(InputAction.CallbackContext context)
     {
-        CloseSettings();
+        if (!settingsCanvasCollection.activeSelf) return;
+        if (context.performed)
+            CloseSettings();
     }
 
     /// <summary>
@@ -79,6 +123,8 @@ public class SettingsMenu : MonoBehaviour
         if (settingsCanvasCollection == null) { return; }
 
         settingsCanvasCollection.SetActive(true);
+
+        EventSystem.current.SetSelectedGameObject(defaultSelectedObject);
     }
 
     public void CloseSettings()
@@ -89,6 +135,8 @@ public class SettingsMenu : MonoBehaviour
         if (pauseCanvas != null) { pauseCanvas.StartCoroutine(pauseCanvas.SettingsClosedDelay()); }
 
         settingsCanvasCollection.SetActive(false);
+
+        EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
     }
 
     // TODO: replace with enum system instead.
@@ -142,7 +190,12 @@ public class SettingsMenu : MonoBehaviour
         Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, fullScreenMode, Screen.currentResolution.refreshRateRatio);
     }
 
-    public void SetVsyncEnabled(bool enableVSync = false, bool ifEnableUseHalfVSync = false)
+    public void SetFullScreen(bool isFullScreen)
+    {
+        Screen.fullScreen = isFullScreen;
+    }
+
+    public void SetVSyncEnabled(bool enableVSync = false, bool ifEnableUseHalfVSync = false)
     {
         QualitySettings.vSyncCount = (enableVSync ? (ifEnableUseHalfVSync ? 2 : 1) : 0);
     }
@@ -152,5 +205,83 @@ public class SettingsMenu : MonoBehaviour
         Application.targetFrameRate = targetFrameRate;
     }
 
+    public void SetVolume(string volumeVar, float value)
+    {
+        mixer.SetFloat(volumeVar, Mathf.Log10(value) * 20f); // convert linear to db.
+    }
 
+    public float GetVolumeValue(string volumeVar)
+    {
+        float returnedFloat = 0f;
+        mixer.GetFloat(volumeVar, out returnedFloat);
+
+        returnedFloat = Mathf.Pow(10f, returnedFloat / 20f);
+
+        return returnedFloat;
+    }
+
+    #region Move to input manager or something.
+    #endregion
+
+    public static void SetMouseXSens(float value)
+    {
+        PlayerPrefs.SetFloat("mouseX", value);
+    }
+
+    public static void SetMouseYSens(float value)
+    {
+        PlayerPrefs.SetFloat("mouseY", value);
+    }
+
+    public static float GetMouseXSens()
+    {
+        return PlayerPrefs.GetFloat("mouseX", 10f);
+    }
+
+    public static float GetMouseYSens()
+    {
+        return PlayerPrefs.GetFloat("mouseY", 10f);
+    }
+
+    public static void SetMouseInvertY(bool invertY)
+    {
+        PlayerPrefs.SetInt("invertMouse", invertY ? 1 : 0);
+    }
+
+    public static bool GetMouseInvertY()
+    {
+        return PlayerPrefs.GetInt("invertMouse", 0) == 1;
+    }
+
+    public static void SetGamepadXSens(float value)
+    {
+        PlayerPrefs.SetFloat("gamepadX", value);
+    }
+
+    public static void SetGamepadYSens(float value)
+    {
+        PlayerPrefs.SetFloat("gamepadY", value);
+    }
+
+    public static float GetGamepadXSens()
+    {
+        return PlayerPrefs.GetFloat("gamepadX", 10f);
+
+    }
+
+    public static float GetGamepadYSens()
+    {
+        return PlayerPrefs.GetFloat("gamepadY", 10f);
+
+    }
+
+    public static void SetGamepadInvertY(bool invertY)
+    {
+        PlayerPrefs.SetInt("InvertGamepad", invertY ? 1 : 0);
+    }
+
+    public static bool GetGamepadInvertY()
+    {
+        return PlayerPrefs.GetInt("InvertGamepad", 0) == 1;
+    }
 }

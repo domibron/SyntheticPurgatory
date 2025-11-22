@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -44,6 +45,34 @@ public class PauseCanvas : MonoBehaviour
     private bool unpausedCameraState;
 
 
+    void OnEnable()
+    {
+        if (InputManager.Instance != null)
+            InputManager.Instance.onDeviceChanged += OnDeviceChanged;
+    }
+
+    void OnDestroy()
+    {
+        if (InputManager.Instance != null)
+            InputManager.Instance.onDeviceChanged -= OnDeviceChanged;
+    }
+
+    private void OnDeviceChanged(InputManager.InputDeviceType newDevice, InputManager.InputDeviceType oldDevice)
+    {
+        if (!pauseCanvasCollection.activeSelf) return;
+
+
+        if (newDevice == InputManager.InputDeviceType.Gamepad)
+        {
+            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.visible = true;
+        }
+    }
+
     void Start()
     {
         pauseInput = InputSystem.actions.FindAction("Pause");
@@ -58,8 +87,6 @@ public class PauseCanvas : MonoBehaviour
         {
             playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
         }
-        
-
     }
 
     private void Update()
@@ -68,6 +95,21 @@ public class PauseCanvas : MonoBehaviour
         {
             playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
         }
+
+        // if (pauseCanvasCollection.activeSelf)
+        // {
+        //     if (InputManager.Instance != null)
+        //     {
+        //         if (InputManager.Instance.GetCurrentInputDevice() == InputManager.InputDeviceType.Keyboard)
+        //         {
+        //             Cursor.visible = true;
+        //         }
+        //         else
+        //         {
+        //             Cursor.visible = false;
+        //         }
+        //     }
+        // }
     }
 
     private void AlternateState(InputAction.CallbackContext context)
@@ -116,15 +158,30 @@ public class PauseCanvas : MonoBehaviour
         unpausedPlayerMoveState = playerMovement.DisabledType;
         unpausedPlayerCombatState = playerCombat.IsDisabled;
         if (playerCamera != null)
-        unpausedCameraState = playerCamera.IsDisabled;
+            unpausedCameraState = playerCamera.IsDisabled;
 
         playerMovement.DisablePlayerMovement(1);
         playerCombat.DisablePlayerCombat(true);
         if (playerCamera != null)
             playerCamera.DisableCameraInput(true);
 
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+        if (InputManager.Instance != null)
+        {
+            if (InputManager.Instance.GetCurrentInputDevice() == InputManager.InputDeviceType.Keyboard)
+            {
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.visible = false;
+            }
+        }
+        else
+        {
+            Cursor.visible = true;
+        }
 
         Time.timeScale = 0;
 
