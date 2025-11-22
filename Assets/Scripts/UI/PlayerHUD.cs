@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,7 +33,9 @@ public class PlayerHUD : MonoBehaviour
 
     private bool playerDied = false;
 
+    private int lastDivisible = 0;
 
+    private float fontSize = 0;
 
     [SerializeField]
     private Image weaponChargeBarFill;
@@ -50,6 +53,12 @@ public class PlayerHUD : MonoBehaviour
 
         savedAlpha = damageVignette.color.a;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, 0);
+
+        if (gameManager != null)
+            lastDivisible = ((int)(gameManager.GetCurrentTime() - 1f) / 30);
+
+        fontSize = currentTimeText.fontSize;
+
     }
 
     private void OnHealthChanged(float newAmount, float oldAmount)
@@ -75,10 +84,23 @@ public class PlayerHUD : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
+            if (gameManager == null) gameManager = GameManager.Instance;
+
+
             if (!GameManager.Instance.IsTimerHidden())
                 currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
             else
                 currentTimeText.text = "";
+
+
+            if (lastDivisible != ((int)gameManager.GetCurrentTime() / 30))
+            {
+                lastDivisible = ((int)gameManager.GetCurrentTime() / 30);
+                if (lastDivisible > 1)
+                    StartCoroutine(FlashTimer());
+                else
+                    StartCoroutine(KeepFlashing());
+            }
         }
 
         if (currentApearTime > 0) currentApearTime -= Time.deltaTime;
@@ -87,6 +109,56 @@ public class PlayerHUD : MonoBehaviour
         weaponChargeBarFill.fillAmount = playerCombat.GetChargeAmount();
 
 
+    }
+
+    private IEnumerator FlashTimer()
+    {
+        yield return new WaitForEndOfFrame();
+
+        float counting = 5;
+        float waitTime = 0.25f;
+
+        while (counting > 0)
+        {
+
+            currentTimeText.color = Color.red;
+            currentTimeText.fontSize = fontSize + 20f;
+
+
+            yield return new WaitForSeconds(waitTime / 2f);
+
+
+            currentTimeText.color = Color.white;
+            currentTimeText.fontSize = fontSize;
+
+
+            counting--;
+            yield return new WaitForSeconds(waitTime / 2f);
+        }
+
+        currentTimeText.color = Color.white;
+        currentTimeText.fontSize = fontSize;
+    }
+
+    private IEnumerator KeepFlashing()
+    {
+        float waitTime = 0.25f;
+
+        while (true)
+        {
+
+            currentTimeText.color = Color.red;
+            currentTimeText.fontSize = fontSize + 20f;
+
+
+            yield return new WaitForSeconds(waitTime / 2f);
+
+
+            currentTimeText.color = Color.white;
+            currentTimeText.fontSize = fontSize;
+
+            yield return new WaitForSeconds(waitTime / 2f);
+        }
     }
 
 

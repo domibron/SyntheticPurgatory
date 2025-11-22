@@ -36,13 +36,16 @@ public class GameStatsManager : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this.gameObject);
+            Destroy(Instance.gameObject); // GET OUT ~Tuco
+            // instance = this;
         }
         else
         {
-            instance = this;
-            SetUpStats();
+
         }
+
+        instance = this;
+        SetUpStats();
     }
 
     private void SetUpStats()

@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     private int depositedScrap = 0;
 
-    public float TimePerLevel = 120f;
+    private float timePerLevel = 120f;
 
     private float currentTime = 1f;
     private bool inDungeon = false;
@@ -53,16 +53,22 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        // yeah, no, this is wrong. We need to destroy the other one.
         if (Instance != null && Instance != this)
         {
-            Destroy(this);
+            // Destroy(this);
+            Destroy(Instance.gameObject); // Terminate the other game manager since it was brought over from a prev game.
         }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(this);
-            currentLives = maxLives;
-        }
+
+        Instance = this;
+        DontDestroyOnLoad(this);
+        currentLives = maxLives;
+
+    }
+
+    void Start()
+    {
+        timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTime;
     }
 
     void Update()
@@ -110,7 +116,10 @@ public class GameManager : MonoBehaviour
 
     public void StartTimer()
     {
-        currentTime = TimePerLevel;
+        // should be impossible but just in case.
+        timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTime;
+
+        currentTime = timePerLevel;
         inDungeon = true;
         pause = false;
     }
@@ -189,7 +198,7 @@ public class GameManager : MonoBehaviour
         SetLevelSeed(Random.Range(-999999999, 999999999));
 
         print("world seed: " + GetWorldSeed() + "     " + "randomlevel: " + GetLevelSeed());
-        
+
         return GetLevelSeed();
 
     }

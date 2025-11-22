@@ -34,6 +34,10 @@ public class MiscellaneousStats : ICloneable
             MaxInventoryScrap = MaxInventoryScrap,
 
             ScrapRangeUpgradeAmount = ScrapRangeUpgradeAmount,
+
+            MaxLevelTime = MaxLevelTime,
+
+            CriticalHitChance = CriticalHitChance,
         };
     }
 
