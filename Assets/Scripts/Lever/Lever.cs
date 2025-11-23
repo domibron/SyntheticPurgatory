@@ -10,6 +10,8 @@ public class Lever : MonoBehaviour, IKickable, IShootable
 
     private bool state = false;
 
+    private bool inMotion = false;
+
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
@@ -22,6 +24,8 @@ public class Lever : MonoBehaviour, IKickable, IShootable
 
     public void HitObject()
     {
+        if (inMotion) { return; }
+
         if (roomID == -1)
         {
             LevelGenerator levelGen = LevelGenObjectRefGetter.Instance.gameObject.GetComponent<LevelGenerator>();
@@ -33,6 +37,7 @@ public class Lever : MonoBehaviour, IKickable, IShootable
 
         doorGenerator.ToggleDoors(roomID);
         state = !state;
+        inMotion = true;
     }
 
     public void KickObject(Vector3 forceAndDir, ForceMode forceMode = ForceMode.Force)
@@ -48,5 +53,11 @@ public class Lever : MonoBehaviour, IKickable, IShootable
 
         doorGenerator.ToggleDoors(roomID);
         state = !state;
+        inMotion = true;
+    }
+
+    public void MotionEnded()
+    {
+        inMotion = false;
     }
 }

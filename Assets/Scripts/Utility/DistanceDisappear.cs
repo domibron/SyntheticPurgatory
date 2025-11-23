@@ -1,10 +1,13 @@
 using System;
+using TMPro;
 using UnityEngine;
 
-public class DistanceDisapear : MonoBehaviour
+public class DistanceDisappear : MonoBehaviour
 {
     [SerializeField]
     SpriteRenderer spriteRenderer;
+    [SerializeField]
+    TMP_Text textRendererAlternative;
 
     float baseOpacity;
     Transform camTransform;
@@ -17,7 +20,15 @@ public class DistanceDisapear : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        baseOpacity = spriteRenderer.color.a;
+        if (spriteRenderer == null)
+        {
+            baseOpacity = textRendererAlternative.color.a;
+        }
+        else
+        {
+            baseOpacity = spriteRenderer.color.a;
+        }
+            
         SetTargetCamera();
     }
 
@@ -33,7 +44,16 @@ public class DistanceDisapear : MonoBehaviour
         float distanceFromCam = Vector3.Distance(transform.position, camTransform.position);
         float targetOpacity = Mathf.Clamp(distanceFromCam - minDistance, 0 , maxDistance) / maxDistance * baseOpacity;
 
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, targetOpacity);
+        if (spriteRenderer == null)
+        {
+            textRendererAlternative.color = new Color(textRendererAlternative.color.r, textRendererAlternative.color.g, textRendererAlternative.color.b, targetOpacity);
+        }
+        else
+        {
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, targetOpacity);
+        }
+        
+
     }
 
     public void SetTargetCamera()

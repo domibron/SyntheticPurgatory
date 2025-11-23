@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class ScaleWithCamDistance : MonoBehaviour
 {
-    Vector3 baseScale;
     Transform camTransform;
+
+    float currentMultiplier;
+    Vector3 curScale;
+    RemoveAfterTimeWithEasing easingComponent;
 
     [SerializeField]
     float fallOffPower = 1;
@@ -12,12 +15,16 @@ public class ScaleWithCamDistance : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        baseScale = transform.localScale;
+        if (transform.GetComponent<RemoveAfterTimeWithEasing>() != null)
+        {
+            easingComponent = transform.GetComponent<RemoveAfterTimeWithEasing>();
+        }
+
+        curScale = transform.localScale;
         SetTargetCamera();
     }
 
-    // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (camTransform == null)
         {
@@ -25,14 +32,17 @@ public class ScaleWithCamDistance : MonoBehaviour
             return;
         }
 
-        transform.localScale = new Vector3(GetTargetScale(baseScale.x), GetTargetScale(baseScale.y), GetTargetScale(baseScale.z));
+        if (easingComponent) { curScale = easingComponent.GetStoredScale(); }
+
+        currentMultiplier = GetTargetScale();
+        transform.localScale = new Vector3(curScale.x * currentMultiplier, curScale.y * currentMultiplier, curScale.z * currentMultiplier);
     }
 
-    public float GetTargetScale(float value)
+    public float GetTargetScale()
     {
         float distanceFromCam = Vector3.Distance(transform.position, camTransform.position);
 
-        return value * Mathf.Pow(distanceFromCam, fallOffPower) / 8;
+        return Mathf.Pow(distanceFromCam, fallOffPower) / 4;
     }
 
 
@@ -44,7 +54,7 @@ public class ScaleWithCamDistance : MonoBehaviour
         }
         catch (NullReferenceException)
         {
-            //Debug.LogError("Main camera was not detected!", this);
+            Debug.LogError("Main camera was not detected!", this);
         }
     }
 }

@@ -35,7 +35,6 @@ public class Crushing : MonoBehaviour
         // print(other.name);
         if (detectedColliders.Contains(other))
         {
-            // print("ATGQEAAEGA");
             other.GetComponent<Health>()?.AddToHealth(-damage);
             detectedColliders.Remove(other);
         }
@@ -47,7 +46,6 @@ public class Crushing : MonoBehaviour
 
     public void RemoveCollider(Collider other)
     {
-        // print("KILL ME");
         if (detectedColliders.Contains(other))
         {
             detectedColliders.Remove(other);

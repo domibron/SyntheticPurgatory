@@ -7,7 +7,10 @@ public class EndStateScreen : MonoBehaviour
     /// </summary>
     [SerializeField]
     private GameObject endStateCanvasCollection;
-
+    /// <summary>
+    /// Bool for checking if the death canvas is open
+    /// </summary>
+    private bool canvasActive = false;
 
     /// <summary>
     /// Activate and enable visibility of the endstate canvas
@@ -15,6 +18,9 @@ public class EndStateScreen : MonoBehaviour
     /// <param name="state">Whether to turn on or off the endstate canvas</param>
     public void ActivateCanvas(bool state)
     {
+        if (canvasActive == state) { return; }
+
+        canvasActive = state;
         endStateCanvasCollection.SetActive(state);
     }
 

@@ -16,6 +16,8 @@ public class Door : MonoBehaviour
 
     private Animator animator;
 
+    private bool inMotion = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -76,14 +78,15 @@ public class Door : MonoBehaviour
         doorOverrideState = DoorOverrideState.Open;
     }
 
-    IEnumerator RandomDoorDelay(bool doorState, float maxPossibleDelay = 0.35f)
+    IEnumerator RandomDoorDelay(bool doorState, float maxPossibleDelay = 0.2f)
     {
         yield return new WaitForSeconds(Random.Range(0, maxPossibleDelay));
-        isDoorOpen = doorState;
+        SetDoorState(doorState);
     }
 
     public bool IsDoorOpen()
     {
         return isDoorOpen;
     }
+
 }

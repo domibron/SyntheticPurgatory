@@ -212,7 +212,7 @@ public class TankEnemyAI : BaseEnemy
         {
             if (rb.linearVelocity.magnitude < 0.5f)
             {
-                StopCharge(Mathf.Min(previousSpeed / 6 , 1));
+                StopCharge(Mathf.Min(previousSpeed / 3 , 1.5f));
             }
 
         }
