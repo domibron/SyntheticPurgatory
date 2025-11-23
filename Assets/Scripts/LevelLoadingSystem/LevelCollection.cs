@@ -8,6 +8,7 @@ public static class LevelCollection
     public enum LevelKey
     {
         MainMenu,
+        Tutorial,
         SetupScreen,
         HubWorld,
         DungeonWorld,
@@ -18,6 +19,7 @@ public static class LevelCollection
     private static Dictionary<string, string[]> AllLevels = new Dictionary<string, string[]>()
     {
         { "MainMenu", new string[] { "MainMenu" } },
+        { "Tutorial", new string[] { "Tutorial" } },
         { "SetupScreen", new string[] { "SetupScreen" } },
         { "HubWorld", new string[] { "HubWorld" } },
         { "DungeonWorld", new string[] { "DungeonWorld" } },

@@ -42,6 +42,8 @@ public class Lever : MonoBehaviour, IKickable, IShootable
 
     public void KickObject(Vector3 forceAndDir, ForceMode forceMode = ForceMode.Force)
     {
+        if (inMotion) { return; }
+
         if (roomID == -1)
         {
             LevelGenerator levelGen = LevelGenObjectRefGetter.Instance.gameObject.GetComponent<LevelGenerator>();

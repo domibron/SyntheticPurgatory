@@ -48,6 +48,15 @@ public class MainMenu : MonoBehaviour
         LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.SetupScreen.ToString());
     }
 
+    public void StartTutorial()
+    {
+        if (LevelLoading.Instance == null) return;
+
+        if (LevelLoading.Instance.IsLoading) return;
+
+        LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.Tutorial.ToString());
+    }
+
     public void Quit()
     {
         Application.Quit();

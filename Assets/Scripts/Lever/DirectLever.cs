@@ -9,6 +9,8 @@ public class DirectLever : MonoBehaviour, IKickable, IShootable
 
     private bool state = false;
 
+    private bool inMotion = false;
+
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
@@ -21,13 +23,26 @@ public class DirectLever : MonoBehaviour, IKickable, IShootable
 
     public void HitObject()
     {
+        if (inMotion) { return; }
+
         OnLeverActivate?.Invoke();
         state = !state;
+
+        inMotion = true;
     }
 
     public void KickObject(Vector3 forceAndDir, ForceMode forceMode = ForceMode.Force)
     {
+        if (inMotion) { return; }
+
         OnLeverActivate?.Invoke();
         state = !state;
+
+        inMotion = true;
+    }
+
+    public void MotionEnded()
+    {
+        inMotion = false;
     }
 }
