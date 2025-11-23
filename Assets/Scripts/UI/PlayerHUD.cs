@@ -50,6 +50,9 @@ public class PlayerHUD : MonoBehaviour
     private float scrapCountersSpeed = 0.05f;
     private float curScrapCounterTime;
 
+    [SerializeField]
+    private GameObject bottomRightUI;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -123,7 +126,7 @@ public class PlayerHUD : MonoBehaviour
             UpdateScrapCounters();
             curScrapCounterTime = scrapCountersSpeed;
         }
-        
+
     }
 
     private IEnumerator FlashTimer()
@@ -176,8 +179,18 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
-    private void UpdateScrapCounters() // Peak programming
+    private void UpdateScrapCounters() // Peak programming // yes, yes it is.
     {
+        if (ScrapManager.Instance == null)
+        {
+            bottomRightUI.SetActive(false);
+            return;
+        }
+        else
+        {
+            bottomRightUI.SetActive(true);
+        }
+
         int targetInvScrap = ScrapManager.Instance.currentInventoryScrap;
         if (curHeldScrapNum < targetInvScrap) { curHeldScrapNum++; }
         else if (curHeldScrapNum > targetInvScrap) { curHeldScrapNum--; }

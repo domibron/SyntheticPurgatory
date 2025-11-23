@@ -136,11 +136,11 @@ public class PlayerMovement : MonoBehaviour
         // col.material.dynamicFriction = 0f;
         PollInput();
 
-        // camera stuff.
+        // camera stuff. default if input manager dies.
         bool useMouseLook = true;
         bool invertYLook = false;
-        float xSense = 1f;
-        float ySense = 1f;
+        float xSense = 7f * MOUSE_SENS_MULT;
+        float ySense = 7f * MOUSE_SENS_MULT;
 
         if (InputManager.Instance != null)
         {
@@ -162,6 +162,8 @@ public class PlayerMovement : MonoBehaviour
                 ySense = SettingsMenu.GetGamepadYSens() * GAMEPAD_SENS_MULT;
             }
         }
+
+        // print(ySense + " " + xSense);
 
 
         if (invertYLook)
