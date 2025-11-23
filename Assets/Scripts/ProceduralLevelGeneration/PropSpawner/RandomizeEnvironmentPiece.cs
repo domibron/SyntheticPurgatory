@@ -42,7 +42,7 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
         {
             newobject.transform.rotation = Quaternion.Euler(newobject.transform.rotation.eulerAngles.x, Random.Range(0, 359), newobject.transform.rotation.eulerAngles.z);
         }
-
+        
         Destroy(temporaryPiece); // Destroy the piece used for creation
         Destroy(this);
     }

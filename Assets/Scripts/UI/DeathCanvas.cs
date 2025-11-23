@@ -22,6 +22,10 @@ public class DeathCanvas : MonoBehaviour
     /// </summary>
     [SerializeField]
     private TMP_Text lostScrapStatText;
+    /// <summary>
+    /// Bool for checking if the stats have been displayed
+    /// </summary>
+    private bool shownStats = false;
 
     void OnEnable()
     {
@@ -68,6 +72,9 @@ public class DeathCanvas : MonoBehaviour
     /// <param name="scrapLost">Value of the held scrap on death</param>
     public void ShowStats(int scrapDeposited, int scrapLost)
     {
+        if (shownStats) { return; }
+
+        shownStats = true;
         depoScrapStatText.text = (depoScrapStatText.text + scrapDeposited);
         lostScrapStatText.text = (lostScrapStatText.text + scrapLost);
     }
@@ -85,7 +92,6 @@ public class DeathCanvas : MonoBehaviour
         }
         else
         {
-
             GameManager.Instance.ReturnToHubWorld(true);
         }
     }

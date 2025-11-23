@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 2018828396590755090}
   - component: {fileID: 7641581563393446495}
   - component: {fileID: 4509525256068644414}
+  - component: {fileID: 5772233230067989972}
+  - component: {fileID: 7390622616342642683}
+  - component: {fileID: 6297521228307021162}
   m_Layer: 13
   m_Name: P_FloatingText
   m_TagString: Untagged
@@ -29,7 +32,7 @@ RectTransform:
   m_GameObject: {fileID: 7122786255667809930}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 15.466}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -208,3 +211,45 @@ MonoBehaviour:
   shouldEaseIn: 1
   easeInTime: 0.3
   easeOutTime: 0.3
+--- !u!114 &5772233230067989972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122786255667809930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74ad3d7edb3a9594c8942d4c155f32bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fallOffPower: 0.8
+--- !u!114 &7390622616342642683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122786255667809930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e63aedbc6a7c284697b46574953b29c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 0}
+  textRendererAlternative: {fileID: 2018828396590755090}
+  minDistance: 0.5
+  maxDistance: 3
+--- !u!114 &6297521228307021162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7122786255667809930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce7e0fc7b9ddd9f4bafdfa8801d56551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invertDirection: 1

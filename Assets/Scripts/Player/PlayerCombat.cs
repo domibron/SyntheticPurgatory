@@ -74,11 +74,11 @@ public class PlayerCombat : MonoBehaviour
     // int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
     // float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
     float currentChargeBar = 1f;
-    float rechargeRate = 0.2f;
+    float rechargeRate = 0.6f;
 
-    float chargeDegradePerShot = 0.1111111111f; // 10 shots before standard.
+    float chargeDegradePerShot = 0.125f; // 8 shots before standard.
 
-    float standardSecondsPerShot = 0.5f;
+    float standardSecondsPerShot = 0.4f;
     float chargedSecondsPerShot = 0.1f;
 
     float delayAfterFireBeforeRecharging = 0.4f;
@@ -386,7 +386,7 @@ public class PlayerCombat : MonoBehaviour
         // currentAmmoCount--;
         currentChargeBar -= chargeDegradePerShot;
         // currentProjectileCooldown = projectileFireRate;
-        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar));
+        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar / 2));
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
