@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 6756714828978082946}
   - component: {fileID: -3394219356379998070}
   - component: {fileID: 4516463004191535880}
+  - component: {fileID: 2161718658074004522}
   m_Layer: 9
   m_Name: P_RangedEnemy
   m_TagString: Untagged
@@ -303,6 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alsoDisablePhysics: 1
 --- !u!114 &4516463004191535880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,6 +319,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disableNavAgent: 1
   enemyClass: {fileID: 9169388589387901843}
+--- !u!114 &2161718658074004522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427628415408339441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6756714828978082946}
+  health: {fileID: 7479287925834451414}
 --- !u!1001 &3126943043658059284
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -551,7 +569,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

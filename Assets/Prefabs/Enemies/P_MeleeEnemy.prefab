@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 6837888478889072226}
   - component: {fileID: 2494591856015755940}
   - component: {fileID: 8368313451598693076}
+  - component: {fileID: 3825170463760190894}
   m_Layer: 9
   m_Name: P_MeleeEnemy
   m_TagString: Untagged
@@ -83,7 +84,7 @@ MonoBehaviour:
   Alerted: 0
   baseSpeed: 5
   turnReduction: 5
-  damage: 18
+  damage: 6
   attackRange: 2.5
   attackCone: 0.3
   attackCooldown: 1
@@ -266,6 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alsoDisablePhysics: 1
 --- !u!114 &8368313451598693076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +282,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disableNavAgent: 1
   enemyClass: {fileID: 328645207216918543}
+--- !u!114 &3825170463760190894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756158581593521815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae775dd86d7b17a4f93526635f67cd6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitPointType: 1
+  hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
+  floatingTextSystem: {fileID: 6837888478889072226}
+  health: {fileID: 1536644213997405182}
 --- !u!1 &2324691687616851649
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,6 +642,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4323694759102204623, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6306225537211470232}
+    - targetCorrespondingSourceObject: {fileID: 4323694759102204623, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6757553708482988950}
     - targetCorrespondingSourceObject: {fileID: 4323694759102204623, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5635689165361683838}
@@ -1120,6 +1141,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.066079855, y: 0.53906906, z: 0.28966713}
   m_Center: {x: 0.3444904, y: 0.78292686, z: 0.03588772}
+--- !u!114 &6757553708482988950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070879608878884718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56977092117c7ff46ae0bb43a57d4d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyAI: {fileID: 328645207216918543}
 --- !u!95 &5635689165361683838
 Animator:
   serializedVersion: 7

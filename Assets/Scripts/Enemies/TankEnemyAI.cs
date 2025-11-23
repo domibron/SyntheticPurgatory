@@ -8,10 +8,6 @@ using UnityEngine.AI;
 public class TankEnemyAI : BaseEnemy
 {
     /// <summary>
-    /// NavmeshAgent component of the enemy
-    /// </summary>
-    private NavMeshAgent agent;
-    /// <summary>
     /// Target of the enemy
     /// </summary>
     private GameObject goal;
@@ -49,11 +45,9 @@ public class TankEnemyAI : BaseEnemy
     [SerializeField]
     private Vector3 viewPointOffset;
 
-    private float chargeFinishTime = 1f;
-
     private float turnReductionMult = 1;
 
-    private float regularTurnSpeed = 60;
+    //private float regularTurnSpeed = 60;
 
     private float previousSpeed;
 

@@ -7,10 +7,6 @@ using UnityEngine.AI;
 public class MeleeEnemyAI : BaseEnemy
 {
     /// <summary>
-    /// NavmeshAgent component of the enemy
-    /// </summary>
-    private NavMeshAgent agent;
-    /// <summary>
     /// Target object for the enemy
     /// </summary>
     private GameObject goal;
@@ -248,17 +244,13 @@ public class MeleeEnemyAI : BaseEnemy
         Health healthscript;
         if (healthscript = goal.gameObject.GetComponent<Health>()) // Attack object if it has the health script attached
         {
-            StartCoroutine(AttackSequence());
+            if (animator) animator.SetTrigger("Attack");
             isAttacking = true;
         }
     }
 
-    private IEnumerator AttackSequence()
+    public void AttemptAttack(bool endOfAttacks)
     {
-        if (animator) animator.SetTrigger("Attack");
-
-        yield return new WaitForSeconds(0.4f);
-
         Collider[] hits = Physics.OverlapBox(transform.position + transform.forward, new Vector3(0.5f, 1.3f, 0.7f), Quaternion.identity);
         foreach (Collider hit in hits)
         {
@@ -268,11 +260,11 @@ public class MeleeEnemyAI : BaseEnemy
             }
         }
 
-        yield return new WaitForSeconds(0.7f);
-
-        curAttackCooldown = attackCooldown; // Reset attack cooldown
-        isAttacking = false;
-
+        if(endOfAttacks)
+        {
+            curAttackCooldown = attackCooldown; // Reset attack cooldown
+            isAttacking = false;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -287,6 +279,7 @@ public class MeleeEnemyAI : BaseEnemy
         }
 
     }
+
 
     public override void GetUp()
     {
