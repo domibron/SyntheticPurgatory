@@ -80,6 +80,7 @@ public class DeathCanvas : MonoBehaviour
     }
 
 
+
     /// <summary>
     /// Return back to hub
     /// </summary>

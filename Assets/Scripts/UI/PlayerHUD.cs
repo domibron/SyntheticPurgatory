@@ -40,6 +40,15 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField]
     private Image weaponChargeBarFill;
 
+    [SerializeField]
+    private TMP_Text heldScrapText;
+    private int curHeldScrapNum;
+    [SerializeField]
+    private TMP_Text depositedScrapText;
+    private int curDepoScrapNum;
+    [SerializeField]
+    private float scrapCountersSpeed = 0.05f;
+    private float curScrapCounterTime;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -108,7 +117,13 @@ public class PlayerHUD : MonoBehaviour
 
         weaponChargeBarFill.fillAmount = playerCombat.GetChargeAmount();
 
-
+        curScrapCounterTime -= Time.fixedDeltaTime;
+        if (curScrapCounterTime < 0)
+        {
+            UpdateScrapCounters();
+            curScrapCounterTime = scrapCountersSpeed;
+        }
+        
     }
 
     private IEnumerator FlashTimer()
@@ -161,5 +176,17 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
+    private void UpdateScrapCounters() // Peak programming
+    {
+        int targetInvScrap = ScrapManager.Instance.currentInventoryScrap;
+        if (curHeldScrapNum < targetInvScrap) { curHeldScrapNum++; }
+        else if (curHeldScrapNum > targetInvScrap) { curHeldScrapNum--; }
 
+        int targetDepoScrap = ScrapManager.Instance.currentDepositedScrap;
+        if (curDepoScrapNum < targetDepoScrap) { curDepoScrapNum++; }
+        else if (curDepoScrapNum > targetDepoScrap) { curDepoScrapNum--; }
+
+        heldScrapText.text = curHeldScrapNum.ToString().PadLeft(3, '0');
+        depositedScrapText.text = curDepoScrapNum.ToString().PadLeft(3, '0');
+    }
 }

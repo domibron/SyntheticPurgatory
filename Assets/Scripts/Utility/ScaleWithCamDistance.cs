@@ -54,7 +54,7 @@ public class ScaleWithCamDistance : MonoBehaviour
         }
         catch (NullReferenceException)
         {
-            Debug.LogError("Main camera was not detected!", this);
+            //Debug.LogError("Main camera was not detected!", this);
         }
     }
 }
