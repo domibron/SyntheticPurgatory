@@ -23,6 +23,8 @@ public class EntityCulling : MonoBehaviour
 
     private Rigidbody rb;
 
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     IEnumerator Start()
     {
@@ -37,12 +39,12 @@ public class EntityCulling : MonoBehaviour
 
         if (LevelGenObjectRefGetter.Instance == null)
         {
-            Debug.LogWarning("LevelGenObjectRefGetter could not be found!");
+            Debug.LogWarning("NONE CRITICAL: LevelGenObjectRefGetter could not be found!");
 
         }
         else
         {
-            levelGenerator = LevelGenObjectRefGetter.Instance.GetReference().GetComponent<LevelGenerator>();
+            levelGenerator = LevelGenObjectRefGetter.Instance.transform.GetComponent<LevelGenerator>();
 
             gridCoordiantes = levelGenerator.GetGridCoordinates(transform.position);
 
