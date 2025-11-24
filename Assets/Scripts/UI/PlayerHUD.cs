@@ -38,7 +38,11 @@ public class PlayerHUD : MonoBehaviour
     private float fontSize = 0;
 
     [SerializeField]
-    private Image weaponChargeBarFill;
+    private Image gunChargeBarFill;
+    [SerializeField]
+    private Image meleeChargeBarFill;
+    [SerializeField]
+    private Image bashChargeBarFill;
 
     [SerializeField]
     private TMP_Text heldScrapText;
@@ -118,7 +122,9 @@ public class PlayerHUD : MonoBehaviour
         if (currentApearTime > 0) currentApearTime -= Time.deltaTime;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, Mathf.Lerp(0, savedAlpha, currentApearTime / apearTime));
 
-        weaponChargeBarFill.fillAmount = playerCombat.GetChargeAmount();
+        gunChargeBarFill.fillAmount = playerCombat.GetGunChargeAmount();
+        meleeChargeBarFill.fillAmount = 1 - playerCombat.GetMeleeChargeAmount();
+        bashChargeBarFill.fillAmount = 1 - playerCombat.GetBashChargeAmount();
 
         curScrapCounterTime -= Time.fixedDeltaTime;
         if (curScrapCounterTime < 0)
