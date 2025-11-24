@@ -76,8 +76,10 @@ public class PlayerCombat : MonoBehaviour
 
     // int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
     // float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
-    float currentChargeBar = 1f;
+    float currentGunChargeBar = 1f;
     float rechargeRate = 0.6f;
+    float currentMeleeChargeBar = 1f;
+    float currentBashChargeBar = 1f;
 
     float chargeDegradePerShot = 0.125f; // 8 shots before standard.
 
@@ -242,7 +244,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            velocity -= Time.deltaTime * 10f * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar));
+            velocity -= Time.deltaTime * 10f * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar));
         }
 
         velocity = Mathf.Clamp01(velocity);
@@ -270,6 +272,9 @@ public class PlayerCombat : MonoBehaviour
 
     private void WeaponCharging()
     {
+        currentMeleeChargeBar = currentMeleeCooldown / (meleeAttackDelay - 0.05f);
+        currentBashChargeBar = currentKickCooldown / (kickAttackDelay - 0.05f);
+
         if (rechargeDelay <= 0)
         {
             isRecharging = true;
@@ -282,15 +287,24 @@ public class PlayerCombat : MonoBehaviour
 
         if (isRecharging)
         {
-            currentChargeBar += Time.deltaTime * rechargeRate;
+            currentGunChargeBar += Time.deltaTime * rechargeRate;
         }
-        currentChargeBar = Mathf.Clamp01(currentChargeBar);
+        currentGunChargeBar = Mathf.Clamp01(currentGunChargeBar);
     }
 
-    public float GetChargeAmount()
+    public float GetGunChargeAmount()
     {
-        return currentChargeBar;
+        return currentGunChargeBar;
     }
+    public float GetMeleeChargeAmount()
+    {
+        return currentMeleeChargeBar;
+    }
+    public float GetBashChargeAmount()
+    {
+        return currentBashChargeBar;
+    }
+
 
     #region OnDrawGizmos
     #endregion
@@ -388,9 +402,9 @@ public class PlayerCombat : MonoBehaviour
     private void FireProjectile()
     {
         // currentAmmoCount--;
-        currentChargeBar -= chargeDegradePerShot;
+        currentGunChargeBar -= chargeDegradePerShot;
         // currentProjectileCooldown = projectileFireRate;
-        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar / 2));
+        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar / 2));
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
