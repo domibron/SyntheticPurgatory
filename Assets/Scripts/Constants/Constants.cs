@@ -68,4 +68,6 @@ public class Constants
     public const string DecorationTag = "Decor";
 
     public const string CollapsibleFloorTag = "CollapsibleFloor";
+
+    public const string NavLineTag = "NavLine";
 }
