@@ -57,6 +57,11 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField]
     private GameObject bottomRightUI;
 
+    private float flashOverheatTime = 0.5f;
+
+    private float currentFlashTime = 0;
+    private bool isFlash = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -122,7 +127,26 @@ public class PlayerHUD : MonoBehaviour
         if (currentApearTime > 0) currentApearTime -= Time.deltaTime;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, Mathf.Lerp(0, savedAlpha, currentApearTime / apearTime));
 
-        gunChargeBarFill.fillAmount = playerCombat.GetGunChargeAmount();
+        if (currentFlashTime > 0) currentFlashTime -= Time.deltaTime;
+
+        if (playerCombat.GetOverheatCoolDownNormalized() > 0)
+        {
+            if (currentFlashTime <= 0)
+            {
+                isFlash = !isFlash;
+                currentFlashTime = flashOverheatTime;
+            }
+
+
+            gunChargeBarFill.color = (isFlash ? Color.red : new Color(0.5f, 0, 0, 1f));
+            gunChargeBarFill.fillAmount = playerCombat.GetOverheatCoolDownNormalized();
+        }
+        else
+        {
+            gunChargeBarFill.color = Color.green;
+            gunChargeBarFill.fillAmount = playerCombat.GetGunChargeAmount();
+        }
+        // gunChargeBarFill.fillAmount = playerCombat.GetGunChargeAmount();
         meleeChargeBarFill.fillAmount = 1 - playerCombat.GetMeleeChargeAmount();
         bashChargeBarFill.fillAmount = 1 - playerCombat.GetBashChargeAmount();
 
