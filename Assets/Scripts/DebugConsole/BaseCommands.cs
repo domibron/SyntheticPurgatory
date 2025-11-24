@@ -196,7 +196,7 @@ public class BaseCommands
             if (go != null && go.transform.name == "Player")
             {
                 go.transform.GetComponent<Health>().AddToHealth(health);
-                console.TextToConsole($"player hp is now at {go.transform.GetComponent<Health>().ReturnHealthValue()}");
+                console.TextToConsole($"player hp is now at {go.transform.GetComponent<Health>().GetHealthValue()}");
 
             }
             else

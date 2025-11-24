@@ -10,6 +10,9 @@ public class PlayerCombat : MonoBehaviour
     public bool IsDisabled = false;
 
     [SerializeField]
+    LayerMask gunAlignmentLayers;
+
+    [SerializeField]
     GameObject projectilePrefab;
 
     [SerializeField]
@@ -371,7 +374,7 @@ public class PlayerCombat : MonoBehaviour
                 if (c.gameObject.CompareTag(Constants.PlayerTag)) continue; // if player, go away.
 
                 c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, c.transform.position); // deal damage.
-                 
+
             }
         }
 
@@ -396,8 +399,8 @@ public class PlayerCombat : MonoBehaviour
 
         if (Physics.Raycast(mainCamera.position, mainCamera.forward, out RaycastHit hit, 999))
         {
-            // we hit, so we fire towards target.
-            Vector3 dirNeeded = (hit.point - projectile.transform.position).normalized;
+            // we hit, so we fire towards target. we add a little offset to allow the projectile to not be aids. but this whole thing sucks.
+            Vector3 dirNeeded = ((hit.point + (mainCamera.forward * 3f)) - projectile.transform.position).normalized;
             projectileRB.AddForce(dirNeeded * projectileSpeed, ForceMode.VelocityChange);
         }
         else

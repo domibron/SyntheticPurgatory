@@ -12,6 +12,13 @@ public class ContainerPlacementCheck : MonoBehaviour
     [SerializeField]
     FallingTileArenaManager fallingTileArenaManager;
 
+    private Vector3 resetPoint;
+
+    void Awake()
+    {
+        resetPoint = transform.position;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,6 +32,11 @@ public class ContainerPlacementCheck : MonoBehaviour
 
         // print(SampleContainerPosition(transform.position));
 
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = resetPoint;
     }
 
     public bool SampleContainerPosition(Vector3 targetPos)

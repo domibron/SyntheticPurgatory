@@ -79,6 +79,11 @@ public class CraneController : MonoBehaviour
         else if (inJob) lastJob = 1f;
     }
 
+    public bool IsStillInJob()
+    {
+        return inJob;
+    }
+
     private void JobStart()
     {
         inJob = true;
@@ -252,6 +257,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
         craneGrabbable.DropObject();
         yield return new WaitForEndOfFrame();
+        containerPlacementCheck.ResetPosition();
 
         JobEnd();
     }

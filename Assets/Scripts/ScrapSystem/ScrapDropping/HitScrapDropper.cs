@@ -50,13 +50,13 @@ public class HitScrapDropper : MonoBehaviour
     /// <param name="oldHP">Health before taking damage</param>
     private void ScrapDropping(float newHP, float oldHP)
     {
-        float hitHPNotches = healthScript.ReturnMaxHealthValue() / (TotalHitScrap + 1); // Calculate health values to spawn scrap at
+        float hitHPNotches = healthScript.GetMaxHealthValue() / (TotalHitScrap + 1); // Calculate health values to spawn scrap at
         int currentNotch = Mathf.FloorToInt(oldHP / hitHPNotches); // Calculate integer relative to totalHitScrap to know how many scrap is left to be spawned
         float nextNotch = currentNotch * hitHPNotches; // Get exact health value that is next to be checked
 
         while (newHP <= nextNotch && currentNotch > 0 && hitScrapRemaining > 0) // Spawn scrap if health difference passes hit-scrap threshold
         {
-            if (nextNotch != healthScript.ReturnMaxHealthValue()) // Do not spawn scrap on first hit
+            if (nextNotch != healthScript.GetMaxHealthValue()) // Do not spawn scrap on first hit
             {
                 dropper.SpawnScrapGroup(1, sideForce, upForce); // Spawn scrap object
                 hitScrapRemaining--; // Handle exploit of repetitively healing then damaging a target, only so many can be dropped

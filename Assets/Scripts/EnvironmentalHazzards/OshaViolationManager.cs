@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 
 // TODO: Shit name, rename later
 /// <summary>
@@ -23,6 +25,8 @@ public class OshaViolationManager : MonoBehaviour
 
     private int currentCompletedEnemySpawnCount = 0;
 
+    public event Action OnEnemySpawnAttackConcluded;
+
     // bool spawnedEnemies = false; // ! DEBUG REMOVE // TODO: REMOVE
 
     void Awake()
@@ -35,7 +39,7 @@ public class OshaViolationManager : MonoBehaviour
 
         foreach (EnemySpawnAtGates enemySpawn in enemySpawnAtGates)
         {
-            enemySpawn.OnJobCompleted += OnEnemySpawnFinished;
+            enemySpawn.OnSpawnedAllEnemies += OnEnemySpawnFinished;
         }
     }
 
@@ -52,11 +56,16 @@ public class OshaViolationManager : MonoBehaviour
         // StartADozerAttack(); // ! DEBUG CODE
     }
 
-    public bool StartAEnemySpawnAttack()
+    public bool IsStillInJob()
+    {
+        return inJob;
+    }
+
+    public bool StartAEnemySpawnAttack(int count)
     {
         if (inJob) return false;
         currentCompletedEnemySpawnCount = 0;
-        StartCoroutine(StartEnemySpawnAttack());
+        StartCoroutine(StartEnemySpawnAttack(count));
 
         return true;
     }
@@ -69,20 +78,29 @@ public class OshaViolationManager : MonoBehaviour
         return true;
     }
 
-    private IEnumerator StartEnemySpawnAttack()
+    private IEnumerator StartEnemySpawnAttack(int count)
     {
         inJob = true;
+        // print("Spawnaegpineragnipaegipn");
+        // foreach (EnemySpawnAtGates enemySpawn in enemySpawnAtGates)
+        // {
+        bool result = enemySpawnAtGates[Random.Range(0, enemySpawnAtGates.Length)].StartEnemyAttack(count);
 
-        foreach (EnemySpawnAtGates enemySpawn in enemySpawnAtGates)
+        while (!result) // keep trying
         {
-            enemySpawn.StartEnemyAttack();
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 1f));
+            result = enemySpawnAtGates[Random.Range(0, enemySpawnAtGates.Length)].StartEnemyAttack(count);
         }
+        // yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 1f));
+        // }
+        yield return new WaitForEndOfFrame();
 
-        while (currentCompletedEnemySpawnCount < enemySpawnAtGates.Length)
+
+        while (currentCompletedEnemySpawnCount < 1)
         {
             yield return new WaitForEndOfFrame();
         }
+
+        OnEnemySpawnAttackConcluded?.Invoke();
 
         inJob = false;
         // spawnedEnemies = true;

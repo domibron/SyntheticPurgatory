@@ -41,7 +41,7 @@ public class DamageKickedObject : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         healthScript = GetComponent<Health>();
     }
-     
+
     private void OnCollisionEnter(Collision collision)
     {
         if (rb == null) { return; }
@@ -54,7 +54,7 @@ public class DamageKickedObject : MonoBehaviour
             Health otherObjectHealth;
             if (otherObjectHealth = collision.gameObject.GetComponent<Health>()) // If the object collided with has health
             {
-                float maxDamage = capAtRemainingHealth ? healthScript.ReturnHealthValue() : Mathf.Infinity; // Check whether to cap at remaining HP or not
+                float maxDamage = capAtRemainingHealth ? healthScript.GetHealthValue() : Mathf.Infinity; // Check whether to cap at remaining HP or not
                 float sharedDamage = Mathf.Max(-objectVel * sharedDamageMult, -maxDamage); // Get highest damage from hit
 
                 otherObjectHealth.AddToHealth(sharedDamage); // Deal damage to other object
