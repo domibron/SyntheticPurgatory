@@ -40,6 +40,11 @@ public class BossArenaAttackManager : BossArenaAttack
         if (currentDropAttackCoolDown > 0) currentDropAttackCoolDown -= Time.deltaTime;
     }
 
+    public void StartJuggleAttack()
+    {
+        arenaWallsManager.StartJuggleJob();
+    }
+
     private void EnemySpawnAttackConcluded()
     {
         waitingForEnemiesToSpawn = false;

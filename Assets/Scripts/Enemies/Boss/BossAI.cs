@@ -35,7 +35,8 @@ public class BossAI : BaseEnemy
     private Transform controlRoom;
 
     [SerializeField]
-    private BossArenaAttack[] arenaAttacks;
+    private BossArenaAttackManager arenaAttacks;
+
 
     [SerializeField]
     private LayerMask ground;
@@ -139,6 +140,7 @@ public class BossAI : BaseEnemy
                 }
                 else if (!isUsingButtonAttack && buttonAttackCount >= maxButtonAttackCount)
                 {
+                    // arenaAttacks.StartJuggleAttack(); // maybe not
                     SetCurrentState(CurrentState.EnterArena);
                 }
 
@@ -433,41 +435,45 @@ public class BossAI : BaseEnemy
 
     private void SetUpAttacks()
     {
-        if (arenaAttacks.Length <= 0)
-        {
-            Debug.LogError("There are no arena attacks!");
-            return;
-        }
+        // if (arenaAttacks.Length <= 0)
+        // {
+        //     Debug.LogError("There are no arena attacks!");
+        //     return;
+        // }
 
-        foreach (var attack in arenaAttacks)
-        {
-            attack.SetUpAttack(this);
-        }
+        // foreach (var attack in arenaAttacks)
+        // {
+        //     attack.SetUpAttack(this);
+        // }
+
+        arenaAttacks.SetUpAttack(this);
     }
 
     private void PickRandomAttackAndWait()
     {
         if (isUsingButtonAttack) return;
 
-        if (arenaAttacks.Length <= 0)
-        {
-            AttackConcluded();
-            Debug.LogError("There are no arena attacks!");
-            return;
-        }
+        // if (arenaAttacks.Length <= 0)
+        // {
+        //     AttackConcluded();
+        //     Debug.LogError("There are no arena attacks!");
+        //     return;
+        // }
 
-        int attackIndex = UnityEngine.Random.Range(0, arenaAttacks.Length);
+        // int attackIndex = UnityEngine.Random.Range(0, arenaAttacks.Length);
 
-        while (attackIndex != lastAttackIndex && arenaAttacks.Length > 1)
-        {
-            attackIndex = UnityEngine.Random.Range(0, arenaAttacks.Length);
-        }
+        // while (attackIndex != lastAttackIndex && arenaAttacks.Length > 1)
+        // {
+        //     attackIndex = UnityEngine.Random.Range(0, arenaAttacks.Length);
+        // }
 
         isUsingButtonAttack = true;
 
-        lastAttackIndex = attackIndex;
+        // lastAttackIndex = attackIndex;
 
-        arenaAttacks[attackIndex].StartAttack();
+        // arenaAttacks[attackIndex].StartAttack();
+
+        arenaAttacks.StartAttack();
 
     }
 }
