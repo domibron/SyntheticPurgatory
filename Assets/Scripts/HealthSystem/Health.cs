@@ -102,7 +102,7 @@ public class Health : MonoBehaviour
     /// Returns the current health value.
     /// </summary>
     /// <returns>The health value.</returns>
-    public virtual float ReturnHealthValue()
+    public virtual float GetHealthValue()
     {
         return currentHealth;
     }
@@ -111,7 +111,7 @@ public class Health : MonoBehaviour
     /// Returns the max health value.
     /// </summary>
     /// <returns>The max health value.</returns>
-    public virtual float ReturnMaxHealthValue()
+    public virtual float GetMaxHealthValue()
     {
         return maxHealth;
     }

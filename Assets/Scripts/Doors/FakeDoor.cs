@@ -6,6 +6,11 @@ public class FakeDoor : MonoBehaviour, IKickable, IShootable
 
     private bool isKnockedOver = false;
 
+    [SerializeField]
+    float targetSpeed = 30f;
+
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -16,19 +21,18 @@ public class FakeDoor : MonoBehaviour, IKickable, IShootable
         if (!isKnockedOver) return;
 
         Vector3 angVel = rb.angularVelocity;
-        rb.AddRelativeTorque((new Vector3(-30f * Time.deltaTime, 0, 0) * Mathf.Deg2Rad) - angVel);
+        rb.AddRelativeTorque((new Vector3(-targetSpeed * Time.deltaTime, 0, 0) * Mathf.Deg2Rad) - angVel);
 
     }
 
     void IShootable.HitObject()
     {
-        isKnockedOver = true;
         rb.isKinematic = false;
+        isKnockedOver = true;
     }
 
     void IKickable.KickObject(Vector3 forceAndDir, ForceMode forceMode)
     {
-
         rb.isKinematic = false;
         isKnockedOver = true;
     }

@@ -50,8 +50,6 @@ namespace DitzelGames.FastIK
         protected Quaternion StartRotationTarget;
         protected Transform Root;
 
-        [SerializeField]
-        private bool runInEditor = false;
 
         // Start is called before the first frame update
         void Awake()
@@ -117,9 +115,6 @@ namespace DitzelGames.FastIK
         // Update is called once per frame
         void LateUpdate()
         {
-#if UNITY_EDITOR
-            if (!runInEditMode) return;
-#endif
             ResolveIK();
         }
 

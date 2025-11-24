@@ -8,6 +8,13 @@ public class HideTimer : MonoBehaviour
     {
         while (PlayerRefFetcher.Instance == null) yield return new WaitForEndOfFrame();
 
-        GameManager.Instance?.HideTimer();
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("Cannot hide the timer because the game manager does not exist.");
+            yield break;
+        }
+
+        while (!GameManager.Instance.IsTimerHidden())
+            GameManager.Instance.HideTimer();
     }
 }

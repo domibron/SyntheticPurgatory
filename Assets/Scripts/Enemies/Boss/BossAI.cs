@@ -21,9 +21,9 @@ public class BossAI : BaseEnemy
 
     private bool isUsingButtonAttack = false;
 
-    private int buttonAttackCount = 1;
+    private int buttonAttackCount = 0;
 
-    private const int maxButtonAttackCount = 3; // what the helly
+    private const int maxButtonAttackCount = 1; // what the helly
 
     private bool inControlRoom = true; // fuck me
 
@@ -54,6 +54,20 @@ public class BossAI : BaseEnemy
 
     private event Action<CurrentState, CurrentState> onCurrentStateChanged;
 
+    private bool playerEnteredArena = false;
+
+    [SerializeField]
+    private float fallBackAfterTakenDamage = 0.3333333f;
+
+    private Health health;
+
+    private float lastHealthPercentage = 1f;
+
+    [SerializeField]
+    private Door bossDoor;
+
+    private bool wantsToGoToControlRoom = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -64,10 +78,26 @@ public class BossAI : BaseEnemy
         // store the player ref.
         player = PlayerRefFetcher.Instance.transform;
 
-        GetComponent<Health>().onDeath += OnHealth;
+        health = GetComponent<Health>();
+
+        lastHealthPercentage = health.GetHealthNormalized();
+
+
+        health.onDeath += OnDeath;
+        health.onHealthChanged += OnTakeDamage;
     }
 
-    private void OnHealth()
+    private void OnTakeDamage(float newHealth, float oldHealth)
+    {
+
+        if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
+        {
+            lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
+            wantsToGoToControlRoom = true;
+        }
+    }
+
+    private void OnDeath()
     {
         Destroy(this.gameObject);
         print("Win!!!!");
@@ -94,9 +124,13 @@ public class BossAI : BaseEnemy
             return;
         }
 
+        if (!playerEnteredArena) return;
+
         switch (currentState)
         {
             case CurrentState.OperateButtons:
+
+                if (wantsToGoToControlRoom) wantsToGoToControlRoom = false;
 
                 if (!isUsingButtonAttack && buttonAttackCount < maxButtonAttackCount)
                 {
@@ -128,6 +162,10 @@ public class BossAI : BaseEnemy
 
     }
 
+    public void PlayerEnteredArena()
+    {
+        playerEnteredArena = true;
+    }
 
     private void SetCurrentState(CurrentState newState)
     {
@@ -139,6 +177,16 @@ public class BossAI : BaseEnemy
 
     private void ThinkingOfAttack()
     {
+
+        if (wantsToGoToControlRoom)
+        {
+            SetCurrentState(CurrentState.EnterControlRoom);
+        }
+
+        if (Vector3.Distance(controlRoom.position, transform.position) > 5f)
+        {
+            bossDoor.SetDoorState(false);
+        }
 
         float playerDistance = Vector3.Distance(player.position, transform.position);
         if (playerDistance < 5f) // lunge distance.
@@ -342,11 +390,14 @@ public class BossAI : BaseEnemy
     private void EnterControlRoom()
     {
         agent.SetDestination(controlRoom.position);
+        bossDoor.SetDoorState(true);
+
 
         if (inControlRoom && Vector3.Distance(agent.destination, transform.position) < 3f)
         {
-            SetCurrentState(CurrentState.OperateButtons);
             agent.SetDestination(transform.position);
+            bossDoor.SetDoorState(false);
+            SetCurrentState(CurrentState.OperateButtons);
         }
     }
 
@@ -354,6 +405,7 @@ public class BossAI : BaseEnemy
     private void ExitControlRoom()
     {
         agent.SetDestination(player.position);
+        bossDoor.SetDoorState(true);
 
         if (!inControlRoom)
         {
@@ -368,12 +420,13 @@ public class BossAI : BaseEnemy
 
         if (!isInControlRoom)
         {
-            buttonAttackCount = 1;
+            buttonAttackCount = 0;
         }
     }
 
     public void AttackConcluded()
     {
+        print("A boss attack concluded.");
         isUsingButtonAttack = false;
         buttonAttackCount++;
     }
@@ -394,6 +447,8 @@ public class BossAI : BaseEnemy
 
     private void PickRandomAttackAndWait()
     {
+        if (isUsingButtonAttack) return;
+
         if (arenaAttacks.Length <= 0)
         {
             AttackConcluded();
@@ -407,6 +462,8 @@ public class BossAI : BaseEnemy
         {
             attackIndex = UnityEngine.Random.Range(0, arenaAttacks.Length);
         }
+
+        isUsingButtonAttack = true;
 
         lastAttackIndex = attackIndex;
 

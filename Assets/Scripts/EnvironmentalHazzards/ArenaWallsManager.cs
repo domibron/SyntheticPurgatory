@@ -95,7 +95,7 @@ public class ArenaWallsManager : MonoBehaviour
 
     public event Action OnJobCompleted;
 
-    void Start()
+    void Awake()
     {
         for (int i = 0; i < containerLayout.containerRows.Length; i++)
         {
@@ -109,7 +109,17 @@ public class ArenaWallsManager : MonoBehaviour
 
 
         StartCoroutine(PregenWithContainers());
+    }
+
+    void Start()
+    {
+
         // StartCoroutine(JuggleContainerWalls());
+    }
+
+    public bool IsStillInJob()
+    {
+        return inJob;
     }
 
     private float GetRandomWaitTime()
@@ -137,6 +147,8 @@ public class ArenaWallsManager : MonoBehaviour
 
     private IEnumerator PregenWithContainers()
     {
+        inJob = true;
+
         gridPlacement = GenerateData(totalWallLayers);
 
         List<Vector2Int> placements = new List<Vector2Int>();
@@ -165,7 +177,7 @@ public class ArenaWallsManager : MonoBehaviour
 
 
         print("Completed Wall Generation");
-
+        inJob = false;
         // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
@@ -328,9 +340,18 @@ public class ArenaWallsManager : MonoBehaviour
     {
         int[] randomDoorways = new int[doorwayAmount];
 
+        for (int i = 0; i < randomDoorways.Length; i++) randomDoorways[i] = -1;
+
         for (int i = 0; i < randomDoorways.Length; i++)
         {
-            randomDoorways[i] = UnityEngine.Random.Range(0, columnSize);
+            int randomSlot = UnityEngine.Random.Range(0, columnSize);
+
+            while (randomDoorways.Contains(randomSlot))
+            {
+                randomSlot = UnityEngine.Random.Range(0, columnSize);
+            }
+
+            randomDoorways[i] = randomSlot;
         }
 
         return randomDoorways;

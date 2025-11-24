@@ -42,13 +42,17 @@ public class EnemySpawnAtGates : MonoBehaviour
     private bool rightGateHold = false;
     private bool leftGateHold = false;
 
-    [SerializeField]
-    private int enemyCountAtGate = 5;
+    public event Action OnSpawnedAllEnemies;
+
+    void Awake()
+    {
+        ResetEverything();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        ResetEverything();
+
     }
 
     // Update is called once per frame
@@ -57,20 +61,20 @@ public class EnemySpawnAtGates : MonoBehaviour
 
     }
 
-    public bool StartEnemyAttack()
+    public bool StartEnemyAttack(int count)
     {
         if (isAttacking) return false;
-        StartCoroutine(SpawnEnemiesAtGates());
+        StartCoroutine(SpawnEnemiesAtGates(count));
 
         return true;
     }
 
-    private IEnumerator SpawnEnemiesAtGates()
+    private IEnumerator SpawnEnemiesAtGates(int count)
     {
         isAttacking = true;
         StartEverything();
         int enemyCount = 0;
-        while (enemyCount < enemyCountAtGate)
+        while (enemyCount < count)
         {
             GameObject enemy = Instantiate(enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Length)], (UnityEngine.Random.Range(0, 2) <= 0 ? leftSpawnPoint.position : rightSpawnPoint.position), Quaternion.identity);
 
@@ -86,6 +90,8 @@ public class EnemySpawnAtGates : MonoBehaviour
         while (leftGateHold || rightGateHold) yield return new WaitForEndOfFrame();
 
         OnJobCompleted?.Invoke();
+        OnSpawnedAllEnemies?.Invoke();
+
 
         ResetEverything();
         isAttacking = false;
