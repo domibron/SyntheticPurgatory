@@ -166,6 +166,11 @@ public class ScrapManager : MonoBehaviour
         return currentInventoryScrap;
     }
 
+    public int GetDepositedScrap()
+    {
+        return currentDepositedScrap;
+    }
+
     void InvokeCollectedScrap(int amount)
     {
         collectedScrap?.Invoke(amount);
