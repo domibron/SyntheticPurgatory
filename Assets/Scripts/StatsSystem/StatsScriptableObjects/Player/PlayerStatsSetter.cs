@@ -13,6 +13,7 @@ public class PlayerStatsSetter : MonoBehaviour
         else
         {
             Debug.LogError("No game stats manager detected. Defaulting player stats.");
+            playerStats = new PlayerStats();
         }
 
         SetAllStats(playerStats);
@@ -21,6 +22,7 @@ public class PlayerStatsSetter : MonoBehaviour
     private void SetAllStats(PlayerStats stats)
     {
         if (stats != null) GetComponent<Health>().SetMaxHealth(stats.MaxHealth);
+        if (stats != null) GetComponent<Regeneration>().SetUpRegeneration(stats.RegenerationSpeed / stats.RegenerationAmount, 3f);
         GetComponent<PlayerCombat>().UpdateVariablesWithStats(stats);
         GetComponent<PlayerMovement>().UpdateVariablesWithStats(stats);
     }
