@@ -265,7 +265,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (wantToKick && currentKickCooldown <= 0)
         {
-            KickAttack();
+            BashAttack();
         }
 
         // if (currentChargeBar <= 0 && !isRecharging)
@@ -351,11 +351,12 @@ public class PlayerCombat : MonoBehaviour
     //     isReloading = true;
     //     currentReloadTime = reloadTime;
     // }
-    #region KickAttack
+    #region BashAttack
     #endregion
-    private void KickAttack()
+    private void BashAttack()
     {
         // does knockback
+        animator.SetTrigger("Bash");
 
         // if (currentKickCooldown > 0) return; // Dunno if i want to do timer check here or update?
         Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f, transform.rotation);
