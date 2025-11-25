@@ -10,10 +10,10 @@ using UnityEngine.AI;
 public class CraneController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject[] containerWalls;
+    private GameObject containerWalls;
 
     [SerializeField]
-    private GameObject[] physicsContainer;
+    private GameObject physicsContainer;
 
     private List<GameObject> allOurSpawnedContainers = new List<GameObject>();
 
@@ -134,7 +134,7 @@ public class CraneController : MonoBehaviour
         container = null;
         if (inJob) return false;
 
-        currentContainer = Instantiate(containerWalls[UnityEngine.Random.Range(0, containerWalls.Length)], containerSpawnPoint.position, Quaternion.identity);
+        currentContainer = Instantiate(containerWalls, containerSpawnPoint.position, Quaternion.identity);
         AddContainer(currentContainer);
 
         StartCoroutine(GetAndPlaceContainerWall(targetPoint));
@@ -186,7 +186,7 @@ public class CraneController : MonoBehaviour
         //     yield break;
         // }
 
-        currentContainer = Instantiate(physicsContainer[UnityEngine.Random.Range(0, physicsContainer.Length)], containerSpawnPoint.position, Quaternion.identity);
+        currentContainer = Instantiate(physicsContainer, containerSpawnPoint.position, Quaternion.identity);
 
 
         ICraneGrabbable craneGrabbable = currentContainer.GetComponent<ICraneGrabbable>();
@@ -528,7 +528,7 @@ public class CraneController : MonoBehaviour
 
     public GameObject SpawnInContainerWall()
     {
-        GameObject returnedGO = Instantiate(containerWalls[UnityEngine.Random.Range(0, containerWalls.Length)], containerSpawnPoint.position, Quaternion.identity);
+        GameObject returnedGO = Instantiate(containerWalls, containerSpawnPoint.position, Quaternion.identity);
         AddContainer(returnedGO);
 
         return returnedGO;
