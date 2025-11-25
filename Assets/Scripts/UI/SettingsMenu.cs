@@ -72,7 +72,7 @@ public class SettingsMenu : MonoBehaviour
 
         pauseInput = InputSystem.actions.FindAction("Pause");
         closeInput = InputSystem.actions.FindAction("Close");
-
+        
 
         pauseInput.started += KeyOpenSettings;
         // closeInput.started += KeyCloseSettings;

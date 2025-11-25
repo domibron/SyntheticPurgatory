@@ -85,7 +85,7 @@ public class PlayerCombat : MonoBehaviour
     float delayAfterFireBeforeRecharging = 0.4f;  // TODO: add to stats
     float rechargeDelay = 0f;
 
-    float overheatForceCoolDown = 3f; // TODO: add to stats
+    float overheatForceCoolDown = 2.25f; // TODO: add to stats
     float currentOverheatCoolDown = 0f;
 
     [SerializeField]
@@ -408,7 +408,12 @@ public class PlayerCombat : MonoBehaviour
     #endregion
     private void FireProjectile()
     {
-        // currentAmmoCount--;
+        if (currentGunChargeBar < chargeDegradePerShot)
+        {
+            currentOverheatCoolDown = overheatForceCoolDown;
+            overheated = true;
+        }
+
         currentGunChargeBar -= chargeDegradePerShot;
         // currentProjectileCooldown = projectileFireRate;
         currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar / 2));
@@ -429,17 +434,11 @@ public class PlayerCombat : MonoBehaviour
             projectileRB.AddForce(mainCamera.forward * projectileSpeed, ForceMode.VelocityChange);
         }
 
-        if (currentGunChargeBar < chargeDegradePerShot)
-        {
-            currentOverheatCoolDown = overheatForceCoolDown;
-            overheated = true;
-        }
 
         // projectile.GetComp<>().SetDamage();
 
         // Debug.Log("Fired ranged weapon");
 
-        // set damage and so on.
     }
 
     public float GetOverheatCoolDownNormalized()

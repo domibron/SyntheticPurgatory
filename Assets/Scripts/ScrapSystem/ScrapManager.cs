@@ -109,6 +109,11 @@ public class ScrapManager : MonoBehaviour
         return currentInventoryScrap < maxInventoryScrap;
     }
 
+    public int GetMaxScrapInventory()
+    {
+        return maxInventoryScrap;
+    }
+
     public int HowMuchCanInventoryHold()
     {
         return maxInventoryScrap - currentInventoryScrap;
