@@ -37,15 +37,19 @@ public class LevelLoading : MonoBehaviour
 	// if the level is being loaded.
 	public bool IsLoading = false;
 
-	// this prevents loading when enabled.
+	// this prevents loading when enabled. this seems stupid not going to lie.
 	public bool OverrideAll = false;
+
+	private bool isOverridingLoadingBar = false;
+	private float loadingBarOverrideValue = 0;
+
+	private bool holdingLoading = false;
 
 	// progress of loading the scene.
 	private float totalSceneProgress;
 
 	// This is used to keep track of levels being loaded.
 	List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
-
 
 	#region Awake
 	// sets the instance
@@ -76,6 +80,11 @@ public class LevelLoading : MonoBehaviour
 
 		LoadMainMenu();
 
+		if (isOverridingLoadingBar)
+		{
+			ProgressBar.value = loadingBarOverrideValue;
+		}
+
 		// SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
 
 	}
@@ -90,6 +99,11 @@ public class LevelLoading : MonoBehaviour
 
 		// stops reloading of reloading multiple times.
 		isReloading = LoadingScreen.gameObject.activeSelf;
+
+		if (isOverridingLoadingBar)
+		{
+			ProgressBar.value = loadingBarOverrideValue;
+		}
 	}
 	#endregion
 
@@ -133,6 +147,8 @@ public class LevelLoading : MonoBehaviour
 	{
 		if (OverrideAll) return;
 
+		holdingLoading = true;
+
 		IsLoading = true;
 		LoadingScreen.gameObject.SetActive(true);
 		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
@@ -143,7 +159,9 @@ public class LevelLoading : MonoBehaviour
 				scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i)));
 		}
 
+
 		scenesLoading.Add(SceneManager.LoadSceneAsync(indexNumber, LoadSceneMode.Additive));
+
 
 		StartCoroutine(GetSceneLoadProgress());
 	}
@@ -158,6 +176,9 @@ public class LevelLoading : MonoBehaviour
 	public void LoadScene(string sceneName)
 	{
 		if (OverrideAll) return;
+		SetIsOverriding();
+		holdingLoading = true;
+
 
 		IsLoading = true;
 		LoadingScreen.gameObject.SetActive(true);
@@ -184,6 +205,9 @@ public class LevelLoading : MonoBehaviour
 	public void LoadScene(string[] mapNames)
 	{
 		if (OverrideAll) return;
+		SetIsOverriding();
+		holdingLoading = true;
+
 
 		IsLoading = true;
 		LoadingScreen.gameObject.SetActive(true);
@@ -194,6 +218,7 @@ public class LevelLoading : MonoBehaviour
 			for (int i = 1; i < SceneManager.sceneCount; i++)
 				scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i)));
 		}
+
 
 		foreach (string map in mapNames)
 		{
@@ -214,6 +239,8 @@ public class LevelLoading : MonoBehaviour
 	public void Reload()
 	{
 		if (OverrideAll) return;
+		SetIsOverriding();
+		holdingLoading = true;
 
 		IsLoading = true;
 		if (isReloading) return;
@@ -229,6 +256,8 @@ public class LevelLoading : MonoBehaviour
 			for (int i = 1; i < SceneManager.sceneCount; i++)
 				scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i)));
 		}
+
+
 
 		// reload the scenes
 		if (LevelCollection.CheckSceneInCollection(savedScene.name))
@@ -276,9 +305,6 @@ public class LevelLoading : MonoBehaviour
 			}
 		}
 
-		IsLoading = false;
-		LoadingScreen.gameObject.SetActive(false);
-
 		if (SceneManager.sceneCount > 1)
 		{
 			SceneManager.SetActiveScene(SceneManager.GetSceneAt(1));
@@ -287,6 +313,38 @@ public class LevelLoading : MonoBehaviour
 		{
 			SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 		}
+		// we should have a hold until release command here instead. Have a script to tell this its free to unlock.
+
+		while (holdingLoading)
+		{
+
+			yield return null;
+		}
+
+
+		IsLoading = false;
+		LoadingScreen.gameObject.SetActive(false);
+
+
 	}
 	#endregion
+
+	public void SetIsOverriding(bool isOverriding = false)
+	{
+		isOverridingLoadingBar = isOverriding;
+
+		if (!isOverriding) SetLoadingBarValue();
+	}
+
+	public void SetLoadingBarValue(float value = 0f)
+	{
+		loadingBarOverrideValue = value;
+	}
+
+	public void ReleaseLevelLoading()
+	{
+		holdingLoading = false;
+		Debug.Log("Released level loading");
+		SetIsOverriding();
+	}
 }

@@ -54,6 +54,8 @@ public class LevelGenerator : SequenceBase
 
     private Vector3 playerSpawnLocation;
 
+    private float currentLevelGenerationProgress = 0f;
+
     public enum RoomSpawnStatus
     {
         Failed,
@@ -93,6 +95,8 @@ public class LevelGenerator : SequenceBase
 
     private IEnumerator StartLevelGeneration()
     {
+        currentLevelGenerationProgress = 0;
+
         onLevelGenerationStart?.Invoke();
 
         levelData.Clear();
@@ -114,6 +118,9 @@ public class LevelGenerator : SequenceBase
             // some cool checks to get spawn room grid cords and convert into a spawn locations.
         }
 
+        int peakRooms = 0;
+
+
         List<int> roomsWithEmptyDoorways = new List<int>();
         roomsWithEmptyDoorways.Add(currentID);
 
@@ -127,6 +134,11 @@ public class LevelGenerator : SequenceBase
 
             roomsWithEmptyDoorways.AddRange(roomIdsToAdd);
             roomsWithEmptyDoorways.Remove(generatingRoomsFromID);
+
+            if (roomsWithEmptyDoorways.Count > peakRooms) peakRooms = roomsWithEmptyDoorways.Count;
+
+            currentLevelGenerationProgress = 1f - (roomsWithEmptyDoorways.Count / (float)peakRooms);
+
 
             yield return null;
         }
@@ -144,8 +156,10 @@ public class LevelGenerator : SequenceBase
             //print(GetGridAsString());
             //print(seed.ToString());
             print("Done generating");
+            currentLevelGenerationProgress = 1f;
             OnThisSequenceEnd?.Invoke();
             onLevelGenerationComplete?.Invoke();
+
         }
     }
 
@@ -927,6 +941,12 @@ public class LevelGenerator : SequenceBase
 
     public override void StartSequence()
     {
+        currentLevelGenerationProgress = 0f;
         roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
+    }
+
+    public override float GetProgress()
+    {
+        return currentLevelGenerationProgress;
     }
 }

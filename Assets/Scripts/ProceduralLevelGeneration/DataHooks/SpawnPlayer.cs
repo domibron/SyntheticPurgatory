@@ -15,6 +15,8 @@ public class SpawnPlayer : SequenceBase
 
     public override event Action OnThisSequenceEnd;
 
+    private float currentProgress = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -41,6 +43,7 @@ public class SpawnPlayer : SequenceBase
 
     public override void StartSequence()
     {
+        currentProgress = 0f;
         playerSpawnLocation = levelGenerator.GetPlayerSpawnLocation();
 
         if (playerPrefab != null)
@@ -51,6 +54,12 @@ public class SpawnPlayer : SequenceBase
             playerObject.transform.GetComponent<PlayerDeath>().deathCanvasScript = canvasObject.transform.GetComponent<DeathCanvas>();
         }
 
+        currentProgress = 1f;
         OnThisSequenceEnd?.Invoke();
+    }
+
+    public override float GetProgress()
+    {
+        return currentProgress;
     }
 }

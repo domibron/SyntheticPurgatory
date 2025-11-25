@@ -24,13 +24,22 @@ public class Sequencer : MonoBehaviour
         {
             if (currentSequence != i) currentSequence = i;
 
+            LevelLoading.Instance?.SetIsOverriding(true);
+            LevelLoading.Instance?.SetLoadingBarValue(GetOverallProgress());
+
             waitingForASequence = true;
 
             sequences[currentSequence].OnThisSequenceEnd += SequenceEnd;
 
             sequences[currentSequence].StartSequence();
 
-            while (waitingForASequence) yield return null;
+            while (waitingForASequence)
+            {
+                LevelLoading.Instance?.SetIsOverriding(true);
+                LevelLoading.Instance?.SetLoadingBarValue(GetOverallProgress());
+
+                yield return null;
+            }
 
             // currentSequence++;
         }
@@ -39,7 +48,22 @@ public class Sequencer : MonoBehaviour
 
         OnSequencesEnd?.Invoke();
 
+        LevelLoading.Instance?.ReleaseLevelLoading();
+
         yield return null;
+    }
+
+    private float GetOverallProgress()
+    {
+        float totalProgress = 0;
+
+        foreach (SequenceBase sequence in sequences)
+        {
+            totalProgress += sequence.GetProgress();
+        }
+
+        print(totalProgress / sequences.Count);
+        return totalProgress / sequences.Count;
     }
 
     private void SequenceEnd()

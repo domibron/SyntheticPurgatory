@@ -59,6 +59,8 @@ public class DoorGenerator : SequenceBase
     public event Action OnDoorsGenerated;
     public override event Action OnThisSequenceEnd;
 
+    private float currentProgress = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -92,6 +94,8 @@ public class DoorGenerator : SequenceBase
         float halfUnitSize = unitSize / 2f;
         bool flipFlop = false;
 
+        int counter = 0;
+
         foreach (var roomData in spawnedLevelRoomData)
         {
             foreach (var doorway in roomData.DoorwayData)
@@ -123,10 +127,13 @@ public class DoorGenerator : SequenceBase
                 doorUUID++;
                 // doorCollection.Add(new DoorData())
             }
+            counter++;
+            currentProgress = (float)counter / spawnedLevelRoomData.Count;
         }
 
         OnDoorsGenerated?.Invoke();
         OnThisSequenceEnd?.Invoke();
+        currentProgress = 1f;
     }
 
 
@@ -231,6 +238,12 @@ public class DoorGenerator : SequenceBase
 
     public override void StartSequence()
     {
+        currentProgress = 0f;
         OnLevelGenerated();
+    }
+
+    public override float GetProgress()
+    {
+        return currentProgress;
     }
 }

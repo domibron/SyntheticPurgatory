@@ -23,6 +23,8 @@ public class NavMeshBaker : SequenceBase
     public event Action onNavMeshSurfaceGenerated;
     public override event Action OnThisSequenceEnd;
 
+    private float currentProgress = 0f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -34,16 +36,25 @@ public class NavMeshBaker : SequenceBase
 
     private void OnLevelGenComplete()
     {
-        UpdateNav();
+        StartCoroutine(UpdateNav());
     }
 
-    void UpdateNav()
+    IEnumerator UpdateNav()
     {
         humanNavSurface.BuildNavMesh(); // I hate this. Cant delay or wait, the game will just be frozen.
+        currentProgress = 0.25f;
+        yield return null;
         meleeNavSurface.BuildNavMesh();
+        currentProgress = 0.5f;
+        yield return null;
         rangedNavSurface.BuildNavMesh();
+        currentProgress = 0.75f;
+        yield return null;
         tankNavSurface.BuildNavMesh();
+        currentProgress = 1f;
+        yield return null;
         // UnityEditor.StaticOcclusionCulling.Compute();
+        currentProgress = 1f;
         onNavMeshSurfaceGenerated?.Invoke();
         OnThisSequenceEnd?.Invoke();
     }
@@ -56,6 +67,12 @@ public class NavMeshBaker : SequenceBase
 
     public override void StartSequence()
     {
-        UpdateNav();
+        currentProgress = 0f;
+        StartCoroutine(UpdateNav());
+    }
+
+    public override float GetProgress()
+    {
+        return currentProgress;
     }
 }
