@@ -17,7 +17,24 @@ public class PlayerHUD : MonoBehaviour
     // private TMP_Text ammoText;
 
     [SerializeField]
+    float healthBarSmoothing = 5f;
+    [SerializeField]
+    float healthLossBarSmoothing = 5f;
+
+    [SerializeField]
+    float waitBeforeUpdating = 1f;
+
+    private float waitTimer = 0f;
+
+    private float currentValue = 0f;
+    private float targetValue = 0f;
+    private float animationTimer = 0f;
+
+    [SerializeField]
     private Image healthBarFill;
+
+    [SerializeField]
+    private Image healthBarDamageFill;
 
     [SerializeField]
     private TMP_Text currentTimeText;
@@ -80,6 +97,8 @@ public class PlayerHUD : MonoBehaviour
 
         fontSize = currentTimeText.fontSize;
 
+        healthBarFill.fillAmount = playerHealth.GetHealthNormalized();
+
     }
 
     private void OnHealthChanged(float newAmount, float oldAmount)
@@ -87,6 +106,13 @@ public class PlayerHUD : MonoBehaviour
         if (newAmount - oldAmount < 0)
         {
             currentApearTime = apearTime;
+
+            waitTimer = waitBeforeUpdating;
+            animationTimer = 0f;
+            if (healthBarDamageFill.fillAmount < healthBarFill.fillAmount) healthBarDamageFill.fillAmount = healthBarFill.fillAmount;
+
+            currentValue = healthBarDamageFill.fillAmount;
+            targetValue = playerHealth.GetHealthNormalized();
         }
 
         if (newAmount <= 0)
@@ -99,7 +125,25 @@ public class PlayerHUD : MonoBehaviour
     void Update()
     {
         // ammoText.text = "REMOVED MECHANIC";
-        healthBarFill.fillAmount = playerHealth.GetHealthNormalized();
+        if (waitTimer <= 0 && playerHealth.GetHealthNormalized() <= currentValue)
+        {
+            animationTimer += (1 - Mathf.Abs(targetValue - currentValue)) * healthLossBarSmoothing * Time.deltaTime;
+            healthBarDamageFill.fillAmount = Mathf.Lerp(currentValue, targetValue, animationTimer);
+        }
+        else if (waitTimer <= 0 && playerHealth.GetHealthNormalized() > currentValue)
+        {
+            healthBarDamageFill.fillAmount = healthBarFill.fillAmount;
+        }
+        else
+        {
+            waitTimer -= Time.deltaTime;
+        }
+
+        // float displacement = Mathf.Abs(healthBarImage.fillAmount - health.GetHealthNormalized());
+
+        healthBarFill.fillAmount = Mathf.Lerp(healthBarFill.fillAmount, playerHealth.GetHealthNormalized(), healthBarSmoothing * Time.deltaTime);
+
+
 
         if (playerDied) { return; }
 
