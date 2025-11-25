@@ -18,10 +18,15 @@ public class Door : MonoBehaviour
 
     private bool inMotion = false;
 
+    [SerializeField]
+    private bool startOpen = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         animator = GetComponent<Animator>();
+
+        if (startOpen) OpenDoor();
     }
 
     // Update is called once per frame

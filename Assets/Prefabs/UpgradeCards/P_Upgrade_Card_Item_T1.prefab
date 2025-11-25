@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5030700179484634743}
   - component: {fileID: 1652899816062803248}
   - component: {fileID: 5850868388823037643}
+  - component: {fileID: 586106820865397324}
   m_Layer: 8
   m_Name: P_Upgrade_Card_Item_T1
   m_TagString: CollectableItem
@@ -96,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alsoDisablePhysics: 1
 --- !u!114 &5850868388823037643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,6 +111,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardTeir: 0
+--- !u!114 &586106820865397324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5304199223535757148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f9f19297f7ba7f48a40095c764d668d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinDirection: {x: 0, y: 1, z: 0}
+  spinSpeed: 5
 --- !u!1001 &7559364034642396135
 PrefabInstance:
   m_ObjectHideFlags: 0

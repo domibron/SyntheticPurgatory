@@ -95,19 +95,26 @@ public class SelectCardType : MonoBehaviour
 
     public void OnOpenClick()
     {
-        SetButtonStates(false);
-        upgradeSystem.OpenCard(SelectedCardData.GetCardTier());
-        UpdateCardInfo(0);
-
-
+        CardTier curCard = SelectedCardData.GetCardTier();
+        upgradeSystem.OpenCard(curCard);
+        if (GameManager.Instance.GetCardCount(curCard) < 1)
+        {
+            SetButtonStates(false);
+            UpdateCardInfo(0);
+        }
     }
 
 
     public void OnScrapCard()
     {
-        SetButtonStates(false);
-        upgradeSystem.ScrapCard(SelectedCardData.GetCardTier());
-        UpdateCardInfo(0);
+        CardTier curCard = SelectedCardData.GetCardTier();
+        upgradeSystem.ScrapCard(curCard);
+        if (GameManager.Instance.GetCardCount(curCard) < 1)
+        {
+            SetButtonStates(false);
+            UpdateCardInfo(0);
+        }
+            
     }
 
 }

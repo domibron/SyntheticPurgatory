@@ -17,6 +17,9 @@ public class DistanceDisappear : MonoBehaviour
     [SerializeField]
     float maxDistance = 10;
 
+    [SerializeField]
+    bool invertedDistance;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -41,8 +44,18 @@ public class DistanceDisappear : MonoBehaviour
             return;
         }
 
-        float distanceFromCam = Vector3.Distance(transform.position, camTransform.position);
-        float targetOpacity = Mathf.Clamp(distanceFromCam - minDistance, 0 , maxDistance) / maxDistance * baseOpacity;
+        float targetOpacity = 0.5f;
+        if (invertedDistance)
+        {
+            float distanceFromCam = Vector3.Distance(transform.position, camTransform.position);
+            targetOpacity = (1 - (Mathf.Clamp(distanceFromCam - minDistance, 0, maxDistance) / maxDistance)) * baseOpacity;
+        }
+        else
+        {
+            float distanceFromCam = Vector3.Distance(transform.position, camTransform.position);
+            targetOpacity = Mathf.Clamp(distanceFromCam - minDistance, 0, maxDistance) / maxDistance * baseOpacity;
+        }
+
 
         if (spriteRenderer == null)
         {

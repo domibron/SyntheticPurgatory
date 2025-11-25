@@ -275,5 +275,14 @@ public class PlayerHUD : MonoBehaviour
 
         heldScrapText.text = curHeldScrapNum.ToString().PadLeft(3, '0');
         depositedScrapText.text = curDepoScrapNum.ToString().PadLeft(3, '0');
+
+        if (curHeldScrapNum >= ScrapManager.Instance.GetMaxScrapInventory())
+        {
+            heldScrapText.color = Color.red;
+        }
+        else
+        {
+            heldScrapText.color = Color.black;
+        }
     }
 }
