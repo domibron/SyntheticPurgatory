@@ -22,12 +22,12 @@ public class StatUpgradeInfo
     public float? Minimum;
     public float? Maximum;
 
-    public StatUpgradeInfo(float upgradeAmount, float downgradeAmount, float? minimum, float? maximum)
+    public StatUpgradeInfo(float upgradeAmount, float downgradeAmount, float? downgradeMax, float? upgradeMax)
     {
         UpgradeAmount = upgradeAmount;
         DowngradeAmount = downgradeAmount;
-        Minimum = minimum;
-        Maximum = maximum;
+        Minimum = downgradeMax;
+        Maximum = upgradeMax;
     }
 
     public float GetLogAmount(float currentValue, int totalIncreases, int amountToAdd)
@@ -123,7 +123,7 @@ public class StatUpgradeInfo
     {
         float newValue = currentValue + (DowngradeAmount * amount);
 
-        if (ExceedsMinmum(newValue))
+        if (ExceedsMinimum(newValue))
         {
             return Minimum.Value;
         }
@@ -131,7 +131,7 @@ public class StatUpgradeInfo
         return newValue;
     }
 
-    public bool ExceedsMinmum(float value)
+    public bool ExceedsMinimum(float value)
     {
         if (!Minimum.HasValue) return false;
 
@@ -400,17 +400,26 @@ public class RangedUpgrades
     //public const UpgradeType upgradeType = UpgradeType.Ranged;
 
     StatUpgradeInfo projectileDamage = new(1, -2, 2, null);
-    StatUpgradeInfo firerate = new(-0.05f, 0.2f, 3f, 0.08f);
-    StatUpgradeInfo magSize = new(2, -3, 4, null);
-    StatUpgradeInfo reloadSpeed = new(-0.06f, 0.1f, 4, 0.1f);
+    StatUpgradeInfo rechargeRate = new(-0.05f, 0.05f, 0.5f, 0.05f);
+    StatUpgradeInfo shotsPerFullCharge = new(1, -1, 5, null);
+    StatUpgradeInfo standardSecondsPerShot = new(-0.05f, 0.05f, 1f, 0.05f);
+    StatUpgradeInfo chargedSecondsPerShot = new(-0.05f, 0.05f, 1f, 0.05f);
+    StatUpgradeInfo delayAfterFireBeforeRecharging = new(-0.05f, 0.05f, 0.5f, 0.05f);
+    StatUpgradeInfo overheatForceCoolDown = new(-0.2f, 0.2f, 5f, 0.2f);
+    // StatUpgradeInfo firerate = new(-0.05f, 0.2f, 3f, 0.08f);
+    // StatUpgradeInfo magSize = new(2, -3, 4, null);
+    // StatUpgradeInfo reloadSpeed = new(-0.06f, 0.1f, 4, 0.1f);
 
 
     public enum CannonUpgradeType
     {
         Damage,
-        Firerate,
-        MagSize,
-        ReloadSpeed,
+        RechargeRate,
+        ShotsPerFullCharge,
+        // StandardSecondsPerShot,
+        // ChargedSecondsPerShot,
+        DelayAfterFireBeforeRecharging,
+        OverheatForceCooldown,
     }
 
     public int GetRandomUpgradeID()
@@ -428,12 +437,14 @@ public class RangedUpgrades
         {
             case CannonUpgradeType.Damage:
                 return (projectileDamage.UpgradeValue(pStats.ProjectileDamage, amount) - pStats.ProjectileDamage).ToString("F0");
-            case CannonUpgradeType.Firerate:
-                return (firerate.UpgradePercentage(pStats.ProjectileFireRate, amount) - pStats.ProjectileFireRate).ToString("F2");
-            case CannonUpgradeType.MagSize:
-                return (magSize.UpgradeValue(pStats.ProjectileMagSize, amount) - pStats.ProjectileMagSize).ToString("F0");
-            case CannonUpgradeType.ReloadSpeed:
-                return (reloadSpeed.UpgradePercentage(pStats.ReloadTime, amount) - pStats.ReloadTime).ToString("F2");
+            case CannonUpgradeType.RechargeRate:
+                return (rechargeRate.UpgradeValue(pStats.RechargeRate, amount) - pStats.RechargeRate).ToString("F2");
+            case CannonUpgradeType.ShotsPerFullCharge:
+                return (shotsPerFullCharge.UpgradeValue(pStats.ShotsPerFullCharge, amount) - pStats.ShotsPerFullCharge).ToString("F0");
+            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                return (delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount) - pStats.DelayAfterFireBeforeRecharging).ToString("F2");
+            case CannonUpgradeType.OverheatForceCooldown:
+                return (overheatForceCoolDown.UpgradeValue(pStats.OverheatForceCooldown, amount) - pStats.OverheatForceCooldown).ToString("F2");
             default:
                 return "";
         }
@@ -449,12 +460,14 @@ public class RangedUpgrades
         {
             case CannonUpgradeType.Damage:
                 return pStats.ProjectileDamage.ToString("F0");
-            case CannonUpgradeType.Firerate:
-                return pStats.ProjectileFireRate.ToString("F2");
-            case CannonUpgradeType.MagSize:
-                return pStats.ProjectileMagSize.ToString("F0");
-            case CannonUpgradeType.ReloadSpeed:
-                return pStats.ReloadTime.ToString("F2");
+            case CannonUpgradeType.RechargeRate:
+                return pStats.RechargeRate.ToString("F2");
+            case CannonUpgradeType.ShotsPerFullCharge:
+                return pStats.ShotsPerFullCharge.ToString("F0");
+            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                return pStats.DelayAfterFireBeforeRecharging.ToString("F2");
+            case CannonUpgradeType.OverheatForceCooldown:
+                return pStats.OverheatForceCooldown.ToString("F2");
             default:
                 return "";
         }
@@ -470,12 +483,14 @@ public class RangedUpgrades
         {
             case CannonUpgradeType.Damage:
                 return (projectileDamage.DowngradeValue(pStats.ProjectileDamage, amount) - pStats.ProjectileDamage).ToString("F0");
-            case CannonUpgradeType.Firerate:
-                return (firerate.DowngradeValue(pStats.ProjectileFireRate, amount) - pStats.ProjectileFireRate).ToString("F2");
-            case CannonUpgradeType.MagSize:
-                return (magSize.DowngradeValue(pStats.ProjectileMagSize, amount) - pStats.ProjectileMagSize).ToString("F0");
-            case CannonUpgradeType.ReloadSpeed:
-                return (reloadSpeed.DowngradeValue(pStats.ReloadTime, amount) - pStats.ReloadTime).ToString("F2");
+            case CannonUpgradeType.RechargeRate:
+                return (rechargeRate.DowngradeValue(pStats.RechargeRate, amount) - pStats.RechargeRate).ToString("F2");
+            case CannonUpgradeType.ShotsPerFullCharge:
+                return (shotsPerFullCharge.DowngradeValue(pStats.ShotsPerFullCharge, amount) - pStats.ShotsPerFullCharge).ToString("F0");
+            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                return (delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount) - pStats.DelayAfterFireBeforeRecharging).ToString("F2");
+            case CannonUpgradeType.OverheatForceCooldown:
+                return (overheatForceCoolDown.DowngradeValue(pStats.OverheatForceCooldown, amount) - pStats.OverheatForceCooldown).ToString("F2");
             default:
                 return "";
         }
@@ -489,12 +504,14 @@ public class RangedUpgrades
         {
             case CannonUpgradeType.Damage:
                 return "Cannon Damage";
-            case CannonUpgradeType.Firerate:
-                return "Fire-rate";
-            case CannonUpgradeType.MagSize:
-                return "Mag Size";
-            case CannonUpgradeType.ReloadSpeed:
-                return "Reload Speed";
+            case CannonUpgradeType.RechargeRate:
+                return "Recharge Rate";
+            case CannonUpgradeType.ShotsPerFullCharge:
+                return "Shots Per Charge";
+            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                return "Recharge Delay";
+            case CannonUpgradeType.OverheatForceCooldown:
+                return "Overheat Cooldown";
             default:
                 return "";
         }
@@ -513,12 +530,14 @@ public class RangedUpgrades
             {
                 case CannonUpgradeType.Damage:
                     return (projectileDamage.UpgradeValue(pStats.ProjectileDamage, amount)).ToString("F0");
-                case CannonUpgradeType.Firerate:
-                    return (firerate.UpgradePercentage(pStats.ProjectileFireRate, amount)).ToString("F2");
-                case CannonUpgradeType.MagSize:
-                    return (magSize.UpgradeValue(pStats.ProjectileMagSize, amount)).ToString("F0");
-                case CannonUpgradeType.ReloadSpeed:
-                    return (reloadSpeed.UpgradePercentage(pStats.ReloadTime, amount)).ToString("F2");
+                case CannonUpgradeType.RechargeRate:
+                    return rechargeRate.UpgradeValue(pStats.RechargeRate, amount).ToString("F2");
+                case CannonUpgradeType.ShotsPerFullCharge:
+                    return shotsPerFullCharge.UpgradeValue(pStats.ShotsPerFullCharge, amount).ToString("F0");
+                case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                    return delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount).ToString("F2");
+                case CannonUpgradeType.OverheatForceCooldown:
+                    return overheatForceCoolDown.UpgradeValue(pStats.OverheatForceCooldown, amount).ToString("F2");
                 default:
                     return "";
             }
@@ -529,12 +548,14 @@ public class RangedUpgrades
             {
                 case CannonUpgradeType.Damage:
                     return (projectileDamage.DowngradeValue(pStats.ProjectileDamage, amount)).ToString("F0");
-                case CannonUpgradeType.Firerate:
-                    return (firerate.DowngradeValue(pStats.ProjectileFireRate, amount)).ToString("F2");
-                case CannonUpgradeType.MagSize:
-                    return (magSize.DowngradeValue(pStats.ProjectileMagSize, amount)).ToString("F0");
-                case CannonUpgradeType.ReloadSpeed:
-                    return (reloadSpeed.DowngradeValue(pStats.ReloadTime, amount)).ToString("F2");
+                case CannonUpgradeType.RechargeRate:
+                    return rechargeRate.DowngradeValue(pStats.RechargeRate, amount).ToString("F2");
+                case CannonUpgradeType.ShotsPerFullCharge:
+                    return shotsPerFullCharge.DowngradeValue(pStats.ShotsPerFullCharge, amount).ToString("F0");
+                case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                    return delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount).ToString("F2");
+                case CannonUpgradeType.OverheatForceCooldown:
+                    return overheatForceCoolDown.DowngradeValue(pStats.OverheatForceCooldown, amount).ToString("F2");
                 default:
                     return "";
             }
@@ -552,14 +573,17 @@ public class RangedUpgrades
             case CannonUpgradeType.Damage:
                 pStats.ProjectileDamage = projectileDamage.UpgradeValue(pStats.ProjectileDamage, amount);
                 break;
-            case CannonUpgradeType.Firerate:
-                pStats.ProjectileFireRate = firerate.UpgradePercentage(pStats.ProjectileFireRate, amount);
+            case CannonUpgradeType.RechargeRate:
+                pStats.RechargeRate = rechargeRate.UpgradeValue(pStats.RechargeRate, amount);
                 break;
-            case CannonUpgradeType.MagSize:
-                pStats.ProjectileMagSize = Mathf.FloorToInt(magSize.UpgradeValue(pStats.ProjectileMagSize, amount));
+            case CannonUpgradeType.ShotsPerFullCharge:
+                pStats.ShotsPerFullCharge = shotsPerFullCharge.UpgradeValue(pStats.ShotsPerFullCharge, amount);
                 break;
-            case CannonUpgradeType.ReloadSpeed:
-                pStats.ReloadTime = reloadSpeed.UpgradePercentage(pStats.ReloadTime, amount);
+            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                pStats.DelayAfterFireBeforeRecharging = delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount);
+                break;
+            case CannonUpgradeType.OverheatForceCooldown:
+                pStats.OverheatForceCooldown = overheatForceCoolDown.UpgradeValue(pStats.OverheatForceCooldown, amount);
                 break;
         }
 
@@ -577,14 +601,17 @@ public class RangedUpgrades
             case CannonUpgradeType.Damage:
                 pStats.ProjectileDamage = projectileDamage.DowngradeValue(pStats.ProjectileDamage, amount);
                 break;
-            case CannonUpgradeType.Firerate:
-                pStats.ProjectileFireRate = firerate.DowngradeValue(pStats.ProjectileFireRate, amount);
+            case CannonUpgradeType.RechargeRate:
+                pStats.RechargeRate = rechargeRate.DowngradeValue(pStats.RechargeRate, amount);
                 break;
-            case CannonUpgradeType.MagSize:
-                pStats.ProjectileMagSize = Mathf.FloorToInt(magSize.DowngradeValue(pStats.ProjectileMagSize, amount));
+            case CannonUpgradeType.ShotsPerFullCharge:
+                pStats.ShotsPerFullCharge = shotsPerFullCharge.DowngradeValue(pStats.ShotsPerFullCharge, amount);
                 break;
-            case CannonUpgradeType.ReloadSpeed:
-                pStats.ReloadTime = reloadSpeed.DowngradeValue(pStats.ReloadTime, amount);
+            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                pStats.DelayAfterFireBeforeRecharging = delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount);
+                break;
+            case CannonUpgradeType.OverheatForceCooldown:
+                pStats.OverheatForceCooldown = overheatForceCoolDown.DowngradeValue(pStats.OverheatForceCooldown, amount);
                 break;
         }
 
@@ -635,7 +662,7 @@ public class MeleeUpgrades
             case MeleeUpgradeType.KickAttackTime:
                 return (kickAttackTime.UpgradePercentage(pStats.KickAttackDelay, amount) - pStats.KickAttackDelay).ToString("F2");
             case MeleeUpgradeType.EnemyStagger:
-                return (enemyStagger.GetLogAmount(pStats.MeleeStaggeTime, pStats.MeleeStaggerUpgradeAmount, amount) - pStats.MeleeStaggeTime).ToString("F2");
+                return (enemyStagger.GetLogAmount(pStats.MeleeStagerTime, pStats.MeleeStaggerUpgradeAmount, amount) - pStats.MeleeStagerTime).ToString("F2");
             case MeleeUpgradeType.Reach:
                 return (reach.GetLogAmount(pStats.MeleeReach, pStats.MeleeReachUpgradeAmount, amount) - pStats.MeleeReach).ToString("F2");
             case MeleeUpgradeType.Knockback:
@@ -660,7 +687,7 @@ public class MeleeUpgrades
             case MeleeUpgradeType.KickAttackTime:
                 return pStats.KickAttackDelay.ToString("F2");
             case MeleeUpgradeType.EnemyStagger:
-                return pStats.MeleeStaggeTime.ToString("F2");
+                return pStats.MeleeStagerTime.ToString("F2");
             case MeleeUpgradeType.Reach:
                 return pStats.MeleeReach.ToString("F2");
             case MeleeUpgradeType.Knockback:
@@ -685,7 +712,7 @@ public class MeleeUpgrades
             case MeleeUpgradeType.KickAttackTime:
                 return (meleeAttackTime.DowngradeValue(pStats.KickAttackDelay, amount) - pStats.KickAttackDelay).ToString("F2");
             case MeleeUpgradeType.EnemyStagger:
-                return (enemyStagger.DowngradeValue(pStats.MeleeAttackDelay, amount) - pStats.MeleeStaggeTime).ToString("F2");
+                return (enemyStagger.DowngradeValue(pStats.MeleeAttackDelay, amount) - pStats.MeleeStagerTime).ToString("F2");
             case MeleeUpgradeType.Reach:
                 return (reach.DowngradeValue(pStats.MeleeReach, amount) - pStats.MeleeReach).ToString("F2");
             case MeleeUpgradeType.Knockback:
@@ -736,7 +763,7 @@ public class MeleeUpgrades
                 case MeleeUpgradeType.KickAttackTime:
                     return (kickAttackTime.UpgradePercentage(pStats.KickAttackDelay, amount)).ToString("F2");
                 case MeleeUpgradeType.EnemyStagger:
-                    return (enemyStagger.GetLogAmount(pStats.MeleeStaggeTime, pStats.MeleeStaggerUpgradeAmount, amount)).ToString("F2");
+                    return (enemyStagger.GetLogAmount(pStats.MeleeStagerTime, pStats.MeleeStaggerUpgradeAmount, amount)).ToString("F2");
                 case MeleeUpgradeType.Reach:
                     return (reach.GetLogAmount(pStats.MeleeReach, pStats.MeleeReachUpgradeAmount, amount)).ToString("F2");
                 case MeleeUpgradeType.Knockback:
@@ -786,7 +813,7 @@ public class MeleeUpgrades
                 pStats.KickAttackDelay = kickAttackTime.UpgradePercentage(pStats.KickAttackDelay, amount);
                 break;
             case MeleeUpgradeType.EnemyStagger:
-                pStats.MeleeStaggeTime = enemyStagger.GetLogAmount(pStats.MeleeStaggeTime, pStats.MeleeStaggerUpgradeAmount, amount);
+                pStats.MeleeStagerTime = enemyStagger.GetLogAmount(pStats.MeleeStagerTime, pStats.MeleeStaggerUpgradeAmount, amount);
                 pStats.MeleeStaggerUpgradeAmount += amount;
                 break;
             case MeleeUpgradeType.Reach:
@@ -819,7 +846,7 @@ public class MeleeUpgrades
                 pStats.KickAttackDelay = kickAttackTime.DowngradeValue(pStats.KickAttackDelay, amount);
                 break;
             case MeleeUpgradeType.EnemyStagger:
-                pStats.MeleeStaggeTime = enemyStagger.DowngradeValue(pStats.MeleeStaggeTime, amount);
+                pStats.MeleeStagerTime = enemyStagger.DowngradeValue(pStats.MeleeStagerTime, amount);
                 break;
             case MeleeUpgradeType.Reach:
                 pStats.MeleeReach = reach.DowngradeValue(pStats.MeleeReach, amount);
@@ -868,7 +895,7 @@ public class MiscellaneousUpgrades
             case MiscellaneousUpgradeType.ScrapCarry:
                 return (scrapCarryMax.UpgradeValue(mStats.MaxInventoryScrap, amount) - mStats.MaxInventoryScrap).ToString("F0");
             case MiscellaneousUpgradeType.ItemPickupRange:
-                return (itemCollectionRange.UpgradeValue(mStats.CollectItemRange, amount) - mStats.CollectItemRange).ToString("F2");
+                return (itemCollectionRange.UpgradeValue(mStats.MaxCollectionRange, amount) - mStats.MaxCollectionRange).ToString("F2");
             case MiscellaneousUpgradeType.TimeLimit:
                 return (levelTimeLimit.UpgradeValue(mStats.MaxLevelTime, amount) - mStats.MaxLevelTime).ToString("F2");
             case MiscellaneousUpgradeType.CriticalChance:
@@ -889,7 +916,7 @@ public class MiscellaneousUpgrades
             case MiscellaneousUpgradeType.ScrapCarry:
                 return mStats.MaxInventoryScrap.ToString("F0");
             case MiscellaneousUpgradeType.ItemPickupRange:
-                return mStats.CollectItemRange.ToString("F2");
+                return mStats.MaxCollectionRange.ToString("F2");
             case MiscellaneousUpgradeType.TimeLimit:
                 return mStats.MaxLevelTime.ToString("F2");
             case MiscellaneousUpgradeType.CriticalChance:
@@ -910,7 +937,7 @@ public class MiscellaneousUpgrades
             case MiscellaneousUpgradeType.ScrapCarry:
                 return (scrapCarryMax.DowngradeValue(mStats.MaxInventoryScrap, amount) - mStats.MaxInventoryScrap).ToString("F0");
             case MiscellaneousUpgradeType.ItemPickupRange:
-                return (itemCollectionRange.DowngradeValue(mStats.CollectItemRange, amount) - mStats.CollectItemRange).ToString("F2");
+                return (itemCollectionRange.DowngradeValue(mStats.MaxCollectionRange, amount) - mStats.MaxCollectionRange).ToString("F2");
             case MiscellaneousUpgradeType.TimeLimit:
                 return (levelTimeLimit.DowngradeValue(mStats.MaxLevelTime, amount) - mStats.MaxLevelTime).ToString("F2");
             case MiscellaneousUpgradeType.CriticalChance:
@@ -953,7 +980,7 @@ public class MiscellaneousUpgrades
                 case MiscellaneousUpgradeType.ScrapCarry:
                     return (scrapCarryMax.UpgradeValue(mStats.MaxInventoryScrap, amount)).ToString("F0");
                 case MiscellaneousUpgradeType.ItemPickupRange:
-                    return (itemCollectionRange.UpgradeValue(mStats.CollectItemRange, amount)).ToString("F2");
+                    return (itemCollectionRange.UpgradeValue(mStats.MaxCollectionRange, amount)).ToString("F2");
                 case MiscellaneousUpgradeType.TimeLimit:
                     return (levelTimeLimit.UpgradeValue(mStats.MaxLevelTime, amount)).ToString("F2");
                 case MiscellaneousUpgradeType.CriticalChance:
@@ -969,7 +996,7 @@ public class MiscellaneousUpgrades
                 case MiscellaneousUpgradeType.ScrapCarry:
                     return (scrapCarryMax.DowngradeValue(mStats.MaxInventoryScrap, amount)).ToString("F0");
                 case MiscellaneousUpgradeType.ItemPickupRange:
-                    return (itemCollectionRange.DowngradeValue(mStats.CollectItemRange, amount)).ToString("F2");
+                    return (itemCollectionRange.DowngradeValue(mStats.MaxCollectionRange, amount)).ToString("F2");
                 case MiscellaneousUpgradeType.TimeLimit:
                     return (levelTimeLimit.DowngradeValue(mStats.MaxLevelTime, amount)).ToString("F2");
                 case MiscellaneousUpgradeType.CriticalChance:
@@ -992,7 +1019,7 @@ public class MiscellaneousUpgrades
                 mStats.MaxInventoryScrap = Mathf.FloorToInt(scrapCarryMax.UpgradeValue(mStats.MaxInventoryScrap, amount));
                 break;
             case MiscellaneousUpgradeType.ItemPickupRange:
-                mStats.CollectItemRange = itemCollectionRange.UpgradeValue(mStats.CollectItemRange, amount);
+                mStats.MaxCollectionRange = itemCollectionRange.UpgradeValue(mStats.MaxCollectionRange, amount);
                 break;
             case MiscellaneousUpgradeType.TimeLimit:
                 mStats.MaxLevelTime = levelTimeLimit.UpgradeValue(mStats.MaxLevelTime, amount);
@@ -1017,7 +1044,7 @@ public class MiscellaneousUpgrades
                 mStats.MaxInventoryScrap = Mathf.FloorToInt(scrapCarryMax.DowngradeValue(mStats.MaxInventoryScrap, amount));
                 break;
             case MiscellaneousUpgradeType.ItemPickupRange:
-                mStats.CollectItemRange = itemCollectionRange.DowngradeValue(mStats.CollectItemRange, amount);
+                mStats.MaxCollectionRange = itemCollectionRange.DowngradeValue(mStats.MaxCollectionRange, amount);
                 break;
             case MiscellaneousUpgradeType.TimeLimit:
                 mStats.MaxLevelTime = levelTimeLimit.DowngradeValue(mStats.MaxLevelTime, amount);

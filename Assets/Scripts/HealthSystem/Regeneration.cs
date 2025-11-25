@@ -20,7 +20,7 @@ public class Regeneration : MonoBehaviour
         health.onHealthChanged += OnHealthChanged;
     }
 
-    public void SetUpRegneration(float regenRate, float delay)
+    public void SetUpRegeneration(float regenRate, float delay)
     {
         regenerationRate = regenRate;
         regnerationDelay = delay;
