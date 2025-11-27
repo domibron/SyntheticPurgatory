@@ -24,11 +24,6 @@ public class PlayerCombat : MonoBehaviour
     // [SerializeField]
     float projectileDamage = 12f;
 
-    // [SerializeField]
-    float projectileFireRate = 0.3f;
-
-    // [SerializeField]
-    int projectileMagSize = 20;
 
     // float reloadTime = 2f;
 
@@ -76,16 +71,22 @@ public class PlayerCombat : MonoBehaviour
 
     // int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
     // float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
-    float currentChargeBar = 1f;
-    float rechargeRate = 0.6f;
+    float currentGunChargeBar = 1f;
+    float rechargeRate = 0.3f; // TODO: add to stats
+    float currentMeleeChargeBar = 1f;
+    float currentBashChargeBar = 1f;
 
-    float chargeDegradePerShot = 0.125f; // 8 shots before standard.
+    int shotsPerFullCharge = 12; // TODO: add to stats
+    float chargeDegradePerShot { get => 1f / shotsPerFullCharge; } // 8 shots before standard.
 
-    float standardSecondsPerShot = 0.4f;
-    float chargedSecondsPerShot = 0.1f;
+    float standardSecondsPerShot = 0.4f; // TODO: add to stats
+    float chargedSecondsPerShot = 0.1f;  // TODO: add to stats
 
-    float delayAfterFireBeforeRecharging = 0.4f;
+    float delayAfterFireBeforeRecharging = 0.4f;  // TODO: add to stats
     float rechargeDelay = 0f;
+
+    float overheatForceCoolDown = 2.25f; // TODO: add to stats
+    float currentOverheatCoolDown = 0f;
 
     [SerializeField]
     private Transform gunSpinBit;
@@ -126,16 +127,9 @@ public class PlayerCombat : MonoBehaviour
     bool wantToMelee = false;
     bool wantToKick = false;
 
-    bool wantLeftCharge = false;
-    bool wantRightCharge = false;
-    bool wantToReload = false;
-
     InputAction rangedWeaponInput;
     InputAction meleeWeaponInput;
     InputAction kickInput;
-    InputAction ReloadInput;
-    InputAction leftChargeInput;
-    InputAction rightChargeInput;
 
     [SerializeField]
     bool showMeleeBox = false;
@@ -145,6 +139,7 @@ public class PlayerCombat : MonoBehaviour
 
     Animator animator;
 
+    bool overheated = false;
 
     #region Awake
     #endregion
@@ -155,9 +150,6 @@ public class PlayerCombat : MonoBehaviour
         rangedWeaponInput = InputSystem.actions.FindAction("Attack");
         meleeWeaponInput = InputSystem.actions.FindAction("Melee");
         kickInput = InputSystem.actions.FindAction("Interact");
-        ReloadInput = InputSystem.actions.FindAction("Reload");
-        leftChargeInput = InputSystem.actions.FindAction("LeftCharge");
-        rightChargeInput = InputSystem.actions.FindAction("RightCharge");
 
 
         animator = GetComponent<Animator>();
@@ -189,11 +181,19 @@ public class PlayerCombat : MonoBehaviour
         }
 
         projectileDamage = stats.ProjectileDamage;
-        projectileFireRate = stats.ProjectileFireRate;
-        projectileMagSize = stats.ProjectileMagSize;
+        rechargeRate = stats.RechargeRate;
+        shotsPerFullCharge = (int)stats.ShotsPerFullCharge;
+        standardSecondsPerShot = stats.StandardSecondsPerShot;
+        chargedSecondsPerShot = stats.ChargedSecondsPerShot;
+        delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
+        overheatForceCoolDown = stats.OverheatForceCooldown;
+        // projectileFireRate = stats.ProjectileFireRate;
+        // projectileMagSize = stats.ProjectileMagSize;
 
         meleeAttackDelay = stats.MeleeAttackDelay;
         meleeDamage = stats.MeleeDamage;
+        meleeBounds.z = stats.MeleeReach;
+
 
         kickForce = stats.KickForce;
         kickAttackDelay = stats.KickAttackDelay;
@@ -213,6 +213,14 @@ public class PlayerCombat : MonoBehaviour
         if (currentKickCooldown > 0) currentKickCooldown -= Time.deltaTime;
         if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
         if (currentProjectileCooldown > 0) currentProjectileCooldown -= Time.deltaTime;
+        if (currentOverheatCoolDown > 0) currentOverheatCoolDown -= Time.deltaTime;
+
+        // did this so it can recharge the weapon before a shot can be fired. otherwise you only shoot one if this is a else if.
+        if (currentOverheatCoolDown <= 0 && overheated)
+        {
+            currentGunChargeBar = 1f;
+            overheated = false;
+        }
 
         // if (currentReloadTime > 0) currentReloadTime -= Time.deltaTime;
         // else if (currentKickCooldown <= 0 && isReloading)
@@ -229,7 +237,7 @@ public class PlayerCombat : MonoBehaviour
 
 
 
-        if (wantToFireRanged)
+        if (wantToFireRanged && currentOverheatCoolDown <= 0)
         {
             rechargeDelay = delayAfterFireBeforeRecharging;
 
@@ -242,7 +250,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            velocity -= Time.deltaTime * 10f * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar));
+            velocity -= Time.deltaTime * 10f * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar));
         }
 
         velocity = Mathf.Clamp01(velocity);
@@ -257,7 +265,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (wantToKick && currentKickCooldown <= 0)
         {
-            KickAttack();
+            BashAttack();
         }
 
         // if (currentChargeBar <= 0 && !isRecharging)
@@ -270,6 +278,10 @@ public class PlayerCombat : MonoBehaviour
 
     private void WeaponCharging()
     {
+        currentMeleeChargeBar = currentMeleeCooldown / (meleeAttackDelay - 0.05f);
+        currentBashChargeBar = currentKickCooldown / (kickAttackDelay - 0.05f);
+        if (currentOverheatCoolDown > 0) return;
+
         if (rechargeDelay <= 0)
         {
             isRecharging = true;
@@ -282,15 +294,24 @@ public class PlayerCombat : MonoBehaviour
 
         if (isRecharging)
         {
-            currentChargeBar += Time.deltaTime * rechargeRate;
+            currentGunChargeBar += Time.deltaTime * rechargeRate;
         }
-        currentChargeBar = Mathf.Clamp01(currentChargeBar);
+        currentGunChargeBar = Mathf.Clamp01(currentGunChargeBar);
     }
 
-    public float GetChargeAmount()
+    public float GetGunChargeAmount()
     {
-        return currentChargeBar;
+        return currentGunChargeBar;
     }
+    public float GetMeleeChargeAmount()
+    {
+        return currentMeleeChargeBar;
+    }
+    public float GetBashChargeAmount()
+    {
+        return currentBashChargeBar;
+    }
+
 
     #region OnDrawGizmos
     #endregion
@@ -330,11 +351,12 @@ public class PlayerCombat : MonoBehaviour
     //     isReloading = true;
     //     currentReloadTime = reloadTime;
     // }
-    #region KickAttack
+    #region BashAttack
     #endregion
-    private void KickAttack()
+    private void BashAttack()
     {
         // does knockback
+        animator.SetTrigger("Bash");
 
         // if (currentKickCooldown > 0) return; // Dunno if i want to do timer check here or update?
         Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f, transform.rotation);
@@ -387,10 +409,15 @@ public class PlayerCombat : MonoBehaviour
     #endregion
     private void FireProjectile()
     {
-        // currentAmmoCount--;
-        currentChargeBar -= chargeDegradePerShot;
+        if (currentGunChargeBar < chargeDegradePerShot)
+        {
+            currentOverheatCoolDown = overheatForceCoolDown;
+            overheated = true;
+        }
+
+        currentGunChargeBar -= chargeDegradePerShot;
         // currentProjectileCooldown = projectileFireRate;
-        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar / 2));
+        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar / 2));
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
@@ -408,11 +435,16 @@ public class PlayerCombat : MonoBehaviour
             projectileRB.AddForce(mainCamera.forward * projectileSpeed, ForceMode.VelocityChange);
         }
 
+
         // projectile.GetComp<>().SetDamage();
 
         // Debug.Log("Fired ranged weapon");
 
-        // set damage and so on.
+    }
+
+    public float GetOverheatCoolDownNormalized()
+    {
+        return currentOverheatCoolDown / overheatForceCoolDown;
     }
 
     #region PollInput
@@ -422,9 +454,6 @@ public class PlayerCombat : MonoBehaviour
         wantToFireRanged = rangedWeaponInput.IsPressed();
         wantToMelee = meleeWeaponInput.IsPressed();
         wantToKick = kickInput.IsPressed();
-        wantToReload = ReloadInput.IsPressed();
-        wantLeftCharge = leftChargeInput.IsPressed();
-        wantRightCharge = rightChargeInput.IsPressed();
     }
 
     // public int GetCurrentAmmo()
@@ -432,10 +461,6 @@ public class PlayerCombat : MonoBehaviour
     //     return currentAmmoCount;
     // }
 
-    public int GetMaxAmmo()
-    {
-        return projectileMagSize;
-    }
 
     #region DisablePlayerCombat
     #endregion

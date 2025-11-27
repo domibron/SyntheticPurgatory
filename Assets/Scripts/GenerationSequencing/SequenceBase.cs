@@ -6,4 +6,6 @@ public abstract class SequenceBase : MonoBehaviour
     public abstract event Action OnThisSequenceEnd;
 
     public abstract void StartSequence();
+
+    public abstract float GetProgress();
 }

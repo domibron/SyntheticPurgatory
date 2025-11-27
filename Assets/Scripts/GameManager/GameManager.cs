@@ -145,6 +145,8 @@ public class GameManager : MonoBehaviour
                 // End run
                 EndRun();
             }
+
+            AddToDepositedScrap(ScrapManager.Instance.GetDepositedScrap());
         }
         else
         {

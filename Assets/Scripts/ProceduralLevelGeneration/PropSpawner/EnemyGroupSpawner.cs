@@ -5,7 +5,7 @@ public class EnemyGroupSpawner : MonoBehaviour
     /// <summary>
     /// Tier of enemy groups to spawn
     /// </summary>
-    [SerializeField, Range(1,3)]
+    [SerializeField, Range(1,4)]
     private int groupTier = 1;
     /// <summary>
     /// List of enemy group objects counted as 'tier 1'
@@ -22,6 +22,11 @@ public class EnemyGroupSpawner : MonoBehaviour
     /// </summary>
     [SerializeField]
     private GameObject[] tier3GroupPrefabs;
+    /// <summary>
+    /// List of enemy group objects counted as 'tier 4'
+    /// </summary>
+    [SerializeField]
+    private GameObject[] tier4GroupPrefabs;
     /// <summary>
     /// Object that will be deleted after actual model is loaded
     /// </summary>
@@ -67,14 +72,17 @@ public class EnemyGroupSpawner : MonoBehaviour
 
         if (tierUpChance > Random.Range(0, 99))
         {
-            groupTier = Mathf.Min(groupTier++, 3);
+            groupTier++;
+            groupTier = Mathf.Min(groupTier, 4);
         }
         if (tierDownChance > Random.Range(0, 99))
         {
-            groupTier = Mathf.Max(groupTier--, 1);
+            groupTier--;
+            groupTier = Mathf.Max(groupTier, 1);
         }
 
 
+        
         GameObject[] chosenGroup;
         chosenGroup = tier1GroupPrefabs;
 
@@ -89,11 +97,14 @@ public class EnemyGroupSpawner : MonoBehaviour
             case 3:
                 chosenGroup = tier3GroupPrefabs;
                 break;
+            case 4:
+                chosenGroup = tier4GroupPrefabs;
+                break;
         }
 
 
         // Choose random piece from given list then spawn at this object with same rotation
-        GameObject newobject = Instantiate(chosenGroup[Random.Range(0, chosenGroup.Length - 1)], transform.position, transform.rotation, transform);
+        GameObject newobject = Instantiate(chosenGroup[Random.Range(0, chosenGroup.Length)], transform.position, transform.rotation, transform);
         if (randomiseYRotation)
         {
             newobject.transform.rotation = Quaternion.Euler(newobject.transform.rotation.eulerAngles.x, Random.Range(0, 359), newobject.transform.rotation.eulerAngles.z);

@@ -17,18 +17,28 @@ public class PlayerStats : ICloneable
     public float AirFriction = 1;
 
     public float ProjectileDamage = 12f;
-    public float ProjectileFireRate = 0.3f;
-    public int ProjectileMagSize = 20;
-    public float ReloadTime = 2f;
+    public float RechargeRate = 0.3f;
+    public float ShotsPerFullCharge = 10;
+    public float StandardSecondsPerShot = 0.4f;
+    public float ChargedSecondsPerShot = 0.1f;
+    public float DelayAfterFireBeforeRecharging = 0.4f;
+    public float OverheatForceCooldown = 3f;
+
+    // public float ProjectileFireRate = 0.3f;
+    // public int ProjectileMagSize = 20;
+    // public float ReloadTime = 2f;
+
+
     public float MeleeAttackDelay = 0.5f;
     public float MeleeDamage = 10f;
+    public float MeleeReach = 1.5f;
+    public float MeleeStagerTime = 0.4f;
+
     public float KickForce = 10f;
     public float KickAttackDelay = 0.5f;
 
-    public float MeleeReach = 1.5f;
-    public float MeleeStaggeTime = 0.4f;
     public float RegenerationSpeed = 1f;
-    public float RegenerationAmount = 1f;
+    public float RegenerationAmount = 5f;
 
     public int SpeedUpgradeAmount = 1;
     public int BoostUpgradeAmount = 1;
@@ -48,15 +58,22 @@ public class PlayerStats : ICloneable
             AirBoostForce = AirBoostForce,
 
             ProjectileDamage = ProjectileDamage,
-            ProjectileFireRate = ProjectileFireRate,
-            ProjectileMagSize = ProjectileMagSize,
+            RechargeRate = RechargeRate,
+            ShotsPerFullCharge = ShotsPerFullCharge,
+            StandardSecondsPerShot = StandardSecondsPerShot,
+            ChargedSecondsPerShot = ChargedSecondsPerShot,
+            DelayAfterFireBeforeRecharging = DelayAfterFireBeforeRecharging,
+            OverheatForceCooldown = OverheatForceCooldown,
+            // ProjectileFireRate = ProjectileFireRate,
+
+
             MeleeAttackDelay = MeleeAttackDelay,
             MeleeDamage = MeleeDamage,
             KickForce = KickForce,
             KickAttackDelay = KickAttackDelay,
 
             MeleeReach = MeleeReach,
-            MeleeStaggeTime = MeleeStaggeTime,
+            MeleeStagerTime = MeleeStagerTime,
             RegenerationSpeed = RegenerationSpeed,
             RegenerationAmount = RegenerationAmount,
 

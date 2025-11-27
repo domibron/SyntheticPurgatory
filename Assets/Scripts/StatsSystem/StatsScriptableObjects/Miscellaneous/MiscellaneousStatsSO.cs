@@ -27,10 +27,13 @@ public class MiscellaneousStats : ICloneable
         {
             MaxCollectionRange = MaxCollectionRange,
             CollectItemRange = CollectItemRange,
+
             FlyAccel = FlyAccel,
             FlyMaxSpeed = FlyMaxSpeed,
             FlyDistanceBoost = FlyDistanceBoost,
+
             DepositRate = DepositRate,
+
             MaxInventoryScrap = MaxInventoryScrap,
 
             ScrapRangeUpgradeAmount = ScrapRangeUpgradeAmount,

@@ -9,6 +9,7 @@ public static class LevelCollection
     {
         MainMenu,
         Tutorial,
+        TutorialHub,
         SetupScreen,
         HubWorld,
         DungeonWorld,
@@ -20,6 +21,7 @@ public static class LevelCollection
     {
         { "MainMenu", new string[] { "MainMenu" } },
         { "Tutorial", new string[] { "Tutorial" } },
+        { "TutorialHub", new string[] { "TutorialHub" } },
         { "SetupScreen", new string[] { "SetupScreen" } },
         { "HubWorld", new string[] { "HubWorld" } },
         { "DungeonWorld", new string[] { "DungeonWorld" } },

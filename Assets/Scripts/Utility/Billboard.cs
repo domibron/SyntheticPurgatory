@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 //by    _                 _ _                     
@@ -17,20 +18,23 @@ using UnityEngine;
 /// </summary>
 public class Billboard : MonoBehaviour
 {
-	public bool invertDirection = false;
+	[SerializeField]
+	private bool invertDirection = false;
+    [SerializeField]
+    private bool lockUpwards = false;
 
-	Transform camTransform;
+    Transform camTransform;
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		SetTargetCamera();
+        SetTargetCamera();
     }
 
 	// Update is called once per frame
 	void Update()
 	{
-		if (camTransform == null)
+        if (camTransform == null)
 		{
 			SetTargetCamera();
             return;
@@ -45,6 +49,8 @@ public class Billboard : MonoBehaviour
 			
 			transform.LookAt(transform.position - (camTransform.position - transform.position));
 		}
+
+		if (lockUpwards) transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 	}
 
 	public void SetTargetCamera()
