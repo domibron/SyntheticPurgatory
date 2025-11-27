@@ -18,7 +18,7 @@ public class RoomCullingManager : MonoBehaviour
 
     void Awake()
     {
-        GetComponent<Sequencer>().OnSequencesEnd += SetUpCullingManager;
+        GetComponent<Sequencer>().OnSequencesEnd += SetUpCullingManager; // TODO: move into the sequencer.
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
