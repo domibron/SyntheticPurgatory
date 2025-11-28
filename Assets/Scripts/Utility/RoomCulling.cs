@@ -14,9 +14,11 @@ public enum VisibleState
 [RequireComponent(typeof(BoxCollider))]
 public class RoomCulling : MonoBehaviour
 {
-    List<MeshRenderer> wallsAndFloorMeshRenderers = new List<MeshRenderer>();
-    List<MeshRenderer> decorMeshRenderers = new List<MeshRenderer>();
-    List<EntityCulling> entityCullings = new List<EntityCulling>();
+    List<MeshRenderer> lowDetail = new List<MeshRenderer>();
+    List<MeshRenderer> mediumDetail = new List<MeshRenderer>();
+    List<MeshRenderer> highDetail = new List<MeshRenderer>();
+    List<EntityCulling> entities = new List<EntityCulling>();
+    List<Animator> animators = new List<Animator>();
 
     // Transform player;
 
@@ -71,25 +73,40 @@ public class RoomCulling : MonoBehaviour
                 continue;
             }
 
-            if (renderer.gameObject.CompareTag(Constants.WallTag) || renderer.gameObject.CompareTag(Constants.FloorTag))
+            if (renderer.gameObject.CompareTag(Constants.LowDetailTag))
             {
-                wallsAndFloorMeshRenderers.Add(renderer);
+                lowDetail.Add(renderer);
             }
-            else if (renderer.gameObject.CompareTag(Constants.DecorationTag))
+            else if (renderer.gameObject.CompareTag(Constants.MediumDetailTag))
             {
-                decorMeshRenderers.Add(renderer);
+                mediumDetail.Add(renderer);
+            }
+            else if (renderer.gameObject.CompareTag(Constants.HighDetailTag))
+            {
+                highDetail.Add(renderer);
             }
 
         }
 
+        Animator[] collectedAnimators = GetComponentsInChildren<Animator>();
+
+        foreach (Animator animator in collectedAnimators)
+        {
+            if (animator.GetComponent<Rigidbody>()) continue;
+
+            if (animator.gameObject.CompareTag(Constants.EnemyTag)) continue;
+
+            animators.Add(animator);
+        }
+
         EntityCulling[] gatheredEntityCullings = GetComponentsInChildren<EntityCulling>();
 
-        entityCullings.AddRange(gatheredEntityCullings);
+        entities.AddRange(gatheredEntityCullings);
 
-        foreach (EntityCulling entityCulling in entityCullings)
+        foreach (EntityCulling entityCulling in entities)
         {
             entityCulling.OverrideCulling();
-            entityCulling.TryOverrideMeshVisiblity(false);
+            entityCulling.TryOverrideMeshVisibility(false);
         }
 
         isReady = true;
@@ -120,24 +137,32 @@ public class RoomCulling : MonoBehaviour
         switch (state) // I do feel this is a bit bad, but eh, fuck it.
         {
             case VisibleState.Unload: // everything else
-                SetWallsAndFloorRendererState(false);
-                SetDecorRendererState(false);
+                SetLowDetailState(false);
+                SetMediumState(false);
+                SetHighDetailState(false);
                 SetEntityCulling(false);
+                SetAnimatorState(false);
                 break;
             case VisibleState.Minimal: // 2nd layer rooms
-                SetWallsAndFloorRendererState(true); // need to set LOD state.
-                SetDecorRendererState(false);
+                SetLowDetailState(true); // need to set LOD state.
+                SetMediumState(false);
+                SetHighDetailState(false);
                 SetEntityCulling(false);
+                SetAnimatorState();
                 break;
             case VisibleState.Medium: // 1st layer rooms
-                SetWallsAndFloorRendererState(true); // need to set LOD state.
-                SetDecorRendererState(true); // need two levels of detail. lower and higher
+                SetLowDetailState(true); // need to set LOD state.
+                SetMediumState(true);
+                SetHighDetailState(false); // need two levels of detail. lower and higher
                 SetEntityCulling(true);
+                SetAnimatorState();
                 break;
             case VisibleState.Maximum: // Current room
-                SetWallsAndFloorRendererState(true);
-                SetDecorRendererState(true);
+                SetLowDetailState(true);
+                SetMediumState(true);
+                SetHighDetailState(true);
                 SetEntityCulling(true);
+                SetAnimatorState();
                 break;
         }
     }
@@ -149,29 +174,38 @@ public class RoomCulling : MonoBehaviour
 
     IEnumerator SetEntityCullingRenderState(bool isVisible)
     {
-        foreach (EntityCulling entity in entityCullings)
+        foreach (EntityCulling entity in entities)
         {
             if (entity == null) continue; // TODO: should have enemies or what ever not be collected.
 
 
-            entity.TryOverrideMeshVisiblity(isVisible);
+            entity.TryOverrideMeshVisibility(isVisible);
         }
         yield return null;
     }
 
-    private void SetWallsAndFloorRendererState(bool isVisible = true)
+    private void SetLowDetailState(bool isVisible = true)
     {
         // print("render state " + isVisible);
 
-        StartCoroutine(SetRenderStateWhenReady(isVisible, wallsAndFloorMeshRenderers));
+        StartCoroutine(SetRenderStateWhenReady(isVisible, lowDetail));
     }
 
-    private void SetDecorRendererState(bool isVisible = true)
+    private void SetHighDetailState(bool isVisible = true)
     {
         // print("render state " + isVisible);
 
-        StartCoroutine(SetRenderStateWhenReady(isVisible, decorMeshRenderers));
+        StartCoroutine(SetRenderStateWhenReady(isVisible, highDetail));
     }
+
+    private void SetMediumState(bool isVisible = true)
+    {
+        // print("render state " + isVisible);
+
+        StartCoroutine(SetRenderStateWhenReady(isVisible, mediumDetail));
+    }
+
+
 
     IEnumerator SetRenderStateWhenReady(bool isVisible, List<MeshRenderer> meshRenderers)
     {
@@ -187,6 +221,24 @@ public class RoomCulling : MonoBehaviour
             meshRenderer.enabled = isVisible;
         }
 
+    }
+
+    private void SetAnimatorState(bool isEnabled = true)
+    {
+        // StartCoroutine(SetAnimatorStateWhenReady(isEnabled));
+    }
+
+    private IEnumerator SetAnimatorStateWhenReady(bool isEnabled)
+    {
+        while (!isReady) yield return null;
+
+        foreach (var animator in animators)
+        {
+            if (animator == null) continue;
+            if (animator.enabled == isEnabled) continue;
+
+            animator.enabled = isEnabled;
+        }
     }
 
     // bool PlayerWithinRange()
@@ -235,13 +287,13 @@ public class RoomCulling : MonoBehaviour
     //     Gizmos.DrawSphere(transform.position + boxCollider.center + (sizeRotated / 2f), 0.1f);
     // }
 
-    bool OutsideLowerBounds(Vector3 playerPos, Vector3 lowerBounds, float maxDistanceFromRoom)
-    {
-        return playerPos.x < lowerBounds.x - maxDistanceFromRoom || playerPos.y < lowerBounds.y - maxDistanceFromRoom || playerPos.z < lowerBounds.z - maxDistanceFromRoom;
-    }
+    // bool OutsideLowerBounds(Vector3 playerPos, Vector3 lowerBounds, float maxDistanceFromRoom)
+    // {
+    //     return playerPos.x < lowerBounds.x - maxDistanceFromRoom || playerPos.y < lowerBounds.y - maxDistanceFromRoom || playerPos.z < lowerBounds.z - maxDistanceFromRoom;
+    // }
 
-    bool OutsideUpperBounds(Vector3 playerPos, Vector3 upperBounds, float maxDistanceFromRoom)
-    {
-        return playerPos.x > upperBounds.x + maxDistanceFromRoom || playerPos.y > upperBounds.y + maxDistanceFromRoom || playerPos.z > upperBounds.z + maxDistanceFromRoom;
-    }
+    // bool OutsideUpperBounds(Vector3 playerPos, Vector3 upperBounds, float maxDistanceFromRoom)
+    // {
+    //     return playerPos.x > upperBounds.x + maxDistanceFromRoom || playerPos.y > upperBounds.y + maxDistanceFromRoom || playerPos.z > upperBounds.z + maxDistanceFromRoom;
+    // }
 }

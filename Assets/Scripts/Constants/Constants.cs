@@ -61,13 +61,15 @@ public class Constants
 
     // public const string CheckpointTag = "Checkpoint";
 
-    public const string WallTag = "Wall";
 
-    public const string FloorTag = "Floor";
 
-    public const string DecorationTag = "Decor";
+    // public const string DecorationTag = "Decor";
 
     public const string CollapsibleFloorTag = "CollapsibleFloor";
 
     public const string NavLineTag = "NavLine";
+
+    public const string HighDetailTag = "HighDetail";
+    public const string MediumDetailTag = "MediumDetail";
+    public const string LowDetailTag = "LowDetail";
 }

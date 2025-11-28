@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 5597321938886023639}
   m_Layer: 0
   m_Name: P_ToxicWater
-  m_TagString: Floor
+  m_TagString: LowDetail
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,6 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alsoDisablePhysics: 1
 --- !u!114 &5597321938886023639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,3 +175,4 @@ MonoBehaviour:
   ScrollSpeed: 0.05
   IsScrolling: 1
   IsReversed: 0
+  materialIndex: 0

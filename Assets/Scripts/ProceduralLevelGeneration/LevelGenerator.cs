@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 using Random = UnityEngine.Random;
 
 
@@ -102,7 +103,9 @@ public class LevelGenerator : SequenceBase
         levelData.Clear();
         currentID = 1;
 
-        int seed = InitializeNewSeed();
+        InitializeNewSeed();
+        levelGrid = new int[XSize + GridEdgeBuffer + GridEdgeBuffer, YSize + GridEdgeBuffer + GridEdgeBuffer];
+
 
         GameObject startRoom = SpawnStartRoom(currentID);
 
@@ -250,14 +253,25 @@ public class LevelGenerator : SequenceBase
 
     }
 
-    private int InitializeNewSeed()
+    private void InitializeNewSeed()
     {
-        Seed = GameManager.Instance.GenerateNextSeed();
+        // Tries to get game manager seed, if it cant find the game manager, then it will generate one with old method.
+
+        if (GameManager.Instance != null)
+        {
+            Seed = GameManager.Instance.GenerateNextSeed();
+        }
+        else
+        {
+            int timeStampSeed = (int)new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
+            // if (Seed != -1) timeStampSeed = Seed;
+            Seed = timeStampSeed;
+        }
+
         Random.InitState(Seed);
 
-        levelGrid = new int[XSize + GridEdgeBuffer + GridEdgeBuffer, YSize + GridEdgeBuffer + GridEdgeBuffer];
 
-        return Seed;
+        // return Seed;
     }
 
     private GameObject SpawnStartRoom(int idForStartRoom)
@@ -929,9 +943,37 @@ public class LevelGenerator : SequenceBase
             return null;
     }
 
+    public GameObject GetRoomGameObjectFromID(int roomID)
+    {
+        if (!levelData.ContainsKey(roomID)) return null;
+
+        return levelData[roomID].GetRoomObject();
+    }
+
     public List<SpawnedLevelRoomData> GetAllSpawnedRoomData()
     {
         return levelData.Values.ToList();
+    }
+
+    /// <summary>
+    /// Returns a copy of the level grid.
+    /// </summary>
+    /// <returns>2D representation of the level.</returns>
+    public int[,] GetLevelGrid()
+    {
+        int[,] arrayCopy = new int[levelGrid.GetLength(X_ROW), levelGrid.GetLength(Y_ROW)];
+
+        for (int row = 0; row < levelGrid.GetLength(X_ROW); row++)
+        {
+            Array.Copy(levelGrid, arrayCopy, levelGrid.Length);
+        }
+
+        return arrayCopy;
+    }
+
+    public Vector2Int GetGridSize()
+    {
+        return new Vector2Int(levelGrid.GetLength(X_ROW), levelGrid.GetLength(Y_ROW));
     }
 
     public float GetUnitSizeInMeters()
