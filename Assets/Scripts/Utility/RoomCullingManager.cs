@@ -74,6 +74,7 @@ public class RoomCullingManager : SequenceBase
         lastCoordinates = currentRoomCoordinates;
         UpdateRoomCulling(currentRoomCoordinates);
         currentProgress = 1f;
+        OnThisSequenceEnd?.Invoke();
     }
 
 

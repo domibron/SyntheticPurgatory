@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class DirectLever : MonoBehaviour, IKickable, IShootable
+public class DirectLever : MonoBehaviour, IKickable, IShootable, IMeleeable
 {
     public UnityEvent OnLeverActivate;
 
@@ -21,28 +21,36 @@ public class DirectLever : MonoBehaviour, IKickable, IShootable
         animator.SetBool("isOn", state);
     }
 
+    public void MotionEnded()
+    {
+        inMotion = false;
+    }
+
     public void HitObject()
     {
-        if (inMotion) { return; }
-
-        OnLeverActivate?.Invoke();
-        state = !state;
-
-        inMotion = true;
+        ToggleLever();
     }
 
     public void KickObject(Vector3 forceAndDir, ForceMode forceMode = ForceMode.Force)
     {
+        ToggleLever();
+
+    }
+
+    public void MeleeObject()
+    {
+        ToggleLever();
+
+    }
+
+
+    private void ToggleLever()
+    {
         if (inMotion) { return; }
 
         OnLeverActivate?.Invoke();
         state = !state;
 
         inMotion = true;
-    }
-
-    public void MotionEnded()
-    {
-        inMotion = false;
     }
 }
