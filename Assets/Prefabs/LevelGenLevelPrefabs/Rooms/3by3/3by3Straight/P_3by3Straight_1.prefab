@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5565973386897201466}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Floor
+  m_TagString: LowDetail
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -9760,8 +9760,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8526512212872856696, guid: 19d8642a87aed7f409b8afb3619f4ee2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6270503593558212468}
   m_SourcePrefab: {fileID: 100100000, guid: 19d8642a87aed7f409b8afb3619f4ee2, type: 3}
+--- !u!1 &2116778681878085222 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8526512212872856696, guid: 19d8642a87aed7f409b8afb3619f4ee2, type: 3}
+  m_PrefabInstance: {fileID: 7724816098665134622}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6270503593558212468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116778681878085222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cad79535bc2f2b544a787a88597d4917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8323103088164992877 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1780493576415776115, guid: 19d8642a87aed7f409b8afb3619f4ee2, type: 3}

@@ -49,7 +49,7 @@ public class ContainerPlacementCheck : MonoBehaviour
         {
             foreach (Collider collider in colliders)
             {
-                if (collider.gameObject.CompareTag(Constants.DecorationTag) || collider.gameObject.CompareTag(Constants.WallTag))
+                if (collider.gameObject.CompareTag(Constants.MediumDetailTag) || collider.gameObject.CompareTag(Constants.LowDetailTag))
                 {
                     return false;
                 }

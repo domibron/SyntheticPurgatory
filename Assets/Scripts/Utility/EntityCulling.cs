@@ -106,7 +106,7 @@ public class EntityCulling : MonoBehaviour
         overrideCulling = true;
     }
 
-    public void TryOverrideMeshVisiblity(bool isVisible = false)
+    public void TryOverrideMeshVisibility(bool isVisible = false)
     {
         if (!overrideCulling) return;
 
