@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 5481178908069593136}
   - component: {fileID: 3646870973740918178}
   - component: {fileID: 5718870035908852188}
+  - component: {fileID: 5432694830556215644}
   m_Layer: 14
   m_Name: Destructable_Barrel_Bronze
   m_TagString: Untagged
@@ -196,6 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alsoDisablePhysics: 1
 --- !u!114 &3646870973740918178
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +231,27 @@ MonoBehaviour:
   MaxDistance: 0
   MaxRotationOffsetHorizontal: 0
   MaxRotationOffsetVertical: 0
+--- !u!114 &5432694830556215644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581709180727947209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bce51f228cf934cb07cb2cbbaa2295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 37961343202782958, guid: 9246fd9e29c9f374aaf762d4ea1bc853, type: 3}
+  addPositionOffset: 0
+  spawnOffset: {x: 0, y: 0, z: 0}
+  addRotationOffset: 0
+  rotationOffset: {x: 0, y: 0, z: 0}
+  setScale: 0
+  scale: {x: 1, y: 1, z: 1}
+  onDeathTarget: {fileID: 0}
+  ensureOnlyOneActivation: 1
 --- !u!1001 &4549750765960618172
 PrefabInstance:
   m_ObjectHideFlags: 0
