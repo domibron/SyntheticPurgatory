@@ -663,9 +663,9 @@ public class MeleeUpgrades
             case MeleeUpgradeType.KickAttackTime:
                 return (kickAttackTime.UpgradePercentage(pStats.KickAttackDelay, amount) - pStats.KickAttackDelay).ToString("F2");
             case MeleeUpgradeType.EnemyStagger:
-                return (enemyStagger.GetLogAmount(pStats.MeleeStagerTime, pStats.MeleeStaggerUpgradeAmount, amount) - pStats.MeleeStagerTime).ToString("F2");
+                return (enemyStagger.UpgradeValue(pStats.MeleeStagerTime, amount) - pStats.MeleeStagerTime).ToString("F2");
             case MeleeUpgradeType.Reach:
-                return (reach.GetLogAmount(pStats.MeleeReach, pStats.MeleeReachUpgradeAmount, amount) - pStats.MeleeReach).ToString("F2");
+                return (reach.UpgradeValue(pStats.MeleeReach, amount) - pStats.MeleeReach).ToString("F2");
             case MeleeUpgradeType.Knockback:
                 return (knockback.UpgradeValue(pStats.KickForce, amount) - pStats.KickForce).ToString("F2");
             default:
@@ -764,9 +764,9 @@ public class MeleeUpgrades
                 case MeleeUpgradeType.KickAttackTime:
                     return (kickAttackTime.UpgradePercentage(pStats.KickAttackDelay, amount)).ToString("F2");
                 case MeleeUpgradeType.EnemyStagger:
-                    return (enemyStagger.GetLogAmount(pStats.MeleeStagerTime, pStats.MeleeStaggerUpgradeAmount, amount)).ToString("F2");
+                    return (enemyStagger.UpgradeValue(pStats.MeleeStagerTime, amount)).ToString("F2");
                 case MeleeUpgradeType.Reach:
-                    return (reach.GetLogAmount(pStats.MeleeReach, pStats.MeleeReachUpgradeAmount, amount)).ToString("F2");
+                    return (reach.UpgradeValue(pStats.MeleeReach, amount)).ToString("F2");
                 case MeleeUpgradeType.Knockback:
                     return (knockback.UpgradeValue(pStats.KickForce, amount)).ToString("F2");
                 default:
@@ -814,11 +814,11 @@ public class MeleeUpgrades
                 pStats.KickAttackDelay = kickAttackTime.UpgradePercentage(pStats.KickAttackDelay, amount);
                 break;
             case MeleeUpgradeType.EnemyStagger:
-                pStats.MeleeStagerTime = enemyStagger.GetLogAmount(pStats.MeleeStagerTime, pStats.MeleeStaggerUpgradeAmount, amount);
+                pStats.MeleeStagerTime = enemyStagger.UpgradeValue(pStats.MeleeStagerTime, amount);
                 pStats.MeleeStaggerUpgradeAmount += amount;
                 break;
             case MeleeUpgradeType.Reach:
-                pStats.MeleeReach = reach.GetLogAmount(pStats.MeleeReach, pStats.MeleeReachUpgradeAmount, amount);
+                pStats.MeleeReach = reach.UpgradeValue(pStats.MeleeReach, amount);
                 pStats.MeleeStaggerUpgradeAmount += amount;
                 break;
             case MeleeUpgradeType.Knockback:
