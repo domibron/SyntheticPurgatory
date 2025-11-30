@@ -19,17 +19,18 @@ public class StatUpgradeInfo
 {
     public float UpgradeAmount;
     public float DowngradeAmount;
-    public float? Minimum;
-    public float? Maximum;
+    public float? DowngradeMax;
+    public float? UpgradeMax;
 
     public StatUpgradeInfo(float upgradeAmount, float downgradeAmount, float? downgradeMax, float? upgradeMax)
     {
         UpgradeAmount = upgradeAmount;
         DowngradeAmount = downgradeAmount;
-        Minimum = downgradeMax;
-        Maximum = upgradeMax;
+        DowngradeMax = downgradeMax;
+        UpgradeMax = upgradeMax;
     }
 
+    [Obsolete("Cannot be asked to imp log, use other upgrade methods.", true)]
     public float GetLogAmount(float currentValue, int totalIncreases, int amountToAdd)
     {
         float current = currentValue;
@@ -113,7 +114,7 @@ public class StatUpgradeInfo
 
         if (ExceedsMaximum(newValue))
         {
-            return Maximum.Value;
+            return UpgradeMax.Value;
         }
 
         return newValue;
@@ -125,7 +126,7 @@ public class StatUpgradeInfo
 
         if (ExceedsMinimum(newValue))
         {
-            return Minimum.Value;
+            return DowngradeMax.Value;
         }
 
         return newValue;
@@ -133,11 +134,11 @@ public class StatUpgradeInfo
 
     public bool ExceedsMinimum(float value)
     {
-        if (!Minimum.HasValue) return false;
+        if (!DowngradeMax.HasValue) return false;
 
         if (DowngradeAmount < 0) // does downgrading go down.
         {
-            if (value < Minimum.Value)
+            if (value <= DowngradeMax.Value)
             {
                 return true;
             }
@@ -148,7 +149,7 @@ public class StatUpgradeInfo
         }
         else
         {
-            if (value > Minimum.Value)
+            if (value >= DowngradeMax.Value)
             {
                 return true;
             }
@@ -161,11 +162,11 @@ public class StatUpgradeInfo
 
     public bool ExceedsMaximum(float value)
     {
-        if (!Maximum.HasValue) return false;
+        if (!UpgradeMax.HasValue) return false;
 
-        if (Maximum > 0) // does upgrading go up.
+        if (UpgradeAmount > 0) // does upgrading go up.
         {
-            if (value > Maximum.Value)
+            if (value >= UpgradeMax.Value)
             {
                 return true;
             }
@@ -176,7 +177,7 @@ public class StatUpgradeInfo
         }
         else
         {
-            if (value < Maximum.Value)
+            if (value <= UpgradeMax.Value)
             {
                 return true;
             }
@@ -225,9 +226,9 @@ public class StatUpgrades
             case StatUpgradeType.Regeneration:
                 return (regenerationInfo.UpgradeValue(pStats.RegenerationAmount, amount) - pStats.RegenerationAmount).ToString("F2");
             case StatUpgradeType.Speed:
-                return (speedInfo.GetLogAmount(pStats.GroundSpeed, pStats.SpeedUpgradeAmount, amount) - pStats.GroundSpeed).ToString("F2");
+                return (speedInfo.UpgradeValue(pStats.GroundSpeed, amount) - pStats.GroundSpeed).ToString("F2");
             case StatUpgradeType.SlideBoostForce:
-                return (boostInfo.GetLogAmount(pStats.SlideBoostForce, pStats.BoostUpgradeAmount, amount) - pStats.SlideBoostForce).ToString("F2");
+                return (boostInfo.UpgradeValue(pStats.SlideBoostForce, amount) - pStats.SlideBoostForce).ToString("F2");
             default:
                 return "";
         }
@@ -310,9 +311,9 @@ public class StatUpgrades
                 case StatUpgradeType.Regeneration:
                     return (regenerationInfo.UpgradeValue(pStats.RegenerationAmount, amount)).ToString("F2");
                 case StatUpgradeType.Speed:
-                    return (speedInfo.GetLogAmount(pStats.GroundSpeed, pStats.SpeedUpgradeAmount, amount)).ToString("F2");
+                    return (speedInfo.UpgradeValue(pStats.GroundSpeed, amount)).ToString("F2");
                 case StatUpgradeType.SlideBoostForce:
-                    return (boostInfo.GetLogAmount(pStats.SlideBoostForce, pStats.BoostUpgradeAmount, amount)).ToString("F2");
+                    return (boostInfo.UpgradeValue(pStats.SlideBoostForce, amount)).ToString("F2");
                 default:
                     return "";
             }
@@ -350,13 +351,13 @@ public class StatUpgrades
                 pStats.RegenerationAmount = regenerationInfo.UpgradeValue(pStats.RegenerationAmount, amount);
                 break;
             case StatUpgradeType.Speed:
-                pStats.GroundSpeed = speedInfo.GetLogAmount(pStats.GroundSpeed, pStats.SpeedUpgradeAmount, amount);
-                pStats.AirSpeed = speedInfo.GetLogAmount(pStats.AirSpeed, pStats.SpeedUpgradeAmount, amount);
+                pStats.GroundSpeed = speedInfo.UpgradeValue(pStats.GroundSpeed, amount);
+                pStats.AirSpeed = speedInfo.UpgradeValue(pStats.AirSpeed, amount);
                 pStats.SpeedUpgradeAmount += amount;
                 break;
             case StatUpgradeType.SlideBoostForce:
-                pStats.SlideBoostForce = boostInfo.GetLogAmount(pStats.SlideBoostForce, pStats.BoostUpgradeAmount, amount);
-                pStats.AirBoostForce = boostInfo.GetLogAmount(pStats.AirBoostForce, pStats.BoostUpgradeAmount, amount);
+                pStats.SlideBoostForce = boostInfo.UpgradeValue(pStats.SlideBoostForce, amount);
+                pStats.AirBoostForce = boostInfo.UpgradeValue(pStats.AirBoostForce, amount);
                 pStats.BoostUpgradeAmount += amount;
                 break;
         }
@@ -400,7 +401,7 @@ public class RangedUpgrades
     //public const UpgradeType upgradeType = UpgradeType.Ranged;
 
     StatUpgradeInfo projectileDamage = new(1, -2, 2, null);
-    StatUpgradeInfo rechargeRate = new(-0.05f, 0.05f, 0.5f, 0.05f);
+    StatUpgradeInfo rechargeRate = new(0.05f, -0.05f, 0.05f, 0.6f);
     StatUpgradeInfo shotsPerFullCharge = new(1, -1, 5, null);
     StatUpgradeInfo standardSecondsPerShot = new(-0.05f, 0.05f, 1f, 0.05f);
     StatUpgradeInfo chargedSecondsPerShot = new(-0.05f, 0.05f, 1f, 0.05f);
@@ -418,7 +419,7 @@ public class RangedUpgrades
         ShotsPerFullCharge,
         // StandardSecondsPerShot,
         // ChargedSecondsPerShot,
-        DelayAfterFireBeforeRecharging,
+        // DelayAfterFireBeforeRecharging,
         OverheatForceCooldown,
     }
 
@@ -441,8 +442,8 @@ public class RangedUpgrades
                 return (rechargeRate.UpgradeValue(pStats.RechargeRate, amount) - pStats.RechargeRate).ToString("F2");
             case CannonUpgradeType.ShotsPerFullCharge:
                 return (shotsPerFullCharge.UpgradeValue(pStats.ShotsPerFullCharge, amount) - pStats.ShotsPerFullCharge).ToString("F0");
-            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                return (delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount) - pStats.DelayAfterFireBeforeRecharging).ToString("F2");
+            // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+            //     return (delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount) - pStats.DelayAfterFireBeforeRecharging).ToString("F2");
             case CannonUpgradeType.OverheatForceCooldown:
                 return (overheatForceCoolDown.UpgradeValue(pStats.OverheatForceCooldown, amount) - pStats.OverheatForceCooldown).ToString("F2");
             default:
@@ -464,8 +465,8 @@ public class RangedUpgrades
                 return pStats.RechargeRate.ToString("F2");
             case CannonUpgradeType.ShotsPerFullCharge:
                 return pStats.ShotsPerFullCharge.ToString("F0");
-            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                return pStats.DelayAfterFireBeforeRecharging.ToString("F2");
+            // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+            //     return pStats.DelayAfterFireBeforeRecharging.ToString("F2");
             case CannonUpgradeType.OverheatForceCooldown:
                 return pStats.OverheatForceCooldown.ToString("F2");
             default:
@@ -487,8 +488,8 @@ public class RangedUpgrades
                 return (rechargeRate.DowngradeValue(pStats.RechargeRate, amount) - pStats.RechargeRate).ToString("F2");
             case CannonUpgradeType.ShotsPerFullCharge:
                 return (shotsPerFullCharge.DowngradeValue(pStats.ShotsPerFullCharge, amount) - pStats.ShotsPerFullCharge).ToString("F0");
-            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                return (delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount) - pStats.DelayAfterFireBeforeRecharging).ToString("F2");
+            // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+            //     return (delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount) - pStats.DelayAfterFireBeforeRecharging).ToString("F2");
             case CannonUpgradeType.OverheatForceCooldown:
                 return (overheatForceCoolDown.DowngradeValue(pStats.OverheatForceCooldown, amount) - pStats.OverheatForceCooldown).ToString("F2");
             default:
@@ -508,8 +509,8 @@ public class RangedUpgrades
                 return "Recharge Rate";
             case CannonUpgradeType.ShotsPerFullCharge:
                 return "Shots Per Charge";
-            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                return "Recharge Delay";
+            // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+            //     return "Recharge Delay";
             case CannonUpgradeType.OverheatForceCooldown:
                 return "Overheat Cooldown";
             default:
@@ -534,8 +535,8 @@ public class RangedUpgrades
                     return rechargeRate.UpgradeValue(pStats.RechargeRate, amount).ToString("F2");
                 case CannonUpgradeType.ShotsPerFullCharge:
                     return shotsPerFullCharge.UpgradeValue(pStats.ShotsPerFullCharge, amount).ToString("F0");
-                case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                    return delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount).ToString("F2");
+                // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                //     return delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount).ToString("F2");
                 case CannonUpgradeType.OverheatForceCooldown:
                     return overheatForceCoolDown.UpgradeValue(pStats.OverheatForceCooldown, amount).ToString("F2");
                 default:
@@ -552,8 +553,8 @@ public class RangedUpgrades
                     return rechargeRate.DowngradeValue(pStats.RechargeRate, amount).ToString("F2");
                 case CannonUpgradeType.ShotsPerFullCharge:
                     return shotsPerFullCharge.DowngradeValue(pStats.ShotsPerFullCharge, amount).ToString("F0");
-                case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                    return delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount).ToString("F2");
+                // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+                //     return delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount).ToString("F2");
                 case CannonUpgradeType.OverheatForceCooldown:
                     return overheatForceCoolDown.DowngradeValue(pStats.OverheatForceCooldown, amount).ToString("F2");
                 default:
@@ -579,9 +580,9 @@ public class RangedUpgrades
             case CannonUpgradeType.ShotsPerFullCharge:
                 pStats.ShotsPerFullCharge = shotsPerFullCharge.UpgradeValue(pStats.ShotsPerFullCharge, amount);
                 break;
-            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                pStats.DelayAfterFireBeforeRecharging = delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount);
-                break;
+            // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+            //     pStats.DelayAfterFireBeforeRecharging = delayAfterFireBeforeRecharging.UpgradeValue(pStats.DelayAfterFireBeforeRecharging, amount);
+            // break;
             case CannonUpgradeType.OverheatForceCooldown:
                 pStats.OverheatForceCooldown = overheatForceCoolDown.UpgradeValue(pStats.OverheatForceCooldown, amount);
                 break;
@@ -607,9 +608,9 @@ public class RangedUpgrades
             case CannonUpgradeType.ShotsPerFullCharge:
                 pStats.ShotsPerFullCharge = shotsPerFullCharge.DowngradeValue(pStats.ShotsPerFullCharge, amount);
                 break;
-            case CannonUpgradeType.DelayAfterFireBeforeRecharging:
-                pStats.DelayAfterFireBeforeRecharging = delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount);
-                break;
+            // case CannonUpgradeType.DelayAfterFireBeforeRecharging:
+            //     pStats.DelayAfterFireBeforeRecharging = delayAfterFireBeforeRecharging.DowngradeValue(pStats.DelayAfterFireBeforeRecharging, amount);
+            //     break;
             case CannonUpgradeType.OverheatForceCooldown:
                 pStats.OverheatForceCooldown = overheatForceCoolDown.DowngradeValue(pStats.OverheatForceCooldown, amount);
                 break;
@@ -1059,7 +1060,7 @@ public class MiscellaneousUpgrades
     }
 }
 
-
+// TODO: Refactor, this hurts me.
 public class UpgradeSystem : MonoBehaviour
 {
     [Serializable]
@@ -1182,11 +1183,11 @@ public class UpgradeSystem : MonoBehaviour
         switch (cardTeir)
         {
             case CardTier.Common:
-                return commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                return commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
             case CardTier.Rare:
-                return rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                return rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
             case CardTier.Epic:
-                return epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                return epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
         }
 
         return -1;
@@ -1254,13 +1255,13 @@ public class UpgradeSystem : MonoBehaviour
         switch (currentCardTier)
         {
             case CardTier.Common:
-                giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
                 break;
             case CardTier.Rare:
-                giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
                 break;
             case CardTier.Epic:
-                giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
                 break;
         }
 
@@ -1280,13 +1281,13 @@ public class UpgradeSystem : MonoBehaviour
         switch (cardTier)
         {
             case CardTier.Common:
-                giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
                 break;
             case CardTier.Rare:
-                giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
                 break;
             case CardTier.Epic:
-                giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficlty());
+                giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
                 break;
         }
 

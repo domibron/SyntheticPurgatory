@@ -215,7 +215,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public int GetCurrentDifficlty()
+    public int GetCurrentDifficulty()
     {
         return currentDifficulty;
     }
