@@ -324,8 +324,11 @@ public class PlayerCombat : MonoBehaviour
             Vector3 offsetPos = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
 
             // newTransform.position = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
+            // Gizmos.matrix = Matrix4x4.TRS(offsetPos,
+            //     Quaternion.LookRotation((offsetPos - cam.position), cam.up),
+            //     cam.localScale);
             Gizmos.matrix = Matrix4x4.TRS(offsetPos,
-                Quaternion.LookRotation((offsetPos - cam.position), cam.up),
+                Quaternion.LookRotation(cam.forward, cam.up),
                 cam.localScale);
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(Vector3.zero, meleeBounds);
@@ -337,7 +340,7 @@ public class PlayerCombat : MonoBehaviour
             Vector3 offsetPos = cam.position + (cam.forward * kickOffset.z) + (cam.right * kickOffset.x) + (cam.up * kickOffset.y);
 
             Gizmos.matrix = Matrix4x4.TRS(offsetPos,
-                Quaternion.LookRotation((offsetPos - cam.position), cam.up),
+                Quaternion.LookRotation(cam.forward, cam.up),
                 cam.localScale);
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(Vector3.zero, kickBounds);
