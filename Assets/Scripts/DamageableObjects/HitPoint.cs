@@ -22,6 +22,6 @@ public class HitPoint : MonoBehaviour, IDamageable
         health.AddToHealth(-Mathf.Abs(totalDamage));
 
         if (floatingTextSystem != null)
-        floatingTextSystem.SpawnText(Mathf.Abs(totalDamage).ToString("F0"), hitPointsData.GetGradient(hitPointType, false), 3, -10, hitPosition);
+            floatingTextSystem.SpawnText(Mathf.Abs(totalDamage).ToString("F0"), hitPointsData.GetGradient(hitPointType, false), 3, -10, hitPosition);
     }
 }

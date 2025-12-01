@@ -89,6 +89,10 @@ public class FloatingTextSystem : MonoBehaviour
     /// <param name="characterSpacing">Spacing between each character</param>
     public void SpawnText(string text, Color textColor, float textSize = 10f, float characterSpacing = -30, Vector3? targetSpawnPoint = null)
     {
+        if (cameraTransform == null) cameraTransform = Camera.main.transform;
+
+        if (cameraTransform == null) throw new NullReferenceException("Cannot find the main camera!");
+
         Vector3 directionTowardsCamera = (cameraTransform.position - transform.position).normalized;
         directionTowardsCamera.y = 0f;
 
@@ -126,6 +130,10 @@ public class FloatingTextSystem : MonoBehaviour
     /// <param name="characterSpacing">Spacing between each character</param>
     public void SpawnText(string text, TMP_ColorGradient textColorGradient, float textSize = 10f, float characterSpacing = -30, Vector3? targetSpawnPoint = null)
     {
+        if (cameraTransform == null) cameraTransform = Camera.main.transform;
+
+        if (cameraTransform == null) throw new NullReferenceException("Cannot find the main camera!");
+
         Vector3 directionTowardsCamera = (cameraTransform.position - transform.position).normalized;
         directionTowardsCamera.y = 0f;
 

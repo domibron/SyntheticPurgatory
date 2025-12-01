@@ -415,7 +415,7 @@ public class PlayerCombat : MonoBehaviour
                 //     }
                 // }
 
-                c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, c.transform.position); // deal damage.
+                c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, mainCamera.position + mainCamera.forward); // deal damage.
 
             }
         }
