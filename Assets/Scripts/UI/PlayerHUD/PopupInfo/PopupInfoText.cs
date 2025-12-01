@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,12 @@ public class PopupInfoText : MonoBehaviour
     private Vector3 targetPos = Vector3.zero;
 
     private bool isSlidingIn = true;
+
+    [SerializeField]
+    private TMP_Text text;
+
+    [SerializeField]
+    private Image image;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -74,6 +81,18 @@ public class PopupInfoText : MonoBehaviour
 
     public void Initialize(string textInfo, Sprite icon)
     {
+        if (icon == null)
+        {
+            text.rectTransform.offsetMin = new Vector2(text.rectTransform.offsetMin.y, text.rectTransform.offsetMin.y);
+            // text.rectTransform.offsetMin = new Vector2(text.rectTransform.anchoredPosition.y, text.rectTransform.anchoredPosition.y);
+            // text.rectTransform.sizeDelta = new Vector2(text.rectTransform.sizeDelta.y, text.rectTransform.sizeDelta.y);
+            image.gameObject.SetActive(false);
+        }
+        else
+        {
+            image.sprite = icon;
+        }
 
+        text.text = textInfo;
     }
 }
