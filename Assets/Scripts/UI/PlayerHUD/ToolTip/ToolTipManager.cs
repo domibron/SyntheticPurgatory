@@ -29,21 +29,30 @@ public class ToolTipManager : MonoBehaviour
 
     List<ToolTipQueItem> toolTipsToDisplay = new List<ToolTipQueItem>();
 
+    [SerializeField]
+    private float fadeTime = 0.3f;
 
+    private float currentFadeTime = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        currentFadeTime = 0f;
+        canvasGroup.alpha = currentFadeTime;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DisplayTooltip("Example text", 1f);
+        }
+
         if (toolTipsToDisplay.Count > 0)
         {
             tooltipText.text = toolTipsToDisplay[0].TextToDisplay;
-            canvasGroup.alpha = 1f;
+
 
             List<ToolTipQueItem> itemsToRemove = new List<ToolTipQueItem>();
             foreach (ToolTipQueItem item in toolTipsToDisplay)
@@ -66,10 +75,19 @@ public class ToolTipManager : MonoBehaviour
                 OrganizeQue();
             }
         }
+
+        if (toolTipsToDisplay.Count > 0)
+        {
+            currentFadeTime += Time.deltaTime * (1f / fadeTime);
+        }
         else
         {
-            canvasGroup.alpha = 0f;
+            currentFadeTime -= Time.deltaTime * (1f / fadeTime);
         }
+
+        currentFadeTime = Mathf.Clamp01(currentFadeTime);
+
+        canvasGroup.alpha = currentFadeTime;
     }
 
 

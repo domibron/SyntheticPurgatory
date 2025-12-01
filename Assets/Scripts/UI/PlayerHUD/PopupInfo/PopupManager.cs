@@ -18,6 +18,9 @@ public class PopupManager : MonoBehaviour
     [SerializeField]
     private PopupIcon[] popupIcons;
 
+    [SerializeField]
+    private float additionalOffset = 10f;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -73,7 +76,7 @@ public class PopupManager : MonoBehaviour
     {
         PopupInfoText popupInfoText = Instantiate(popupTextPrefab, transform).GetComponent<PopupInfoText>();
 
-        popupInfoText.Initialize(text, sprite);
+        popupInfoText.Initialize(text, sprite, additionalOffset);
 
     }
 }

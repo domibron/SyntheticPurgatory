@@ -34,16 +34,7 @@ public class PopupInfoText : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        float offset = objectToSlide.GetComponent<RectTransform>().sizeDelta.x;
 
-        targetPos = objectToSlide.localPosition;
-
-        offsetPos = targetPos + (Vector3.left * offset);
-
-        slideInTimer = 0f;
-        isSlidingIn = true;
-
-        objectToSlide.localPosition = offsetPos;
     }
 
     // Update is called once per frame
@@ -79,7 +70,7 @@ public class PopupInfoText : MonoBehaviour
 
     }
 
-    public void Initialize(string textInfo, Sprite icon)
+    public void Initialize(string textInfo, Sprite icon, float additionalOffset = 0f)
     {
         if (icon == null)
         {
@@ -92,6 +83,17 @@ public class PopupInfoText : MonoBehaviour
         {
             image.sprite = icon;
         }
+
+        float offset = objectToSlide.GetComponent<RectTransform>().sizeDelta.x;
+
+        targetPos = objectToSlide.localPosition;
+
+        offsetPos = targetPos + (Vector3.left * offset) + (Vector3.left * additionalOffset);
+
+        slideInTimer = 0f;
+        isSlidingIn = true;
+
+        objectToSlide.localPosition = offsetPos;
 
         text.text = textInfo;
     }
