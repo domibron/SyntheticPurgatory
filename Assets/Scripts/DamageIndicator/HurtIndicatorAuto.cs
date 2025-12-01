@@ -76,12 +76,12 @@ public class HurtIndicatorAuto : MonoBehaviour
         if (GetComponent<Health>())
             GetComponent<Health>().OnHealthChanged += TakenDamage;
         else
-            Debug.LogError("Cannot find health for damage flash!", this.gameObject);
+            Debug.LogWarning("Cannot find health for damage flash!", this.gameObject);
 
         if (GetComponent<KickableObject>())
             GetComponent<KickableObject>().OnKicked += KickObject;
         else
-            Debug.LogError("Cannot find kickable object for stun flash!", this.gameObject);
+            Debug.LogWarning("Cannot find kickable object for stun flash!", this.gameObject);
     }
 
     // Update is called once per frame
