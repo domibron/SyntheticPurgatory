@@ -51,6 +51,10 @@ public class HurtIndicatorAuto : MonoBehaviour
     /// </summary>
     protected float damageTimer = 0;
 
+    private Color normalColor = Color.red;
+    private Color stunColor = Color.white;
+
+    private Color currentColor = Color.red;
 
     void Start()
     {
@@ -63,13 +67,21 @@ public class HurtIndicatorAuto : MonoBehaviour
             foreach (var material in renderer.materials)
             {
                 // add the material to the collection if it matches the shader name.
-                if (!material.name.Contains(materialName)) continue;
-                allMaterials.Add(material);
+                if (material.name.Contains(materialName))
+                    allMaterials.Add(material);
             }
         }
 
         // subscript to the take damage health event to flash when taking damage.
-        GetComponent<Health>().onHealthChanged += TakenDamage;
+        if (GetComponent<Health>())
+            GetComponent<Health>().OnHealthChanged += TakenDamage;
+        else
+            Debug.LogError("Cannot find health for damage flash!", this.gameObject);
+
+        if (GetComponent<KickableObject>())
+            GetComponent<KickableObject>().OnKicked += KickObject;
+        else
+            Debug.LogError("Cannot find kickable object for stun flash!", this.gameObject);
     }
 
     // Update is called once per frame
@@ -84,15 +96,17 @@ public class HurtIndicatorAuto : MonoBehaviour
         // handles the fading to apply on the materials.
         float alpha = damageTimer > 0 ? Mathf.Lerp(0, opacity / 255f, blend) : 0;
 
+        Color colorToSet = currentColor;
+        colorToSet.a = alpha;
 
         // cycle through all the materials in the collection.
         foreach (var material in allMaterials)
         {
             // if the alpha is the same, we dont need to do anything.
-            if (material.color.a == alpha) continue;
+            if (material.color == colorToSet) continue;
 
             // override the alpha with the new one.
-            material.color = new Color(material.color.r, material.color.g, material.color.b, alpha);
+            material.color = colorToSet;
 
         }
     }
@@ -106,15 +120,20 @@ public class HurtIndicatorAuto : MonoBehaviour
     {
         float amount = newHealth - oldHealth;
         if (amount < 0)
-            Flash();
+            Flash(normalColor);
     }
 
     /// <summary>
     /// Triggers the damage flash.
     /// </summary>
-    public virtual void Flash()
+    public virtual void Flash(Color color)
     {
         damageTimer = hurtDuration;
+        currentColor = color;
     }
 
+    protected void KickObject(Vector3 forceAndDir)
+    {
+        Flash(stunColor);
+    }
 }

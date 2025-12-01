@@ -37,7 +37,7 @@ public class HitScrapDropper : MonoBehaviour
     void Start()
     {
         healthScript = GetComponent<Health>();
-        GetComponent<Health>().onHealthChanged += ScrapDropping;
+        GetComponent<Health>().OnHealthChanged += ScrapDropping;
         dropper = GetComponent<ScrapDropper>();
 
         hitScrapRemaining = TotalHitScrap;

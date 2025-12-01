@@ -14,7 +14,7 @@ public class SpawnParticlesOnHit : MonoBehaviour
     void Start()
     {
         if (health == null) health = GetComponent<Health>();
-        health.onHealthChanged += OnHealthChanged;
+        health.OnHealthChanged += OnHealthChanged;
     }
 
     private void OnHealthChanged(float newHealth, float oldHealth)

@@ -370,6 +370,14 @@ public class PlayerCombat : MonoBehaviour
             {
                 Vector3 kickDir = c.transform.position - transform.position;
                 c.GetComponent<IKickable>()?.KickObject(kickDir * kickForce, ForceMode.VelocityChange);
+                // IKickable[] kickables = c.GetComponents<IKickable>();
+                // if (kickables.Length > 0)
+                // {
+                //     foreach (var kickable in kickables)
+                //     {
+                //         kickable.KickObject(kickDir * kickForce, ForceMode.VelocityChange);
+                //     }
+                // }
             }
         }
 
@@ -398,6 +406,15 @@ public class PlayerCombat : MonoBehaviour
                 // print(c.gameObject.name);
                 if (c.gameObject.CompareTag(Constants.PlayerTag)) continue; // if player, go away.
                 c.GetComponent<IMeleeable>()?.MeleeObject();
+                // IMeleeable[] meleeables = c.GetComponents<IMeleeable>();
+                // if (meleeables.Length > 0)
+                // {
+                //     foreach (var meleeable in meleeables)
+                //     {
+                //         meleeable.MeleeObject();
+                //     }
+                // }
+
                 c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, c.transform.position); // deal damage.
 
             }
