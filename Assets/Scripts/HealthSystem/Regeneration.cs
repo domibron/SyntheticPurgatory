@@ -17,7 +17,7 @@ public class Regeneration : MonoBehaviour
     {
         health = GetComponent<Health>();
 
-        health.onHealthChanged += OnHealthChanged;
+        health.OnHealthChanged += OnHealthChanged;
     }
 
     public void SetUpRegeneration(float regenRate, float delay)

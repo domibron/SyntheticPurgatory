@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class KickableObject : MonoBehaviour, IKickable
@@ -9,6 +10,8 @@ public class KickableObject : MonoBehaviour, IKickable
 
     [SerializeField]
     private BaseEnemy enemyClass; // TODO: rmeove.
+
+    public event Action<Vector3> OnKicked;
 
     void Awake()
     {
@@ -26,11 +29,13 @@ public class KickableObject : MonoBehaviour, IKickable
             // Alter given force to have forced upward direction and to account for the mass of the object
             alteredForceDir = new Vector3(forceAndDir.x * 5 / (rb.mass / 2), Mathf.Max(forceAndDir.y, 5), forceAndDir.z * 5 / (rb.mass / 2));
             rb.AddForce(alteredForceDir, forceMode);
+            OnKicked?.Invoke(alteredForceDir);
 
             return;
         }
 
         alteredForceDir = new Vector3(forceAndDir.x / (rb.mass / 2), Mathf.Max(forceAndDir.y, 5), forceAndDir.z / (rb.mass / 2));
         rb.AddForce(alteredForceDir, forceMode);
+        OnKicked?.Invoke(alteredForceDir);
     }
 }

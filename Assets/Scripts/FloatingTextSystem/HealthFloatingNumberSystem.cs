@@ -60,7 +60,7 @@ public class HealthFloatingNumberSystem : MonoBehaviour
 
         if (floatingTextSystem == null) Debug.LogError($"Need a {nameof(floatingTextSystem)} component to also be added!", this);
 
-        health.onHealthChanged += OnHealthChanged;
+        health.OnHealthChanged += OnHealthChanged;
     }
 
     protected virtual void OnHealthChanged(float newHealth, float oldHealth) // TODO: redo for readability. Remove magic numbers

@@ -85,7 +85,7 @@ public class PlayerHUD : MonoBehaviour
         playerObject = PlayerRefFetcher.Instance.GetPlayerRef();
         playerCombat = playerObject.GetComponent<PlayerCombat>();
         playerHealth = playerObject.GetComponent<Health>();
-        playerHealth.onHealthChanged += OnHealthChanged;
+        playerHealth.OnHealthChanged += OnHealthChanged;
 
         gameManager = GameManager.Instance;
 

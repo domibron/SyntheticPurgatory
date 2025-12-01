@@ -85,7 +85,7 @@ public class BossAI : BaseEnemy
 
 
         health.onDeath += OnDeath;
-        health.onHealthChanged += OnTakeDamage;
+        health.OnHealthChanged += OnTakeDamage;
     }
 
     private void OnTakeDamage(float newHealth, float oldHealth)

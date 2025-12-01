@@ -58,7 +58,7 @@ public class EnemyDetection : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GetComponent<Health>().onHealthChanged += AlertFromDamage;
+        GetComponent<Health>().OnHealthChanged += AlertFromDamage;
 
         targetObject = GameObject.FindWithTag("Player");
     }
