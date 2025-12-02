@@ -30,11 +30,12 @@ public class PlayerHUD : MonoBehaviour
     private float targetValue = 0f;
     private float animationTimer = 0f;
 
-    [SerializeField]
-    private Image healthBarFill;
 
     [SerializeField]
-    private Image healthBarDamageFill;
+    private Image healthBarImage;
+
+    [SerializeField]
+    private Image healthBarLossImage;
 
     [SerializeField]
     private TMP_Text currentTimeText;
@@ -102,8 +103,9 @@ public class PlayerHUD : MonoBehaviour
 
         fontSize = currentTimeText.fontSize;
 
-        healthBarFill.fillAmount = playerHealth.GetHealthNormalized();
-
+        healthBarImage.fillAmount = playerHealth.GetHealthNormalized();
+        currentValue = 1;
+        targetValue = 1;
     }
 
     private void OnHealthChanged(float newAmount, float oldAmount)
@@ -114,9 +116,9 @@ public class PlayerHUD : MonoBehaviour
 
             waitTimer = waitBeforeUpdating;
             animationTimer = 0f;
-            if (healthBarDamageFill.fillAmount < healthBarFill.fillAmount) healthBarDamageFill.fillAmount = healthBarFill.fillAmount;
+            if (healthBarLossImage.fillAmount < healthBarImage.fillAmount) healthBarLossImage.fillAmount = healthBarImage.fillAmount;
 
-            currentValue = healthBarDamageFill.fillAmount;
+            currentValue = healthBarLossImage.fillAmount;
             targetValue = playerHealth.GetHealthNormalized();
         }
 
@@ -140,11 +142,11 @@ public class PlayerHUD : MonoBehaviour
         if (waitTimer <= 0 && playerHealth.GetHealthNormalized() <= currentValue)
         {
             animationTimer += (1 - Mathf.Abs(targetValue - currentValue)) * healthLossBarSmoothing * Time.deltaTime;
-            healthBarDamageFill.fillAmount = Mathf.Lerp(currentValue, targetValue, animationTimer);
+            healthBarLossImage.fillAmount = Mathf.Lerp(currentValue, targetValue, animationTimer);
         }
         else if (waitTimer <= 0 && playerHealth.GetHealthNormalized() > currentValue)
         {
-            healthBarDamageFill.fillAmount = healthBarFill.fillAmount;
+            healthBarLossImage.fillAmount = healthBarImage.fillAmount;
         }
         else
         {
@@ -153,7 +155,7 @@ public class PlayerHUD : MonoBehaviour
 
         // float displacement = Mathf.Abs(healthBarImage.fillAmount - health.GetHealthNormalized());
 
-        healthBarFill.fillAmount = Mathf.Lerp(healthBarFill.fillAmount, playerHealth.GetHealthNormalized(), healthBarSmoothing * Time.deltaTime);
+        healthBarImage.fillAmount = Mathf.Lerp(healthBarImage.fillAmount, playerHealth.GetHealthNormalized(), healthBarSmoothing * Time.deltaTime);
 
 
 
