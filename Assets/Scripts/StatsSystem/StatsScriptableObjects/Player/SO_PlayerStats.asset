@@ -14,23 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats:
     MaxHealth: 100
-    GroundSpeed: 4.5
+    GroundSpeed: 5.5
     AirSpeed: 3
     JumpSpeed: 6
-    SlideBoostForce: 7.5
+    SlideBoostForce: 9
     AirBoostForce: 7.5
     GroundFriction: 5
     AirFriction: 1
     ProjectileDamage: 12
-    ProjectileFireRate: 0.3
-    ProjectileMagSize: 20
-    ReloadTime: 2
+    RechargeRate: 0.3
+    ShotsPerFullCharge: 10
+    StandardSecondsPerShot: 0.4
+    ChargedSecondsPerShot: 0.1
+    DelayAfterFireBeforeRecharging: 0.4
+    OverheatForceCooldown: 3
     MeleeAttackDelay: 0.5
     MeleeDamage: 20
+    MeleeReach: 1.5
+    MeleeStagerTime: 0.4
     KickForce: 10
     KickAttackDelay: 0.5
-    MeleeReach: 1.5
-    MeleeStaggeTime: 0.4
     RegenerationSpeed: 1
     RegenerationAmount: 1
     SpeedUpgradeAmount: 1

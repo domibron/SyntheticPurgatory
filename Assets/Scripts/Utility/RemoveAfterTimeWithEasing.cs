@@ -40,6 +40,7 @@ public class RemoveAfterTimeWithEasing : MonoBehaviour
     void Start()
     {
         Destroy(gameObject, timeToWaitBeforeRemoving);
+        storedScale = transform.localScale;
 
         if (shouldEaseIn) { transform.localScale = Vector3.zero; }
     }

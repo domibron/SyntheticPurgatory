@@ -10,6 +10,16 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     [SerializeField]
     private GameObject[] objectPrefabs;
     /// <summary>
+    /// List of secondary objects that could also be chosen
+    /// </summary>
+    [SerializeField]
+    private GameObject[] secondaryObjectPrefabs;
+    /// <summary>
+    /// Percentage chance for object to delete itself before generating anything
+    /// </summary>
+    [SerializeField, Range(0, 100)]
+    private float secondaryGroupChance = 0;
+    /// <summary>
     /// Object that will be deleted after actual model is loaded
     /// </summary>
     [SerializeField]
@@ -19,6 +29,7 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     /// </summary>
     [SerializeField]
     private bool randomiseYRotation;
+
     /// <summary>
     /// Percentage chance for object to delete itself before generating anything
     /// </summary>
@@ -30,14 +41,20 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     {
         if (noActivationChance > Random.Range(0, 99))
         {
-            // print(Random.Range(0, 99));
             Destroy(temporaryPiece); // Destroy the piece used for creation
             Destroy(this);
             return;
         }
 
+        // Select second group of objects randomly
+        GameObject[] chosenObjects = objectPrefabs; 
+        if (secondaryGroupChance > Random.Range(0, 99))
+        {
+            chosenObjects = secondaryObjectPrefabs;
+        }
+
         // Choose random piece from given list then spawn at this object with same rotation
-        GameObject newobject = Instantiate(objectPrefabs[Random.Range(0, objectPrefabs.Length - 1)], transform.position, transform.rotation, transform);
+        GameObject newobject = Instantiate(chosenObjects[Random.Range(0, chosenObjects.Length - 1)], transform.position, transform.rotation, transform);
         if (randomiseYRotation)
         {
             newobject.transform.rotation = Quaternion.Euler(newobject.transform.rotation.eulerAngles.x, Random.Range(0, 359), newobject.transform.rotation.eulerAngles.z);

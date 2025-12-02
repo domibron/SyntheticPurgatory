@@ -22,7 +22,7 @@ public class OpenCardUI : MonoBehaviour
 
     void Update()
     {
-        cardCost.text = upgradeSystem.GetCardOpenCost(cardTier).ToString() + " Scrap";
+        cardCost.text = "Cost: " + upgradeSystem.GetCardOpenCost(cardTier).ToString() + "sc";
         cardAmount.text = GameManager.Instance.GetCardCount(cardTier).ToString();
 
         if (GameManager.Instance.GetCardCount(cardTier) <= 0)

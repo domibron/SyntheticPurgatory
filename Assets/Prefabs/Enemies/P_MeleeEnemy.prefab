@@ -323,6 +323,8 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   onDeathTarget: {fileID: 0}
   ensureOnlyOneActivation: 1
+  addForce: 0
+  forceOrigin: {fileID: 0}
 --- !u!114 &4493655451717947915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,6 +365,7 @@ GameObject:
   - component: {fileID: 2193735456019928021}
   - component: {fileID: 3308718678499402373}
   - component: {fileID: 683648185817587228}
+  - component: {fileID: 4279574880439944695}
   m_Layer: 9
   m_Name: CoreWeakspot
   m_TagString: Untagged
@@ -422,6 +425,29 @@ MonoBehaviour:
   hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
   floatingTextSystem: {fileID: 6837888478889072226}
   health: {fileID: 1536644213997405182}
+--- !u!114 &4279574880439944695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2324691687616851649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bce51f228cf934cb07cb2cbbaa2295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 3736916453138268998, guid: e29e220e026a4c44ca1d6246300993af, type: 3}
+  addPositionOffset: 0
+  spawnOffset: {x: 0, y: 0, z: 0}
+  addRotationOffset: 0
+  rotationOffset: {x: 0, y: 0, z: 0}
+  setScale: 0
+  scale: {x: 1, y: 1, z: 1}
+  onDeathTarget: {fileID: 1536644213997405182}
+  ensureOnlyOneActivation: 1
+  addForce: 1
+  forceOrigin: {fileID: 6233635240962316276}
 --- !u!1 &6074150130508648669
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,6 +929,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1065713951867596109, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8846606097926150216}
+    - targetCorrespondingSourceObject: {fileID: 1065713951867596109, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1870530102599327056}
     - targetCorrespondingSourceObject: {fileID: 3342401126887172678, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9213929386863439524}
@@ -927,6 +956,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2550693731822873781, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5392785909207891314}
+    - targetCorrespondingSourceObject: {fileID: 2550693731822873781, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1873202269200707088}
     - targetCorrespondingSourceObject: {fileID: 1597688541728827278, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 571663896731719966}
@@ -945,6 +977,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4991693116120542250, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8209179946569555625}
+    - targetCorrespondingSourceObject: {fileID: 7815563801055784127, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5646071285295072692}
     - targetCorrespondingSourceObject: {fileID: 8474320052524101509, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1549130432654040918}
@@ -1001,6 +1036,29 @@ MonoBehaviour:
   hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
   floatingTextSystem: {fileID: 6837888478889072226}
   health: {fileID: 1536644213997405182}
+--- !u!114 &1870530102599327056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771346059277680876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bce51f228cf934cb07cb2cbbaa2295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 1463401893874058660, guid: c0e08889a5fc2994a84a304350aafef7, type: 3}
+  addPositionOffset: 0
+  spawnOffset: {x: 0, y: 0, z: 0}
+  addRotationOffset: 0
+  rotationOffset: {x: 0, y: 0, z: 0}
+  setScale: 0
+  scale: {x: 1, y: 1, z: 1}
+  onDeathTarget: {fileID: 1536644213997405182}
+  ensureOnlyOneActivation: 1
+  addForce: 1
+  forceOrigin: {fileID: 6233635240962316276}
 --- !u!1 &1320209268203276847 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1597688541728827278, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -1173,6 +1231,29 @@ MonoBehaviour:
   hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
   floatingTextSystem: {fileID: 6837888478889072226}
   health: {fileID: 1536644213997405182}
+--- !u!114 &1873202269200707088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818004843145462036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bce51f228cf934cb07cb2cbbaa2295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 1765271783346911791, guid: c96b28e4df0ff9f41ab5e3d20c6d51ca, type: 3}
+  addPositionOffset: 0
+  spawnOffset: {x: 0, y: 0, z: 0}
+  addRotationOffset: 0
+  rotationOffset: {x: 0, y: 0, z: 0}
+  setScale: 0
+  scale: {x: 1, y: 1, z: 1}
+  onDeathTarget: {fileID: 1536644213997405182}
+  ensureOnlyOneActivation: 1
+  addForce: 1
+  forceOrigin: {fileID: 6233635240962316276}
 --- !u!1 &3034557584387573735 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3342401126887172678, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
@@ -1511,6 +1592,34 @@ MonoBehaviour:
   hitPointsData: {fileID: 11400000, guid: fd95eb8ac7e6eb945b85cf6a66cf3fca, type: 2}
   floatingTextSystem: {fileID: 6837888478889072226}
   health: {fileID: 1536644213997405182}
+--- !u!1 &7496250137385025822 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7815563801055784127, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}
+  m_PrefabInstance: {fileID: 323821662755237281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5646071285295072692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7496250137385025822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bce51f228cf934cb07cb2cbbaa2295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 986005237118359908, guid: 72f97f63c7f8f59419d1fc0c4a46888d, type: 3}
+  addPositionOffset: 0
+  spawnOffset: {x: 0, y: 0, z: 0}
+  addRotationOffset: 0
+  rotationOffset: {x: 0, y: 0, z: 0}
+  setScale: 0
+  scale: {x: 1, y: 1, z: 1}
+  onDeathTarget: {fileID: 1536644213997405182}
+  ensureOnlyOneActivation: 1
+  addForce: 1
+  forceOrigin: {fileID: 6233635240962316276}
 --- !u!1 &8206868204517130788 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8474320052524101509, guid: 538f5d6aa78c78d49a2bb52766d756cf, type: 3}

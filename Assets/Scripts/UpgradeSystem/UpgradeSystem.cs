@@ -868,7 +868,7 @@ public class MiscellaneousUpgrades
 
     StatUpgradeInfo scrapCarryMax = new(10, -10, 40, null);
     StatUpgradeInfo itemCollectionRange = new(0.5f, -0.2f, 0.5f, 10f);
-    StatUpgradeInfo levelTimeLimit = new(2, -2, 20, 600);
+    StatUpgradeInfo levelTimeLimit = new(15, -10, 30, null);
     StatUpgradeInfo criticalChance = new(0.01f, -0.02f, 0, 1); // decimal percentage
 
 
