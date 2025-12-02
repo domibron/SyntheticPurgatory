@@ -24,11 +24,13 @@ public class SpawnObjectAndSetSize : MonoBehaviour
     private Vector3 scale = Vector3.one;
 
 
-    public void SpawnObject()
+    public void SpawnObject(Vector3 forceOrigin, bool addForce = false)
     {
         GameObject objectThatSpawned = Instantiate(prefabToSpawn, transform.position, transform.rotation);
         if (addPositionOffset) objectThatSpawned.transform.position += spawnOffset;
         if (addRotationOffset) objectThatSpawned.transform.Rotate(rotationOffset);
         if (setScale) objectThatSpawned.transform.localScale = scale;
+
+        if (addForce) objectThatSpawned.AddComponent<SetVelocityOnSpawn>().forceOrigin = forceOrigin;
     }
 }
