@@ -51,6 +51,12 @@ public class GameManager : MonoBehaviour
 
     private bool timerHidden = false;
 
+    private bool lowTimeEventCalled = false;
+    public event Action<float> OnLowTime;
+    public event Action<float> OnWarnTime;
+
+    private float lowTime = 60f;
+
     void Awake()
     {
         // yeah, no, this is wrong. We need to destroy the other one.
@@ -76,12 +82,27 @@ public class GameManager : MonoBehaviour
         if (inDungeon && currentTime > 0)
         {
             currentTime -= Time.deltaTime;
+
+            if (currentTime < lowTime) InvokeLowTime(); // yes, spam the thing!!!
         }
         else if (inDungeon && currentTime <= 0 && !pause)
         {
             pause = true;
             PlayerRefFetcher.Instance?.GetPlayerRef()?.GetComponent<PlayerDeath>()?.KillPlayer();
         }
+    }
+
+    private void InvokeLowTime()
+    {
+        // if (lowTimeEventCalled) return;
+
+        // lowTimeEventCalled = true;
+        OnLowTime?.Invoke(currentTime);
+    }
+
+    public void InvokeRemindTime()
+    {
+        OnWarnTime?.Invoke(currentTime);
     }
 
     public (int, int) GetUPandDOWNAmounts(CardTier cardTeir)
@@ -128,6 +149,7 @@ public class GameManager : MonoBehaviour
     {
         inDungeon = false;
         timerHidden = false;
+        lowTimeEventCalled = false;
     }
 
     public void ReturnToHubWorld(bool playerDied = false)

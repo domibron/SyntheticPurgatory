@@ -105,8 +105,8 @@ public class CollectableBase : MonoBehaviour
         if (playerTransform == null)
             return false;
 
-        if (!ScrapManager.Instance.HaveInventorySpace())
-            return false;
+        // if (!ScrapManager.Instance.HaveInventorySpace())
+        //     return false;
 
         return true;
 

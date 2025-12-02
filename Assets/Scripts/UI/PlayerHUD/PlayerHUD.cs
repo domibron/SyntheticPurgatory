@@ -92,8 +92,13 @@ public class PlayerHUD : MonoBehaviour
         savedAlpha = damageVignette.color.a;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, 0);
 
-        if (gameManager != null)
-            lastDivisible = ((int)(gameManager.GetCurrentTime() - 1f) / 30);
+        // if (gameManager != null)
+        // {
+        //     lastDivisible = ((int)(gameManager.GetCurrentTime()) / 30);
+        //     if (lastDivisible > 2) lastDivisible -= 1;
+        // }
+
+        lastDivisible = -1;
 
         fontSize = currentTimeText.fontSize;
 
@@ -124,6 +129,13 @@ public class PlayerHUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameManager != null && lastDivisible == -1)
+        {
+            lastDivisible = ((int)(gameManager.GetCurrentTime()) / 30);
+        }
+
+        print(lastDivisible + " " + ((int)(gameManager.GetCurrentTime()) / 30));
+
         // ammoText.text = "REMOVED MECHANIC";
         if (waitTimer <= 0 && playerHealth.GetHealthNormalized() <= currentValue)
         {
@@ -153,16 +165,19 @@ public class PlayerHUD : MonoBehaviour
 
 
             if (!GameManager.Instance.IsTimerHidden())
-                currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
+                currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + (((float)gameManager.GetCurrentTime() % 60f) < 10 ? "0" : "") + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
             else
                 currentTimeText.text = "";
 
 
-            if (lastDivisible != ((int)gameManager.GetCurrentTime() / 30))
+            if (lastDivisible > ((int)gameManager.GetCurrentTime() / 30))
             {
                 lastDivisible = ((int)gameManager.GetCurrentTime() / 30);
                 if (lastDivisible > 1)
+                {
+                    GameManager.Instance.InvokeRemindTime();
                     StartCoroutine(FlashTimer());
+                }
                 else
                     StartCoroutine(KeepFlashing());
             }

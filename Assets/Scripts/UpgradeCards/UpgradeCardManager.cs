@@ -25,6 +25,9 @@ public class UpgradeCardManager : MonoBehaviour
     [SerializeField]
     private GameObject epicCardPrefab;
 
+    public event Action<CardTier, int> OnUpgradeCardCollected;
+    public event Action<CardTier, int> OnUpgradeCardDeposited;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -37,10 +40,10 @@ public class UpgradeCardManager : MonoBehaviour
         Instance = this;
     }
 
-    public void CollectUpgradeCard(CardTier cardTeir)
+    public void CollectUpgradeCard(CardTier cardTier)
     {
 
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 currentT1Cards++;
@@ -54,9 +57,9 @@ public class UpgradeCardManager : MonoBehaviour
         }
     }
 
-    public int GetAllCardCountOfType(CardTier cardTeir)
+    public int GetAllCardCountOfType(CardTier cardTier)
     {
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 return currentT1Cards;
@@ -69,9 +72,9 @@ public class UpgradeCardManager : MonoBehaviour
         }
     }
 
-    public GameObject GetUpgradeCardPrefab(CardTier cardTeir)
+    public GameObject GetUpgradeCardPrefab(CardTier cardTier)
     {
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 return commonCardPrefab;
