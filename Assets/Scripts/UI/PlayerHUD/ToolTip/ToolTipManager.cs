@@ -20,6 +20,8 @@ public class ToolTipQueItem
 
 public class ToolTipManager : MonoBehaviour
 {
+    public static ToolTipManager Instance { get; private set; }
+
     [SerializeField]
     TMP_Text tooltipText;
 
@@ -34,6 +36,18 @@ public class ToolTipManager : MonoBehaviour
 
     private float currentFadeTime = 0f;
 
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogError("There cannot be more than one tool tip manager! Overriding!");
+            Instance = this;
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,10 +58,10 @@ public class ToolTipManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            DisplayTooltip("Example text", 1f);
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     DisplayTooltip("Example text", 1f);
+        // }
 
         if (toolTipsToDisplay.Count > 0)
         {
@@ -149,8 +163,8 @@ public class ToolTipManager : MonoBehaviour
             else
             {
                 if (x.Priority == y.Priority) return 0;
-                else if (x.Priority > y.Priority) return 1;
-                else return -1;
+                else if (x.Priority > y.Priority) return -1;
+                else return 1;
             }
         }
     }

@@ -11,7 +11,7 @@ public class PopupInfoText : MonoBehaviour
     private float slideOutTime = 1f;
 
     [SerializeField]
-    private float duration = 3f;
+    private float defaultDuration = 3f;
 
     private float currentDurationTime = 0f;
 
@@ -41,6 +41,7 @@ public class PopupInfoText : MonoBehaviour
     void Update()
     {
 
+
         if (isSlidingIn)
         {
             slideInTimer += Time.deltaTime * (1f / slideInTime);
@@ -61,17 +62,26 @@ public class PopupInfoText : MonoBehaviour
 
         objectToSlide.localPosition = pos;
 
-        currentDurationTime += Time.deltaTime;
+        currentDurationTime -= Time.deltaTime;
 
-        if (currentDurationTime >= duration)
+        if (currentDurationTime <= 0)
         {
             isSlidingIn = false;
         }
 
     }
 
-    public void Initialize(string textInfo, Sprite icon, float additionalOffset = 0f)
+    public void Initialize(string textInfo, Sprite icon, float additionalOffset = 0f, float duration = -1f)
     {
+        if (duration <= 1f)
+        {
+            currentDurationTime = Mathf.Max(defaultDuration, 1f);
+        }
+        else
+        {
+            currentDurationTime = duration;
+        }
+
         if (icon == null)
         {
             text.rectTransform.offsetMin = new Vector2(text.rectTransform.offsetMin.y, text.rectTransform.offsetMin.y);

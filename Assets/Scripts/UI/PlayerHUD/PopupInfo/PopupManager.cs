@@ -43,15 +43,15 @@ public class PopupManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SpawnPopupText("Some stinky message");
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     SpawnPopupText("Some stinky message");
+        // }
     }
 
-    public void DisplayText(string text, string iconName)
+    public void DisplayText(string text, string iconName, float popupDuration = -1f)
     {
-        SpawnPopupText(text, GetSpriteFromIconName(iconName)); // yeah yeah, double functions. I will ponder later.
+        SpawnPopupText(text, GetSpriteFromIconName(iconName), popupDuration); // yeah yeah, double functions. I will ponder later.
     }
 
     private Sprite GetSpriteFromIconName(string name)
@@ -67,16 +67,16 @@ public class PopupManager : MonoBehaviour
         return null;
     }
 
-    public void DisplayText(string text, Sprite sprite = null)
+    public void DisplayText(string text, Sprite sprite = null, float popupDuration = -1f)
     {
-        SpawnPopupText(text, sprite); // yeah yeah, double functions. I will ponder later.
+        SpawnPopupText(text, sprite, popupDuration); // yeah yeah, double functions. I will ponder later.
     }
 
-    private void SpawnPopupText(string text, Sprite sprite = null)
+    private void SpawnPopupText(string text, Sprite sprite = null, float popupDuration = -1f)
     {
         PopupInfoText popupInfoText = Instantiate(popupTextPrefab, transform).GetComponent<PopupInfoText>();
 
-        popupInfoText.Initialize(text, sprite, additionalOffset);
+        popupInfoText.Initialize(text, sprite, additionalOffset, popupDuration);
 
     }
 }

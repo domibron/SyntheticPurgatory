@@ -31,9 +31,18 @@ public class ScrapManager : MonoBehaviour
 
     public int currentDepositedScrap = 0;
 
-    public event Action<int> collectedScrap;
-    public event Action<int> droppedScrap;
-    public event Action<int> depositedScrap;
+    public event Action<int> OnCollectedScrap;
+    public event Action<int> OnDroppedScrap;
+    public event Action<int> OnDepositedScrap;
+    public event Action OnInventoryFull;
+
+    private float scrapCollectHoardInfoTimer = 0f;
+    private float scrapCollectHoardDuration = 0.5f;
+    private int finalCollectAmount = 0;
+
+    private float scrapDepoHoardInfoTimer = 0f;
+    private float scrapDepoHoardDuration = 0.5f;
+    private int finalDepoAmount = 0;
 
 
     void Awake()
@@ -65,6 +74,9 @@ public class ScrapManager : MonoBehaviour
 
             maxInventoryScrap = collectableStats.MaxInventoryScrap;
         }
+
+        scrapCollectHoardInfoTimer = scrapCollectHoardDuration;
+        scrapDepoHoardInfoTimer = scrapDepoHoardDuration;
     }
 
     // Update is called once per frame
@@ -74,6 +86,26 @@ public class ScrapManager : MonoBehaviour
         // {
         //     GameManager.Instance.ReturnToHubWorld();
         // }
+
+        if (finalCollectAmount > 0 && scrapCollectHoardInfoTimer >= scrapCollectHoardDuration)
+        {
+            InvokeCollectedScrap(finalCollectAmount);
+            finalCollectAmount = 0;
+        }
+        else if (scrapCollectHoardInfoTimer < scrapCollectHoardDuration)
+        {
+            scrapCollectHoardInfoTimer += Time.deltaTime;
+        }
+
+        if (finalDepoAmount > 0 && scrapDepoHoardInfoTimer >= scrapDepoHoardDuration)
+        {
+            InvokeDepositedScrap(finalDepoAmount);
+            finalDepoAmount = 0;
+        }
+        else if (scrapDepoHoardInfoTimer < scrapDepoHoardDuration)
+        {
+            scrapDepoHoardInfoTimer += Time.deltaTime;
+        }
     }
 
     // * This is static.
@@ -126,7 +158,16 @@ public class ScrapManager : MonoBehaviour
         int remainder = (currentInventoryScrap + amount) - maxInventoryScrap;
 
         currentInventoryScrap += (amount - Mathf.Max(remainder, 0));
-        InvokeCollectedScrap(amount);
+
+        // !
+        // InvokeCollectedScrap(amount);
+        if (finalCollectAmount <= 0)
+        {
+            scrapCollectHoardInfoTimer = 0f;
+        }
+
+        finalCollectAmount += amount;
+
 
         return Mathf.Max(remainder, 0);
     }
@@ -153,7 +194,14 @@ public class ScrapManager : MonoBehaviour
         currentDepositedScrap += amount;
 
 
-        InvokeDepositedScrap(amount);
+        // InvokeDepositedScrap(amount);
+        if (finalDepoAmount <= 0)
+        {
+            scrapCollectHoardInfoTimer = 0f;
+        }
+
+        finalDepoAmount += amount;
+
         // code goes here.
     }
 
@@ -178,7 +226,7 @@ public class ScrapManager : MonoBehaviour
 
     void InvokeCollectedScrap(int amount)
     {
-        collectedScrap?.Invoke(amount);
+        OnCollectedScrap?.Invoke(amount);
     }
 
     public GameObject SpawnScrap(int worth, Vector3 pos)
@@ -196,11 +244,16 @@ public class ScrapManager : MonoBehaviour
 
     void InvokeDroppedScrap(int amount)
     {
-        droppedScrap?.Invoke(amount);
+        OnDroppedScrap?.Invoke(amount);
     }
 
     void InvokeDepositedScrap(int amount)
     {
-        depositedScrap?.Invoke(amount);
+        OnDepositedScrap?.Invoke(amount);
+    }
+
+    public void InvokeOnInventoryFull()
+    {
+        OnInventoryFull?.Invoke();
     }
 }

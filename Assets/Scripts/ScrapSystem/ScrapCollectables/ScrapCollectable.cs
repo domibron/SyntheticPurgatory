@@ -50,5 +50,19 @@ public class ScrapCollectable : CollectableBase
         Destroy(gameObject);
     }
 
+    protected override bool CanPlayerCollect()
+    {
+        if (!base.CanPlayerCollect()) return false;
+
+        if (!ScrapManager.Instance.HaveInventorySpace())
+        {
+            ScrapManager.Instance.InvokeOnInventoryFull();
+            return false;
+        }
+
+        return true;
+    }
+
+
 
 }
