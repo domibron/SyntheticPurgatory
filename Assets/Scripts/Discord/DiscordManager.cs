@@ -15,8 +15,15 @@ public class DiscordManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        discord = new Discord.Discord(clientId, (ulong)Discord.CreateFlags.NoRequireDiscord);
-        ChangeActivity();
+        try
+        {
+            discord = new Discord.Discord(clientId, (ulong)Discord.CreateFlags.NoRequireDiscord);
+            ChangeActivity();
+        }
+        catch (ResultException ex)
+        {
+            return; // fuck off
+        }
     }
 
     void OnDisable()
