@@ -5,28 +5,46 @@ using UnityEngine;
 [Serializable]
 public class DoorData
 {
-    public Vector2Int cordsOne = Vector2Int.zero;
-    public Vector2Int cordsTwo = Vector2Int.zero;
-    public int id = -1;
-    public int roomOneID = -1;
-    public int roomTwoID = -1;
-    public GameObject doorObject;
-    public Door doorScript;
+    public Vector2Int CordsOne = Vector2Int.zero;
+    public Vector2Int CordsTwo = Vector2Int.zero;
+    public Vector2Int GridCoordinates = Vector2Int.zero;
+    public int ID = -1;
+    public int RoomOneID = -1;
+    public int RoomTwoID = -1;
+    public GameObject DoorObject;
+    public Door DoorScript;
 
-    public DoorData(int roomID, Vector2Int roomOneCords, Vector2Int roomTwoCords, int firstRoomID, int secondRoomID, GameObject doorGameObject)
+    public DoorData(int roomID, Vector2Int roomOneCords, Vector2Int roomTwoCords, int firstRoomID, int secondRoomID, Vector2Int roomPosition, GameObject doorGameObject)
     {
-        cordsOne = roomOneCords;
-        cordsTwo = roomTwoCords;
-        id = roomID;
-        roomOneID = firstRoomID;
-        roomTwoID = secondRoomID;
-        doorObject = doorGameObject;
-        doorScript = doorObject.GetComponent<Door>();
+        CordsOne = roomOneCords;
+        CordsTwo = roomTwoCords;
+        GridCoordinates = roomPosition;
+        ID = roomID;
+        RoomOneID = firstRoomID;
+        RoomTwoID = secondRoomID;
+        DoorObject = doorGameObject;
+        DoorScript = DoorObject.GetComponent<Door>();
     }
 
     public bool OccupiesCords(Vector2Int firstPos, Vector2Int secondPos)
     {
-        if ((cordsOne == firstPos && cordsTwo == secondPos) || (cordsOne == secondPos && cordsTwo == firstPos))
+        if ((CordsOne == firstPos && CordsTwo == secondPos) || (CordsOne == secondPos && CordsTwo == firstPos))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsOccupingDoorway(Vector2Int doorPosition, CompassDirection facingDirection)
+    {
+        doorPosition += GridCoordinates;
+
+        if (CordsOne == doorPosition && CordsTwo == doorPosition + LevelGenerationUtil.GetCompassDirectionAsVector2Int(facingDirection))
+        {
+            return true;
+        }
+        else if (CordsTwo == doorPosition && CordsOne == doorPosition + LevelGenerationUtil.GetCompassDirectionAsVector2Int(facingDirection))
         {
             return true;
         }
@@ -56,10 +74,12 @@ public class DoorGenerator : SequenceBase
 
     private int doorUUID = 1;
 
-    public event Action OnDoorsGenerated;
+    // public event Action OnDoorsGenerated;
     public override event Action OnThisSequenceEnd;
 
     private float currentProgress = 0;
+
+    public event Action OnDoorToggled;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -119,7 +139,7 @@ public class DoorGenerator : SequenceBase
                 doorObject.transform.SetParent(roomData.GetRoomObject().transform);
                 doorObject.name = "[" + doorUUID.ToString() + "] " + DoorPrefab.name;
 
-                doorCollection.Add(new DoorData(doorUUID, cordA, cordB, roomData.ID, levelGenerator.GetRoomIDFromCoordinates(cordB), doorObject));
+                doorCollection.Add(new DoorData(doorUUID, cordA, cordB, roomData.ID, levelGenerator.GetRoomIDFromCoordinates(cordB), roomData.GridCoordinates, doorObject));
 
                 doorObject.GetComponent<Door>().SetDoorState(flipFlop);
                 flipFlop = !flipFlop;
@@ -131,7 +151,7 @@ public class DoorGenerator : SequenceBase
             currentProgress = (float)counter / spawnedLevelRoomData.Count;
         }
 
-        OnDoorsGenerated?.Invoke();
+        // OnDoorsGenerated?.Invoke();
         OnThisSequenceEnd?.Invoke();
         currentProgress = 1f;
     }
@@ -173,10 +193,11 @@ public class DoorGenerator : SequenceBase
         // this will get expsensive.
         foreach (DoorData door in doorCollection)
         {
-            if (door.roomOneID == roomID || door.roomTwoID == roomID)
+            if (door.RoomOneID == roomID || door.RoomTwoID == roomID)
             {
                 // toggle door.
-                door.doorScript.ToggleDoorState();
+                door.DoorScript.ToggleDoorState();
+                OnDoorToggled?.Invoke();
             }
             else
             {
@@ -185,15 +206,30 @@ public class DoorGenerator : SequenceBase
         }
     }
 
+    public bool IsDoorOpenInDoorway(Vector2Int doorCoordinates, CompassDirection facingDirection)
+    {
+        foreach (DoorData door in doorCollection)
+        {
+            if (door.IsOccupingDoorway(doorCoordinates, facingDirection))
+            {
+                return door.DoorScript.IsDoorOpen();
+            }
+        }
+
+        Debug.LogWarning("Failed to find door, returning false.");
+        return false;
+    }
+
     public void SetAllDoorsState(int roomID, bool state)
     {
         // this will get expsensive.
         foreach (DoorData door in doorCollection)
         {
-            if (door.roomOneID == roomID || door.roomTwoID == roomID)
+            if (door.RoomOneID == roomID || door.RoomTwoID == roomID)
             {
                 // toggle door.
-                door.doorScript.SetDoorState(state);
+                door.DoorScript.SetDoorState(state);
+                OnDoorToggled?.Invoke();
             }
             else
             {
@@ -207,10 +243,11 @@ public class DoorGenerator : SequenceBase
         // this will get expsensive.
         foreach (DoorData door in doorCollection)
         {
-            if (door.roomOneID == roomID || door.roomTwoID == roomID)
+            if (door.RoomOneID == roomID || door.RoomTwoID == roomID)
             {
                 // toggle door.
-                door.doorScript.SetOverrideState(state);
+                door.DoorScript.SetOverrideState(state);
+                OnDoorToggled?.Invoke();
             }
             else
             {
@@ -224,10 +261,11 @@ public class DoorGenerator : SequenceBase
         // this will get expsensive.
         foreach (DoorData door in doorCollection)
         {
-            if (door.roomOneID == roomID || door.roomTwoID == roomID)
+            if (door.RoomOneID == roomID || door.RoomTwoID == roomID)
             {
                 // toggle door.
-                door.doorScript.ResetOverrideState();
+                door.DoorScript.ResetOverrideState();
+                OnDoorToggled?.Invoke(); // ? maybe not :/
             }
             else
             {

@@ -387,7 +387,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a0fd3b3191bb240b1b7d528ef0b7f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelGenerator: {fileID: 842285758}
 --- !u!114 &842285770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,11 +425,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sequences:
-  - {fileID: 842285758}
-  - {fileID: 842285762}
-  - {fileID: 842285771}
-  - {fileID: 842285761}
-  - {fileID: 842285769}
+  - IsEnabled: 1
+    SequenceBase: {fileID: 842285758}
+  - IsEnabled: 1
+    SequenceBase: {fileID: 842285762}
+  - IsEnabled: 1
+    SequenceBase: {fileID: 842285771}
+  - IsEnabled: 1
+    SequenceBase: {fileID: 842285761}
+  - IsEnabled: 1
+    SequenceBase: {fileID: 842285769}
 --- !u!114 &842285773
 MonoBehaviour:
   m_ObjectHideFlags: 0

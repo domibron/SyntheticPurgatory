@@ -136,7 +136,7 @@ public class PlayerHUD : MonoBehaviour
             lastDivisible = ((int)(gameManager.GetCurrentTime()) / 30);
         }
 
-        print(lastDivisible + " " + ((int)(gameManager.GetCurrentTime()) / 30));
+        // print(lastDivisible + " " + ((int)(gameManager.GetCurrentTime()) / 30));
 
         // ammoText.text = "REMOVED MECHANIC";
         if (waitTimer <= 0 && playerHealth.GetHealthNormalized() <= currentValue)

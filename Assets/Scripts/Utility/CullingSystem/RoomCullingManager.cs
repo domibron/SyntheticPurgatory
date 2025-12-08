@@ -11,6 +11,7 @@ public class RoomCullingManager : SequenceBase
     Transform player;
 
     private LevelGenerator levelGenerator;
+    private DoorGenerator doorGenerator;
 
     List<int> lastLoadedRooms = new List<int>();
 
@@ -24,9 +25,9 @@ public class RoomCullingManager : SequenceBase
 
     private int radius = 4;
 
-    private int mediumStart = 3;
+    private int mediumStart = 2;
 
-    private int lowStart = 4;
+    private int lowStart = 3;
 
     Vector2Int levelGridSize = Vector2Int.zero;
 
@@ -34,7 +35,13 @@ public class RoomCullingManager : SequenceBase
     {
         // GetComponent<Sequencer>().OnSequencesEnd += SetUpCullingManager; // TODO: move into the sequencer.
         if (levelGenerator == null) levelGenerator = GetComponent<LevelGenerator>();
+        if (doorGenerator == null) doorGenerator = GetComponent<DoorGenerator>();
+
+        // doorGenerator.OnDoorToggled += DoorToggled;
+
     }
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -94,6 +101,11 @@ public class RoomCullingManager : SequenceBase
         UpdateRoomCulling(currentRoomCoordinates);
 
     }
+
+    // private void DoorToggled()
+    // {
+    //     UpdateRoomCulling(lastCoordinates);
+    // }
 
     void SetupAllRooms()
     {
@@ -195,6 +207,42 @@ public class RoomCullingManager : SequenceBase
 
         Vector2Int checkingPos = Vector2Int.zero;
 
+        // room crawling culling.
+        // int currentRoomID = levelGenerator.GetRoomIDFromCoordinates(currentRoomCoordinates);
+
+        // SpawnedLevelRoomData currentRoomData = levelGenerator.GetSpawnedLevelRoomData(currentRoomID);
+
+        // if (currentRoomData == null)
+        // {
+        //     throw new NullReferenceException("Room data was null");
+        // }
+
+        // List<int> collectedRooms = new List<int> { currentRoomID };
+
+        // // 1st ring around the rooms.
+        // List<int> closedDoors = new List<int>();
+        // List<int> toCheckRooms = GetConnectingRoomIDs(currentRoomData, levelGenerator, out closedDoors, doorGenerator);
+        // collectedRooms.AddRange(toCheckRooms);
+
+        // List<int> foundRooms = new List<int>();
+
+        // for (int i = 0; i < radius; i++)
+        // {
+        //     foundRooms.Clear();
+
+        //     foreach (int roomID in toCheckRooms)
+        //     {
+        //         foundRooms.AddRange(GetConnectingRoomIDs(currentRoomData, levelGenerator, out closedDoors, doorGenerator, collectedRooms.ToArray()));
+        //     }
+
+        //     collectedRooms.AddRange(foundRooms);
+        // }
+
+        // print("Found " + collectedRooms.Count);
+
+
+
+        // This does the radius of rooms.
         List<int> ignoredIDs = new List<int>();
         List<int> highDetailRooms = new List<int>();
         List<int> mediumDetailRooms = new List<int>();
@@ -202,37 +250,40 @@ public class RoomCullingManager : SequenceBase
 
         print("Trying to set render states");
 
-        // row is X and col is Y, but because how arrays are, top left is 0,0 and this is a brain fuck.
-        for (int row = -radius; row <= radius; row++)
+        for (int searchRadius = 0; searchRadius <= radius; searchRadius++) // move out one by one
         {
-            checkingPos.x = xPos + row;
-            if (checkingPos.x < 0 || checkingPos.x >= levelGridSize.x) continue;
-
-            for (int col = -radius; col <= radius; col++)
+            // row is X and col is Y, but because how arrays are, top left is 0,0 and this is a brain fuck.
+            for (int row = -searchRadius; row <= searchRadius; row++)
             {
-                checkingPos.y = yPos + col;
-                if (checkingPos.y < 0 || checkingPos.y >= levelGridSize.y) continue;
+                checkingPos.x = xPos + row;
+                if (checkingPos.x < 0 || checkingPos.x >= levelGridSize.x) continue;
 
-                int roomID = levelGenerator.GetRoomIDFromCoordinates(checkingPos);
-                if (roomID == LevelGenerator.BLANK_ID) continue;
+                for (int col = -searchRadius; col <= searchRadius; col++)
+                {
+                    checkingPos.y = yPos + col;
+                    if (checkingPos.y < 0 || checkingPos.y >= levelGridSize.y) continue;
 
-                if (Mathf.Abs(row) + Mathf.Abs(col) < mediumStart)
-                {
-                    if (ignoredIDs.Contains(roomID)) continue;
-                    highDetailRooms.Add(roomID);
-                    ignoredIDs.Add(roomID);
-                }
-                else if (Mathf.Abs(row) + Mathf.Abs(col) < lowStart)
-                {
-                    if (ignoredIDs.Contains(roomID)) continue;
-                    mediumDetailRooms.Add(roomID);
-                    ignoredIDs.Add(roomID);
-                }
-                else if (Mathf.Abs(row) + Mathf.Abs(col) <= radius)
-                {
-                    if (ignoredIDs.Contains(roomID)) continue;
-                    lowDetailRooms.Add(roomID);
-                    ignoredIDs.Add(roomID);
+                    int roomID = levelGenerator.GetRoomIDFromCoordinates(checkingPos);
+                    if (roomID == LevelGenerator.BLANK_ID) continue;
+
+                    if (Mathf.Abs(row) + Mathf.Abs(col) < mediumStart)
+                    {
+                        if (ignoredIDs.Contains(roomID)) continue;
+                        highDetailRooms.Add(roomID);
+                        ignoredIDs.Add(roomID);
+                    }
+                    else if (Mathf.Abs(row) + Mathf.Abs(col) < lowStart)
+                    {
+                        if (ignoredIDs.Contains(roomID)) continue;
+                        mediumDetailRooms.Add(roomID);
+                        ignoredIDs.Add(roomID);
+                    }
+                    else if (Mathf.Abs(row) + Mathf.Abs(col) <= radius)
+                    {
+                        if (ignoredIDs.Contains(roomID)) continue;
+                        lowDetailRooms.Add(roomID);
+                        ignoredIDs.Add(roomID);
+                    }
                 }
             }
         }
@@ -296,8 +347,11 @@ public class RoomCullingManager : SequenceBase
     }
 
     // TODO: should be in level generator.
-    private static List<int> GetConnectingRoomIDs(SpawnedLevelRoomData currentRoom, LevelGenerator levelGenerator, params int[] ignoredIDs)
+    private static List<int> GetConnectingRoomIDs(SpawnedLevelRoomData currentRoom, LevelGenerator levelGenerator, out List<int> roomsWithClosedDoor, DoorGenerator doorGenerator = null, params int[] ignoredIDs)
     {
+
+        roomsWithClosedDoor = new List<int>();
+
         int roomID = currentRoom.ID;
 
         Vector2Int doorCoordinates = Vector2Int.zero;
@@ -314,8 +368,18 @@ public class RoomCullingManager : SequenceBase
 
             if (ignoredIDs.Contains(checkingRoomID)) continue;
 
+            if (doorGenerator != null)
+            {
+                // print("door state is: " + doorGenerator.IsDoorOpenInDoorway(door.Location, door.FacingDirection));
+                if (!doorGenerator.IsDoorOpenInDoorway(door.Location, door.FacingDirection))
+                {
+                    roomsWithClosedDoor.Add(checkingRoomID);
+                }
+            }
+
             roomIDs.Add(checkingRoomID);
         }
+
 
         return roomIDs;
     }
