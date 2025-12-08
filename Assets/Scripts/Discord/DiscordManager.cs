@@ -1,16 +1,21 @@
 using System;
+using Discord;
 using UnityEngine;
 // using Discord;
 
 public class DiscordManager : MonoBehaviour
 {
-#if false
+    [SerializeField]
+    private long clientId;
+
     Discord.Discord discord;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        discord = new Discord.Discord(1437893216409223309, (ulong)Discord.CreateFlags.NoRequireDiscord);
+        discord = new Discord.Discord(clientId, (ulong)Discord.CreateFlags.NoRequireDiscord);
         ChangeActivity();
     }
 
@@ -37,6 +42,7 @@ public class DiscordManager : MonoBehaviour
         if (discord == null) return;
 
         var activityManager = discord.GetActivityManager();
+
         var activity = new Discord.Activity
         {
 #if UNITY_EDITOR
@@ -52,7 +58,7 @@ public class DiscordManager : MonoBehaviour
 
         activityManager.UpdateActivity(activity, (res) =>
         {
-            Debug.Log("Activity updated!");
+            Debug.Log("Activity updated!" + res);
         });
     }
 
@@ -60,7 +66,14 @@ public class DiscordManager : MonoBehaviour
     void Update()
     {
         if (discord == null) return;
-        discord.RunCallbacks();
+        try
+        {
+            discord.RunCallbacks();
+        }
+        catch (ResultException ex)
+        {
+            return; // fuck off
+        }
     }
-#endif
+
 }
