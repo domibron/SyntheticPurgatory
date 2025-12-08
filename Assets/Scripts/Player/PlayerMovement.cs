@@ -18,13 +18,13 @@ public class PlayerMovement : MonoBehaviour
     float groundSpeed = 4f;
     // [SerializeField]
     // float runSpeed = 6f;
-    [SerializeField]
-    float grAccel = 20f;
+    // [SerializeField]
+    float grAccel = 30f;
 
     //Air
     // [SerializeField]
     float airSpeed = 3f;
-    [SerializeField]
+    // [SerializeField]
     float airAccel = 20f;
 
     //Jump
@@ -314,9 +314,17 @@ public class PlayerMovement : MonoBehaviour
 
         groundSpeed = stats.GroundSpeed;
         airSpeed = stats.AirSpeed;
-        jumpUpSpeed = stats.JumpSpeed;
-        slideBoostForce = stats.SlideBoostForce;
-        airBoostForce = stats.AirBoostForce;
+
+        grAccel = stats.GroundSpeed * stats.GroundAccelerationPercentBase;
+        airAccel = stats.AirSpeed * stats.AirAccelerationPercentBase;
+
+        jumpUpSpeed = stats.JumpForce;
+        // slideBoostForce = stats.SlideBoostForce;
+        // airBoostForce = stats.AirBoostForce;
+
+        slideBoostForce = stats.GroundSpeed * stats.SlideBoostPercentage;
+        airBoostForce = stats.AirSpeed * stats.AirBoostPercentage;
+
         groundFriction = stats.GroundFriction;
         airFriction = stats.AirFriction;
     }

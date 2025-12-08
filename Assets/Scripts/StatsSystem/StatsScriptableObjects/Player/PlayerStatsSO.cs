@@ -8,13 +8,35 @@ public class PlayerStats : ICloneable
 {
     public float MaxHealth = 100f;
 
-    public float GroundSpeed = 6f;
+
+    public float RegenerationSpeed = 1f;
+    public float RegenerationAmount = 5f;
+
+    public float GroundSpeed = 5.5f;
     public float AirSpeed = 3f;
-    public float JumpSpeed = 9.2f;
-    public float SlideBoostForce = 5f;
-    public float AirBoostForce = 5f;
+
+    // public float GroundAcceleration = 30f;
+    // public float AirAcceleration = 20f;
+
+    // this should be calculated from accel and speed to get this. 
+    public float GroundAccelerationPercentBase = 5.45454545455f;
+    public float AirAccelerationPercentBase = 6.66666666667f;
+
+    public float JumpForce = 9.2f;
+
+    [Obsolete("Use GroundSpeed * SlideBoostPercentage to get slide boost force.", true)]
+    public float SlideBoostForce = 9f;
+
+    [Obsolete("Use AirSpeed * AirBoostPercentage to get Air boost force.", true)]
+    public float AirBoostForce = 7.5f;
+
+    public float SlideBoostPercentage = 1.65f;
+    public float AirBoostPercentage = 2.5f;
+
     public float GroundFriction = 5f;
     public float AirFriction = 1;
+
+
 
     public float ProjectileDamage = 12f;
     public float RechargeRate = 0.3f;
@@ -37,11 +59,10 @@ public class PlayerStats : ICloneable
     public float KickForce = 10f;
     public float KickAttackDelay = 0.5f;
 
-    public float RegenerationSpeed = 1f;
-    public float RegenerationAmount = 5f;
 
     public int SpeedUpgradeAmount = 1;
-    public int BoostUpgradeAmount = 1;
+    public int SlideBoostUpgradeAmount = 1;
+    public int AirBoostUpgradeAmount = 1;
     public int MeleeStaggerUpgradeAmount = 1;
     public int MeleeReachUpgradeAmount = 1;
 
@@ -51,11 +72,22 @@ public class PlayerStats : ICloneable
         {
             MaxHealth = MaxHealth,
 
+            RegenerationSpeed = RegenerationSpeed,
+            RegenerationAmount = RegenerationAmount,
+
             GroundSpeed = GroundSpeed,
             AirSpeed = AirSpeed,
-            JumpSpeed = JumpSpeed,
-            SlideBoostForce = SlideBoostForce,
-            AirBoostForce = AirBoostForce,
+
+            GroundAccelerationPercentBase = GroundAccelerationPercentBase,
+            AirAccelerationPercentBase = AirAccelerationPercentBase,
+
+            JumpForce = JumpForce,
+
+            // SlideBoostForce = SlideBoostForce,
+            // AirBoostForce = AirBoostForce,
+
+            SlideBoostPercentage = SlideBoostPercentage,
+            AirBoostPercentage = AirBoostPercentage,
 
             ProjectileDamage = ProjectileDamage,
             RechargeRate = RechargeRate,
@@ -74,11 +106,9 @@ public class PlayerStats : ICloneable
 
             MeleeReach = MeleeReach,
             MeleeStagerTime = MeleeStagerTime,
-            RegenerationSpeed = RegenerationSpeed,
-            RegenerationAmount = RegenerationAmount,
 
             SpeedUpgradeAmount = SpeedUpgradeAmount,
-            BoostUpgradeAmount = BoostUpgradeAmount,
+            SlideBoostUpgradeAmount = SlideBoostUpgradeAmount,
             MeleeStaggerUpgradeAmount = MeleeStaggerUpgradeAmount,
             MeleeReachUpgradeAmount = MeleeReachUpgradeAmount,
 
