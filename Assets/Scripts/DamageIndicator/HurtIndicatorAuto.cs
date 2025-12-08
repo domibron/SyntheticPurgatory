@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 //by    _                 _ _                     
 //     | |               (_) |                    
@@ -64,6 +65,11 @@ public class HurtIndicatorAuto : MonoBehaviour
         // Go through all of the renderers and their materials.
         foreach (var renderer in allRenderers)
         {
+            if (renderer is VFXRenderer)
+            {
+                continue;
+            }
+
             foreach (var material in renderer.materials)
             {
                 // add the material to the collection if it matches the shader name.

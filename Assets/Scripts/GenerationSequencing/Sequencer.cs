@@ -3,10 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
+public class Sequence
+{
+    public bool IsEnabled = true;
+    public SequenceBase SequenceBase = null;
+
+    public Sequence()
+    {
+        IsEnabled = true;
+        SequenceBase = null;
+    }
+}
+
 public class Sequencer : MonoBehaviour
 {
     [SerializeField]
-    private List<SequenceBase> sequences = new List<SequenceBase>();
+    private Sequence[] sequences;
 
     private bool waitingForASequence = false;
     private int currentSequence = 0;
@@ -20,18 +33,20 @@ public class Sequencer : MonoBehaviour
 
     private IEnumerator StartSequence()
     {
-        for (int i = 0; i < sequences.Count; i++)
+        for (int i = 0; i < sequences.Length; i++)
         {
             if (currentSequence != i) currentSequence = i;
+
+            if (!sequences[i].IsEnabled) continue;
 
             LevelLoading.Instance?.SetIsOverriding(true);
             LevelLoading.Instance?.SetLoadingBarValue(GetOverallProgress());
 
             waitingForASequence = true;
 
-            sequences[currentSequence].OnThisSequenceEnd += SequenceEnd;
+            sequences[currentSequence].SequenceBase.OnThisSequenceEnd += SequenceEnd;
 
-            sequences[currentSequence].StartSequence();
+            sequences[currentSequence].SequenceBase.StartSequence();
 
             while (waitingForASequence)
             {
@@ -57,18 +72,18 @@ public class Sequencer : MonoBehaviour
     {
         float totalProgress = 0;
 
-        foreach (SequenceBase sequence in sequences)
+        foreach (Sequence sequence in sequences)
         {
-            totalProgress += sequence.GetProgress();
+            totalProgress += sequence.SequenceBase.GetProgress();
         }
 
-        print(totalProgress / sequences.Count);
-        return totalProgress / sequences.Count;
+        print(totalProgress / sequences.Length);
+        return totalProgress / sequences.Length;
     }
 
     private void SequenceEnd()
     {
-        sequences[currentSequence].OnThisSequenceEnd -= SequenceEnd;
+        sequences[currentSequence].SequenceBase.OnThisSequenceEnd -= SequenceEnd;
         waitingForASequence = false;
     }
 }

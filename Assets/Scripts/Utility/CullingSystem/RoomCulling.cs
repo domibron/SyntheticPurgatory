@@ -134,35 +134,53 @@ public class RoomCulling : MonoBehaviour
 
     public void SetRendererState(VisibleState state)
     {
+        SetRenderStateBasedOnVisiblityState(state);
+
+
         switch (state) // I do feel this is a bit bad, but eh, fuck it.
+        {
+            case VisibleState.Unload: // everything else
+                SetEntityCulling(false);
+                SetAnimatorState(false);
+                break;
+            case VisibleState.Minimal: // 2nd layer rooms
+                SetEntityCulling(false);
+                SetAnimatorState(false);
+                break;
+            case VisibleState.Medium: // 1st layer rooms
+                SetEntityCulling(true);
+                SetAnimatorState(false);
+                break;
+            case VisibleState.Maximum: // Current room
+                SetEntityCulling(true);
+                SetAnimatorState();
+                break;
+        }
+    }
+
+    private void SetRenderStateBasedOnVisiblityState(VisibleState visibleState)
+    {
+        switch (visibleState) // I do feel this is a bit bad, but eh, fuck it.
         {
             case VisibleState.Unload: // everything else
                 SetLowDetailState(false);
                 SetMediumState(false);
                 SetHighDetailState(false);
-                SetEntityCulling(false);
-                SetAnimatorState(false);
                 break;
             case VisibleState.Minimal: // 2nd layer rooms
                 SetLowDetailState(true); // need to set LOD state.
                 SetMediumState(false);
                 SetHighDetailState(false);
-                SetEntityCulling(false);
-                SetAnimatorState();
                 break;
             case VisibleState.Medium: // 1st layer rooms
                 SetLowDetailState(true); // need to set LOD state.
                 SetMediumState(true);
                 SetHighDetailState(false); // need two levels of detail. lower and higher
-                SetEntityCulling(true);
-                SetAnimatorState();
                 break;
             case VisibleState.Maximum: // Current room
                 SetLowDetailState(true);
                 SetMediumState(true);
                 SetHighDetailState(true);
-                SetEntityCulling(true);
-                SetAnimatorState();
                 break;
         }
     }

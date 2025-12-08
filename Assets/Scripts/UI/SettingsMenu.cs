@@ -72,7 +72,7 @@ public class SettingsMenu : MonoBehaviour
 
         pauseInput = InputSystem.actions.FindAction("Pause");
         closeInput = InputSystem.actions.FindAction("Close");
-        
+
 
         pauseInput.started += KeyOpenSettings;
         // closeInput.started += KeyCloseSettings;
@@ -89,14 +89,14 @@ public class SettingsMenu : MonoBehaviour
 
     private void KeyOpenSettings(InputAction.CallbackContext context)
     {
-        if (settingsCanvasCollection.activeSelf) return;
+        if (settingsCanvasCollection != null && settingsCanvasCollection.activeSelf) return;
         if (context.performed)
             OpenSettings();
     }
 
     private void KeyCloseSettings(InputAction.CallbackContext context)
     {
-        if (!settingsCanvasCollection.activeSelf) return;
+        if (settingsCanvasCollection != null && !settingsCanvasCollection.activeSelf) return;
         if (context.performed)
             CloseSettings();
     }

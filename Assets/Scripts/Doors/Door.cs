@@ -11,6 +11,7 @@ public enum DoorOverrideState
 public class Door : MonoBehaviour
 {
     private bool isDoorOpen = false;
+    private bool desiredDoorState = false;
 
     private DoorOverrideState doorOverrideState = DoorOverrideState.None;
 
@@ -46,16 +47,28 @@ public class Door : MonoBehaviour
     public void SetOverrideState(DoorOverrideState overrideState)
     {
         doorOverrideState = overrideState;
+
+        switch (doorOverrideState)
+        {
+            case DoorOverrideState.Closed:
+                desiredDoorState = false;
+                break;
+            case DoorOverrideState.Open:
+                desiredDoorState = true;
+                break;
+        }
     }
 
     public void ResetOverrideState()
     {
         doorOverrideState = DoorOverrideState.None;
+        desiredDoorState = isDoorOpen;
     }
 
     public void SetDoorState(bool isOpen)
     {
         isDoorOpen = isOpen;
+        desiredDoorState = isOpen;
     }
 
     public void ToggleDoorState()
@@ -76,22 +89,25 @@ public class Door : MonoBehaviour
     public void OverrideClose()
     {
         doorOverrideState = DoorOverrideState.Closed;
+        desiredDoorState = false;
     }
 
     public void OverrideOpen()
     {
         doorOverrideState = DoorOverrideState.Open;
+        desiredDoorState = true;
     }
 
     IEnumerator RandomDoorDelay(bool doorState, float maxPossibleDelay = 0.2f)
     {
+        desiredDoorState = doorState;
         yield return new WaitForSeconds(Random.Range(0, maxPossibleDelay));
         SetDoorState(doorState);
     }
 
     public bool IsDoorOpen()
     {
-        return isDoorOpen;
+        return desiredDoorState;
     }
 
 }
