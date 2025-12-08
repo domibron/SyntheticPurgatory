@@ -197,7 +197,8 @@ public class StatUpgrades
     StatUpgradeInfo healthInfo = new(8, -15, 10, null);
     StatUpgradeInfo regenerationInfo = new(0.5f, -0.2f, 0f, null);
     StatUpgradeInfo speedInfo = new(1, -0.4f, 1, null);
-    StatUpgradeInfo boostInfo = new(1.2f, -0.5f, 2, null);
+    StatUpgradeInfo slideBoostInfo = new(0.05f, -0.05f, 1.1f, null);
+    StatUpgradeInfo airBoostInfo = new(0.05f, -0.05f, 1.1f, null);
 
 
     private enum StatUpgradeType
@@ -206,6 +207,7 @@ public class StatUpgrades
         Regeneration,
         Speed,
         SlideBoostForce,
+        AirBoostInfo,
     }
 
     public int GetRandomUpgradeID()
@@ -228,7 +230,9 @@ public class StatUpgrades
             case StatUpgradeType.Speed:
                 return (speedInfo.UpgradeValue(pStats.GroundSpeed, amount) - pStats.GroundSpeed).ToString("F2");
             case StatUpgradeType.SlideBoostForce:
-                return (boostInfo.UpgradeValue(pStats.SlideBoostForce, amount) - pStats.SlideBoostForce).ToString("F2");
+                return ((slideBoostInfo.UpgradeValue(pStats.SlideBoostPercentage, amount) - pStats.SlideBoostPercentage) * 100f).ToString("F0") + "%";
+            case StatUpgradeType.AirBoostInfo:
+                return ((airBoostInfo.UpgradeValue(pStats.AirBoostPercentage, amount) - pStats.AirBoostPercentage) * 100f).ToString("F0") + "%";
             default:
                 return "";
         }
@@ -249,7 +253,9 @@ public class StatUpgrades
             case StatUpgradeType.Speed:
                 return pStats.GroundSpeed.ToString("F2");
             case StatUpgradeType.SlideBoostForce:
-                return pStats.SlideBoostForce.ToString("F2");
+                return (pStats.SlideBoostPercentage * 100f).ToString("F0") + "%";
+            case StatUpgradeType.AirBoostInfo:
+                return (pStats.AirBoostPercentage * 100f).ToString("F0") + "%";
             default:
                 return "";
         }
@@ -270,7 +276,9 @@ public class StatUpgrades
             case StatUpgradeType.Speed:
                 return (speedInfo.DowngradeValue(pStats.GroundSpeed, amount) - pStats.GroundSpeed).ToString("F2");
             case StatUpgradeType.SlideBoostForce:
-                return (boostInfo.DowngradeValue(pStats.SlideBoostForce, amount) - pStats.SlideBoostForce).ToString("F2");
+                return ((slideBoostInfo.DowngradeValue(pStats.SlideBoostPercentage, amount) - pStats.SlideBoostPercentage) * 100f).ToString("F0") + "%";
+            case StatUpgradeType.AirBoostInfo:
+                return ((airBoostInfo.DowngradeValue(pStats.AirBoostPercentage, amount) - pStats.AirBoostPercentage) * 100f).ToString("F0") + "%";
             default:
                 return "";
         }
@@ -289,7 +297,9 @@ public class StatUpgrades
             case StatUpgradeType.Speed:
                 return "Speed";
             case StatUpgradeType.SlideBoostForce:
-                return "Boost Amount";
+                return "Slide Amount";
+            case StatUpgradeType.AirBoostInfo:
+                return "Air Slide Amount";
             default:
                 return "";
         }
@@ -313,7 +323,9 @@ public class StatUpgrades
                 case StatUpgradeType.Speed:
                     return (speedInfo.UpgradeValue(pStats.GroundSpeed, amount)).ToString("F2");
                 case StatUpgradeType.SlideBoostForce:
-                    return (boostInfo.UpgradeValue(pStats.SlideBoostForce, amount)).ToString("F2");
+                    return ((slideBoostInfo.UpgradeValue(pStats.SlideBoostPercentage, amount)) * 100f).ToString("F0") + "%";
+                case StatUpgradeType.AirBoostInfo:
+                    return ((airBoostInfo.UpgradeValue(pStats.AirBoostPercentage, amount)) * 100f).ToString("F0") + "%";
                 default:
                     return "";
             }
@@ -329,7 +341,9 @@ public class StatUpgrades
                 case StatUpgradeType.Speed:
                     return (speedInfo.DowngradeValue(pStats.GroundSpeed, amount)).ToString("F2");
                 case StatUpgradeType.SlideBoostForce:
-                    return (boostInfo.DowngradeValue(pStats.SlideBoostForce, amount)).ToString("F2");
+                    return ((slideBoostInfo.DowngradeValue(pStats.SlideBoostPercentage, amount)) * 100f).ToString("F0") + "%";
+                case StatUpgradeType.AirBoostInfo:
+                    return ((airBoostInfo.DowngradeValue(pStats.AirBoostPercentage, amount)) * 100f).ToString("F0") + "%";
                 default:
                     return "";
             }
@@ -356,9 +370,12 @@ public class StatUpgrades
                 pStats.SpeedUpgradeAmount += amount;
                 break;
             case StatUpgradeType.SlideBoostForce:
-                pStats.SlideBoostForce = boostInfo.UpgradeValue(pStats.SlideBoostForce, amount);
-                pStats.AirBoostForce = boostInfo.UpgradeValue(pStats.AirBoostForce, amount);
-                pStats.BoostUpgradeAmount += amount;
+                pStats.SlideBoostPercentage = slideBoostInfo.UpgradeValue(pStats.SlideBoostPercentage, amount);
+                pStats.SlideBoostUpgradeAmount += amount;
+                break;
+            case StatUpgradeType.AirBoostInfo:
+                pStats.AirBoostPercentage = airBoostInfo.UpgradeValue(pStats.AirBoostPercentage, amount);
+                pStats.AirBoostUpgradeAmount += amount;
                 break;
         }
 
@@ -385,9 +402,12 @@ public class StatUpgrades
                 pStats.SpeedUpgradeAmount -= amount;
                 break;
             case StatUpgradeType.SlideBoostForce:
-                pStats.SlideBoostForce = boostInfo.DowngradeValue(pStats.SlideBoostForce, amount);
-                pStats.AirBoostForce = boostInfo.DowngradeValue(pStats.AirBoostForce, amount);
-                pStats.BoostUpgradeAmount -= amount;
+                pStats.SlideBoostPercentage = slideBoostInfo.DowngradeValue(pStats.SlideBoostPercentage, amount);
+                pStats.SlideBoostUpgradeAmount -= amount;
+                break;
+            case StatUpgradeType.AirBoostInfo:
+                pStats.AirBoostPercentage = airBoostInfo.DowngradeValue(pStats.AirBoostPercentage, amount);
+                pStats.AirBoostUpgradeAmount -= amount;
                 break;
         }
 
