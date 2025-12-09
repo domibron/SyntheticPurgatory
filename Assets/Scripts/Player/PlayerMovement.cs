@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     // [SerializeField]
     float jumpUpSpeed = 9.2f;
 
-    float wallFloorBarrier = 50f;
+    float wallFloorBarrier = 60f;
 
     [SerializeField]
     float gravityScalar = 1f;
@@ -300,22 +300,23 @@ public class PlayerMovement : MonoBehaviour
             // if (isJumping) isJumping = false; // this is cursed.
         }
 
-        if (IsGrounded)
-        {
-            Vector3 curentVelocityThisFrame = rb.GetAccumulatedForce() * Time.deltaTime;
-            curentVelocityThisFrame.y = 0;
+        // ! TEMP disable to stop player from glitch rising or whatever. I WANT A GOOD VIDEO!
+        // if (IsGrounded)
+        // {
+        //     Vector3 curentVelocityThisFrame = rb.GetAccumulatedForce() * Time.deltaTime;
+        //     curentVelocityThisFrame.y = 0;
 
-            if (Vector3.Dot(curentVelocityThisFrame.normalized, dir.normalized) < 0.3)
-            {
-                if (curentVelocityThisFrame.magnitude < dir.magnitude)
-                {
-                    curentVelocityThisFrame = dir.normalized;
-                }
-            }
+        //     if (Vector3.Dot(curentVelocityThisFrame.normalized, dir.normalized) < 0.3)
+        //     {
+        //         if (curentVelocityThisFrame.magnitude < dir.magnitude)
+        //         {
+        //             curentVelocityThisFrame = dir.normalized;
+        //         }
+        //     }
 
-            if (rb.SweepTest(transform.worldToLocalMatrix * curentVelocityThisFrame.normalized, out RaycastHit hitInfo, 1f))
-                StepHandle(curentVelocityThisFrame);
-        }
+        //     if (rb.SweepTest(transform.worldToLocalMatrix * curentVelocityThisFrame.normalized, out RaycastHit hitInfo, 1f))
+        //         StepHandle(curentVelocityThisFrame);
+        // }
     }
 
     public void UpdateVariablesWithStats(PlayerStats stats)
@@ -367,14 +368,14 @@ public class PlayerMovement : MonoBehaviour
     {
         Collider[] results = Physics.OverlapSphere(transform.position - Vector3.down * GetHalfHeight(), col.radius - 0.05f, groundLayer); // TODO ground mask?
 
-        bool didHit = Physics.Raycast(transform.position, -transform.up, out RaycastHit hitInfo, GetHalfHeight() + 0.05f, groundLayer);
+        bool didHit = Physics.Raycast(transform.position, -transform.up, out RaycastHit hitInfo, GetHalfHeight() + 0.1f, groundLayer);
 
         if (results.Length > 0 || didHit)
         {
             if (didHit)
             {
                 float angle = Vector3.Angle(hitInfo.normal, Vector3.up);
-
+                print(angle);
                 grounded = true;
                 isOnSteepSlope = angle > wallFloorBarrier;
                 isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
