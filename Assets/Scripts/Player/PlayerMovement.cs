@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     // [SerializeField]
     float jumpUpSpeed = 9.2f;
 
-    float wallFloorBarrier = 40f;
+    float wallFloorBarrier = 50f;
 
     [SerializeField]
     float gravityScalar = 1f;
@@ -300,7 +300,22 @@ public class PlayerMovement : MonoBehaviour
             // if (isJumping) isJumping = false; // this is cursed.
         }
 
+        if (IsGrounded)
+        {
+            Vector3 curentVelocityThisFrame = rb.GetAccumulatedForce() * Time.deltaTime;
+            curentVelocityThisFrame.y = 0;
 
+            if (Vector3.Dot(curentVelocityThisFrame.normalized, dir.normalized) < 0.3)
+            {
+                if (curentVelocityThisFrame.magnitude < dir.magnitude)
+                {
+                    curentVelocityThisFrame = dir.normalized;
+                }
+            }
+
+            if (rb.SweepTest(transform.worldToLocalMatrix * curentVelocityThisFrame.normalized, out RaycastHit hitInfo, 1f))
+                StepHandle(curentVelocityThisFrame);
+        }
     }
 
     public void UpdateVariablesWithStats(PlayerStats stats)
@@ -476,6 +491,69 @@ public class PlayerMovement : MonoBehaviour
         //     isOnSteepSlope = false;
         //     isOnSlightSlope = false;
         // }
+    }
+
+    private void StepHandle(Vector3 moveDirectionThisFrame)
+    {
+        moveDirectionThisFrame.y = 0;
+
+        // Presuming that we casting in the move direction.
+        // We also presume that something was hit, like a curb or a wall.
+
+        float stepHeight = 0.3f;
+        float stepDepthAllowed = 0.2f;
+
+        float halfHeight = col.height / 2f;
+
+        Vector3 halfAsVector = Vector3.up * GetHalfHeight();
+
+
+        Vector3 point1 = transform.position + halfAsVector;
+        Vector3 point2 = point1 - (halfAsVector * 2f);
+
+        if (Physics.CapsuleCast(point1, point2, col.radius, Vector3.up, stepHeight)) return; // cant step up with something above our head.
+        print("No air stopping");
+        Vector3 airPoint = transform.position + (Vector3.up * stepHeight);
+
+        point1 = airPoint + halfAsVector;
+        point2 = point1 - (halfAsVector * 2f);
+
+        // can we move over the step.
+        // float depthCheck = (stepDepthAllowed > moveDirectionThisFrame.magnitude) ? stepDepthAllowed : moveDirectionThisFrame.magnitude;
+        float depthCheck = stepDepthAllowed;
+
+
+        if (Physics.CapsuleCast(point1, point2, col.radius, moveDirectionThisFrame.normalized, depthCheck)) return;
+        print("No dir stopping");
+
+        airPoint += moveDirectionThisFrame.normalized * depthCheck;
+
+        point1 = airPoint + halfAsVector;
+        point2 = point1 - (halfAsVector * 2f);
+
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, col.radius, Vector3.down, stepHeight);
+
+        float currentY = float.MinValue;
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.transform.gameObject.CompareTag(Constants.PlayerTag)) continue;
+
+            print(hit.normal + " " + hit.point + " " + hit.barycentricCoordinate + " " + hit.transform.gameObject.name);
+            Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.green, 10f);
+
+
+            if (hit.point.y > currentY) currentY = hit.point.y;
+        }
+
+
+        Vector3 pos = transform.position;
+
+        float amountToAdd = currentY - (transform.position + (Vector3.down * halfHeight)).y;
+        print(hits.Length);
+        pos.y += Mathf.Max(amountToAdd, 0f);
+
+        transform.position = pos;
     }
 
     Vector3 GetFrictionVector(float maxSpeed, float friction)
