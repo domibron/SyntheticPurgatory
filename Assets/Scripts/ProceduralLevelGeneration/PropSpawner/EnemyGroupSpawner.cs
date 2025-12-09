@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 public class EnemyGroupSpawner : MonoBehaviour
 {
     /// <summary>

@@ -79,7 +79,7 @@ public class EnemySpawnAtGates : MonoBehaviour
             GameObject enemy = Instantiate(enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Length)], (UnityEngine.Random.Range(0, 2) <= 0 ? leftSpawnPoint.position : rightSpawnPoint.position), Quaternion.identity);
 
             enemy.GetComponent<EnemyDetection>()?.BecomeAlert(false, 0, 0f);
-
+            enemy.GetComponent<EnemyDetection>()?.ChangeCanLoseAgro(false);
             enemyCount++;
 
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.3f, 3f));

@@ -50,10 +50,44 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 5f708516574926f42a7afb14e80e35ea, type: 3}
       propertyPath: m_Name
-      value: FBX_Crushed_Car_Rusted
+      value: P_Crushed_Car_Rusted
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5f708516574926f42a7afb14e80e35ea, type: 3}
+      propertyPath: m_TagString
+      value: MediumDetail
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5f708516574926f42a7afb14e80e35ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6163927663208741270}
   m_SourcePrefab: {fileID: 100100000, guid: 5f708516574926f42a7afb14e80e35ea, type: 3}
+--- !u!1 &1565936441179430965 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5f708516574926f42a7afb14e80e35ea, type: 3}
+  m_PrefabInstance: {fileID: 1835844894264647012}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &6163927663208741270
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565936441179430965}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8858072300294633262, guid: 5f708516574926f42a7afb14e80e35ea, type: 3}

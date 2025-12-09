@@ -14,11 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats:
     MaxHealth: 100
+    RegenerationSpeed: 1
+    RegenerationAmount: 1
     GroundSpeed: 5.5
     AirSpeed: 3
-    JumpSpeed: 6
+    GroundAccelerationPercentBase: 5.4545455
+    AirAccelerationPercentBase: 6.6666665
+    JumpForce: 7
     SlideBoostForce: 9
     AirBoostForce: 7.5
+    SlideBoostPercentage: 1.65
+    AirBoostPercentage: 2.5
     GroundFriction: 5
     AirFriction: 1
     ProjectileDamage: 12
@@ -34,9 +40,8 @@ MonoBehaviour:
     MeleeStagerTime: 0.4
     KickForce: 10
     KickAttackDelay: 0.5
-    RegenerationSpeed: 1
-    RegenerationAmount: 1
     SpeedUpgradeAmount: 1
-    BoostUpgradeAmount: 1
+    SlideBoostUpgradeAmount: 1
+    AirBoostUpgradeAmount: 1
     MeleeStaggerUpgradeAmount: 1
     MeleeReachUpgradeAmount: 1
