@@ -300,23 +300,12 @@ public class PlayerMovement : MonoBehaviour
             // if (isJumping) isJumping = false; // this is cursed.
         }
 
-        // ! TEMP disable to stop player from glitch rising or whatever. I WANT A GOOD VIDEO!
-        // if (IsGrounded)
-        // {
-        //     Vector3 curentVelocityThisFrame = rb.GetAccumulatedForce() * Time.deltaTime;
-        //     curentVelocityThisFrame.y = 0;
 
-        //     if (Vector3.Dot(curentVelocityThisFrame.normalized, dir.normalized) < 0.3)
-        //     {
-        //         if (curentVelocityThisFrame.magnitude < dir.magnitude)
-        //         {
-        //             curentVelocityThisFrame = dir.normalized;
-        //         }
-        //     }
-
-        //     if (rb.SweepTest(transform.worldToLocalMatrix * curentVelocityThisFrame.normalized, out RaycastHit hitInfo, 1f))
-        //         StepHandle(curentVelocityThisFrame);
-        // }
+        if (IsGrounded)
+        {
+            // if (rb.SweepTest(transform.worldToLocalMatrix * dir.normalized, out RaycastHit hitInfo, 1f))
+            StepHandle(dir.normalized);
+        }
     }
 
     public void UpdateVariablesWithStats(PlayerStats stats)
@@ -375,7 +364,7 @@ public class PlayerMovement : MonoBehaviour
             if (didHit)
             {
                 float angle = Vector3.Angle(hitInfo.normal, Vector3.up);
-                print(angle);
+                // print(angle);
                 grounded = true;
                 isOnSteepSlope = angle > wallFloorBarrier;
                 isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
@@ -498,63 +487,127 @@ public class PlayerMovement : MonoBehaviour
     {
         moveDirectionThisFrame.y = 0;
 
-        // Presuming that we casting in the move direction.
-        // We also presume that something was hit, like a curb or a wall.
+        Vector3 pointAtFeet = transform.position + (Vector3.up * 0.05f) + (Vector3.down * GetHalfHeight());
 
-        float stepHeight = 0.3f;
-        float stepDepthAllowed = 0.2f;
+        float stepHeight = 0.5f;
 
-        float halfHeight = col.height / 2f;
+        float minStepAllowed = 0.1f;
 
-        Vector3 halfAsVector = Vector3.up * GetHalfHeight();
+        float minStepWithRadius = col.radius + minStepAllowed;
 
+        int rayCount = 5; // dont go below 2
 
-        Vector3 point1 = transform.position + halfAsVector;
-        Vector3 point2 = point1 - (halfAsVector * 2f);
+        float heightIncrement = stepHeight / (float)(rayCount - 1f);
 
-        if (Physics.CapsuleCast(point1, point2, col.radius, Vector3.up, stepHeight)) return; // cant step up with something above our head.
-        print("No air stopping");
-        Vector3 airPoint = transform.position + (Vector3.up * stepHeight);
+        print("H: " + heightIncrement);
 
-        point1 = airPoint + halfAsVector;
-        point2 = point1 - (halfAsVector * 2f);
+        bool canStep = false;
+        int iteration = 0;
 
-        // can we move over the step.
-        // float depthCheck = (stepDepthAllowed > moveDirectionThisFrame.magnitude) ? stepDepthAllowed : moveDirectionThisFrame.magnitude;
-        float depthCheck = stepDepthAllowed;
-
-
-        if (Physics.CapsuleCast(point1, point2, col.radius, moveDirectionThisFrame.normalized, depthCheck)) return;
-        print("No dir stopping");
-
-        airPoint += moveDirectionThisFrame.normalized * depthCheck;
-
-        point1 = airPoint + halfAsVector;
-        point2 = point1 - (halfAsVector * 2f);
-
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, col.radius, Vector3.down, stepHeight);
-
-        float currentY = float.MinValue;
-
-        foreach (RaycastHit hit in hits)
+        for (int i = 0; i < rayCount; i++)
         {
-            if (hit.transform.gameObject.CompareTag(Constants.PlayerTag)) continue;
+            bool rayRes = Physics.Raycast(pointAtFeet + (Vector3.up * (heightIncrement * i)), moveDirectionThisFrame.normalized, out RaycastHit hitInfo, minStepWithRadius, groundLayer, QueryTriggerInteraction.Ignore);
+            Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), (pointAtFeet + (Vector3.up * (heightIncrement * i))) + (moveDirectionThisFrame.normalized * minStepWithRadius), Color.blue, 10f);
 
-            print(hit.normal + " " + hit.point + " " + hit.barycentricCoordinate + " " + hit.transform.gameObject.name);
-            Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.green, 10f);
+            if (rayRes)
+            {
+                print(hitInfo.transform.gameObject.name);
+                Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), hitInfo.point, Color.red, 10f);
+            }
+
+            if (i == 0 && !rayRes)
+            {
+                print("cannot step on air");
+                break; // we dont need to step.
+            }
+            else if (i == 0 && rayRes)
+            {
+                if (Vector3.Angle(hitInfo.normal, Vector3.up) < 80f || Vector3.Angle(hitInfo.normal, Vector3.up) > 100f)
+                {
+                    print("failed angle check");
+                    break;
+                }
+            }
 
 
-            if (hit.point.y > currentY) currentY = hit.point.y;
+            if (!rayRes)
+            {
+                print("can step");
+                canStep = true;
+                iteration = i;
+                break;
+            }
         }
 
+        if (!canStep)
+        {
+            print("Cannot step up a wall");
+            return;
+        }
 
-        Vector3 pos = transform.position;
+        print("able to step");
 
-        float amountToAdd = currentY - (transform.position + (Vector3.down * halfHeight)).y;
-        print(hits.Length);
-        pos.y += Mathf.Max(amountToAdd, 0f);
+        Vector3 upAmount = (Vector3.up * (heightIncrement * iteration));
 
-        transform.position = pos;
+        transform.position += upAmount;
+
+        // // Presuming that we casting in the move direction.
+        // // We also presume that something was hit, like a curb or a wall.
+
+        // float stepHeight = 0.3f;
+        // float stepDepthAllowed = 0.2f;
+
+        // float halfHeight = col.height / 2f;
+
+        // Vector3 halfAsVector = Vector3.up * GetHalfHeight();
+
+
+        // Vector3 point1 = transform.position - halfAsVector;
+        // Vector3 point2 = point1 + (halfAsVector * 2f);
+
+        // if (Physics.CapsuleCast(point1, point2, col.radius, Vector3.up, stepHeight, groundLayer)) return; // cant step up with something above our head.
+        // print("No air stopping");
+        // Vector3 airPoint = transform.position + (Vector3.up * stepHeight);
+
+        // point1 = airPoint - halfAsVector;
+        // point2 = point1 + (halfAsVector * 2f);
+
+        // // can we move over the step. 
+        // // float depthCheck = (stepDepthAllowed > moveDirectionThisFrame.magnitude) ? stepDepthAllowed : moveDirectionThisFrame.magnitude;
+        // float depthCheck = stepDepthAllowed;
+
+
+        // if (Physics.CapsuleCast(point1, point2, col.radius, moveDirectionThisFrame.normalized, depthCheck, groundLayer)) return;
+        // print("No dir stopping");
+
+        // airPoint += moveDirectionThisFrame.normalized * depthCheck;
+
+        // point1 = airPoint - halfAsVector;
+        // point2 = point1 + (halfAsVector * 2f);
+
+        // RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, col.radius, Vector3.down, stepHeight, groundLayer);
+
+        // float currentY = float.MinValue;
+
+        // foreach (RaycastHit hit in hits)
+        // {
+        //     if (hit.transform.gameObject.CompareTag(Constants.PlayerTag)) continue;
+
+        //     print(hit.normal + " " + hit.point + " " + hit.barycentricCoordinate + " " + hit.transform.gameObject.name);
+        //     Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.green, 10f);
+
+
+        //     if (hit.point.y > currentY) currentY = hit.point.y;
+        // }
+
+
+        // Vector3 pos = transform.position;
+
+        // float amountToAdd = currentY - (transform.position + (Vector3.down * halfHeight)).y;
+        // print(hits.Length);
+        // pos.y += Mathf.Max(amountToAdd, 0f);
+
+        // transform.position = pos;
     }
 
     Vector3 GetFrictionVector(float maxSpeed, float friction)
