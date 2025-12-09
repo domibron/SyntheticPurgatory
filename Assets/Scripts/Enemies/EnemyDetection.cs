@@ -36,6 +36,26 @@ public class EnemyDetection : MonoBehaviour
     private float currentDetection;
 
     /// <summary>
+    /// Allow AI to stop persuing the target if conditions are not met
+    /// </summary>
+    [Header("Agro Loss")]
+    public bool canLoseAgro = false;
+    /// <summary>
+    /// Range the enemy starts losing agro
+    /// </summary>
+    [SerializeField]
+    private float ignoreRange = 25;
+    /// <summary>
+    /// Time it takes to lose target when it is out of view
+    /// </summary>
+    [SerializeField]
+    private float loseTimer = 10;
+    /// <summary>
+    /// Current lose time
+    /// </summary>
+    private float currentLose;
+
+    /// <summary>
     /// Range that other enemies have to be in to be activated by this enemy
     /// </summary>
     [Header("Alerting Others"), SerializeField, Min(0.01f)]
@@ -67,27 +87,50 @@ public class EnemyDetection : MonoBehaviour
     {
         LayerMask obstacles = LayerMask.GetMask("Default", "Ground", "Player"); // Set layers the raycast can be stopped by
 
+        float currentRange = activated ? ignoreRange : currentDetection;
+        bool isDetecting = false;
+
         RaycastHit hit; // Get any objects between enemy and target, if not get player (provided they are within reach)
         Physics.Raycast(transform.position + viewPointOffset, ((targetObject.transform.position + Vector3.up / 2) - (transform.position + viewPointOffset)).normalized, out hit, detectionRange, obstacles);
         if (hit.rigidbody != null) // Make sure something was hit before continuing
         {
             if (hit.rigidbody.CompareTag("Player")) // If object found is player
             {
-                currentDetection += Time.fixedDeltaTime; // Increase visibility timer
+                isDetecting = true;
             }
-            else
-            {
-                currentDetection = Mathf.Max(currentDetection - Time.fixedDeltaTime * 2, 0); // Reduce Visility timer
-            }
-        }
-        else // Raycast didn't return any object
-        {
-            currentDetection = Mathf.Max(currentDetection - Time.fixedDeltaTime * 2, 0); // Reduce visibility timer
         }
 
-        if (currentDetection >= detectionTimer && !activated) // If player has been within sight for long enough
+        if (!activated)
+        {
+            DetectingTarget(isDetecting);
+        }
+        else if (canLoseAgro)
+        {
+            lostTarget(isDetecting);
+        }
+        
+    }
+
+
+    private void DetectingTarget(bool detected)
+    {
+        if (detected) { currentDetection += Time.fixedDeltaTime; } // Increase visibility timer
+        else { currentDetection = Mathf.Max(currentDetection - Time.fixedDeltaTime * 2, 0); } // Reduce Visility timer
+
+        if (currentDetection >= detectionTimer) // If player has been out of sight for long enough
         {
             BecomeAlert(true, MaxDetectionChain, 0); // Start activation sequence
+        }
+    }
+
+    private void lostTarget(bool detected)
+    {
+        if (detected) { currentLose += Time.fixedDeltaTime; } // Increase visibility timer
+        else { currentLose = Mathf.Max(currentLose - Time.fixedDeltaTime * 2, 0); } // Reduce Visility timer
+
+        if (currentLose <= 0) // If player has been out of sight for long enough
+        {
+            BecomeInactive(); // Deactivate AI
         }
     }
 
@@ -97,11 +140,10 @@ public class EnemyDetection : MonoBehaviour
     /// </summary>
     private void AlertFromDamage(float oldHP, float newHP)
     {
-        if (activated) { return; } // Failsafe
+        if (activated) { currentLose = loseTimer; return; } // Keep persuing player if hit when active
 
         BecomeAlert(true, MaxDetectionChain, 0); // Start activation sequence
     }
-
 
     /// <summary>
     /// Activation sequence for the enemy AI, alert other enemies if applicable
@@ -112,11 +154,12 @@ public class EnemyDetection : MonoBehaviour
     public void BecomeAlert(bool alertOthers, int currentChain, float activationDelay)
     {
         activated = true;
+        currentLose = loseTimer;
+
         if (alertOthers && currentChain > 0) { AlertOtherEnemies(currentChain, activationDelay + activateDelayAddition); }
 
         StartCoroutine(WaitForDelay(activationDelay));
     }
-
 
     /// <summary>
     /// Alert other visible unactivated enemies that are within range
@@ -151,7 +194,6 @@ public class EnemyDetection : MonoBehaviour
 
     }
 
-
     /// <summary>
     /// Wait for set amount of seconds beforing activating
     /// </summary>
@@ -161,7 +203,20 @@ public class EnemyDetection : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         onAlerted?.Invoke(true); // Invoke the onAlerted event
-        this.enabled = false; // Disable this script so that it doesn't attempt to activate again
+
+    }
+
+    private void BecomeInactive()
+    {
+        activated = false;
+        currentDetection = 0;
+
+        onAlerted?.Invoke(false); // Invoke the onAlerted event
+    }
+
+    public void ChangeCanLoseAgro(bool newState)
+    {
+        canLoseAgro = newState;
     }
 
 }

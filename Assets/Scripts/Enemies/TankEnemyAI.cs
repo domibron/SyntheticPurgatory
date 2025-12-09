@@ -12,8 +12,6 @@ public class TankEnemyAI : BaseEnemy
     /// </summary>
     private GameObject goal;
 
-    private Rigidbody rb;
-
     /// <summary>
     /// Check if enemy has been alerted to player presence
     /// </summary>
@@ -54,6 +52,22 @@ public class TankEnemyAI : BaseEnemy
     private float chargingMinTime = 0.1f;
     private float currentCharging = 0;
 
+    [SerializeField]
+    private GameObject[] leftWheels;
+
+    [SerializeField]
+    private GameObject[] rightWheels;
+
+
+    /// <summary>
+    /// Position of the enemy on start
+    /// </summary>
+    private Vector3 startPosition;
+
+
+
+
+
     void Start()
     {
         GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
@@ -62,12 +76,14 @@ public class TankEnemyAI : BaseEnemy
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
 
+        startPosition = transform.position;
     }
 
 
 
     void FixedUpdate()
     {
+        // Base enemy class logic
         if (enemyKnockedBack)
         {
             return;
@@ -77,37 +93,101 @@ public class TankEnemyAI : BaseEnemy
             agent.destination = transform.position;
             return;
         }
-        if (!Alerted) { return; }
 
-        Vector3 targetDir;
-        Vector3 newDir;
-
+        // Mid-charge logic
         if (isCharging) 
         {
-            currentCharging += Time.deltaTime;
+            HandleCharging();
+            return;
+        }
+        else if (!agent.isActiveAndEnabled) { return; }
 
-            if (rb.linearVelocity.magnitude < 0.5f && currentCharging < chargingMinTime) { return; }
-
-            if (rb.linearVelocity.magnitude > 2)
+        // Movement
+        if (Alerted) 
+        {
+            MoveToTarget(goal.transform.position, true);
+            
+        }
+        else
+        {
+            if (Vector3.Distance(transform.position, startPosition) > 2)
             {
-                targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
-                newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.008f, 0.0f); // Calculate next angle
-                transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+                MoveToTarget(startPosition, false); // Move back to start position
+            }
+            else
+            {
+                RotateWheels(0, 0);
             }
 
-            Vector3 targetVel = transform.forward * currentChargeSpeed;
-            rb.linearVelocity = new Vector3(targetVel.x, rb.linearVelocity.y, targetVel.z);
-
+            MoveToTarget(startPosition, false);
             return;
         }
-        else if (!agent.isActiveAndEnabled)
+
+        // Attacking initialisation
+        if (CheckCanAttack())
         {
+            StartCoroutine(ChargeAtTarget());
+        }
+
+    }
+
+
+
+    private void MoveToTarget(Vector3 target, bool persuing)
+    {
+        int detectedTarget = CalculateChargeCharge();
+        Vector3 targetDir = new Vector3(target.x, transform.position.y, target.z) - transform.position; // Get target angle to turn towards
+        Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.03f, 0.0f); // Calculate next angle
+
+        if (agent.isActiveAndEnabled)
+        {
+            agent.destination = target;
+        }
+
+        if (!persuing)
+        {
+            agent.speed = BaseSpeed;
+            agent.angularSpeed = 80;
+            
+            oldRotation = transform.rotation.eulerAngles; // Save old angle
+            previousSpeed = rb.linearVelocity.magnitude;
             return;
         }
 
-        bool detectSucceeded = false;
+        if (agent.remainingDistance < 12)
+        {
+            switch (detectedTarget)
+            {
+                case 0:
+                    agent.speed = BaseSpeed;
+                    agent.angularSpeed = 80;
+                    break;
+                case 1:
+                    transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+                    agent.speed = 0.1f;
+                    agent.angularSpeed = 0;
+                    break;
+                case 2:
+                    transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+                    agent.speed = 0.1f;
+                    agent.angularSpeed = 0;
+                    break;
+            }
+        }
+        else
+        {
+            agent.speed = BaseSpeed;
+            agent.angularSpeed = 80;
+        }
 
-        if (chargeCharge < chargeActivationTime && agent.remainingDistance < 12)
+        oldRotation = transform.rotation.eulerAngles; // Save old angle
+        previousSpeed = rb.linearVelocity.magnitude;
+    }
+
+
+    private int CalculateChargeCharge()
+    {
+        if (agent.remainingDistance < 12)
         {
             LayerMask obstacles = LayerMask.GetMask(Constants.DefaultLayer, Constants.PlayerLayer); // Set layers the raycast can be stopped by
             //Vector3 detectDirection = new Vector3(transform.forward.x, Mathf.Clamp(goal.transform.position.y - transform.position.y, -5, 4), transform.forward.z);
@@ -116,10 +196,11 @@ public class TankEnemyAI : BaseEnemy
             Physics.SphereCast(transform.position + viewPointOffset, 0.75f, transform.forward, out hit, 12, obstacles);
             if (hit.rigidbody != null) // Make sure something was hit before continuing
             {
+
                 if (hit.rigidbody.CompareTag(Constants.PlayerTag)) // If object found is player
                 {
                     chargeCharge += Time.fixedDeltaTime;
-                    detectSucceeded = true;
+                    return 2;
                 }
                 else
                 {
@@ -132,58 +213,43 @@ public class TankEnemyAI : BaseEnemy
                 chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
             }
 
-        }
-
-
-
-        targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
-        newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.03f, 0.0f); // Calculate next angle
-        transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
-
-        if (agent.remainingDistance < 12)
-        {
-            agent.speed = 0.1f;
-            if (!detectSucceeded)
+            Physics.SphereCast(transform.position + viewPointOffset, 0.75f, (goal.transform.position - (transform.position + viewPointOffset)).normalized, out hit, 12, obstacles);
+            if (hit.rigidbody != null) // Make sure something was hit before continuing
             {
-                agent.speed = BaseSpeed;
+                if (hit.rigidbody.CompareTag(Constants.PlayerTag)) // If object found is player
+                {
+                    chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
+                    return 1;
+                }
             }
-        }
-        else
-        {
 
-            agent.speed = BaseSpeed / turnReductionMult;
-        }
-        
-
-
-        if (chargeCharge > chargeActivationTime)
-        {
-            StartCoroutine(ChargeAtTarget());
         }
 
-        float angularVelocity = transform.rotation.eulerAngles.y - oldRotation.y; // Get angle difference from previous frame
-        turnReductionMult = 1 + (angularVelocity * 2);
-        //agent.angularSpeed = regularTurnSpeed * turnReductionMult * 2;
+        chargeCharge = Mathf.Max(0, chargeCharge - Time.fixedDeltaTime * 2);
+        return 0;
 
-        if (agent.isActiveAndEnabled)
-        {
-            agent.destination = goal.transform.position;
-        }
-
-        oldRotation = transform.rotation.eulerAngles; // Save old angle
-        previousSpeed = rb.linearVelocity.magnitude;
     }
 
+    private void HandleCharging()
+    {
+        Vector3 targetDir;
+        Vector3 newDir;
 
-    //private void OnDrawGizmos()
-    //{
-    //    Vector3 detectDirection = new Vector3(transform.forward.x, Mathf.Clamp(goal.transform.position.y - transform.position.y, -5, 4), transform.forward.z);
-    //    Gizmos.DrawLine(transform.position + viewPointOffset, transform.position + viewPointOffset + (detectDirection.normalized) * 3);
-    //}
+        currentCharging += Time.deltaTime;
 
+        if (rb.linearVelocity.magnitude < 0.5f && currentCharging < chargingMinTime) { return; }
 
+        if (rb.linearVelocity.magnitude > 2)
+        {
+            targetDir = new Vector3(goal.transform.position.x, transform.position.y, goal.transform.position.z) - transform.position; // Get target angle to turn towards
+            newDir = Vector3.RotateTowards(transform.forward, targetDir, 0.008f, 0.0f); // Calculate next angle
+            transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
+        }
 
+        Vector3 targetVel = transform.forward * currentChargeSpeed;
+        rb.linearVelocity = new Vector3(targetVel.x, rb.linearVelocity.y, targetVel.z);
 
+    }
 
 
     private void OnCollisionEnter(Collision collision)
@@ -266,7 +332,7 @@ public class TankEnemyAI : BaseEnemy
             isCharging = false;
             agent.enabled = true;
             rb.angularDamping = 15;
-            rb.linearDamping = 20;
+            rb.linearDamping = 0; //rb.linearDamping = 20;
             rb.linearVelocity = -transform.up;
             chargeCharge = 0;
             currentCharging = 0;
@@ -281,6 +347,35 @@ public class TankEnemyAI : BaseEnemy
         }
     }
 
+    private bool CheckCanAttack()
+    {
+        if (chargeCharge < chargeActivationTime)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /// <summary>
+    /// Spin the attached wheel objects
+    /// </summary>
+    /// <param name="leftSpeed">Speed of the left wheels</param>
+    /// <param name="rightSpeed">Speed of the right wheels</param>
+    private void RotateWheels(float leftSpeed, float rightSpeed)
+    {
+        foreach (GameObject wheel in leftWheels)
+        {
+            wheel.GetComponent<SimpleSpin>().spinSpeed = leftSpeed;
+        }
+
+        foreach (GameObject wheel in rightWheels)
+        {
+            wheel.GetComponent<SimpleSpin>().spinSpeed = rightSpeed;
+        }
+
+    }
 
 
     /// <summary>

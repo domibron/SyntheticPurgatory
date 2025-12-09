@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 // By Vince Pressey
 
@@ -11,10 +12,13 @@ public class MeleeEnemyAI : BaseEnemy
     /// </summary>
     private GameObject goal;
     /// <summary>
-    /// Target Location of the enemy
+    /// Goal Location
     /// </summary>
     private GameObject goalPos;
-
+    /// <summary>
+    /// Current Target location of the enemy
+    /// </summary>
+    private GameObject curTargetPos;
 
     /// <summary>
     /// Check if enemy has been alerted to player presence
@@ -88,6 +92,11 @@ public class MeleeEnemyAI : BaseEnemy
     [SerializeField]
     private Animator animator;
 
+    /// <summary>
+    /// Position of the enemy on start
+    /// </summary>
+    private Vector3 startPosition;
+
     void Start()
     {
         GetComponent<EnemyDetection>().onAlerted += BecomeAlerted;
@@ -97,10 +106,13 @@ public class MeleeEnemyAI : BaseEnemy
 
         agent = GetComponent<NavMeshAgent>();
 
+        startPosition = transform.position;
+
     }
 
     private void FixedUpdate()
     {
+        // Base enemy class logic
         if (enemyKnockedBack)
         {
             return;
@@ -111,13 +123,24 @@ public class MeleeEnemyAI : BaseEnemy
             return;
         }
 
-
-        if (!Alerted)
-        { 
-            return; 
+        // Movement
+        if (Alerted)
+        {
+            MoveToTarget(goalPos.transform.position, isAttacking ? baseSpeed / 16 : baseSpeed); // Move to target
+        }
+        else
+        {
+            if (Vector3.Distance(transform.position, startPosition) > 2)
+            {
+                MoveToTarget(startPosition, isAttacking ? baseSpeed / 16 : baseSpeed); // Move back to start position
+            }
+            else
+            {
+                RotateWheels(0, 0);
+            }
+            return;
         }
 
-        MoveToTarget(isAttacking ? baseSpeed / 16 : baseSpeed); // Movement
 
         curAttackCooldown -= Time.fixedDeltaTime;
         if (CheckCanAttack()) { InitiateAttack(); } // Attacking
@@ -128,12 +151,12 @@ public class MeleeEnemyAI : BaseEnemy
     /// <summary>
     /// Moves the object towards the target using navmesh, stops and turn when close to the target
     /// </summary>
-    public void MoveToTarget(float aimedBaseSpeed)
+    public void MoveToTarget(Vector3 target, float aimedBaseSpeed)
     {
-        agent.destination = goalPos.transform.position; // Set destination to goal's current position
+        agent.destination = target; // Set destination to goal's current position
         if (isAttacking)
         {
-            agent.destination = (transform.position * 7 + goalPos.transform.position) / 8;
+            agent.destination = (transform.position * 7 + target) / 8;
         }
 
 
@@ -156,12 +179,12 @@ public class MeleeEnemyAI : BaseEnemy
 
 
         // Swap to alternative movement if close enough to target
-        if (Vector3.Distance(transform.position, goalPos.transform.position) < attackRange)
+        if (Vector3.Distance(transform.position, target) < attackRange)
         {
             nextToSpeed = Mathf.Min(nextToSpeed + 0.02f, 1); // Increase rate of turning 
             agent.speed = 0; // Stop movement
 
-            Vector3 targetDir = goalPos.transform.position - transform.position; // Get target angle to turn towards
+            Vector3 targetDir = target - transform.position; // Get target angle to turn towards
             Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, nextToSpeed * 0.04f, 0.0f); // Calculate next angle
             transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
         }
@@ -177,6 +200,7 @@ public class MeleeEnemyAI : BaseEnemy
         RotateWheels(Mathf.Clamp(angularVelocity + agent.speed / 2, -1, 1), Mathf.Clamp(-angularVelocity + agent.speed / 2, -1, 1));
     }
 
+    #region Attacking
 
     /// <summary>
     /// Checks if the target is within reach
@@ -221,7 +245,6 @@ public class MeleeEnemyAI : BaseEnemy
         // Return true if all checks weren't triggered
         return true;
     }
-
 
     /// <summary>
     /// Start the attack
@@ -280,6 +303,7 @@ public class MeleeEnemyAI : BaseEnemy
 
     }
 
+    #endregion Attacking
 
     public override void GetUp()
     {
@@ -290,8 +314,8 @@ public class MeleeEnemyAI : BaseEnemy
     /// <summary>
     /// Spin the attached tread/wheel objects
     /// </summary>
-    /// <param name="leftSpeed">Speed of the left tread/wheel</param>
-    /// <param name="rightSpeed">Speed of the right tread/wheel</param>
+    /// <param name="leftSpeed">Speed of the left tread/wheels</param>
+    /// <param name="rightSpeed">Speed of the right tread/wheels</param>
     private void RotateWheels(float leftSpeed, float rightSpeed)
     {
         foreach (GameObject wheel in leftWheels)

@@ -8,10 +8,6 @@ using UnityEngine.AI;
 public class RangedEnemyAI : BaseEnemy
 {
     /// <summary>
-    /// NavmeshAgent component of the enemy
-    /// </summary>
-    private NavMeshAgent agent;
-    /// <summary>
     /// Target of the enemy
     /// </summary>
     private GameObject goal;
@@ -115,6 +111,10 @@ public class RangedEnemyAI : BaseEnemy
     [SerializeField]
     private float projectileSpeed = 10;
 
+    /// <summary>
+    /// Position of the enemy on start
+    /// </summary>
+    private Vector3 startPosition;
 
     void Start()
     {
@@ -122,6 +122,8 @@ public class RangedEnemyAI : BaseEnemy
 
         goal = Camera.main.gameObject;
         agent = GetComponent<NavMeshAgent>();
+
+        startPosition = transform.position;
     }
 
     private void FixedUpdate()
@@ -136,11 +138,24 @@ public class RangedEnemyAI : BaseEnemy
             return;
         }
 
+        // Movement and Aiming
+        if (Alerted)
+        {
+            MoveToTarget(goal.transform.position, true); // Move to target
+            LookAtTarget(goal.transform.position); // Aiming
+        }
+        else
+        {
+            if (Vector3.Distance(transform.position, startPosition) > 2)
+            {
+                MoveToTarget(startPosition, false); // Move back to start position
+                LookAtTarget(goal.transform.position); // Aiming
+            }
+            return;
+        }
+
+
         if (!Alerted) { return; }
-
-        MoveToTarget(); // Movement
-
-        LookAtTarget(); // Aiming
 
         curAttackCooldown -= Time.fixedDeltaTime;
         if (CheckCanAttack()) { InitiateAttack(); } // Attacking
@@ -150,9 +165,15 @@ public class RangedEnemyAI : BaseEnemy
     /// <summary>
     /// Move towards goal then stay a set distance away from it, flee when too close to target
     /// </summary>
-    public void MoveToTarget()
+    public void MoveToTarget(Vector3 target, bool persuing)
     {
-        agent.destination = goal.transform.position; // Set destination to goal's current position
+        agent.destination = target; // Set destination to goal's current position
+
+        if (!persuing)
+        {
+            agent.speed = BaseSpeed * followSpeedMult;
+            return;
+        }
 
         if (Vector3.Distance(agent.destination, transform.position) > minFollowRange) // Too far away from target
         {
@@ -160,7 +181,7 @@ public class RangedEnemyAI : BaseEnemy
         }
         else if(Vector3.Distance(agent.destination, transform.position) < maxFleeDistance) // Too close to target, start fleeing
         {
-            Vector3 targetPos = goal.transform.position - ((goal.transform.position - transform.position).normalized * minFollowRange); 
+            Vector3 targetPos = target - ((target - transform.position).normalized * minFollowRange); 
 
             NavMeshHit myNavHit;
             if (NavMesh.SamplePosition(targetPos, out myNavHit, 100, -1)) // Check if target destination is on navmesh and store nearest point
@@ -168,8 +189,8 @@ public class RangedEnemyAI : BaseEnemy
 
                 if (Vector3.Distance(myNavHit.position, targetPos) > maxStuckDistance) // Target is too close and destination is out of reach, likely stuck in corner
                 {
-                    Vector3 oldPosition = (goal.transform.position - transform.position).normalized; 
-                    agent.destination = goal.transform.position + (new Vector3(oldPosition.z, oldPosition.y, oldPosition.x) * 30); // Try another position
+                    Vector3 oldPosition = (target - transform.position).normalized; 
+                    agent.destination = target + (new Vector3(oldPosition.z, oldPosition.y, oldPosition.x) * 30); // Try another position
                     agent.speed = BaseSpeed * stuckSpeedMult;
                 }
                 else // Destination is within range to flee to, likely out in the open
@@ -206,15 +227,15 @@ public class RangedEnemyAI : BaseEnemy
     /// <summary>
     /// Slowly turn towards the target object and adjust gun to target player's Y coord
     /// </summary>
-    private void LookAtTarget()
+    private void LookAtTarget(Vector3 target)
     {
-        Vector3 targetDir = goal.transform.position - gunPosition.position; // Get target angle to turn towards
+        Vector3 targetDir = target - gunPosition.position; // Get target angle to turn towards
         Vector3 newDir = Vector3.RotateTowards(gunPosition.forward, targetDir, 0.05f, 0.0f); // Calculate next angle
         transform.rotation = Quaternion.LookRotation(newDir); // Apply rotation
 
 
         // I hate math
-        Vector3 relativePos = goal.transform.position - gunObject.position;
+        Vector3 relativePos = target - gunObject.position;
 
         Quaternion rotation = Quaternion.LookRotation(relativePos, new Vector3(0, 1, 0));
         gunObject.transform.rotation = rotation * Quaternion.Euler(0, -90, 0);
