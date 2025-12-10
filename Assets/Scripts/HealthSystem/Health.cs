@@ -53,7 +53,9 @@ public class Health : MonoBehaviour
     /// <summary>
     /// Called when adding to the health, the provided float is what to add to the health. new, old.
     /// </summary>
-    public event Action<float, float> OnHealthChanged;
+    public event OnHealthChangedDelegate OnHealthChanged; // * NOTE TO SELF: use a delegate as that allows you to change param names.
+
+    public delegate void OnHealthChangedDelegate(float newHealthValue, float oldHealthValue);
 
     protected virtual void Start()
     {
