@@ -13,6 +13,8 @@ public enum UpgradeType
 }
 
 
+// function passing for upgrading and downgrading. also need to store current upgrade amounts.
+
 
 
 public class StatUpgradeInfo
