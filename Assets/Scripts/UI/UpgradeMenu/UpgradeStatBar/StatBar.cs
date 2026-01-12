@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -42,6 +43,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     float getRightBound { get { return positionOffset; } }
 
     bool isBeingHovered = false;
+    bool isStationary = false;
+    Vector2 lastPos = Vector2.zero;
 
     const float slideLerpSpeed = 0.1f;
     float currentLerpValue = 0;
@@ -74,6 +77,21 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         addButtonWidth = addButton.sizeDelta.x;
         removeButtonWidth = removeButton.sizeDelta.x;
 
+
+
+        if (isBeingHovered && Pointer.current.position.value == lastPos)
+        {
+            isStationary = true;
+        }
+        else
+        {
+            isStationary = false;
+        }
+
+        lastPos = Pointer.current.position.value;
+
+
+
         if (isBeingHovered) currentLingerTime = lingerTime;
         else if (!isBeingHovered) currentLingerTime -= Time.deltaTime;
 
@@ -81,7 +99,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (currentLingerTime > 0 && currentLerpValue <= 1) currentLerpValue += Time.deltaTime * (1 / slideLerpSpeed);
         else if (currentLingerTime <= 0 && currentLerpValue > 0) currentLerpValue -= Time.deltaTime * (1 / slideLerpSpeed);
 
-        if (isBeingHovered)
+        if (isStationary)
         {
             if (hoverTime > 0) hoverTime -= Time.deltaTime;
 
