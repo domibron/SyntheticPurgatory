@@ -27,7 +27,7 @@ public class GameStatsManager : MonoBehaviour
     private static GameStatsManager instance;
 
     [SerializeField]
-    private StatData[] baseStats = new StatData[0];
+    private StatData[] baseStats = new StatData[0]; // This store the raw stat classes, aka the scriptable objects.
 
 
     private Dictionary<Stats, object> statClasses = new Dictionary<Stats, object>();
@@ -196,6 +196,8 @@ public class GameStatsManager : MonoBehaviour
 
     //     return (T)Convert.ChangeType(value, typeof(T));
     // }
+
+    // * NOTE: This function below is for loading the base from file so they can be used else where and have a modifiable copy at runtime. 
 
     /// <summary>
     /// Gets the stats data with the given key or null.
