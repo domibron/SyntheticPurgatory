@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public class MiscellaneousStats : ICloneable
 {
-    public float MaxCollectionRange = 1.5f;
+    public UpgradablePlayerStat MaxCollectionRangeStat = new(1.5f);
     public float CollectItemIntoInventoryRange = 1f;
 
     public float FlyAccel = 15f;
@@ -13,19 +13,19 @@ public class MiscellaneousStats : ICloneable
 
     public float DepositRate = 0.5f;
 
-    public int MaxInventoryScrap = 100;
+    public UpgradablePlayerStat MaxInventoryScrapStat = new(100);
 
     public int ScrapRangeUpgradeAmount = 0;
 
-    public float MaxLevelTime = 120f;
+    public UpgradablePlayerStat MaxLevelTimeStat = new(120f);
 
-    public float CriticalHitChance = 0.1f;
+    public UpgradablePlayerStat CriticalHitChanceStat = new(0.1f);
 
     public object Clone()
     {
         return new MiscellaneousStats
         {
-            MaxCollectionRange = MaxCollectionRange,
+            MaxCollectionRangeStat = (UpgradablePlayerStat)MaxCollectionRangeStat.Clone(),
             CollectItemIntoInventoryRange = CollectItemIntoInventoryRange,
 
             FlyAccel = FlyAccel,
@@ -34,13 +34,13 @@ public class MiscellaneousStats : ICloneable
 
             DepositRate = DepositRate,
 
-            MaxInventoryScrap = MaxInventoryScrap,
+            MaxInventoryScrapStat = (UpgradablePlayerStat)MaxInventoryScrapStat.Clone(),
 
             ScrapRangeUpgradeAmount = ScrapRangeUpgradeAmount,
 
-            MaxLevelTime = MaxLevelTime,
+            MaxLevelTimeStat = (UpgradablePlayerStat)MaxLevelTimeStat.Clone(),
 
-            CriticalHitChance = CriticalHitChance,
+            CriticalHitChanceStat = (UpgradablePlayerStat)CriticalHitChanceStat.Clone(),
         };
     }
 

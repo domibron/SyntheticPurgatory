@@ -1,7 +1,13 @@
 using System;
 using UnityEngine;
 
-
+public enum UpgradeType
+{
+    PlayerStats,
+    Ranged,
+    Melee,
+    Misc,
+}
 
 [Serializable]
 public class UpgradeWheelSlot

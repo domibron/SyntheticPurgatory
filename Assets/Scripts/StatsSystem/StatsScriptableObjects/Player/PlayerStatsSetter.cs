@@ -21,8 +21,8 @@ public class PlayerStatsSetter : MonoBehaviour
 
     private void SetAllStats(PlayerStats stats)
     {
-        if (stats != null) GetComponent<Health>().SetMaxHealth(stats.MaxHealth);
-        if (stats != null) GetComponent<Regeneration>().SetUpRegeneration(stats.RegenerationSpeed / stats.RegenerationAmount, 3f);
+        if (stats != null) GetComponent<Health>().SetMaxHealth(stats.MaxHealthStat.CurrentValue);
+        if (stats != null) GetComponent<Regeneration>().SetUpRegeneration(stats.RegenerationSpeed / stats.RegenerationAmountStat.CurrentValue, 3f);
         GetComponent<PlayerCombat>().UpdateVariablesWithStats(stats);
         GetComponent<PlayerMovement>().UpdateVariablesWithStats(stats);
     }
