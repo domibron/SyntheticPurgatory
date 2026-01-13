@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,6 +27,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField]
     RectTransform removeButton;
 
+    RectTransform currentRect;
 
     string statText = "STAT";
 
@@ -38,11 +40,19 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     float chipAmount = 0;
 
     float parentWidth = 0;
+    float parentHeight = 0;
     float positionOffset = 0;
     float getLeftBound { get { return positionOffset - parentWidth; } }
     float getRightBound { get { return positionOffset; } }
 
     bool isBeingHovered = false;
+    enum HoveringOver
+    {
+        StatBar,
+        RemoveButton,
+        AddButton,
+    }
+    HoveringOver hoveringOver = HoveringOver.StatBar;
     bool isStationary = false;
     Vector2 lastPos = Vector2.zero;
 
@@ -51,7 +61,10 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     const float lingerTime = 0.2f;
     float currentLingerTime = 0;
 
+    bool addButtonEnabled = true;
     float addButtonWidth = 0;
+
+    bool removeButtonEnabled = true;
     float removeButtonWidth = 0;
 
     const float hoverTimeBeforeToolTip = 1f;
@@ -63,13 +76,17 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         parentWidth = 0;
         currentLerpValue = 0f;
 
+        currentRect = GetComponent<RectTransform>();
+
+
         SetUpStat(20, 50, 20, 10);
     }
 
     void Update()
     {
         total = currentAmount + upgradedAmount + upgradeAboutAmount + chipAmount;
-        parentWidth = GetComponent<RectTransform>().sizeDelta.x + parentContainer.sizeDelta.x;
+        parentWidth = currentRect.sizeDelta.x + parentContainer.sizeDelta.x;
+        parentHeight = currentRect.sizeDelta.y + parentContainer.sizeDelta.y;
         positionOffset = parentWidth / 2f;
 
 
@@ -92,7 +109,21 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
 
 
-        if (isBeingHovered) currentLingerTime = lingerTime;
+        if (isBeingHovered)
+        {
+            currentLingerTime = lingerTime;
+
+            Vector3 pos = currentRect.position;
+
+            if (lastPos.x <= pos.x + getLeftBound + removeButtonWidth && lastPos.x >= pos.x + getLeftBound &&
+                lastPos.y <= pos.y + (parentHeight / 2f) && lastPos.y >= pos.y - (parentHeight / 2f) && removeButtonEnabled)
+                hoveringOver = HoveringOver.RemoveButton;
+            else if (lastPos.x <= pos.x + getRightBound && lastPos.x >= pos.x + getRightBound - addButtonWidth &&
+                lastPos.y <= pos.y + (parentHeight / 2f) && lastPos.y >= pos.y - (parentHeight / 2f) && addButtonEnabled)
+                hoveringOver = HoveringOver.AddButton;
+            else
+                hoveringOver = HoveringOver.StatBar;
+        }
         else if (!isBeingHovered) currentLingerTime -= Time.deltaTime;
 
 
@@ -105,7 +136,18 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
             if (ToolTipTextDisplay.Instance != null && hoverTime <= 0)
             {
-                ToolTipTextDisplay.Instance.SetDisplayText("STAT STAT STAT");
+                switch (hoveringOver)
+                {
+                    case HoveringOver.StatBar:
+                        ToolTipTextDisplay.Instance.SetDisplayText("STAT STAT STAT");
+                        break;
+                    case HoveringOver.RemoveButton:
+                        ToolTipTextDisplay.Instance.SetDisplayText("REMOVE STAT");
+                        break;
+                    case HoveringOver.AddButton:
+                        ToolTipTextDisplay.Instance.SetDisplayText("ADD STAT");
+                        break;
+                }
             }
         }
         else
@@ -113,8 +155,16 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             hoverTime = hoverTimeBeforeToolTip;
         }
 
-        addButton.localPosition = new Vector3(Mathf.Lerp(getRightBound + addButtonWidth, getRightBound, currentLerpValue), addButton.localPosition.y, addButton.localPosition.z);
-        removeButton.localPosition = new Vector3(Mathf.Lerp(getLeftBound - removeButtonWidth, getLeftBound, currentLerpValue), removeButton.localPosition.y, removeButton.localPosition.z);
+        if (addButtonEnabled)
+            addButton.localPosition = new Vector3(Mathf.Lerp(getRightBound + addButtonWidth, getRightBound, currentLerpValue), addButton.localPosition.y, addButton.localPosition.z);
+        else
+            addButton.localPosition = new Vector3(Mathf.Lerp(getRightBound + addButtonWidth, getRightBound, 0), addButton.localPosition.y, addButton.localPosition.z);
+
+
+        if (removeButtonEnabled)
+            removeButton.localPosition = new Vector3(Mathf.Lerp(getLeftBound - removeButtonWidth, getLeftBound, currentLerpValue), removeButton.localPosition.y, removeButton.localPosition.z);
+        else
+            removeButton.localPosition = new Vector3(Mathf.Lerp(getLeftBound - removeButtonWidth, getLeftBound, 0), removeButton.localPosition.y, removeButton.localPosition.z);
 
 
         UpdateStatBar();

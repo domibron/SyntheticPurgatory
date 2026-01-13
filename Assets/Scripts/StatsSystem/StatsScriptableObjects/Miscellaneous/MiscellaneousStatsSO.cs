@@ -5,7 +5,7 @@ using UnityEngine;
 public class MiscellaneousStats : ICloneable
 {
     public float MaxCollectionRange = 1.5f;
-    public float CollectItemRange = 1f;
+    public float CollectItemIntoInventoryRange = 1f;
 
     public float FlyAccel = 15f;
     public float FlyMaxSpeed = 30f;
@@ -26,7 +26,7 @@ public class MiscellaneousStats : ICloneable
         return new MiscellaneousStats
         {
             MaxCollectionRange = MaxCollectionRange,
-            CollectItemRange = CollectItemRange,
+            CollectItemIntoInventoryRange = CollectItemIntoInventoryRange,
 
             FlyAccel = FlyAccel,
             FlyMaxSpeed = FlyMaxSpeed,
