@@ -180,23 +180,23 @@ public class PlayerCombat : MonoBehaviour
             // return;
         }
 
-        projectileDamage = stats.ProjectileDamage;
-        rechargeRate = stats.RechargeRate;
-        shotsPerFullCharge = (int)stats.ShotsPerFullCharge;
+        projectileDamage = stats.ProjectileDamageStat.CurrentValue;
+        rechargeRate = stats.RechargeRateStat.CurrentValue;
+        shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.CurrentValue;
         standardSecondsPerShot = stats.StandardSecondsPerShot;
         chargedSecondsPerShot = stats.ChargedSecondsPerShot;
         delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
-        overheatForceCoolDown = stats.OverheatForceCooldown;
+        overheatForceCoolDown = stats.OverheatForceCooldownStat.CurrentValue;
         // projectileFireRate = stats.ProjectileFireRate;
         // projectileMagSize = stats.ProjectileMagSize;
 
-        meleeAttackDelay = stats.MeleeAttackDelay;
-        meleeDamage = stats.MeleeDamage;
-        meleeBounds.z = stats.MeleeReach;
+        meleeAttackDelay = stats.MeleeAttackDelayStat.CurrentValue;
+        meleeDamage = stats.MeleeDamageStat.CurrentValue;
+        meleeBounds.z = stats.MeleeReachStat.CurrentValue;
 
 
-        kickForce = stats.KickForce;
-        kickAttackDelay = stats.KickAttackDelay;
+        kickForce = stats.KickForceStat.CurrentValue;
+        kickAttackDelay = stats.KickAttackDelayStat.CurrentValue;
         // reloadTime = stats.ReloadTime;
         // rechargeRate = stats.ReloadTime;
 

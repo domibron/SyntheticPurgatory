@@ -317,18 +317,18 @@ public class PlayerMovement : MonoBehaviour
             // return;
         }
 
-        groundSpeed = stats.GroundSpeed;
+        groundSpeed = stats.GroundSpeedStat.CurrentValue;
         airSpeed = stats.AirSpeed;
 
-        grAccel = stats.GroundSpeed * stats.GroundAccelerationPercentBase;
+        grAccel = stats.GroundSpeedStat.CurrentValue * stats.GroundAccelerationPercentBase;
         airAccel = stats.AirSpeed * stats.AirAccelerationPercentBase;
 
         jumpUpSpeed = stats.JumpForce;
         // slideBoostForce = stats.SlideBoostForce;
         // airBoostForce = stats.AirBoostForce;
 
-        slideBoostForce = stats.GroundSpeed * stats.SlideBoostPercentage;
-        airBoostForce = stats.AirSpeed * stats.AirBoostPercentage;
+        slideBoostForce = stats.GroundSpeedStat.CurrentValue * stats.SlideBoostPercentageStat.CurrentValue;
+        airBoostForce = stats.AirSpeed * stats.AirBoostPercentageStat.CurrentValue;
 
         groundFriction = stats.GroundFriction;
         airFriction = stats.AirFriction;

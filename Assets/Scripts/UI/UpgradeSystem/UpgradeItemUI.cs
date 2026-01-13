@@ -1,29 +1,31 @@
-using TMPro;
-using UnityEngine;
+// using TMPro;
+// using UnityEngine;
 
-public class UpgradeItemUI : MonoBehaviour
-{
-    [SerializeField]
-    private UpgradeSystem upgradeSystem;
+// This is the v2 upgrade system, this is now depricated.
 
-    [SerializeField]
-    private UpgradeType upgradeType = UpgradeType.Ranged;
+// public class UpgradeItemUI : MonoBehaviour
+// {
+//     [SerializeField]
+//     private UpgradeSystem upgradeSystem;
 
-    [SerializeField]
-    private TMP_Text InfoText;
+//     [SerializeField]
+//     private UpgradeType upgradeType = UpgradeType.Ranged;
 
-    public void SetText(string text)
-    {
-        InfoText.text = text;
-    }
+//     [SerializeField]
+//     private TMP_Text InfoText;
 
-    public UpgradeType GetUpgradeType()
-    {
-        return upgradeType;
-    }
+//     public void SetText(string text)
+//     {
+//         InfoText.text = text;
+//     }
 
-    public void OnClick()
-    {
-        upgradeSystem.UpgradeSelected(upgradeType);
-    }
-}
+//     public UpgradeType GetUpgradeType()
+//     {
+//         return upgradeType;
+//     }
+
+//     public void OnClick()
+//     {
+//         upgradeSystem.UpgradeSelected(upgradeType);
+//     }
+// }
