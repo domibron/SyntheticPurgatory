@@ -1,8 +1,8 @@
-// using System;
-// using System.Collections.Generic;
-// using TMPro;
-// using Unity.Mathematics;
-// using UnityEngine;
+using System;
+using System.Collections.Generic;
+using TMPro;
+using Unity.Mathematics;
+using UnityEngine;
 
 // rest in peace v2 upgrade system (v1 was epic, v1.5 was a cool idea, now this one is deprecated becuase HOLY FUCK).
 
@@ -1085,592 +1085,593 @@
 // }
 
 // // TODO: Refactor, this hurts me.
-// public class UpgradeSystem : MonoBehaviour
-// {
-//     [Serializable]
-//     private class UpgradeData
-//     {
-//         public UpgradeType UpgradeType;
-//         public int ID;
-//         public int Amount;
-
-//         public UpgradeData(UpgradeType type, int id, int amount)
-//         {
-//             UpgradeType = type;
-//             ID = id;
-//             Amount = amount;
-//         }
-//     }
-
-//     [Serializable]
-//     private class UpgradeChoice
-//     {
-//         public UpgradeData Upgrade;
-//         public UpgradeData Downgrade;
-
-//         public UpgradeChoice(UpgradeData upgrade, UpgradeData downgrade)
-//         {
-//             Upgrade = upgrade;
-//             Downgrade = downgrade;
-//         }
-//     }
-
-//     StatUpgrades playerStatUpgrades = new();
-//     RangedUpgrades rangedUpgrades = new();
-//     MeleeUpgrades meleeUpgrades = new();
-//     MiscellaneousUpgrades miscellaneousUpgrades = new();
-
-
-//     UpgradeChoice[] upgradeChoices;
-
-//     CardTier currentCardTier;
-
-//     [SerializeField]
-//     UpgradeItemUI[] upgradeItemUIs;
-
-//     [SerializeField]
-//     GameObject chooseUpgradeCardScreen;
-
-//     [SerializeField]
-//     TMP_Text cardScrappedText;
-
-//     private float fadeDuration = 1f;
-
-//     private float currentFadeTime = 0f;
-
-//     [SerializeField]
-//     GameObject upgradeChoicesScreen;
-
-//     [SerializeField]
-//     GameObject upgradedTheStatsScreen;
-
-//     [SerializeField]
-//     TMP_Text newStatsDisplay;
-
-//     [SerializeField]
-//     int commonOpenCost;
-
-//     [SerializeField]
-//     int commonOpenIncreaseAmount;
-
-//     [SerializeField]
-//     int rareOpenCost;
-
-//     [SerializeField]
-//     int rareOpenIncreaseAmount;
-
-//     [SerializeField]
-//     int epicOpenCost;
-
-//     [SerializeField]
-//     int epicOpenIncreaseAmount;
-
-//     [SerializeField]
-//     TMP_Text scrapThisCardText;
-
-//     private enum ScreenType
-//     {
-//         OpenCard,
-//         ChooseUpgrade,
-//         StatsUpgraded,
-//     }
-
-//     void Start()
-//     {
-//         ShowScreen(ScreenType.OpenCard);
-//     }
-
-//     void Update()
-//     {
-//         if (Input.GetKeyDown(KeyCode.Space))
-//         {
-//             ShowScreen(ScreenType.OpenCard);
-//             // int ran = UnityEngine.Random.Range(0, 3);
-//             // OpenCard((CardTeir)ran);
-//             // print(((CardTeir)ran).ToString());
-//         }
-
-//         if (currentFadeTime > 0) // Needs rework for new format
-//         {
-//             cardScrappedText.gameObject.SetActive(true);
-//             currentFadeTime -= Time.deltaTime;
-//             cardScrappedText.alpha = EasingFunctions.EaseOutQuint(currentFadeTime / fadeDuration);
-//         }
-//         else
-//         {
-//             cardScrappedText.gameObject.SetActive(false);
-//         }
-//     }
-
-//     public int GetCardOpenCost(CardTier cardTeir)
-//     {
-//         switch (cardTeir)
-//         {
-//             case CardTier.Common:
-//                 return commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//             case CardTier.Rare:
-//                 return rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//             case CardTier.Epic:
-//                 return epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//         }
-
-//         return -1;
-//     }
-
-//     private void ShowScreen(ScreenType screenType)
-//     {
-//         switch (screenType)
-//         {
-//             case ScreenType.OpenCard:
-//                 chooseUpgradeCardScreen.SetActive(true);
-//                 upgradeChoicesScreen.SetActive(false);
-//                 upgradedTheStatsScreen.SetActive(false);
-//                 break;
-//             case ScreenType.ChooseUpgrade:
-//                 chooseUpgradeCardScreen.SetActive(false);
-//                 upgradeChoicesScreen.SetActive(true);
-//                 upgradedTheStatsScreen.SetActive(false);
-//                 break;
-//             case ScreenType.StatsUpgraded:
-//                 chooseUpgradeCardScreen.SetActive(false);
-//                 upgradeChoicesScreen.SetActive(false);
-//                 upgradedTheStatsScreen.SetActive(true);
-//                 break;
-//         }
-//     }
-
-//     public void UpgradeSelected(UpgradeType upgradeType)
-//     {
-//         UpgradeChoice upgradeChoice = null;
-
-//         print(upgradeChoices.Length);
-
-//         foreach (UpgradeChoice choice in upgradeChoices)
-//         {
-//             print("gabba" + choice);
-//             if (choice.Upgrade.UpgradeType == upgradeType) upgradeChoice = choice;
-//         }
-
-//         newStatsDisplay.text = GetUpgradedDisplayText(upgradeChoice);
-//         ShowScreen(ScreenType.StatsUpgraded);
-
-
-//         UpgradeStat(upgradeChoice);
-//     }
-
-//     public void OpenCard(CardTier cardTier)
-//     {
-//         if (GameManager.Instance.GetCurrentScrapCount() < GetCardOpenCost(cardTier)) return; // cant open the card
-
-//         if (GameManager.Instance.GetCardCount(cardTier) < 1) return; // if we have none of said card type.
-
-//         currentCardTier = cardTier;
-//         GameManager.Instance.RemoveFromDepositedScrap(GetCardOpenCost(currentCardTier));
-//         GameManager.Instance.RemoveFromStoredCards(currentCardTier, 1);
-//         RandomUpgrades(currentCardTier);
-//         scrapThisCardText.text = "Worth: " + GetCardOpenCost(currentCardTier).ToString() + " Scrap";
-//         ShowScreen(ScreenType.ChooseUpgrade);
-//     }
-
-//     public void ScrapCurrentCard()
-//     {
-//         int giveAmount = 0;
-
-//         switch (currentCardTier)
-//         {
-//             case CardTier.Common:
-//                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//                 break;
-//             case CardTier.Rare:
-//                 giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//                 break;
-//             case CardTier.Epic:
-//                 giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//                 break;
-//         }
-
-//         GameManager.Instance.AddToDepositedScrap(giveAmount);
-
-//         cardScrappedText.text = $"{currentCardTier.ToString()} scrapped for {giveAmount}";
-//         currentFadeTime = fadeDuration;
-//         ShowScreen(ScreenType.OpenCard);
-//     }
-
-//     public void ScrapCard(CardTier cardTier)
-//     {
-//         if (GameManager.Instance.GetCardCount(cardTier) < 1) return;
-
-//         int giveAmount = 0;
-
-//         switch (cardTier)
-//         {
-//             case CardTier.Common:
-//                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//                 break;
-//             case CardTier.Rare:
-//                 giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//                 break;
-//             case CardTier.Epic:
-//                 giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
-//                 break;
-//         }
-
-//         GameManager.Instance.RemoveFromStoredCards(cardTier, 1);
-//         GameManager.Instance.AddToDepositedScrap(giveAmount);
-
-//         cardScrappedText.text = $"{currentCardTier.ToString()} scrapped for {giveAmount}";
-//         currentFadeTime = fadeDuration;
-//     }
-
-//     public void GoToOpenScreen()
-//     {
-//         ShowScreen(ScreenType.OpenCard);
-//     }
-
-//     private void RandomUpgrades(CardTier cardTeir)
-//     {
-//         // int upAmount;
-//         // int downAmount;
-
-
-//         (int upAmount, int downAmount) = GameManager.Instance.GetUPandDOWNAmounts(cardTeir);
-
-
-
-//         upgradeChoices = GenerateUpgradeChoices(upAmount, downAmount);
-
-//         for (int i = 0; i < 4; i++)
-//         {
-//             upgradeItemUIs[i].SetText(GetDisplayText(upgradeChoices[i]));
-//         }
-//     }
-
-//     private string GetDisplayText(UpgradeChoice upgradeChoice)
-//     {
-//         string returnedText = "";
-
-//         string upgradeName = "NAME";
-//         string currentAmountForUpgradeType = "CURRENT AMOUNT";
-//         string newAmount = "CURRENT AMOUNT";
-//         string upgradeAmount = "INCRASE AMOUNT";
-
-//         switch (upgradeChoice.Upgrade.UpgradeType)
-//         {
-//             case UpgradeType.PlayerStats:
-//                 upgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 currentAmountForUpgradeType = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 newAmount = playerStatUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 upgradeAmount = playerStatUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//             case UpgradeType.Ranged:
-//                 upgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 currentAmountForUpgradeType = rangedUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 newAmount = rangedUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 upgradeAmount = rangedUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//             case UpgradeType.Melee:
-//                 upgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 currentAmountForUpgradeType = meleeUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 newAmount = meleeUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 upgradeAmount = meleeUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//             case UpgradeType.Misc:
-//                 upgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 currentAmountForUpgradeType = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 newAmount = miscellaneousUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 upgradeAmount = miscellaneousUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//         }
-
-//         bool isUpgradeNegative = upgradeAmount[0] == '-';
-
-//         if (isUpgradeNegative) upgradeAmount = upgradeAmount.Substring(1);
-
-//         char sign = (isUpgradeNegative ? '-' : '+');
-
-//         returnedText += $"<color=green>+ {upgradeName} ({currentAmountForUpgradeType}) -> ({newAmount}) [{sign}{upgradeAmount}]</color>";
-
-
-//         if (upgradeChoice.Downgrade.Amount <= 0) return returnedText;
-
-//         string downgradeName = "NAME";
-//         string currentAmountForDowngradeType = "CURRENT AMOUNT";
-//         string downgradeAmount = "DECREASE AMOUNT";
-
-//         switch (upgradeChoice.Downgrade.UpgradeType)
-//         {
-//             case UpgradeType.PlayerStats:
-//                 downgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 currentAmountForDowngradeType = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 newAmount = playerStatUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 downgradeAmount = playerStatUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//             case UpgradeType.Ranged:
-//                 downgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 currentAmountForDowngradeType = rangedUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 newAmount = rangedUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 downgradeAmount = rangedUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//             case UpgradeType.Melee:
-//                 downgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 currentAmountForDowngradeType = meleeUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 newAmount = meleeUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 downgradeAmount = meleeUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//             case UpgradeType.Misc:
-//                 downgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 currentAmountForDowngradeType = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 newAmount = miscellaneousUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 downgradeAmount = miscellaneousUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//         }
-
-
-//         bool isDowngradeNegative = downgradeAmount[0] == '-';
-
-//         if (isDowngradeNegative) downgradeAmount = downgradeAmount.Substring(1);
-
-//         sign = (isDowngradeNegative ? '-' : '+');
-
-//         returnedText += $"\n\n<color=red>- {downgradeName} ({currentAmountForDowngradeType}) -> ({newAmount}) [{sign}{downgradeAmount}]</color>";
-
-//         return returnedText;
-//     }
-
-//     private string GetUpgradedDisplayText(UpgradeChoice upgradeChoice)
-//     {
-//         string returnedText = "";
-
-//         string upgradeName = "NAME";
-//         string newCurrent = "CURRENT AMOUNT";
-//         string oldCurrent = "INCRASE AMOUNT";
-
-//         switch (upgradeChoice.Upgrade.UpgradeType)
-//         {
-//             case UpgradeType.PlayerStats:
-//                 upgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 newCurrent = playerStatUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 oldCurrent = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 break;
-//             case UpgradeType.Ranged:
-//                 upgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 newCurrent = rangedUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 oldCurrent = rangedUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 break;
-//             case UpgradeType.Melee:
-//                 upgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 newCurrent = meleeUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 oldCurrent = meleeUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 break;
-//             case UpgradeType.Misc:
-//                 upgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
-//                 newCurrent = miscellaneousUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 oldCurrent = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
-//                 break;
-//         }
-
-//         returnedText += $"<color=green>+ {upgradeName} ({oldCurrent}) -> ({newCurrent})</color>";
-
-
-//         if (upgradeChoice.Downgrade.Amount <= 0) return returnedText;
-
-//         string downgradeName = "NAME";
-//         string newCurrentForDowngrade = "CURRENT AMOUNT";
-//         string oldDowngradeCurrent = "DECREASE AMOUNT";
-
-//         switch (upgradeChoice.Downgrade.UpgradeType)
-//         {
-//             case UpgradeType.PlayerStats:
-//                 downgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 newCurrentForDowngrade = playerStatUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 oldDowngradeCurrent = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 break;
-//             case UpgradeType.Ranged:
-//                 downgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 newCurrentForDowngrade = rangedUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 oldDowngradeCurrent = rangedUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 break;
-//             case UpgradeType.Melee:
-//                 downgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 newCurrentForDowngrade = meleeUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 oldDowngradeCurrent = meleeUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 break;
-//             case UpgradeType.Misc:
-//                 downgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
-//                 newCurrentForDowngrade = miscellaneousUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 oldDowngradeCurrent = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
-//                 break;
-//         }
-
-
-//         returnedText += $"\n\n<color=red>- {downgradeName} ({oldDowngradeCurrent}) -> ({newCurrentForDowngrade})</color>";
-
-//         return returnedText;
-//     }
-
-//     private void UpgradeStat(UpgradeChoice upgradeChoice)
-//     {
-//         switch (upgradeChoice.Upgrade.UpgradeType)
-//         {
-//             case UpgradeType.PlayerStats:
-//                 playerStatUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//             case UpgradeType.Ranged:
-//                 rangedUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//             case UpgradeType.Melee:
-//                 meleeUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//             case UpgradeType.Misc:
-//                 miscellaneousUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
-//                 break;
-//         }
-
-//         if (upgradeChoice.Downgrade.Amount <= 0) return;
-
-//         switch (upgradeChoice.Downgrade.UpgradeType)
-//         {
-//             case UpgradeType.PlayerStats:
-//                 playerStatUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//             case UpgradeType.Ranged:
-//                 rangedUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//             case UpgradeType.Melee:
-//                 meleeUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//             case UpgradeType.Misc:
-//                 miscellaneousUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
-//                 break;
-//         }
-//     }
-
-
-//     private UpgradeChoice[] GenerateUpgradeChoices(int upgradeAmount, int downgradeAmount)
-//     {
-//         UpgradeChoice[] choices = new UpgradeChoice[4];
-
-//         for (int i = 0; i < 4; i++)
-//         {
-//             choices[i] = GetRandomBaseOnCatagory((UpgradeType)i, upgradeAmount, downgradeAmount);
-//         }
-
-//         return choices;
-//     }
-
-//     private UpgradeChoice GetRandomBaseOnCatagory(UpgradeType upgradeType, int upgradeAmount, int downgradeAmount)
-//     {
-//         return new UpgradeChoice(GetRandomUpgradeForType(upgradeType, upgradeAmount), GetDowngradeExcludingType(upgradeType, downgradeAmount));
-//     }
-
-//     private UpgradeData GetRandomUpgradeForType(UpgradeType upgradeType, int amount)
-//     {
-//         UpgradeData upgradeData = null;
-
-//         switch (upgradeType)
-//         {
-//             case UpgradeType.Melee:
-//                 return upgradeData = new UpgradeData(UpgradeType.Melee, meleeUpgrades.GetRandomUpgradeID(), amount);
-//             case UpgradeType.Misc:
-//                 return upgradeData = new UpgradeData(UpgradeType.Misc, miscellaneousUpgrades.GetRandomUpgradeID(), amount);
-//             case UpgradeType.PlayerStats:
-//                 return upgradeData = new UpgradeData(UpgradeType.PlayerStats, playerStatUpgrades.GetRandomUpgradeID(), amount);
-//             case UpgradeType.Ranged:
-//                 return upgradeData = new UpgradeData(UpgradeType.Ranged, rangedUpgrades.GetRandomUpgradeID(), amount);
-//             default:
-//                 return null;
-//         }
-//     }
-
-//     private UpgradeData GetDowngradeExcludingType(UpgradeType upgradeType, int amount)
-//     {
-//         int rand = UnityEngine.Random.Range(1, 4); // this only goes to 3 but we want that.
-//         /*
-//         1 - player stats
-//         2 - range stats
-//         3 - melee stats
-//         4 - misc stats
-//         */
-
-//         switch (upgradeType)
-//         {
-//             case UpgradeType.Melee:
-//                 if (rand == 1)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.PlayerStats, amount);
-//                 }
-//                 else if (rand == 2)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Ranged, amount);
-//                 }
-//                 else if (rand == 3)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Misc, amount);
-//                 }
-//                 break;
-//             case UpgradeType.Misc:
-//                 if (rand == 1)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.PlayerStats, amount);
-//                 }
-//                 else if (rand == 2)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Ranged, amount);
-//                 }
-//                 else if (rand == 3)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Melee, amount);
-//                 }
-//                 break;
-//             case UpgradeType.PlayerStats:
-//                 if (rand == 1)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Ranged, amount);
-//                 }
-//                 else if (rand == 2)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Melee, amount);
-//                 }
-//                 else if (rand == 3)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Misc, amount);
-//                 }
-//                 break;
-//             case UpgradeType.Ranged:
-//                 if (rand == 1)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.PlayerStats, amount);
-//                 }
-//                 else if (rand == 2)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Melee, amount);
-//                 }
-//                 else if (rand == 3)
-//                 {
-//                     return GetDowngradeForType(UpgradeType.Misc, amount);
-//                 }
-//                 break;
-//         }
-//         return null;
-//     }
-
-//     private UpgradeData GetDowngradeForType(UpgradeType upgradeType, int amount)
-//     {
-//         UpgradeData upgradeData = null;
-
-//         switch (upgradeType)
-//         {
-//             case UpgradeType.Melee:
-//                 return upgradeData = new UpgradeData(UpgradeType.Melee, meleeUpgrades.GetRandomUpgradeID(), amount);
-//             case UpgradeType.Misc:
-//                 return upgradeData = new UpgradeData(UpgradeType.Misc, miscellaneousUpgrades.GetRandomUpgradeID(), amount);
-//             case UpgradeType.PlayerStats:
-//                 return upgradeData = new UpgradeData(UpgradeType.PlayerStats, playerStatUpgrades.GetRandomUpgradeID(), amount);
-//             case UpgradeType.Ranged:
-//                 return upgradeData = new UpgradeData(UpgradeType.Ranged, rangedUpgrades.GetRandomUpgradeID(), amount);
-//             default:
-//                 return null;
-//         }
-//     }
-// }
+[Obsolete("V2 of the upgrade system has been replaced with V3", true)]
+public class UpgradeSystem : MonoBehaviour
+{
+    //     [Serializable]
+    //     private class UpgradeData
+    //     {
+    //         public UpgradeType UpgradeType;
+    //         public int ID;
+    //         public int Amount;
+
+    //         public UpgradeData(UpgradeType type, int id, int amount)
+    //         {
+    //             UpgradeType = type;
+    //             ID = id;
+    //             Amount = amount;
+    //         }
+    //     }
+
+    //     [Serializable]
+    //     private class UpgradeChoice
+    //     {
+    //         public UpgradeData Upgrade;
+    //         public UpgradeData Downgrade;
+
+    //         public UpgradeChoice(UpgradeData upgrade, UpgradeData downgrade)
+    //         {
+    //             Upgrade = upgrade;
+    //             Downgrade = downgrade;
+    //         }
+    //     }
+
+    //     StatUpgrades playerStatUpgrades = new();
+    //     RangedUpgrades rangedUpgrades = new();
+    //     MeleeUpgrades meleeUpgrades = new();
+    //     MiscellaneousUpgrades miscellaneousUpgrades = new();
+
+
+    //     UpgradeChoice[] upgradeChoices;
+
+    //     CardTier currentCardTier;
+
+    //     [SerializeField]
+    //     UpgradeItemUI[] upgradeItemUIs;
+
+    //     [SerializeField]
+    //     GameObject chooseUpgradeCardScreen;
+
+    //     [SerializeField]
+    //     TMP_Text cardScrappedText;
+
+    //     private float fadeDuration = 1f;
+
+    //     private float currentFadeTime = 0f;
+
+    //     [SerializeField]
+    //     GameObject upgradeChoicesScreen;
+
+    //     [SerializeField]
+    //     GameObject upgradedTheStatsScreen;
+
+    //     [SerializeField]
+    //     TMP_Text newStatsDisplay;
+
+    //     [SerializeField]
+    //     int commonOpenCost;
+
+    //     [SerializeField]
+    //     int commonOpenIncreaseAmount;
+
+    //     [SerializeField]
+    //     int rareOpenCost;
+
+    //     [SerializeField]
+    //     int rareOpenIncreaseAmount;
+
+    //     [SerializeField]
+    //     int epicOpenCost;
+
+    //     [SerializeField]
+    //     int epicOpenIncreaseAmount;
+
+    //     [SerializeField]
+    //     TMP_Text scrapThisCardText;
+
+    //     private enum ScreenType
+    //     {
+    //         OpenCard,
+    //         ChooseUpgrade,
+    //         StatsUpgraded,
+    //     }
+
+    //     void Start()
+    //     {
+    //         ShowScreen(ScreenType.OpenCard);
+    //     }
+
+    //     void Update()
+    //     {
+    //         if (Input.GetKeyDown(KeyCode.Space))
+    //         {
+    //             ShowScreen(ScreenType.OpenCard);
+    //             // int ran = UnityEngine.Random.Range(0, 3);
+    //             // OpenCard((CardTeir)ran);
+    //             // print(((CardTeir)ran).ToString());
+    //         }
+
+    //         if (currentFadeTime > 0) // Needs rework for new format
+    //         {
+    //             cardScrappedText.gameObject.SetActive(true);
+    //             currentFadeTime -= Time.deltaTime;
+    //             cardScrappedText.alpha = EasingFunctions.EaseOutQuint(currentFadeTime / fadeDuration);
+    //         }
+    //         else
+    //         {
+    //             cardScrappedText.gameObject.SetActive(false);
+    //         }
+    //     }
+
+    //     public int GetCardOpenCost(CardTier cardTeir)
+    //     {
+    //         switch (cardTeir)
+    //         {
+    //             case CardTier.Common:
+    //                 return commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //             case CardTier.Rare:
+    //                 return rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //             case CardTier.Epic:
+    //                 return epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //         }
+
+    //         return -1;
+    //     }
+
+    //     private void ShowScreen(ScreenType screenType)
+    //     {
+    //         switch (screenType)
+    //         {
+    //             case ScreenType.OpenCard:
+    //                 chooseUpgradeCardScreen.SetActive(true);
+    //                 upgradeChoicesScreen.SetActive(false);
+    //                 upgradedTheStatsScreen.SetActive(false);
+    //                 break;
+    //             case ScreenType.ChooseUpgrade:
+    //                 chooseUpgradeCardScreen.SetActive(false);
+    //                 upgradeChoicesScreen.SetActive(true);
+    //                 upgradedTheStatsScreen.SetActive(false);
+    //                 break;
+    //             case ScreenType.StatsUpgraded:
+    //                 chooseUpgradeCardScreen.SetActive(false);
+    //                 upgradeChoicesScreen.SetActive(false);
+    //                 upgradedTheStatsScreen.SetActive(true);
+    //                 break;
+    //         }
+    //     }
+
+    //     public void UpgradeSelected(UpgradeType upgradeType)
+    //     {
+    //         UpgradeChoice upgradeChoice = null;
+
+    //         print(upgradeChoices.Length);
+
+    //         foreach (UpgradeChoice choice in upgradeChoices)
+    //         {
+    //             print("gabba" + choice);
+    //             if (choice.Upgrade.UpgradeType == upgradeType) upgradeChoice = choice;
+    //         }
+
+    //         newStatsDisplay.text = GetUpgradedDisplayText(upgradeChoice);
+    //         ShowScreen(ScreenType.StatsUpgraded);
+
+
+    //         UpgradeStat(upgradeChoice);
+    //     }
+
+    //     public void OpenCard(CardTier cardTier)
+    //     {
+    //         if (GameManager.Instance.GetCurrentScrapCount() < GetCardOpenCost(cardTier)) return; // cant open the card
+
+    //         if (GameManager.Instance.GetCardCount(cardTier) < 1) return; // if we have none of said card type.
+
+    //         currentCardTier = cardTier;
+    //         GameManager.Instance.RemoveFromDepositedScrap(GetCardOpenCost(currentCardTier));
+    //         GameManager.Instance.RemoveFromStoredCards(currentCardTier, 1);
+    //         RandomUpgrades(currentCardTier);
+    //         scrapThisCardText.text = "Worth: " + GetCardOpenCost(currentCardTier).ToString() + " Scrap";
+    //         ShowScreen(ScreenType.ChooseUpgrade);
+    //     }
+
+    //     public void ScrapCurrentCard()
+    //     {
+    //         int giveAmount = 0;
+
+    //         switch (currentCardTier)
+    //         {
+    //             case CardTier.Common:
+    //                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //                 break;
+    //             case CardTier.Rare:
+    //                 giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //                 break;
+    //             case CardTier.Epic:
+    //                 giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //                 break;
+    //         }
+
+    //         GameManager.Instance.AddToDepositedScrap(giveAmount);
+
+    //         cardScrappedText.text = $"{currentCardTier.ToString()} scrapped for {giveAmount}";
+    //         currentFadeTime = fadeDuration;
+    //         ShowScreen(ScreenType.OpenCard);
+    //     }
+
+    //     public void ScrapCard(CardTier cardTier)
+    //     {
+    //         if (GameManager.Instance.GetCardCount(cardTier) < 1) return;
+
+    //         int giveAmount = 0;
+
+    //         switch (cardTier)
+    //         {
+    //             case CardTier.Common:
+    //                 giveAmount = commonOpenCost + (commonOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //                 break;
+    //             case CardTier.Rare:
+    //                 giveAmount = rareOpenCost + (rareOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //                 break;
+    //             case CardTier.Epic:
+    //                 giveAmount = epicOpenCost + (epicOpenIncreaseAmount * GameManager.Instance.GetCurrentDifficulty());
+    //                 break;
+    //         }
+
+    //         GameManager.Instance.RemoveFromStoredCards(cardTier, 1);
+    //         GameManager.Instance.AddToDepositedScrap(giveAmount);
+
+    //         cardScrappedText.text = $"{currentCardTier.ToString()} scrapped for {giveAmount}";
+    //         currentFadeTime = fadeDuration;
+    //     }
+
+    //     public void GoToOpenScreen()
+    //     {
+    //         ShowScreen(ScreenType.OpenCard);
+    //     }
+
+    //     private void RandomUpgrades(CardTier cardTeir)
+    //     {
+    //         // int upAmount;
+    //         // int downAmount;
+
+
+    //         (int upAmount, int downAmount) = GameManager.Instance.GetUPandDOWNAmounts(cardTeir);
+
+
+
+    //         upgradeChoices = GenerateUpgradeChoices(upAmount, downAmount);
+
+    //         for (int i = 0; i < 4; i++)
+    //         {
+    //             upgradeItemUIs[i].SetText(GetDisplayText(upgradeChoices[i]));
+    //         }
+    //     }
+
+    //     private string GetDisplayText(UpgradeChoice upgradeChoice)
+    //     {
+    //         string returnedText = "";
+
+    //         string upgradeName = "NAME";
+    //         string currentAmountForUpgradeType = "CURRENT AMOUNT";
+    //         string newAmount = "CURRENT AMOUNT";
+    //         string upgradeAmount = "INCRASE AMOUNT";
+
+    //         switch (upgradeChoice.Upgrade.UpgradeType)
+    //         {
+    //             case UpgradeType.PlayerStats:
+    //                 upgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 currentAmountForUpgradeType = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 newAmount = playerStatUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 upgradeAmount = playerStatUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 upgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 currentAmountForUpgradeType = rangedUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 newAmount = rangedUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 upgradeAmount = rangedUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Melee:
+    //                 upgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 currentAmountForUpgradeType = meleeUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 newAmount = meleeUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 upgradeAmount = meleeUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 upgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 currentAmountForUpgradeType = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 newAmount = miscellaneousUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 upgradeAmount = miscellaneousUpgrades.GetUpgradeAmountAsString(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //         }
+
+    //         bool isUpgradeNegative = upgradeAmount[0] == '-';
+
+    //         if (isUpgradeNegative) upgradeAmount = upgradeAmount.Substring(1);
+
+    //         char sign = (isUpgradeNegative ? '-' : '+');
+
+    //         returnedText += $"<color=green>+ {upgradeName} ({currentAmountForUpgradeType}) -> ({newAmount}) [{sign}{upgradeAmount}]</color>";
+
+
+    //         if (upgradeChoice.Downgrade.Amount <= 0) return returnedText;
+
+    //         string downgradeName = "NAME";
+    //         string currentAmountForDowngradeType = "CURRENT AMOUNT";
+    //         string downgradeAmount = "DECREASE AMOUNT";
+
+    //         switch (upgradeChoice.Downgrade.UpgradeType)
+    //         {
+    //             case UpgradeType.PlayerStats:
+    //                 downgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 currentAmountForDowngradeType = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 newAmount = playerStatUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 downgradeAmount = playerStatUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 downgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 currentAmountForDowngradeType = rangedUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 newAmount = rangedUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 downgradeAmount = rangedUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Melee:
+    //                 downgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 currentAmountForDowngradeType = meleeUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 newAmount = meleeUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 downgradeAmount = meleeUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 downgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 currentAmountForDowngradeType = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 newAmount = miscellaneousUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 downgradeAmount = miscellaneousUpgrades.GetDowngradeAmountAsString(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //         }
+
+
+    //         bool isDowngradeNegative = downgradeAmount[0] == '-';
+
+    //         if (isDowngradeNegative) downgradeAmount = downgradeAmount.Substring(1);
+
+    //         sign = (isDowngradeNegative ? '-' : '+');
+
+    //         returnedText += $"\n\n<color=red>- {downgradeName} ({currentAmountForDowngradeType}) -> ({newAmount}) [{sign}{downgradeAmount}]</color>";
+
+    //         return returnedText;
+    //     }
+
+    //     private string GetUpgradedDisplayText(UpgradeChoice upgradeChoice)
+    //     {
+    //         string returnedText = "";
+
+    //         string upgradeName = "NAME";
+    //         string newCurrent = "CURRENT AMOUNT";
+    //         string oldCurrent = "INCRASE AMOUNT";
+
+    //         switch (upgradeChoice.Upgrade.UpgradeType)
+    //         {
+    //             case UpgradeType.PlayerStats:
+    //                 upgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 newCurrent = playerStatUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 oldCurrent = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 upgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 newCurrent = rangedUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 oldCurrent = rangedUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 break;
+    //             case UpgradeType.Melee:
+    //                 upgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 newCurrent = meleeUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 oldCurrent = meleeUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 upgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Upgrade.ID);
+    //                 newCurrent = miscellaneousUpgrades.GetNewValWithGradeAsString(true, upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 oldCurrent = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Upgrade.ID);
+    //                 break;
+    //         }
+
+    //         returnedText += $"<color=green>+ {upgradeName} ({oldCurrent}) -> ({newCurrent})</color>";
+
+
+    //         if (upgradeChoice.Downgrade.Amount <= 0) return returnedText;
+
+    //         string downgradeName = "NAME";
+    //         string newCurrentForDowngrade = "CURRENT AMOUNT";
+    //         string oldDowngradeCurrent = "DECREASE AMOUNT";
+
+    //         switch (upgradeChoice.Downgrade.UpgradeType)
+    //         {
+    //             case UpgradeType.PlayerStats:
+    //                 downgradeName = playerStatUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 newCurrentForDowngrade = playerStatUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 oldDowngradeCurrent = playerStatUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 downgradeName = rangedUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 newCurrentForDowngrade = rangedUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 oldDowngradeCurrent = rangedUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 break;
+    //             case UpgradeType.Melee:
+    //                 downgradeName = meleeUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 newCurrentForDowngrade = meleeUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 oldDowngradeCurrent = meleeUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 downgradeName = miscellaneousUpgrades.GetUpgradeNameAsString(upgradeChoice.Downgrade.ID);
+    //                 newCurrentForDowngrade = miscellaneousUpgrades.GetNewValWithGradeAsString(false, upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 oldDowngradeCurrent = miscellaneousUpgrades.GetCurrentAsString(upgradeChoice.Downgrade.ID);
+    //                 break;
+    //         }
+
+
+    //         returnedText += $"\n\n<color=red>- {downgradeName} ({oldDowngradeCurrent}) -> ({newCurrentForDowngrade})</color>";
+
+    //         return returnedText;
+    //     }
+
+    //     private void UpgradeStat(UpgradeChoice upgradeChoice)
+    //     {
+    //         switch (upgradeChoice.Upgrade.UpgradeType)
+    //         {
+    //             case UpgradeType.PlayerStats:
+    //                 playerStatUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 rangedUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Melee:
+    //                 meleeUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 miscellaneousUpgrades.UpgradeWithID(upgradeChoice.Upgrade.ID, upgradeChoice.Upgrade.Amount);
+    //                 break;
+    //         }
+
+    //         if (upgradeChoice.Downgrade.Amount <= 0) return;
+
+    //         switch (upgradeChoice.Downgrade.UpgradeType)
+    //         {
+    //             case UpgradeType.PlayerStats:
+    //                 playerStatUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 rangedUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Melee:
+    //                 meleeUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 miscellaneousUpgrades.DownGradeWithID(upgradeChoice.Downgrade.ID, upgradeChoice.Downgrade.Amount);
+    //                 break;
+    //         }
+    //     }
+
+
+    //     private UpgradeChoice[] GenerateUpgradeChoices(int upgradeAmount, int downgradeAmount)
+    //     {
+    //         UpgradeChoice[] choices = new UpgradeChoice[4];
+
+    //         for (int i = 0; i < 4; i++)
+    //         {
+    //             choices[i] = GetRandomBaseOnCatagory((UpgradeType)i, upgradeAmount, downgradeAmount);
+    //         }
+
+    //         return choices;
+    //     }
+
+    //     private UpgradeChoice GetRandomBaseOnCatagory(UpgradeType upgradeType, int upgradeAmount, int downgradeAmount)
+    //     {
+    //         return new UpgradeChoice(GetRandomUpgradeForType(upgradeType, upgradeAmount), GetDowngradeExcludingType(upgradeType, downgradeAmount));
+    //     }
+
+    //     private UpgradeData GetRandomUpgradeForType(UpgradeType upgradeType, int amount)
+    //     {
+    //         UpgradeData upgradeData = null;
+
+    //         switch (upgradeType)
+    //         {
+    //             case UpgradeType.Melee:
+    //                 return upgradeData = new UpgradeData(UpgradeType.Melee, meleeUpgrades.GetRandomUpgradeID(), amount);
+    //             case UpgradeType.Misc:
+    //                 return upgradeData = new UpgradeData(UpgradeType.Misc, miscellaneousUpgrades.GetRandomUpgradeID(), amount);
+    //             case UpgradeType.PlayerStats:
+    //                 return upgradeData = new UpgradeData(UpgradeType.PlayerStats, playerStatUpgrades.GetRandomUpgradeID(), amount);
+    //             case UpgradeType.Ranged:
+    //                 return upgradeData = new UpgradeData(UpgradeType.Ranged, rangedUpgrades.GetRandomUpgradeID(), amount);
+    //             default:
+    //                 return null;
+    //         }
+    //     }
+
+    //     private UpgradeData GetDowngradeExcludingType(UpgradeType upgradeType, int amount)
+    //     {
+    //         int rand = UnityEngine.Random.Range(1, 4); // this only goes to 3 but we want that.
+    //         /*
+    //         1 - player stats
+    //         2 - range stats
+    //         3 - melee stats
+    //         4 - misc stats
+    //         */
+
+    //         switch (upgradeType)
+    //         {
+    //             case UpgradeType.Melee:
+    //                 if (rand == 1)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.PlayerStats, amount);
+    //                 }
+    //                 else if (rand == 2)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Ranged, amount);
+    //                 }
+    //                 else if (rand == 3)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Misc, amount);
+    //                 }
+    //                 break;
+    //             case UpgradeType.Misc:
+    //                 if (rand == 1)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.PlayerStats, amount);
+    //                 }
+    //                 else if (rand == 2)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Ranged, amount);
+    //                 }
+    //                 else if (rand == 3)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Melee, amount);
+    //                 }
+    //                 break;
+    //             case UpgradeType.PlayerStats:
+    //                 if (rand == 1)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Ranged, amount);
+    //                 }
+    //                 else if (rand == 2)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Melee, amount);
+    //                 }
+    //                 else if (rand == 3)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Misc, amount);
+    //                 }
+    //                 break;
+    //             case UpgradeType.Ranged:
+    //                 if (rand == 1)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.PlayerStats, amount);
+    //                 }
+    //                 else if (rand == 2)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Melee, amount);
+    //                 }
+    //                 else if (rand == 3)
+    //                 {
+    //                     return GetDowngradeForType(UpgradeType.Misc, amount);
+    //                 }
+    //                 break;
+    //         }
+    //         return null;
+    //     }
+
+    //     private UpgradeData GetDowngradeForType(UpgradeType upgradeType, int amount)
+    //     {
+    //         UpgradeData upgradeData = null;
+
+    //         switch (upgradeType)
+    //         {
+    //             case UpgradeType.Melee:
+    //                 return upgradeData = new UpgradeData(UpgradeType.Melee, meleeUpgrades.GetRandomUpgradeID(), amount);
+    //             case UpgradeType.Misc:
+    //                 return upgradeData = new UpgradeData(UpgradeType.Misc, miscellaneousUpgrades.GetRandomUpgradeID(), amount);
+    //             case UpgradeType.PlayerStats:
+    //                 return upgradeData = new UpgradeData(UpgradeType.PlayerStats, playerStatUpgrades.GetRandomUpgradeID(), amount);
+    //             case UpgradeType.Ranged:
+    //                 return upgradeData = new UpgradeData(UpgradeType.Ranged, rangedUpgrades.GetRandomUpgradeID(), amount);
+    //             default:
+    //                 return null;
+    //         }
+    //     }
+}
 

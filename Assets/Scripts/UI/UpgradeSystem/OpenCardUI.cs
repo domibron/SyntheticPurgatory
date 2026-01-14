@@ -1,41 +1,42 @@
-// using TMPro;
-// using UnityEngine;
-// using UnityEngine.UI;
+using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 // This is the v2 upgrade system, this is now depricated.
+[Obsolete("V2 of the upgrade system has been replaced with V3", true)]
+public class OpenCardUI : MonoBehaviour
+{
+    //     [SerializeField]
+    //     private UpgradeSystem upgradeSystem;
 
-// public class OpenCardUI : MonoBehaviour
-// {
-//     [SerializeField]
-//     private UpgradeSystem upgradeSystem;
+    //     [SerializeField]
+    //     private Button button;
 
-//     [SerializeField]
-//     private Button button;
+    //     [SerializeField]
+    //     private CardTier cardTier;
 
-//     [SerializeField]
-//     private CardTier cardTier;
+    //     [SerializeField]
+    //     private TMP_Text cardCost;
 
-//     [SerializeField]
-//     private TMP_Text cardCost;
-
-//     [SerializeField]
-//     private TMP_Text cardAmount;
+    //     [SerializeField]
+    //     private TMP_Text cardAmount;
 
 
-//     void Update()
-//     {
-//         cardCost.text = "Cost: " + upgradeSystem.GetCardOpenCost(cardTier).ToString() + "sc";
-//         cardAmount.text = GameManager.Instance.GetCardCount(cardTier).ToString();
+    //     void Update()
+    //     {
+    //         cardCost.text = "Cost: " + upgradeSystem.GetCardOpenCost(cardTier).ToString() + "sc";
+    //         cardAmount.text = GameManager.Instance.GetCardCount(cardTier).ToString();
 
-//         if (GameManager.Instance.GetCardCount(cardTier) <= 0)
-//         {
-//             button.interactable = false;
-//         }
-//     }
+    //         if (GameManager.Instance.GetCardCount(cardTier) <= 0)
+    //         {
+    //             button.interactable = false;
+    //         }
+    //     }
 
-//     public CardTier GetCardTier()
-//     {
-//         return cardTier;
-//     }
+    //     public CardTier GetCardTier()
+    //     {
+    //         return cardTier;
+    //     }
 
-// }
+}
