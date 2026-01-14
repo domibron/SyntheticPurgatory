@@ -40,6 +40,8 @@ public class UpgradablePlayerStat : ICloneable
         CurrentUpgradeAmount = IncreaseAmount;
     }
 
+
+
     public UpgradablePlayerStat(float baseVal) // If neeeded we can have a custom constructor for cloning.
     {
         if (initilized) return;
@@ -52,7 +54,15 @@ public class UpgradablePlayerStat : ICloneable
         CurrentUpgradeAmount = IncreaseAmount;
     }
 
-    public int UpgradeStat(int amount)
+    public void ResetStat()
+    {
+        UpgradedAmount = 0;
+        CurrentValue = BaseStat;
+        CurrentCost = BaseCost;
+        CurrentUpgradeAmount = IncreaseAmount;
+    }
+
+    public int UpgradeStat(int amount = 1)
     {
         int count = GetHowManyTimesToUpgradeBeforeMaxing(amount);
 
@@ -73,7 +83,7 @@ public class UpgradablePlayerStat : ICloneable
         else return amount - count;
     }
 
-    public int GetHowManyTimesToUpgradeBeforeMaxing(int amount)
+    public int GetHowManyTimesToUpgradeBeforeMaxing(int amount = 1)
     {
         if (!MaxStat.HasValue) return -1;
 
@@ -120,7 +130,7 @@ public class UpgradablePlayerStat : ICloneable
     /// </summary>
     /// <param name="amount"></param>
     /// <returns>New current amount, new increase amount.</returns>
-    public (float, float) UpgradeAmount(int amount)
+    public (float, float) UpgradeAmount(int amount = 1)
     {
         float curAmount = CurrentValue;
         float tempIncrease = CurrentUpgradeAmount;
@@ -134,13 +144,13 @@ public class UpgradablePlayerStat : ICloneable
         return (curAmount, tempIncrease);
     }
 
-    public int UpgradeCost(int amount, bool additonalOne = false)
+    public int UpgradeCost(int amount = 1, bool additonalOne = false)
     {
         int cost = CurrentCost;
 
         for (int i = 1; i <= amount - (additonalOne ? 0 : 1); i++)
         {
-            cost += Mathf.RoundToInt(cost * IncreaseCostAmount);
+            cost = Mathf.RoundToInt(cost * IncreaseCostAmount);
         }
 
         return cost;

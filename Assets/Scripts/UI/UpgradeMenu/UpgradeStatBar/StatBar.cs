@@ -11,13 +11,13 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     TMP_Text title;
 
     [SerializeField]
-    RectTransform defualtBar;
+    RectTransform currentBar;
     [SerializeField]
     RectTransform upgradeBar;
     [SerializeField]
-    RectTransform aboutBar;
-    [SerializeField]
     RectTransform chipBar;
+    [SerializeField]
+    RectTransform chipUpgradeBar;
 
     [SerializeField]
     RectTransform parentContainer;
@@ -29,15 +29,18 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     RectTransform currentRect;
 
+    [SerializeField]
+    StatType statBarType = StatType.MaxHealth;
+
     string statText = "STAT";
 
     float total = 0;
     bool displayWholeNumbersOnly = false;
 
-    float currentAmount = 0;
-    float upgradedAmount = 0;
-    float upgradeAboutAmount = 0;
-    float chipAmount = 0;
+    float currentStatAmount = 0;
+    float upgradedStatAmount = 0;
+    float currentChip = 0;
+    float upgradedChip = 0;
 
     float parentWidth = 0;
     float parentHeight = 0;
@@ -70,8 +73,24 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     const float hoverTimeBeforeToolTip = 1f;
     float hoverTime = 0;
 
+    // these are most likely stored references and not copies!
+    UpgradablePlayerStat currentStat;
+    UpgradablePlayerStat upgradedButNotApploedStat;
+
+
+
+    void OnDestroy()
+    {
+        if (UpgradeMenuManager.Instance == null) return;
+        UpgradeMenuManager.Instance.OnStatsUpdated -= UpdateStoredStatInfo;
+    }
+
     void Start()
     {
+        if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find {nameof(UpgradeMenuManager)}!");
+        UpgradeMenuManager.Instance.OnStatsUpdated += UpdateStoredStatInfo;
+        UpdateStoredStatInfo();
+
         // parentWidth = GetComponent<RectTransform>().sizeDelta.x + parentContainer.sizeDelta.x; // * This will always be fucked, UI is updated last in update.
         parentWidth = 0;
         currentLerpValue = 0f;
@@ -79,12 +98,14 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         currentRect = GetComponent<RectTransform>();
 
 
-        SetUpStat(20, 50, 20, 10);
+        SetUpStat(0, 0, 0, 0);
+
+
     }
 
     void Update()
     {
-        total = currentAmount + upgradedAmount + upgradeAboutAmount + chipAmount;
+        total = currentStatAmount + upgradedStatAmount + currentChip + upgradedChip;
         parentWidth = currentRect.sizeDelta.x + parentContainer.sizeDelta.x;
         parentHeight = currentRect.sizeDelta.y + parentContainer.sizeDelta.y;
         positionOffset = parentWidth / 2f;
@@ -170,53 +191,66 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         UpdateStatBar();
     }
 
+    private void UpdateStoredStatInfo()
+    {
+        (currentStat, upgradedButNotApploedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statBarType);
+
+        if (currentStat.IsIncreasingStat)
+        {
+            currentStatAmount = currentStat.CurrentValue;
+            float diff = upgradedButNotApploedStat.CurrentValue - currentStat.CurrentValue;
+            upgradedStatAmount = diff;
+        }
+        else
+        {
+            float offset = currentStat.CurrentValue - upgradedButNotApploedStat.CurrentValue;
+            currentStatAmount = currentStat.CurrentValue - offset;
+
+            upgradedStatAmount = offset;
+        }
+    }
+
     public void UpdateStatBar()
     {
         float currentPercentage = 0f;
 
-        defualtBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (currentAmount / total) * parentWidth);
-        currentPercentage = currentAmount / total;
+        currentBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (currentStatAmount / total) * parentWidth);
+        currentPercentage = currentStatAmount / total;
 
         upgradeBar.localPosition = new Vector3(GetOffsetAmount(currentPercentage), upgradeBar.localPosition.y, upgradeBar.localPosition.z);
-        upgradeBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (upgradedAmount / total) * parentWidth);
-        currentPercentage += upgradedAmount / total;
-
-        aboutBar.localPosition = new Vector3(GetOffsetAmount(currentPercentage), aboutBar.localPosition.y, aboutBar.localPosition.z);
-        aboutBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (upgradeAboutAmount / total) * parentWidth);
-        currentPercentage += upgradeAboutAmount / total;
+        upgradeBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (upgradedStatAmount / total) * parentWidth);
+        currentPercentage += upgradedStatAmount / total;
 
         chipBar.localPosition = new Vector3(GetOffsetAmount(currentPercentage), chipBar.localPosition.y, chipBar.localPosition.z);
-        chipBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (chipAmount / total) * parentWidth);
-        currentPercentage += chipAmount / total;
+        chipBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (currentChip / total) * parentWidth);
+        currentPercentage += currentChip / total;
+
+        chipUpgradeBar.localPosition = new Vector3(GetOffsetAmount(currentPercentage), chipUpgradeBar.localPosition.y, chipUpgradeBar.localPosition.z);
+        chipUpgradeBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (upgradedChip / total) * parentWidth);
+        currentPercentage += upgradedChip / total;
     }
 
-    public void SetUpStat(float defualt, float upgraded, float about, float chip)
+    public void SetUpStat(float current, float upgraded, float chip, float chipUpgraded)
     {
-        currentAmount = defualt;
-        upgradedAmount = upgraded;
-        upgradeAboutAmount = about;
-        chipAmount = chip;
-    }
-
-    public void SetUpgradeAbout(float aboutAmount)
-    {
-        upgradeAboutAmount = aboutAmount;
-    }
-
-    public void SetUpgrade(float amount)
-    {
-        upgradedAmount = amount;
+        currentStatAmount = current;
+        upgradedStatAmount = upgraded;
+        currentChip = chip;
+        upgradedChip = chipUpgraded;
     }
 
     public void SetChipAmount(float amount)
     {
-        chipAmount = amount;
+        currentChip = amount;
     }
+
+
 
     private float GetOffsetAmount(float percentage)
     {
         return Mathf.Lerp(getLeftBound, getRightBound, percentage);
     }
+
+
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -226,5 +260,20 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerExit(PointerEventData eventData)
     {
         isBeingHovered = false;
+    }
+
+
+    public void OnAddOneToStat()
+    {
+        if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
+
+        UpgradeMenuManager.Instance.AddUpgradeOnce(statBarType);
+    }
+
+    public void OnRemoveOneToStat()
+    {
+        if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
+
+        UpgradeMenuManager.Instance.RemoveUpgradeOnce(statBarType);
     }
 }

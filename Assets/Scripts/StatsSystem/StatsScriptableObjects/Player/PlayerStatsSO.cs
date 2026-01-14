@@ -13,12 +13,12 @@ public class PlayerStats : ICloneable
     public UpgradablePlayerStat RegenerationAmountStat = new(5f);
 
     public UpgradablePlayerStat GroundSpeedStat = new(5.5f);
-    public float AirSpeed = 3f; // should be a fraction from gound speed.
+    public float AirSpeed = 3f; // TODO: should be a fraction from gound speed.
 
     // public float GroundAcceleration = 30f;
     // public float AirAcceleration = 20f;
 
-    // this should be calculated from accel and speed to get this. 
+    // this should be calculated from accel and speed to get this. Speed * thisPercentage = accel.
     public float GroundAccelerationPercentBase = 5.45454545455f;
     public float AirAccelerationPercentBase = 6.66666666667f;
 
@@ -39,10 +39,6 @@ public class PlayerStats : ICloneable
     public float ChargedSecondsPerShot = 0.1f;
     public float DelayAfterFireBeforeRecharging = 0.4f;
     public UpgradablePlayerStat OverheatForceCooldownStat = new(3f);
-
-    // public float ProjectileFireRate = 0.3f;
-    // public int ProjectileMagSize = 20;
-    // public float ReloadTime = 2f;
 
 
     public UpgradablePlayerStat MeleeAttackDelayStat = new(0.5f);
