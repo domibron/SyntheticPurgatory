@@ -17,6 +17,8 @@ public class UpgradeWheelSlot
     public float SegmentLength = 90f;
 }
 
+// This may be reworked into a gamble mechanic for the player in dungeon. 1% of death by this machine exploading.
+
 public class UpgradeWheel : MonoBehaviour
 {
     [SerializeField]
