@@ -46,8 +46,8 @@ public class PlayerStats : ICloneable
     public UpgradablePlayerStat MeleeReachStat = new(1.5f);
     public UpgradablePlayerStat MeleeStagerTimeStat = new(0.4f);
 
-    public UpgradablePlayerStat KickForceStat = new(10f);
-    public UpgradablePlayerStat KickAttackDelayStat = new(0.5f);
+    public UpgradablePlayerStat BashForceStat = new(10f);
+    public UpgradablePlayerStat BashAttackDelayStat = new(0.5f);
 
     public object Clone()
     {
@@ -84,8 +84,8 @@ public class PlayerStats : ICloneable
 
             MeleeAttackDelayStat = (UpgradablePlayerStat)MeleeAttackDelayStat.Clone(),
             MeleeDamageStat = (UpgradablePlayerStat)MeleeDamageStat.Clone(),
-            KickForceStat = (UpgradablePlayerStat)KickForceStat.Clone(),
-            KickAttackDelayStat = (UpgradablePlayerStat)KickAttackDelayStat.Clone(),
+            BashForceStat = (UpgradablePlayerStat)BashForceStat.Clone(),
+            BashAttackDelayStat = (UpgradablePlayerStat)BashAttackDelayStat.Clone(),
 
             MeleeReachStat = (UpgradablePlayerStat)MeleeReachStat.Clone(),
             MeleeStagerTimeStat = (UpgradablePlayerStat)MeleeStagerTimeStat.Clone(),
