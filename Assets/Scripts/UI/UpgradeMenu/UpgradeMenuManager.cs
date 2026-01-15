@@ -319,6 +319,48 @@ public class UpgradeMenuManager : MonoBehaviour
         stat.UpgradeStat(currentAmount);
     }
 
+    private void CopyOverStats(bool copyToCurrent = true)
+    {
+        if (copyToCurrent)
+        {
+            currentPStats = (PlayerStats)upgradedButNotAppliedPStats.Clone();
+            currentMiscStats = (MiscellaneousStats)upgradedButNotAppliedMiscStats.Clone();
+
+            GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, currentPStats);
+            GameStatsManager.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, currentMiscStats);
+        }
+        else
+        {
+            upgradedButNotAppliedPStats = (PlayerStats)currentPStats.Clone();
+            upgradedButNotAppliedMiscStats = (MiscellaneousStats)currentMiscStats.Clone();
+        }
+
+        OnStatsUpdated?.Invoke();
+    }
+
+    public int GetRemainingScrap()
+    {
+        return gameManager.GetCurrentScrapCount() - currentCost;
+    }
+
+    public int GetRemainingFromCost(ref UpgradablePlayerStat stat, int amount = 1)
+    {
+        return GetRemainingScrap() + stat.UpgradeCost(amount);
+    }
+
+    public void ResetStats()
+    {
+        currentCost = 0;
+        CopyOverStats(false);
+    }
+
+    public void ApplyStats()
+    {
+        gameManager.RemoveFromDepositedScrap(currentCost);
+        CopyOverStats();
+        currentCost = 0;
+    }
+
     public int GetCurrentCost()
     {
         return currentCost;

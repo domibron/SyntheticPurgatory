@@ -35,6 +35,15 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField]
     StatType statBarType = StatType.MaxHealth;
 
+    [SerializeField]
+    AudioClip hover;
+    [SerializeField]
+    AudioClip add;
+    [SerializeField]
+    AudioClip remove;
+
+    private Transform cam;
+
     float total = 0;
     bool displayWholeNumbersOnly = false;
 
@@ -91,6 +100,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find {nameof(UpgradeMenuManager)}!");
         UpgradeMenuManager.Instance.OnStatsUpdated += UpdateStoredStatInfo;
         UpdateStoredStatInfo();
+
+        cam = Camera.main.transform;
 
         // parentWidth = GetComponent<RectTransform>().sizeDelta.x + parentContainer.sizeDelta.x; // * This will always be fucked, UI is updated last in update.
         parentWidth = 0;
@@ -263,6 +274,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         isBeingHovered = true;
+
+        AudioSource.PlayClipAtPoint(hover, cam.position);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -276,6 +289,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
 
         UpgradeMenuManager.Instance.AddUpgradeOnce(statBarType);
+
+        AudioSource.PlayClipAtPoint(add, cam.position);
     }
 
     public void OnRemoveOneToStat()
@@ -283,5 +298,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
 
         UpgradeMenuManager.Instance.RemoveUpgradeOnce(statBarType);
+
+        AudioSource.PlayClipAtPoint(remove, cam.position);
+
     }
 }
