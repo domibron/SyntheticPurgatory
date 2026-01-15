@@ -72,7 +72,7 @@ public class ScrapManager : MonoBehaviour
                 collectableStats = new();
             }
 
-            maxInventoryScrap = Mathf.FloorToInt(collectableStats.MaxInventoryScrapStat.CurrentValue);
+            maxInventoryScrap = Mathf.FloorToInt(collectableStats.MaxInventoryScrapStat.GetCurrentValue());
         }
 
         scrapCollectHoardInfoTimer = scrapCollectHoardDuration;

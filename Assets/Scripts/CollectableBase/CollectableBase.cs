@@ -33,7 +33,7 @@ public class CollectableBase : MonoBehaviour
             }
 
             collectItemRange = collectableStats.CollectItemIntoInventoryRange;
-            maxCollectionRange = collectableStats.MaxCollectionRangeStat.CurrentValue;
+            maxCollectionRange = collectableStats.MaxCollectionRangeStat.GetCurrentValue();
             flyAccel = collectableStats.FlyAccel;
             flyMaxSpeed = collectableStats.FlyMaxSpeed;
             flyDistanceBoost = collectableStats.FlyDistanceBoost;

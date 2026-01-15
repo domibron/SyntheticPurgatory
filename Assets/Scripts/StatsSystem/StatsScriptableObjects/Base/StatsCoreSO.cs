@@ -24,7 +24,7 @@ public class UpgradablePlayerStat : ICloneable
     public bool IsIncreasingStat { get => IncreaseAmount > 0; }
 
     [ReadOnly]
-    public float CurrentValue; // the current value of the stat.
+    private float currentValue; // the current value of the stat.
     [ReadOnly]
     public int UpgradedAmount = 0; // how many times did we upgrade.
     [ReadOnly]
@@ -36,7 +36,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public UpgradablePlayerStat()
     {
-        CurrentValue = BaseStat;
+        currentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
@@ -45,7 +45,7 @@ public class UpgradablePlayerStat : ICloneable
     {
         BaseStat = baseVal;
 
-        CurrentValue = BaseStat;
+        currentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
@@ -53,7 +53,7 @@ public class UpgradablePlayerStat : ICloneable
     public void ResetStat()
     {
         UpgradedAmount = 0;
-        CurrentValue = BaseStat;
+        currentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
@@ -69,7 +69,7 @@ public class UpgradablePlayerStat : ICloneable
 
         // can simplify.
         (float curAmount, float incAmount) = GetUpgradeAmounts(count);
-        CurrentValue = curAmount;
+        currentValue = curAmount;
         CurrentUpgradeAmount = incAmount;
         //emd.
 
@@ -85,9 +85,9 @@ public class UpgradablePlayerStat : ICloneable
     {
         if (!IsThereAMax) return -1;
 
-        if (IsExceedingMax(CurrentValue)) return 0; // 
+        if (IsExceedingMax(currentValue)) return 0; // 
 
-        float temp = CurrentValue;
+        float temp = currentValue;
         float tempIncrease = CurrentUpgradeAmount;
 
         int count = 0;
@@ -130,7 +130,7 @@ public class UpgradablePlayerStat : ICloneable
     /// <returns>New current amount, new increase amount.</returns>
     public (float, float) GetUpgradeAmounts(int amount = 1)
     {
-        float curAmount = CurrentValue;
+        float curAmount = currentValue;
         float tempIncrease = CurrentUpgradeAmount;
 
         for (int i = 1; i <= amount; i++)
@@ -179,7 +179,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public string GetValueWithPreAndSuf()
     {
-        return Prefix + CurrentValue.ToString(StringModifiers) + Suffix;
+        return Prefix + currentValue.ToString(StringModifiers) + Suffix;
     }
 
     public string GetName()
@@ -195,6 +195,11 @@ public class UpgradablePlayerStat : ICloneable
     public void SetChipIncreaseAmount(float amount = 0)
     {
         ChipIncreaseAmount = amount;
+    }
+
+    public float GetCurrentValue()
+    {
+        return currentValue + ChipIncreaseAmount;
     }
 
     public object Clone() // fingers crossed that initilized can work to stop setting current cost and that to base.
@@ -217,7 +222,7 @@ public class UpgradablePlayerStat : ICloneable
             StatDescription = StatDescription,
 
 
-            CurrentValue = CurrentValue,
+            currentValue = currentValue,
             UpgradedAmount = UpgradedAmount,
             CurrentCost = CurrentCost,
             CurrentUpgradeAmount = CurrentUpgradeAmount,
