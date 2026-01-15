@@ -33,7 +33,7 @@ public class PlayerStats : ICloneable
 
 
     public UpgradablePlayerStat ProjectileDamageStat = new(12f);
-    public UpgradablePlayerStat RechargeRateStat = new(0.3f);
+    public UpgradablePlayerStat RechargeSecondsStat = new(0.3f);
     public UpgradablePlayerStat ShotsPerFullChargeStat = new(10);
     public float StandardSecondsPerShot = 0.4f;
     public float ChargedSecondsPerShot = 0.1f;
@@ -44,10 +44,37 @@ public class PlayerStats : ICloneable
     public UpgradablePlayerStat MeleeAttackDelayStat = new(0.5f);
     public UpgradablePlayerStat MeleeDamageStat = new(10f);
     public UpgradablePlayerStat MeleeReachStat = new(1.5f);
-    public UpgradablePlayerStat MeleeStagerTimeStat = new(0.4f);
+    public UpgradablePlayerStat MeleeStaggerTimeStat = new(0.4f);
 
     public UpgradablePlayerStat BashForceStat = new(10f);
     public UpgradablePlayerStat BashAttackDelayStat = new(0.5f);
+
+    public void RefreshStats()
+    {
+        UpgradablePlayerStat[] upgradablePlayerStats =
+        {
+            MaxHealthStat,
+            RegenerationAmountStat,
+            GroundSpeedStat,
+            SlideBoostPercentageStat,
+            AirBoostPercentageStat,
+            ProjectileDamageStat,
+            RechargeSecondsStat,
+            ShotsPerFullChargeStat,
+            OverheatForceCooldownStat,
+            MeleeAttackDelayStat,
+            MeleeDamageStat,
+            MeleeReachStat,
+            MeleeStaggerTimeStat,
+            BashForceStat,
+            BashAttackDelayStat,
+        };
+
+        foreach (var stat in upgradablePlayerStats)
+        {
+            stat.ResetStat();
+        }
+    }
 
     public object Clone()
     {
@@ -73,7 +100,7 @@ public class PlayerStats : ICloneable
             AirBoostPercentageStat = (UpgradablePlayerStat)AirBoostPercentageStat.Clone(),
 
             ProjectileDamageStat = (UpgradablePlayerStat)ProjectileDamageStat.Clone(),
-            RechargeRateStat = (UpgradablePlayerStat)RechargeRateStat.Clone(),
+            RechargeSecondsStat = (UpgradablePlayerStat)RechargeSecondsStat.Clone(),
             ShotsPerFullChargeStat = (UpgradablePlayerStat)ShotsPerFullChargeStat.Clone(),
             StandardSecondsPerShot = StandardSecondsPerShot,
             ChargedSecondsPerShot = ChargedSecondsPerShot,
@@ -88,7 +115,7 @@ public class PlayerStats : ICloneable
             BashAttackDelayStat = (UpgradablePlayerStat)BashAttackDelayStat.Clone(),
 
             MeleeReachStat = (UpgradablePlayerStat)MeleeReachStat.Clone(),
-            MeleeStagerTimeStat = (UpgradablePlayerStat)MeleeStagerTimeStat.Clone(),
+            MeleeStaggerTimeStat = (UpgradablePlayerStat)MeleeStaggerTimeStat.Clone(),
 
         };
     }
@@ -107,5 +134,10 @@ public class PlayerStatsSO : StatsCoreSO
     public override object GetStats()
     {
         return stats.Clone();
+    }
+
+    void OnValidate()
+    {
+        stats.RefreshStats();
     }
 }
