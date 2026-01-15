@@ -180,23 +180,23 @@ public class PlayerCombat : MonoBehaviour
             // return;
         }
 
-        projectileDamage = stats.ProjectileDamageStat.CurrentValue;
-        rechargeRate = 1f / stats.RechargeSecondsStat.CurrentValue;
-        shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.CurrentValue;
+        projectileDamage = stats.ProjectileDamageStat.GetCurrentValue();
+        rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
+        shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.GetCurrentValue();
         standardSecondsPerShot = stats.StandardSecondsPerShot;
         chargedSecondsPerShot = stats.ChargedSecondsPerShot;
         delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
-        overheatForceCoolDown = stats.OverheatForceCooldownStat.CurrentValue;
+        overheatForceCoolDown = stats.OverheatForceCooldownStat.GetCurrentValue();
         // projectileFireRate = stats.ProjectileFireRate;
         // projectileMagSize = stats.ProjectileMagSize;
 
-        meleeAttackDelay = stats.MeleeAttackDelayStat.CurrentValue;
-        meleeDamage = stats.MeleeDamageStat.CurrentValue;
-        meleeBounds.z = stats.MeleeReachStat.CurrentValue;
+        meleeAttackDelay = stats.MeleeAttackDelayStat.GetCurrentValue();
+        meleeDamage = stats.MeleeDamageStat.GetCurrentValue();
+        meleeBounds.z = stats.MeleeReachStat.GetCurrentValue();
 
 
-        kickForce = stats.BashForceStat.CurrentValue;
-        kickAttackDelay = stats.BashAttackDelayStat.CurrentValue;
+        kickForce = stats.BashForceStat.GetCurrentValue();
+        kickAttackDelay = stats.BashAttackDelayStat.GetCurrentValue();
         // reloadTime = stats.ReloadTime;
         // rechargeRate = stats.ReloadTime;
 

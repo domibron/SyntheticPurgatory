@@ -203,14 +203,14 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (currentStat.IsIncreasingStat)
         {
-            currentStatAmount = currentStat.CurrentValue;
-            float diff = upgradedButNotApploedStat.CurrentValue - currentStat.CurrentValue;
+            currentStatAmount = currentStat.GetCurrentValue();
+            float diff = upgradedButNotApploedStat.GetCurrentValue() - currentStat.GetCurrentValue();
             upgradedStatAmount = diff;
         }
         else
         {
-            float offset = currentStat.CurrentValue - upgradedButNotApploedStat.CurrentValue;
-            currentStatAmount = currentStat.CurrentValue - offset;
+            float offset = currentStat.GetCurrentValue() - upgradedButNotApploedStat.GetCurrentValue();
+            currentStatAmount = currentStat.GetCurrentValue() - offset;
 
             upgradedStatAmount = offset;
         }

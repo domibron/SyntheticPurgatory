@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.CurrentValue;
+        timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.GetCurrentValue();
     }
 
     void Update()
@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
     public void StartTimer()
     {
         // should be impossible but just in case.
-        timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.CurrentValue;
+        timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.GetCurrentValue();
 
         currentTime = timePerLevel;
         inDungeon = true;
