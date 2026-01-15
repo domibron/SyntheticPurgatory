@@ -195,8 +195,8 @@ public class PlayerCombat : MonoBehaviour
         meleeBounds.z = stats.MeleeReachStat.CurrentValue;
 
 
-        kickForce = stats.KickForceStat.CurrentValue;
-        kickAttackDelay = stats.KickAttackDelayStat.CurrentValue;
+        kickForce = stats.BashForceStat.CurrentValue;
+        kickAttackDelay = stats.BashAttackDelayStat.CurrentValue;
         // reloadTime = stats.ReloadTime;
         // rechargeRate = stats.ReloadTime;
 

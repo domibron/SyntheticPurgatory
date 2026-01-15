@@ -30,9 +30,10 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     RectTransform currentRect;
 
     [SerializeField]
-    StatType statBarType = StatType.MaxHealth;
+    TMP_Text text;
 
-    string statText = "STAT";
+    [SerializeField]
+    StatType statBarType = StatType.MaxHealth;
 
     float total = 0;
     bool displayWholeNumbersOnly = false;
@@ -195,6 +196,11 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         (currentStat, upgradedButNotApploedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statBarType);
 
+        if (currentStat == null || upgradedButNotApploedStat == null)
+        {
+            throw new NullReferenceException($"Fetched stats are NULL what the hell, did you add them in {nameof(UpgradeMenuManager)}?");
+        }
+
         if (currentStat.IsIncreasingStat)
         {
             currentStatAmount = currentStat.CurrentValue;
@@ -208,6 +214,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
             upgradedStatAmount = offset;
         }
+
+        text.text = upgradedButNotApploedStat.GetName() + " - " + upgradedButNotApploedStat.GetValueWithPreAndSuf();
     }
 
     public void UpdateStatBar()

@@ -14,6 +14,9 @@ public class UpgradablePlayerStat : ICloneable
 
     public string Prefix = "";
     public string Suffix = "";
+    public string StringModifiers = "";
+
+    public string StatName = "Name";
 
     public bool IsIncreasingStat { get => IncreaseAmount > 0; }
 
@@ -70,13 +73,13 @@ public class UpgradablePlayerStat : ICloneable
 
 
         // can simplify.
-        (float curAmount, float incAmount) = UpgradeAmount(count);
+        (float curAmount, float incAmount) = GetUpgradeAmounts(count);
         CurrentValue = curAmount;
         CurrentUpgradeAmount = incAmount;
         //emd.
 
         UpgradedAmount += count;
-        CurrentCost = UpgradeCost(count, true);
+        CurrentCost = IncreaseUpgradeCost(count);
 
 
         if (count == -1) return 0;
@@ -87,7 +90,7 @@ public class UpgradablePlayerStat : ICloneable
     {
         if (!MaxStat.HasValue) return -1;
 
-        if (ExceedsMax(CurrentValue)) return 0; // 
+        if (IsExceedingMax(CurrentValue)) return 0; // 
 
         float temp = CurrentValue;
         float tempIncrease = CurrentUpgradeAmount;
@@ -99,7 +102,7 @@ public class UpgradablePlayerStat : ICloneable
             temp += tempIncrease;
             tempIncrease *= IncreasePerLevel;
 
-            if (!ExceedsMax(temp))
+            if (!IsExceedingMax(temp))
                 count++;
             else
                 break;
@@ -109,7 +112,7 @@ public class UpgradablePlayerStat : ICloneable
     }
 
     // TODO: any checks with this needs to be reworked so it upgrades can touch the max rather than be near it.
-    public bool ExceedsMax(float val)
+    public bool IsExceedingMax(float val)
     {
         if (!MaxStat.HasValue) return false;
 
@@ -130,7 +133,7 @@ public class UpgradablePlayerStat : ICloneable
     /// </summary>
     /// <param name="amount"></param>
     /// <returns>New current amount, new increase amount.</returns>
-    public (float, float) UpgradeAmount(int amount = 1)
+    public (float, float) GetUpgradeAmounts(int amount = 1)
     {
         float curAmount = CurrentValue;
         float tempIncrease = CurrentUpgradeAmount;
@@ -147,8 +150,22 @@ public class UpgradablePlayerStat : ICloneable
     public int UpgradeCost(int amount = 1, bool additonalOne = false)
     {
         int cost = CurrentCost;
+        int tempCostHolder = CurrentCost;
 
         for (int i = 1; i <= amount - (additonalOne ? 0 : 1); i++)
+        {
+            tempCostHolder = Mathf.RoundToInt(tempCostHolder * IncreaseCostAmount);
+            cost += tempCostHolder;
+        }
+
+        return cost;
+    }
+
+    public int IncreaseUpgradeCost(int amount = 1)
+    {
+        int cost = CurrentCost;
+
+        for (int i = 1; i <= amount; i++)
         {
             cost = Mathf.RoundToInt(cost * IncreaseCostAmount);
         }
@@ -159,6 +176,16 @@ public class UpgradablePlayerStat : ICloneable
     public string GetTextWithPreAndSuf(string text)
     {
         return Prefix + text + Suffix;
+    }
+
+    public string GetValueWithPreAndSuf()
+    {
+        return Prefix + CurrentValue.ToString(StringModifiers) + Suffix;
+    }
+
+    public string GetName()
+    {
+        return StatName;
     }
 
     public void SetChipIncreaseAmount(float amount = 0)
