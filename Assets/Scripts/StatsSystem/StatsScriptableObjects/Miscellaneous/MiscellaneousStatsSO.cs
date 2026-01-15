@@ -21,6 +21,22 @@ public class MiscellaneousStats : ICloneable
 
     public UpgradablePlayerStat CriticalHitChanceStat = new(0.1f);
 
+    public void RefreshStats()
+    {
+        UpgradablePlayerStat[] upgradablePlayerStats =
+        {
+            MaxCollectionRangeStat,
+            MaxInventoryScrapStat,
+            MaxLevelTimeStat,
+            CriticalHitChanceStat,
+        };
+
+        foreach (var stat in upgradablePlayerStats)
+        {
+            stat.ResetStat();
+        }
+    }
+
     public object Clone()
     {
         return new MiscellaneousStats
@@ -58,5 +74,10 @@ public class MiscellaneousStatsSO : StatsCoreSO
     public override object GetStats()
     {
         return stats.Clone();
+    }
+
+    void OnValidate()
+    {
+        stats.RefreshStats();
     }
 }

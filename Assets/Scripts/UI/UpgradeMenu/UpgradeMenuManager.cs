@@ -103,7 +103,7 @@ public class UpgradeMenuManager : MonoBehaviour
             case StatType.ProjectileDamage:
                 return (currentPStats.ProjectileDamageStat, upgradedButNotAppliedPStats.ProjectileDamageStat);
             case StatType.CannonRechargeRate:
-                return (currentPStats.RechargeRateStat, upgradedButNotAppliedPStats.RechargeRateStat);
+                return (currentPStats.RechargeSecondsStat, upgradedButNotAppliedPStats.RechargeSecondsStat);
             case StatType.ShotsPerFullCharge:
                 return (currentPStats.ShotsPerFullChargeStat, upgradedButNotAppliedPStats.ShotsPerFullChargeStat);
             case StatType.OverheatForceCoolDown:
@@ -117,7 +117,7 @@ public class UpgradeMenuManager : MonoBehaviour
             case StatType.BashDelay:
                 return (currentPStats.BashAttackDelayStat, upgradedButNotAppliedPStats.BashAttackDelayStat);
             case StatType.EnemyStaggerTime:
-                return (currentPStats.MeleeStagerTimeStat, upgradedButNotAppliedPStats.MeleeStagerTimeStat);
+                return (currentPStats.MeleeStaggerTimeStat, upgradedButNotAppliedPStats.MeleeStaggerTimeStat);
             case StatType.Reach:
                 return (currentPStats.MeleeReachStat, upgradedButNotAppliedPStats.MeleeReachStat);
             case StatType.KnockbackForce:
@@ -163,7 +163,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.ProjectileDamageStat);
                 break;
             case StatType.CannonRechargeRate:
-                currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.RechargeRateStat);
+                currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.RechargeSecondsStat);
                 break;
             case StatType.ShotsPerFullCharge:
                 currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.ShotsPerFullChargeStat);
@@ -183,7 +183,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.BashAttackDelayStat);
                 break;
             case StatType.EnemyStaggerTime:
-                currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.MeleeStagerTimeStat);
+                currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.MeleeStaggerTimeStat);
                 break;
             case StatType.Reach:
                 currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.MeleeReachStat);
@@ -236,7 +236,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 currentCost += RemoveUpgradeOnce(ref currentPStats.ProjectileDamageStat, ref upgradedButNotAppliedPStats.ProjectileDamageStat);
                 break;
             case StatType.CannonRechargeRate:
-                currentCost += RemoveUpgradeOnce(ref currentPStats.RechargeRateStat, ref upgradedButNotAppliedPStats.RechargeRateStat);
+                currentCost += RemoveUpgradeOnce(ref currentPStats.RechargeSecondsStat, ref upgradedButNotAppliedPStats.RechargeSecondsStat);
                 break;
             case StatType.ShotsPerFullCharge:
                 currentCost += RemoveUpgradeOnce(ref currentPStats.ShotsPerFullChargeStat, ref upgradedButNotAppliedPStats.ShotsPerFullChargeStat);
@@ -256,7 +256,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 currentCost += RemoveUpgradeOnce(ref currentPStats.BashAttackDelayStat, ref upgradedButNotAppliedPStats.BashAttackDelayStat);
                 break;
             case StatType.EnemyStaggerTime:
-                currentCost += RemoveUpgradeOnce(ref currentPStats.MeleeStagerTimeStat, ref upgradedButNotAppliedPStats.MeleeStagerTimeStat);
+                currentCost += RemoveUpgradeOnce(ref currentPStats.MeleeStaggerTimeStat, ref upgradedButNotAppliedPStats.MeleeStaggerTimeStat);
                 break;
             case StatType.Reach:
                 currentCost += RemoveUpgradeOnce(ref currentPStats.MeleeReachStat, ref upgradedButNotAppliedPStats.MeleeReachStat);
@@ -298,6 +298,8 @@ public class UpgradeMenuManager : MonoBehaviour
 
     private int UpgradeOnce(ref UpgradablePlayerStat upgradingStat)
     {
+        if (upgradingStat.GetHowManyTimesToUpgradeBeforeMaxing() == 0) return 0;
+
         int cost = upgradingStat.UpgradeCost();
         upgradingStat.UpgradeStat();
 

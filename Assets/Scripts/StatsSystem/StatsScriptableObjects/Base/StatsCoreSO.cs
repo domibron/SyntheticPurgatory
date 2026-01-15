@@ -6,7 +6,8 @@ public class UpgradablePlayerStat : ICloneable
 {
     // these should be private with public getters. not get private set, these need to be serializedField for unity inspector.
     public float BaseStat = 1;
-    public float? MaxStat = null;
+    public bool IsThereAMax = false;
+    public float MaxStat = 0;
     public float IncreaseAmount = 1; // base increase
     public float IncreasePerLevel = 1f; // percentage, 0.5f will decrease by 50 percent 1.5f will increase 50 percent.
     public int BaseCost = 1;
@@ -17,6 +18,8 @@ public class UpgradablePlayerStat : ICloneable
     public string StringModifiers = "";
 
     public string StatName = "Name";
+    [TextArea]
+    public string StatDescription = "Description";
 
     public bool IsIncreasingStat { get => IncreaseAmount > 0; }
 
@@ -31,26 +34,16 @@ public class UpgradablePlayerStat : ICloneable
     [ReadOnly]
     public float ChipIncreaseAmount = 0f;
 
-    private bool initilized = false;
-
     public UpgradablePlayerStat()
     {
-        if (initilized) return;
-        initilized = true;
-
         CurrentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
 
-
-
     public UpgradablePlayerStat(float baseVal) // If neeeded we can have a custom constructor for cloning.
     {
-        if (initilized) return;
         BaseStat = baseVal;
-
-        initilized = true;
 
         CurrentValue = BaseStat;
         CurrentCost = BaseCost;
@@ -71,6 +64,8 @@ public class UpgradablePlayerStat : ICloneable
 
         if (count == -1) count = amount; // we can just apply it directly. 
 
+        // the system should be redundent but just in case.
+        if (count == 0) return amount - count;
 
         // can simplify.
         (float curAmount, float incAmount) = GetUpgradeAmounts(count);
@@ -88,7 +83,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public int GetHowManyTimesToUpgradeBeforeMaxing(int amount = 1)
     {
-        if (!MaxStat.HasValue) return -1;
+        if (!IsThereAMax) return -1;
 
         if (IsExceedingMax(CurrentValue)) return 0; // 
 
@@ -114,16 +109,16 @@ public class UpgradablePlayerStat : ICloneable
     // TODO: any checks with this needs to be reworked so it upgrades can touch the max rather than be near it.
     public bool IsExceedingMax(float val)
     {
-        if (!MaxStat.HasValue) return false;
+        if (!IsThereAMax) return false;
 
         if (IsIncreasingStat)
         {
-            if (val > MaxStat.Value) return true;
+            if (val > MaxStat) return true;
             else return false;
         }
         else
         {
-            if (val < MaxStat.Value) return true;
+            if (val < MaxStat) return true;
             else return false;
         }
     }
@@ -152,7 +147,11 @@ public class UpgradablePlayerStat : ICloneable
         int cost = CurrentCost;
         int tempCostHolder = CurrentCost;
 
-        for (int i = 1; i <= amount - (additonalOne ? 0 : 1); i++)
+        int amountToItterate = amount - (additonalOne ? 0 : 1);
+
+        //amountToItterate = GetHowManyTimesToUpgradeBeforeMaxing(amountToItterate);
+
+        for (int i = 1; i <= amountToItterate; i++)
         {
             tempCostHolder = Mathf.RoundToInt(tempCostHolder * IncreaseCostAmount);
             cost += tempCostHolder;
@@ -188,6 +187,11 @@ public class UpgradablePlayerStat : ICloneable
         return StatName;
     }
 
+    public string GetDescription()
+    {
+        return StatDescription;
+    }
+
     public void SetChipIncreaseAmount(float amount = 0)
     {
         ChipIncreaseAmount = amount;
@@ -198,13 +202,20 @@ public class UpgradablePlayerStat : ICloneable
         var clone = new UpgradablePlayerStat
         {
             BaseStat = BaseStat,
+            IsThereAMax = IsThereAMax,
             MaxStat = MaxStat,
             IncreaseAmount = IncreaseAmount,
             IncreasePerLevel = IncreasePerLevel,
             BaseCost = BaseCost,
+            IncreaseCostAmount = IncreaseCostAmount,
 
             Prefix = Prefix,
             Suffix = Suffix,
+            StringModifiers = StringModifiers,
+
+            StatName = StatName,
+            StatDescription = StatDescription,
+
 
             CurrentValue = CurrentValue,
             UpgradedAmount = UpgradedAmount,
@@ -212,7 +223,7 @@ public class UpgradablePlayerStat : ICloneable
             CurrentUpgradeAmount = CurrentUpgradeAmount,
             ChipIncreaseAmount = ChipIncreaseAmount,
 
-            initilized = initilized,
+            // initilized = initilized,
         };
 
         return clone;
@@ -243,6 +254,8 @@ public class StatsCoreSO : ScriptableObject
     {
         return new CoreStats();
     }
+
+
 
     // keep empty for now.
 

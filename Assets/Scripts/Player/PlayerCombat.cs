@@ -181,7 +181,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         projectileDamage = stats.ProjectileDamageStat.CurrentValue;
-        rechargeRate = stats.RechargeRateStat.CurrentValue;
+        rechargeRate = 1f / stats.RechargeSecondsStat.CurrentValue;
         shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.CurrentValue;
         standardSecondsPerShot = stats.StandardSecondsPerShot;
         chargedSecondsPerShot = stats.ChargedSecondsPerShot;

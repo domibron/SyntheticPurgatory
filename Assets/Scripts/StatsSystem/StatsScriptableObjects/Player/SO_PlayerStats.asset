@@ -13,35 +13,268 @@ MonoBehaviour:
   m_Name: SO_PlayerStats
   m_EditorClassIdentifier: 
   stats:
-    MaxHealth: 100
+    MaxHealthStat:
+      BaseStat: 100
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: ' HP'
+      StringModifiers: N0
+      StatName: Max Health
+      CurrentValue: 100
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
     RegenerationSpeed: 1
-    RegenerationAmount: 1
-    GroundSpeed: 5.5
+    RegenerationAmountStat:
+      BaseStat: 5
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: ' HP'
+      StringModifiers: N0
+      StatName: Regen Per Tick
+      CurrentValue: 5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
+    GroundSpeedStat:
+      BaseStat: 5.5
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: ' m/s'
+      StringModifiers: N0
+      StatName: Max Speed
+      CurrentValue: 5.5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
     AirSpeed: 3
     GroundAccelerationPercentBase: 5.4545455
     AirAccelerationPercentBase: 6.6666665
     JumpForce: 7
-    SlideBoostForce: 9
-    AirBoostForce: 7.5
-    SlideBoostPercentage: 1.65
-    AirBoostPercentage: 2.5
+    SlideBoostPercentageStat:
+      BaseStat: 1.65
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 0.1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: 
+      StringModifiers: P0
+      StatName: Slide Boost
+      CurrentValue: 1.65
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 0.1
+      ChipIncreaseAmount: 0
+    AirBoostPercentageStat:
+      BaseStat: 2.5
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 0.1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: 
+      StringModifiers: P0
+      StatName: Air Boost
+      CurrentValue: 2.5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 0.1
+      ChipIncreaseAmount: 0
     GroundFriction: 5
     AirFriction: 1
-    ProjectileDamage: 12
-    RechargeRate: 0.3
-    ShotsPerFullCharge: 10
+    ProjectileDamageStat:
+      BaseStat: 12
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: ' DMG'
+      StringModifiers: N0
+      StatName: Gun Damage
+      CurrentValue: 12
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
+    RechargeSecondsStat:
+      BaseStat: 3
+      IsThereAMax: 1
+      MaxStat: 0.1
+      IncreaseAmount: -0.1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: s
+      StringModifiers: N2
+      StatName: Recharge
+      CurrentValue: 3
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: -0.1
+      ChipIncreaseAmount: 0
+    ShotsPerFullChargeStat:
+      BaseStat: 10
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: 
+      StringModifiers: N0
+      StatName: Bullets Per Charge
+      CurrentValue: 10
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
     StandardSecondsPerShot: 0.4
     ChargedSecondsPerShot: 0.1
     DelayAfterFireBeforeRecharging: 0.4
-    OverheatForceCooldown: 3
-    MeleeAttackDelay: 0.5
-    MeleeDamage: 20
-    MeleeReach: 1.5
-    MeleeStagerTime: 0.4
-    KickForce: 10
-    KickAttackDelay: 0.5
-    SpeedUpgradeAmount: 1
-    SlideBoostUpgradeAmount: 1
-    AirBoostUpgradeAmount: 1
-    MeleeStaggerUpgradeAmount: 1
-    MeleeReachUpgradeAmount: 1
+    OverheatForceCooldownStat:
+      BaseStat: 3
+      IsThereAMax: 1
+      MaxStat: 0.1
+      IncreaseAmount: -0.1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: s
+      StringModifiers: N2
+      StatName: Overheat Wait
+      CurrentValue: 3
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: -0.1
+      ChipIncreaseAmount: 0
+    MeleeAttackDelayStat:
+      BaseStat: 0.5
+      IsThereAMax: 1
+      MaxStat: 0.1
+      IncreaseAmount: -0.05
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: s
+      StringModifiers: N2
+      StatName: Melee Delay
+      CurrentValue: 0.5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: -0.05
+      ChipIncreaseAmount: 0
+    MeleeDamageStat:
+      BaseStat: 10
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: ' DMG'
+      StringModifiers: N0
+      StatName: Melee Damage
+      CurrentValue: 10
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
+    MeleeReachStat:
+      BaseStat: 1.5
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 0.05
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: m
+      StringModifiers: N2
+      StatName: Reach
+      CurrentValue: 1.5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 0.05
+      ChipIncreaseAmount: 0
+    MeleeStaggerTimeStat:
+      BaseStat: 0.4
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 0.05
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: s
+      StringModifiers: N2
+      StatName: Melee Stagger
+      CurrentValue: 0.4
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 0.05
+      ChipIncreaseAmount: 0
+    BashForceStat:
+      BaseStat: 10
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: N
+      StringModifiers: N0
+      StatName: Bash Force
+      CurrentValue: 10
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
+    BashAttackDelayStat:
+      BaseStat: 0.5
+      IsThereAMax: 1
+      MaxStat: 0.1
+      IncreaseAmount: -0.05
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: s
+      StringModifiers: N2
+      StatName: Bash Delay
+      CurrentValue: 0.5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: -0.05
+      ChipIncreaseAmount: 0
