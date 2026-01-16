@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 [Serializable]
@@ -122,6 +123,16 @@ public class GameStatsManager : MonoBehaviour
     public static T DeepCopy<T>(T original)
     {
         string json = JsonUtility.ToJson(original);
+
+#if false // used to debug the stats to makes sure values are being copied.
+        string path = Application.persistentDataPath;
+        string fullName = path + "/" + (DateTime.Now.ToString("dd-MM-yy-hh-mm-ss.ffff") + ".txt");
+        print(fullName);
+        StreamWriter steamWriter = File.CreateText(fullName);
+        steamWriter.Write(json);
+        steamWriter.Close();
+#endif
+
         T copy = JsonUtility.FromJson<T>(json);
         return copy;
     }

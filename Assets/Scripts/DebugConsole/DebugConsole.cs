@@ -31,6 +31,11 @@ public class DebugConsole : MonoBehaviour
 
 	public List<object> commands = new List<object>();
 
+	const int MAX_DEBUG_MESSAGES = 50;
+
+	public Queue<GameObject> debugMessages = new Queue<GameObject>(MAX_DEBUG_MESSAGES + 1);
+
+	private bool onlyWatchForErrors = true;
 
 	BaseCommands baseCommands;
 
@@ -65,6 +70,8 @@ public class DebugConsole : MonoBehaviour
 	private void MessageReceived(string condition, string stackTrace, LogType type)
 	{
 		string suffix = "";
+
+		if (onlyWatchForErrors && type != LogType.Error) return;
 
 		switch (type)
 		{
@@ -152,6 +159,13 @@ public class DebugConsole : MonoBehaviour
 		GameObject textObj = Instantiate(textPrefab, content.transform, false);
 
 		textObj.GetComponent<TMP_Text>().text = text;
+
+		if (debugMessages.Count >= 50)
+		{
+			Destroy(debugMessages.Dequeue());
+		}
+
+		debugMessages.Enqueue(textObj);
 
 		vertScrollBar.value = -1;
 	}
@@ -391,5 +405,10 @@ public class DebugConsole : MonoBehaviour
 	public void DestroyUnityObject(UnityEngine.Object objectToDestroy)
 	{
 		Destroy(objectToDestroy);
+	}
+
+	public void ChangeWatchMessage(bool watchingErrorsOnly = true)
+	{
+		onlyWatchForErrors = watchingErrorsOnly;
 	}
 }

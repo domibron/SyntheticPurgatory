@@ -48,6 +48,16 @@ public class UpgradeMenuManager : MonoBehaviour
     // public event Action OnStatsAppliedOrReset;
     public event Action OnStatsUpdated;
 
+    enum WaitingForConfirmationFor
+    {
+        ApplyStats,
+        RevertStats,
+        BackToMenuWithUnsavedStats,
+        None,
+    }
+
+    WaitingForConfirmationFor waitingForConfirmationFor = WaitingForConfirmationFor.None;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -75,12 +85,32 @@ public class UpgradeMenuManager : MonoBehaviour
         OnStatsUpdated?.Invoke();
 
         gameManager = GameManager.Instance;
+        ConfirmationBox.Instance.OnConfirmation += OnConfirmation;
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnDisable()
     {
+        ConfirmationBox.Instance.OnConfirmation -= OnConfirmation;
+    }
 
+    private void OnConfirmation(bool cofirmedAction)
+    {
+        if (!cofirmedAction) return; // we dont care if its not confirming.
+
+        switch (waitingForConfirmationFor)
+        {
+            case WaitingForConfirmationFor.None:
+                return; // We are not waiting for any confirmations so we ignore the message.
+            case WaitingForConfirmationFor.ApplyStats:
+                ApplyStats();
+                break;
+            case WaitingForConfirmationFor.RevertStats:
+                RevertStats();
+                break;
+            case WaitingForConfirmationFor.BackToMenuWithUnsavedStats:
+                BackToMenu();
+                break;
+        }
     }
 
     public (UpgradablePlayerStat, UpgradablePlayerStat) GetCurrentStat(StatType statType)
@@ -207,7 +237,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 break;
         }
 
-        OnStatsUpdated?.Invoke();
+        UpdateStatUI();
     }
 
     public void RemoveUpgradeOnce(StatType statType)
@@ -280,7 +310,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 break;
         }
 
-        OnStatsUpdated?.Invoke();
+        UpdateStatUI();
     }
 
     private int RemoveUpgradeOnce(ref UpgradablePlayerStat currentStat, ref UpgradablePlayerStat upgradingStat)
@@ -335,11 +365,13 @@ public class UpgradeMenuManager : MonoBehaviour
             upgradedButNotAppliedMiscStats = (MiscellaneousStats)currentMiscStats.Clone();
         }
 
-        OnStatsUpdated?.Invoke();
+        UpdateStatUI(); // even though this is called, you should still call this for any operations after such as resetting current cost.
     }
 
     public int GetRemainingScrap()
     {
+        if (gameManager == null) return 0;
+
         return gameManager.GetCurrentScrapCount() - currentCost;
     }
 
@@ -348,10 +380,12 @@ public class UpgradeMenuManager : MonoBehaviour
         return GetRemainingScrap() + stat.UpgradeCost(amount);
     }
 
-    public void ResetStats()
+    public void RevertStats()
     {
         currentCost = 0;
         CopyOverStats(false);
+
+        UpdateStatUI();
     }
 
     public void ApplyStats()
@@ -359,10 +393,48 @@ public class UpgradeMenuManager : MonoBehaviour
         gameManager.RemoveFromDepositedScrap(currentCost);
         CopyOverStats();
         currentCost = 0;
+
+        UpdateStatUI();
     }
 
     public int GetCurrentCost()
     {
         return currentCost;
+    }
+
+    public void UpdateStatUI()
+    {
+        OnStatsUpdated?.Invoke();
+    }
+
+    public void GetConfirmApplyStats()
+    {
+        waitingForConfirmationFor = WaitingForConfirmationFor.ApplyStats;
+        ConfirmationBox.Instance.TryOpenConfirmationBox("Apply Stats", "Are you sure you want to apply these stat changes?");
+    }
+
+    public void GetConfirmRevertStats()
+    {
+        waitingForConfirmationFor = WaitingForConfirmationFor.RevertStats;
+        ConfirmationBox.Instance.TryOpenConfirmationBox("Revert Changes", "Are you sure you want to revert all your stat changes?");
+    }
+
+    public void GetConfirmBackToMenu()
+    {
+        if (currentCost > 0)
+        {
+            waitingForConfirmationFor = WaitingForConfirmationFor.BackToMenuWithUnsavedStats;
+            ConfirmationBox.Instance.TryOpenConfirmationBox("Lose Changes", "You still have unapplied changes!\nAre you sure you want to lose all changes?");
+        }
+        else
+        {
+            BackToMenu();
+        }
+    }
+
+    private void BackToMenu()
+    {
+        RevertStats();
+        // TODO LOAD THE HUB MAIN MENU
     }
 }

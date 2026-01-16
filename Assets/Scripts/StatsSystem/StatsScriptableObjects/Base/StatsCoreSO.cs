@@ -4,6 +4,8 @@ using UnityEngine;
 [Serializable]
 public class UpgradablePlayerStat : ICloneable
 {
+    // NOTE, ANY PRIVATE VARIABLES WILL NOT BE ABLE TO BE DEEP COPIED USING THE JSON METHOD!
+
     // these should be private with public getters. not get private set, these need to be serializedField for unity inspector.
     public float BaseStat = 1;
     public bool IsThereAMax = false;
@@ -24,7 +26,7 @@ public class UpgradablePlayerStat : ICloneable
     public bool IsIncreasingStat { get => IncreaseAmount > 0; }
 
     [ReadOnly]
-    private float currentValue; // the current value of the stat.
+    public float CurrentValue; // the current value of the stat.
     [ReadOnly]
     public int UpgradedAmount = 0; // how many times did we upgrade.
     [ReadOnly]
@@ -36,7 +38,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public UpgradablePlayerStat()
     {
-        currentValue = BaseStat;
+        CurrentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
@@ -45,7 +47,7 @@ public class UpgradablePlayerStat : ICloneable
     {
         BaseStat = baseVal;
 
-        currentValue = BaseStat;
+        CurrentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
@@ -53,7 +55,7 @@ public class UpgradablePlayerStat : ICloneable
     public void ResetStat()
     {
         UpgradedAmount = 0;
-        currentValue = BaseStat;
+        CurrentValue = BaseStat;
         CurrentCost = BaseCost;
         CurrentUpgradeAmount = IncreaseAmount;
     }
@@ -69,7 +71,7 @@ public class UpgradablePlayerStat : ICloneable
 
         // can simplify.
         (float curAmount, float incAmount) = GetUpgradeAmounts(count);
-        currentValue = curAmount;
+        CurrentValue = curAmount;
         CurrentUpgradeAmount = incAmount;
         //emd.
 
@@ -85,9 +87,9 @@ public class UpgradablePlayerStat : ICloneable
     {
         if (!IsThereAMax) return -1;
 
-        if (IsExceedingMax(currentValue)) return 0; // 
+        if (IsExceedingMax(CurrentValue)) return 0; // 
 
-        float temp = currentValue;
+        float temp = CurrentValue;
         float tempIncrease = CurrentUpgradeAmount;
 
         int count = 0;
@@ -130,7 +132,7 @@ public class UpgradablePlayerStat : ICloneable
     /// <returns>New current amount, new increase amount.</returns>
     public (float, float) GetUpgradeAmounts(int amount = 1)
     {
-        float curAmount = currentValue;
+        float curAmount = CurrentValue;
         float tempIncrease = CurrentUpgradeAmount;
 
         for (int i = 1; i <= amount; i++)
@@ -179,7 +181,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public string GetValueWithPreAndSuf()
     {
-        return Prefix + currentValue.ToString(StringModifiers) + Suffix;
+        return Prefix + CurrentValue.ToString(StringModifiers) + Suffix;
     }
 
     public string GetName()
@@ -199,7 +201,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public float GetCurrentValue()
     {
-        return currentValue + ChipIncreaseAmount;
+        return CurrentValue + ChipIncreaseAmount;
     }
 
     public object Clone() // fingers crossed that initilized can work to stop setting current cost and that to base.
@@ -222,7 +224,7 @@ public class UpgradablePlayerStat : ICloneable
             StatDescription = StatDescription,
 
 
-            currentValue = currentValue,
+            CurrentValue = CurrentValue,
             UpgradedAmount = UpgradedAmount,
             CurrentCost = CurrentCost,
             CurrentUpgradeAmount = CurrentUpgradeAmount,

@@ -16,6 +16,6 @@ public class DisplayCost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        text.text = umm.GetCurrentCost().ToString();
+        text.text = "<b>Cost:</b>\n" + umm.GetCurrentCost().ToString("N0") + "sc";
     }
 }
