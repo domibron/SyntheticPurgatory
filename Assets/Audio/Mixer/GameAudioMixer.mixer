@@ -114,7 +114,27 @@ AudioMixerSnapshotController:
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 4a98b8d59693a9245b8f911294f1e32c
-  m_FloatValues: {}
+  m_FloatValues:
+    e8646700af5c6ee46b1f3254eaf11938: 16
+    d2b663012f1cea54499d8a6f68e14481: 1000
+    184e82718c6906348b01038b811f2470: 23.8
+    470a47d2c944e7d40985453acf86ff80: 0
+    d9c7d273b6fad9e4d99ccbd2e7ed1459: -31.5
+    687b9d258337dd042b4f298877feca21: 10
+    2e9152357f0a84f47ad106c474e52ae2: 7512
+    282134d554e18e0408dfb82354540baa: 59444
+    33ea0d575f9237040b3256153db5268e: 0.028
+    3724baf7348f987458a87f495aff11a6: 0.694
+    7d17de490ac134e418da611c30862762: 0.005
+    ebc026aa1d756954699246b485addaa8: -7778
+    02efedaa9c3fd574f92ff6a627db4eda: 0
+    2082171b7a3cdf746a4ad53433b5be53: 1
+    acfc4c7ce9984354193fd66368abf128: 10
+    73ae75ad99c45cf429057fcc80d13f3b: 0
+    68575ead003f33d4baa767a44aca47f3: 20
+    48ae7bdd54e0ea940b56694aa7da1e5c: -28.7
+    9c9afc0ef3d467f41b5e8e4ed696660f: 0
+    acf14f2fd171e14439741aa9c3933f03: -20
   m_TransitionOverrides: {}
 --- !u!243 &888072800668534617
 AudioMixerGroupController:
@@ -131,6 +151,7 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 7767264967304042380}
+  - {fileID: 7103744347375653094}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
@@ -179,6 +200,28 @@ AudioMixerEffectController:
   m_EffectName: Attenuation
   m_MixLevel: fca236adebaa7de42a13bdf5e601457f
   m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &7103744347375653094
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 2af5255214bcd704598d61d9b26fa32a
+  m_EffectName: Compressor
+  m_MixLevel: e3296aa24a3b6e24194848754627ee86
+  m_Parameters:
+  - m_ParameterName: Threshold
+    m_GUID: acf14f2fd171e14439741aa9c3933f03
+  - m_ParameterName: Attack
+    m_GUID: acfc4c7ce9984354193fd66368abf128
+  - m_ParameterName: Release
+    m_GUID: d2b663012f1cea54499d8a6f68e14481
+  - m_ParameterName: Make up gain
+    m_GUID: 9c9afc0ef3d467f41b5e8e4ed696660f
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0

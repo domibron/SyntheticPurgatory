@@ -38,6 +38,9 @@ public class BaseCommands
     public static Command<int> giveScrap;
     public static Command<int, int> giveUpgradeCard;
 
+    public static Command refreshUpgradeMenu;
+    public static Command<bool> errorsOnly;
+
     public BaseCommands(DebugConsole console)
     {
         test = new Command("test", "test the debug console", "test", () =>
@@ -389,7 +392,20 @@ public class BaseCommands
             console.TextToConsole($"Gave {amount} of {cardTeir.Value.ToString()}. Current amount is {GameManager.Instance.GetCardCount(cardTeir.Value)}");
         });
 
+        refreshUpgradeMenu = new Command("refupmenu", "Refreshes the upgrade menu.", "refupmenu", () =>
+        {
+            if (UpgradeMenuManager.Instance == null)
+            {
+                throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
+            }
 
+            UpgradeMenuManager.Instance.UpdateStatUI();
+        });
+
+        errorsOnly = new Command<bool>("errorsOnly", "Only log errors in console", "errorsOnly <bool>", (b) =>
+        {
+            console.ChangeWatchMessage(b);
+        });
 
         List<object> commandsToAdd = new List<object>()
         {
@@ -410,6 +426,8 @@ public class BaseCommands
             toggleDoors,
             giveScrap,
             giveUpgradeCard,
+            refreshUpgradeMenu,
+            errorsOnly,
         };
 
         foreach (var command in commandsToAdd)

@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -42,7 +43,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField]
     AudioClip remove;
 
-    private Transform cam;
+    AudioSource uiAudioSource;
 
     float total = 0;
     bool displayWholeNumbersOnly = false;
@@ -99,9 +100,9 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find {nameof(UpgradeMenuManager)}!");
         UpgradeMenuManager.Instance.OnStatsUpdated += UpdateStoredStatInfo;
-        UpdateStoredStatInfo();
+        // UpdateStoredStatInfo();
 
-        cam = Camera.main.transform;
+        uiAudioSource = UIAudioSource.Instance.GetAudioSource();
 
         // parentWidth = GetComponent<RectTransform>().sizeDelta.x + parentContainer.sizeDelta.x; // * This will always be fucked, UI is updated last in update.
         parentWidth = 0;
@@ -112,7 +113,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         SetUpStat(0, 0, 0, 0);
 
-
+        UpdateStoredStatInfo();
     }
 
     void Update()
@@ -205,6 +206,11 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private void UpdateStoredStatInfo()
     {
+        if (UpgradeMenuManager.Instance == null)
+        {
+            throw new NullReferenceException($"Urm, {nameof(UpgradeMenuManager)} is null but you called update stats.");
+        }
+
         (currentStat, upgradedButNotApploedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statBarType);
 
         if (currentStat == null || upgradedButNotApploedStat == null)
@@ -224,6 +230,25 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             currentStatAmount = currentStat.GetCurrentValue() - offset;
 
             upgradedStatAmount = offset;
+        }
+
+        if (upgradedButNotApploedStat.UpgradedAmount <= currentStat.UpgradedAmount)
+        {
+            removeButtonEnabled = false;
+        }
+        else
+        {
+            removeButtonEnabled = true;
+        }
+
+
+        if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotApploedStat.UpgradeCost() < 0)
+        {
+            addButtonEnabled = false;
+        }
+        else
+        {
+            addButtonEnabled = true;
         }
 
         text.text = upgradedButNotApploedStat.GetName() + " - " + upgradedButNotApploedStat.GetValueWithPreAndSuf();
@@ -266,7 +291,10 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private float GetOffsetAmount(float percentage)
     {
-        return Mathf.Lerp(getLeftBound, getRightBound, percentage);
+        float x = Mathf.Lerp(getLeftBound, getRightBound, percentage);
+
+        if (float.IsNaN(x)) return 0f;
+        else return x;
     }
 
 
@@ -275,7 +303,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         isBeingHovered = true;
 
-        AudioSource.PlayClipAtPoint(hover, cam.position);
+        uiAudioSource.PlayOneShot(hover);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -288,18 +316,21 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
 
+        if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotApploedStat.UpgradeCost() < 0) return; // Prevents and purchases that puts the player into negative.
+
         UpgradeMenuManager.Instance.AddUpgradeOnce(statBarType);
 
-        AudioSource.PlayClipAtPoint(add, cam.position);
+        uiAudioSource.PlayOneShot(add);
     }
 
     public void OnRemoveOneToStat()
     {
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
 
+        if (upgradedButNotApploedStat.UpgradedAmount <= currentStat.UpgradedAmount) return; // Stops accidental downgrades that eat into current stats.
+
         UpgradeMenuManager.Instance.RemoveUpgradeOnce(statBarType);
 
-        AudioSource.PlayClipAtPoint(remove, cam.position);
-
+        uiAudioSource.PlayOneShot(remove);
     }
 }
