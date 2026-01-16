@@ -41,6 +41,21 @@ public class HubWorldUI : MonoBehaviour
         ConfirmationBox.Instance.OnConfirmation += OnConfirmation;
     }
 
+    void Update()
+    {
+        if (InputManager.Instance.GetCurrentInputDevice() == InputManager.InputDeviceType.Keyboard)
+        {
+            Cursor.visible = false; // using a custom cursor.
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+    }
+
     private void OnConfirmation(bool confirmedAction)
     {
         if (waitingConfirmationFor == WaitingConfirmationFor.None) return;
