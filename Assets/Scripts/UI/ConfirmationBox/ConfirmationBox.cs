@@ -6,7 +6,7 @@ public class ConfirmationBox : MonoBehaviour
 {
     public static ConfirmationBox Instance { get; private set; }
 
-    public delegate void ConfirmationBoxDelegate(bool cofirmedAction);
+    public delegate void ConfirmationBoxDelegate(bool confirmedAction);
     public event ConfirmationBoxDelegate OnConfirmation;
 
     [SerializeField]

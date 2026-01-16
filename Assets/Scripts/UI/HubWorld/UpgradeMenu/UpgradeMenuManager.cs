@@ -35,6 +35,12 @@ public class UpgradeMenuManager : MonoBehaviour
 {
     public static UpgradeMenuManager Instance { get; private set; }
 
+    [SerializeField]
+    MenuManager menuManager;
+
+    [SerializeField]
+    string mainMenuKey = "main";
+
     PlayerStats currentPStats;
     PlayerStats upgradedButNotAppliedPStats;
 
@@ -93,9 +99,9 @@ public class UpgradeMenuManager : MonoBehaviour
         ConfirmationBox.Instance.OnConfirmation -= OnConfirmation;
     }
 
-    private void OnConfirmation(bool cofirmedAction)
+    private void OnConfirmation(bool confirmedAction)
     {
-        if (!cofirmedAction) return; // we dont care if its not confirming.
+        if (!confirmedAction) return; // we dont care if its not confirming.
 
         switch (waitingForConfirmationFor)
         {
@@ -410,13 +416,19 @@ public class UpgradeMenuManager : MonoBehaviour
     public void GetConfirmApplyStats()
     {
         waitingForConfirmationFor = WaitingForConfirmationFor.ApplyStats;
-        ConfirmationBox.Instance.TryOpenConfirmationBox("Apply Stats", "Are you sure you want to apply these stat changes?");
+        if (!ConfirmationBox.Instance.TryOpenConfirmationBox("Apply Stats", "Are you sure you want to apply these stat changes?"))
+        {
+            waitingForConfirmationFor = WaitingForConfirmationFor.None;
+        }
     }
 
     public void GetConfirmRevertStats()
     {
         waitingForConfirmationFor = WaitingForConfirmationFor.RevertStats;
-        ConfirmationBox.Instance.TryOpenConfirmationBox("Revert Changes", "Are you sure you want to revert all your stat changes?");
+        if (!ConfirmationBox.Instance.TryOpenConfirmationBox("Revert Changes", "Are you sure you want to revert all your stat changes?"))
+        {
+            waitingForConfirmationFor = WaitingForConfirmationFor.None;
+        }
     }
 
     public void GetConfirmBackToMenu()
@@ -424,7 +436,10 @@ public class UpgradeMenuManager : MonoBehaviour
         if (currentCost > 0)
         {
             waitingForConfirmationFor = WaitingForConfirmationFor.BackToMenuWithUnsavedStats;
-            ConfirmationBox.Instance.TryOpenConfirmationBox("Lose Changes", "You still have unapplied changes!\nAre you sure you want to lose all changes?");
+            if (!ConfirmationBox.Instance.TryOpenConfirmationBox("Lose Changes", "You still have unapplied changes!\nAre you sure you want to lose all changes?"))
+            {
+                waitingForConfirmationFor = WaitingForConfirmationFor.None;
+            }
         }
         else
         {
@@ -435,6 +450,6 @@ public class UpgradeMenuManager : MonoBehaviour
     private void BackToMenu()
     {
         RevertStats();
-        // TODO LOAD THE HUB MAIN MENU
+        menuManager.OpenMenu(mainMenuKey);
     }
 }
