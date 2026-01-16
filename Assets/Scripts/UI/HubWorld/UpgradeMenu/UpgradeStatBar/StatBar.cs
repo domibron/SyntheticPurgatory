@@ -303,7 +303,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         isBeingHovered = true;
 
-        uiAudioSource.PlayOneShot(hover);
+        if (addButtonEnabled || removeButtonEnabled)
+            uiAudioSource.PlayOneShot(hover);
     }
 
     public void OnPointerExit(PointerEventData eventData)
