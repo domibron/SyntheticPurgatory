@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1654738285179640649}
   - component: {fileID: 8116285052169308977}
   - component: {fileID: 7383289994067013109}
+  - component: {fileID: 1145762540784793520}
   m_Layer: 0
   m_Name: P_GameManager
   m_TagString: Untagged
@@ -45,7 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382f52e2574c1dd45bd6e76e945803d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimePerLevel: 120
   maxLives: 3
   commonUpgradeAmount: 2
   commonDowngradeAmount: 1
@@ -74,3 +74,18 @@ MonoBehaviour:
     ScriptableObject: {fileID: 11400000, guid: ac57a9d5f7545084aa3ec0e00cd4e75c, type: 2}
   - Key: 5
     ScriptableObject: {fileID: 11400000, guid: 1124548518d24a74f936724845d29329, type: 2}
+--- !u!114 &1145762540784793520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3146877350283063855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a43e320564ebe94c9d85fb3ec78a51f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  common_Chips: []
+  rare_Chips: []
+  epic_Chips: []
