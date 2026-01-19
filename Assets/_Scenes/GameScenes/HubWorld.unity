@@ -306,6 +306,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 860627b3901d5dd4e8c94aeed36e9eac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitSize: 200
+  Width: 4
+  Height: 3
+--- !u!114 &156022799 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4077117349151000674, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+  m_PrefabInstance: {fileID: 2316155062788454927}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156022790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c835e7c38841354b91ac43dc0936800, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &161992849
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +700,7 @@ GameObject:
   - component: {fileID: 371005221}
   - component: {fileID: 371005223}
   - component: {fileID: 371005222}
+  - component: {fileID: 371005224}
   m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
@@ -800,6 +815,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 371005218}
   m_CullTransparentMesh: 1
+--- !u!114 &371005224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371005218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dad428e82cddedb49a8c00a60d30a5d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chipBoardMenu: {fileID: 156022798}
 --- !u!1 &500449350
 GameObject:
   m_ObjectHideFlags: 0
@@ -2986,6 +3014,38 @@ PrefabInstance:
     - target: {fileID: 1982155821764168386, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 156022799}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MenuManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: chip
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284575208801133264, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2511643509868719985, guid: bf7f92b02bb93ff4e9dda4572f6fdcdc, type: 3}
       propertyPath: m_IsActive
