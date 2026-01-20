@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats:
     MaxCollectionRangeStat:
-      BaseStat: 1.5
+      BaseStat: 2.25
       IsThereAMax: 1
       MaxStat: 5
       IncreaseAmount: 0.1
@@ -26,6 +26,7 @@ MonoBehaviour:
       StringModifiers: N2
       StatName: Collection Range
       StatDescription: Description
+      CurrentValue: 2.25
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 0.1
@@ -48,13 +49,14 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Max Inventory
       StatDescription: Description
+      CurrentValue: 100
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 10
       ChipIncreaseAmount: 0
     ScrapRangeUpgradeAmount: 0
     MaxLevelTimeStat:
-      BaseStat: 120
+      BaseStat: 300
       IsThereAMax: 0
       MaxStat: 0
       IncreaseAmount: 1
@@ -66,6 +68,7 @@ MonoBehaviour:
       StringModifiers: n0
       StatName: Time In Level
       StatDescription: Description
+      CurrentValue: 300
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -83,6 +86,7 @@ MonoBehaviour:
       StringModifiers: p0
       StatName: Crit Chance
       StatDescription: Description
+      CurrentValue: 0.1
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 0.01
