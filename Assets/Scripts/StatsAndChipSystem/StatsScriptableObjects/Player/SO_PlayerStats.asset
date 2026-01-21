@@ -169,21 +169,21 @@ MonoBehaviour:
     DelayAfterFireBeforeRecharging: 0.4
     OverheatForceCoolDownStat:
       BaseStat: 3
-      IsThereAMax: 0
-      MaxStat: 0
-      IncreaseAmount: 1
+      IsThereAMax: 1
+      MaxStat: 0.1
+      IncreaseAmount: -0.1
       IncreasePerLevel: 1
       BaseCost: 1
-      IncreaseCostAmount: 1
+      IncreaseCostAmount: 1.1
       Prefix: 
-      Suffix: 
+      Suffix: s
       StringModifiers: 
-      StatName: Name
-      StatDescription: Description
+      StatName: Overheat
+      StatDescription: Overheat cool down time
       CurrentValue: 3
       UpgradedAmount: 0
       CurrentCost: 1
-      CurrentUpgradeAmount: 1
+      CurrentUpgradeAmount: -0.1
       ChipIncreaseAmount: 0
     MeleeAttackDelayStat:
       BaseStat: 0.5
