@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class MiscellaneousStats : ICloneable
+public class MiscellaneousStats : CoreStats, ICloneable
 {
     public UpgradablePlayerStat MaxCollectionRangeStat = new(1.5f);
     public float CollectItemIntoInventoryRange = 1f;
@@ -21,7 +21,7 @@ public class MiscellaneousStats : ICloneable
 
     public UpgradablePlayerStat CriticalHitChanceStat = new(0.1f);
 
-    public void RefreshStats()
+    protected override UpgradablePlayerStat[] GetAllUpgradableStats()
     {
         UpgradablePlayerStat[] upgradablePlayerStats =
         {
@@ -31,13 +31,10 @@ public class MiscellaneousStats : ICloneable
             CriticalHitChanceStat,
         };
 
-        foreach (var stat in upgradablePlayerStats)
-        {
-            stat.ResetStat();
-        }
+        return upgradablePlayerStats;
     }
 
-    public object Clone()
+    public override object Clone()
     {
         return new MiscellaneousStats
         {

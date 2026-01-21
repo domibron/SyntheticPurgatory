@@ -42,6 +42,9 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
     Dictionary<int, GameObject> inventoryChips = new Dictionary<int, GameObject>();
     Dictionary<int, GameObject> placedChips = new Dictionary<int, GameObject>();
 
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -108,16 +111,6 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
 
     }
 
-    void UpdateGrid()
-    {
-
-    }
-
-    void UpdateInventory()
-    {
-
-    }
-
     void Init()
     {
         List<int> invChips = chipManager.GetAllInventoryChips();
@@ -153,7 +146,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
         inventoryChips.Add(id, invItem);
     }
 
-    private bool CreateAndAddToBoard(int id, Vector2Int pos, bool upgradeChipManager = true)
+    private bool CreateAndAddToBoard(int id, Vector2Int pos, bool updateChipManager = true)
     {
         if (placedChips.ContainsKey(id))
         {
@@ -161,7 +154,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
             return false;
         }
 
-        if (upgradeChipManager)
+        if (updateChipManager)
         {
             if (!chipManager.AddChipToBoard(id, pos))
             {
@@ -177,6 +170,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
 
         placedChips.Add(id, chipBoardObject);
 
+
         return true;
     }
 
@@ -184,6 +178,8 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
     {
         RemoveChipFromBoard(id);
         AddToInventory(id);
+
+        UpdateStatsToo();
     }
 
     private void MoveToBoardFromInventory(int id, Vector2Int pos)
@@ -191,7 +187,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
         if (!CreateAndAddToBoard(id, pos)) return; // we failed, abort.
         RemoveChipFromInventory(id);
 
-        print(chipManager.BoardToString());
+        UpdateStatsToo();
     }
 
     private void MoveToNewLocationOnBoard(int id, Vector2Int pos)
@@ -227,66 +223,66 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
         print(chipManager.BoardToString());
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
+    // public void OnPointerClick(PointerEventData eventData)
+    // {
 
-        // eventData.button == PointerEventData.InputButton.Right
-        // throw new System.NotImplementedException();
-    }
+    //     // eventData.button == PointerEventData.InputButton.Right
+    //     // throw new System.NotImplementedException();
+    // }
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            int chipSelectRes = chipManager.GetChipIdFromGridPos(cursorGridPos); // banking on this returning -1 for null.
-            if (chipSelectRes != -1)
-            {
-                currentSelectedChipID = chipSelectRes;
-                selectedFromInventory = false;
-            }
-            else if (hoveredInventoryChipID != -1)
-            {
-                currentSelectedChipID = hoveredInventoryChipID;
-                selectedFromInventory = true;
-            }
-        }
-        else if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            int chipSelectRes = chipManager.GetChipIdFromGridPos(cursorGridPos);
-            if (chipSelectRes != -1)
-            {
-                MoveToInventoryFromBoard(chipSelectRes);
-            }
-        }
-    }
+    // public void OnPointerDown(PointerEventData eventData)
+    // {
+    //     if (eventData.button == PointerEventData.InputButton.Left)
+    //     {
+    //         int chipSelectRes = chipManager.GetChipIdFromGridPos(cursorGridPos); // banking on this returning -1 for null.
+    //         if (chipSelectRes != -1)
+    //         {
+    //             currentSelectedChipID = chipSelectRes;
+    //             selectedFromInventory = false;
+    //         }
+    //         else if (hoveredInventoryChipID != -1)
+    //         {
+    //             currentSelectedChipID = hoveredInventoryChipID;
+    //             selectedFromInventory = true;
+    //         }
+    //     }
+    //     else if (eventData.button == PointerEventData.InputButton.Right)
+    //     {
+    //         int chipSelectRes = chipManager.GetChipIdFromGridPos(cursorGridPos);
+    //         if (chipSelectRes != -1)
+    //         {
+    //             MoveToInventoryFromBoard(chipSelectRes);
+    //         }
+    //     }
+    // }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            if (currentSelectedChipID != -1)
-            {
-                if (cursorGridPos == new Vector2Int(-1, -1))
-                {
-                    MoveToInventoryFromBoard(currentSelectedChipID);
-                }
-                else
-                {
-                    if (selectedFromInventory)
-                    {
-                        MoveToBoardFromInventory(currentSelectedChipID, cursorGridPos);
-                    }
-                    else
-                    {
-                        MoveToNewLocationOnBoard(currentSelectedChipID, cursorGridPos);
-                    }
-                }
-            }
+    // public void OnPointerUp(PointerEventData eventData)
+    // {
+    //     if (eventData.button == PointerEventData.InputButton.Left)
+    //     {
+    //         if (currentSelectedChipID != -1)
+    //         {
+    //             if (cursorGridPos == new Vector2Int(-1, -1))
+    //             {
+    //                 MoveToInventoryFromBoard(currentSelectedChipID);
+    //             }
+    //             else
+    //             {
+    //                 if (selectedFromInventory)
+    //                 {
+    //                     MoveToBoardFromInventory(currentSelectedChipID, cursorGridPos);
+    //                 }
+    //                 else
+    //                 {
+    //                     MoveToNewLocationOnBoard(currentSelectedChipID, cursorGridPos);
+    //                 }
+    //             }
+    //         }
 
-            currentSelectedChipID = -1;
-            selectedFromInventory = false;
-        }
-    }
+    //         currentSelectedChipID = -1;
+    //         selectedFromInventory = false;
+    //     }
+    // }
 
     public void HoveredInventoryItem(int id)
     {
@@ -311,5 +307,9 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
         return new Vector3((-halfWidthSize * UnitSize) + (UnitSize * pos.x), (halfHeightSize * UnitSize) - (UnitSize * pos.y));
     }
 
-
+    private void UpdateStatsToo()
+    {
+        UpgradeMenuManager.Instance.UpdateStatUI(); // updates the stats with the new data.
+        // the manager will fetch the data.
+    }
 }

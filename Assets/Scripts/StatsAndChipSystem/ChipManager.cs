@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 
 
 public class ChipManager : MonoBehaviour
@@ -30,6 +31,7 @@ public class ChipManager : MonoBehaviour
 
     Dictionary<int, Vector2Int> allPlacedChips = new Dictionary<int, Vector2Int>();
     List<int> allInventoryChips = new List<int>();
+
 
     void Awake()
     {
@@ -188,4 +190,17 @@ public class ChipManager : MonoBehaviour
         }
         return returnedString;
     }
+
+    public void ModifyStatChipData(ref PlayerStats pStats, ref MiscellaneousStats mStats)
+    {
+        pStats.ResetAllChipStats();
+        mStats.ResetAllChipStats();
+
+        foreach (var id in allPlacedChips.Keys)
+        {
+            allChips[id].ModifyStats(ref pStats, ref mStats);
+        }
+    }
+
+
 }

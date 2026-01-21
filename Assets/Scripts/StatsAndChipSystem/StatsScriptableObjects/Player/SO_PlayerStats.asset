@@ -26,6 +26,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Max Health
       StatDescription: Description
+      CurrentValue: 100
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -44,6 +45,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Regen Per Tick
       StatDescription: Description
+      CurrentValue: 5
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -61,6 +63,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Max Speed
       StatDescription: Description
+      CurrentValue: 5.5
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -82,6 +85,7 @@ MonoBehaviour:
       StringModifiers: P0
       StatName: Slide Boost
       StatDescription: Description
+      CurrentValue: 1.65
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 0.1
@@ -99,6 +103,7 @@ MonoBehaviour:
       StringModifiers: P0
       StatName: Air Boost
       StatDescription: Description
+      CurrentValue: 2.5
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 0.1
@@ -118,6 +123,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Gun Damage
       StatDescription: Description
+      CurrentValue: 12
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -135,6 +141,7 @@ MonoBehaviour:
       StringModifiers: N2
       StatName: Recharge
       StatDescription: Description
+      CurrentValue: 3
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: -0.1
@@ -152,6 +159,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Bullets Per Charge
       StatDescription: Description
+      CurrentValue: 10
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -159,22 +167,23 @@ MonoBehaviour:
     StandardSecondsPerShot: 0.4
     ChargedSecondsPerShot: 0.1
     DelayAfterFireBeforeRecharging: 0.4
-    OverheatForceCooldownStat:
+    OverheatForceCoolDownStat:
       BaseStat: 3
-      IsThereAMax: 1
-      MaxStat: 0.1
-      IncreaseAmount: -0.1
+      IsThereAMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
       IncreasePerLevel: 1
-      BaseCost: 10
-      IncreaseCostAmount: 1.1
+      BaseCost: 1
+      IncreaseCostAmount: 1
       Prefix: 
-      Suffix: s
-      StringModifiers: N2
-      StatName: Overheat Wait
+      Suffix: 
+      StringModifiers: 
+      StatName: Name
       StatDescription: Description
+      CurrentValue: 3
       UpgradedAmount: 0
-      CurrentCost: 10
-      CurrentUpgradeAmount: -0.1
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
       ChipIncreaseAmount: 0
     MeleeAttackDelayStat:
       BaseStat: 0.5
@@ -189,6 +198,7 @@ MonoBehaviour:
       StringModifiers: N2
       StatName: Melee Delay
       StatDescription: Description
+      CurrentValue: 0.5
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: -0.05
@@ -206,6 +216,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Melee Damage
       StatDescription: Description
+      CurrentValue: 10
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -223,6 +234,7 @@ MonoBehaviour:
       StringModifiers: N2
       StatName: Reach
       StatDescription: Description
+      CurrentValue: 1.5
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 0.05
@@ -240,6 +252,7 @@ MonoBehaviour:
       StringModifiers: N2
       StatName: Melee Stagger
       StatDescription: Description
+      CurrentValue: 0.4
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 0.05
@@ -257,6 +270,7 @@ MonoBehaviour:
       StringModifiers: N0
       StatName: Bash Force
       StatDescription: Description
+      CurrentValue: 10
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: 1
@@ -274,6 +288,7 @@ MonoBehaviour:
       StringModifiers: N2
       StatName: Bash Delay
       StatDescription: Description
+      CurrentValue: 0.5
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: -0.05
