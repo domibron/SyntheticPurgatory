@@ -7,10 +7,10 @@ public class PercentIncreaseChipSO : ChipSO
 
     public StatType targetStat = StatType.MaxHealth;
 
-    public override void ModifyStats(ref PlayerStats pStats, ref MiscellaneousStats miscStats)
+    public override void ModifyStats(ref PlayerStats pStats, ref MiscellaneousStats mStats)
     {
         // foreach the enum and use the value to cycle through and increase.
-
+        IncreaseStat(ref UpgradeMenuManager.ConvertEnumToStat(targetStat, ref pStats, ref mStats));
     }
 
     protected virtual void IncreaseStat(ref UpgradablePlayerStat pStat)
