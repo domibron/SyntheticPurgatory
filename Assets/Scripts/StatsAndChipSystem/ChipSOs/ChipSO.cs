@@ -21,6 +21,7 @@ public class ChipSO : ScriptableObject
     public virtual void ModifyStats(ref PlayerStats pStats, ref MiscellaneousStats miscStats)
     {
         // Modify the stats, remember to add to the chip stats. They will all be reset to 0 before this is called.
+        pStats.MaxHealthStat.AddToChipIncreaseAmount(pStats.MaxHealthStat.CurrentValue * 1f); // TEMP
     }
 
     public virtual Vector2Int GetSize()

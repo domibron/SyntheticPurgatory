@@ -199,9 +199,18 @@ public class UpgradablePlayerStat : ICloneable
         ChipIncreaseAmount = amount;
     }
 
+    public void AddToChipIncreaseAmount(float amount)
+    {
+        ChipIncreaseAmount += amount;
+    }
+
     public float GetCurrentValue()
     {
+        // * im not sure about this
+        // if (IsIncreasingStat)
         return CurrentValue + ChipIncreaseAmount;
+        // else
+        //     return CurrentValue - ChipIncreaseAmount;
     }
 
     public object Clone() // fingers crossed that initilized can work to stop setting current cost and that to base.
@@ -239,7 +248,33 @@ public class UpgradablePlayerStat : ICloneable
 
 public class CoreStats : ICloneable
 {
-    public object Clone()
+    protected virtual UpgradablePlayerStat[] GetAllUpgradableStats()
+    {
+        UpgradablePlayerStat[] upgradablePlayerStats =
+        {
+            // add your stats here.
+        };
+
+        return upgradablePlayerStats;
+    }
+
+    public virtual void ResetAllChipStats()
+    {
+        foreach (var stat in GetAllUpgradableStats())
+        {
+            stat.SetChipIncreaseAmount();
+        }
+    }
+
+    public virtual void RefreshStats()
+    {
+        foreach (var stat in GetAllUpgradableStats())
+        {
+            stat.ResetStat();
+        }
+    }
+
+    public virtual object Clone()
     {
         var clone = new CoreStats
         {

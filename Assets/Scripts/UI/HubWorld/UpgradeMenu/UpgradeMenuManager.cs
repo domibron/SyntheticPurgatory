@@ -74,7 +74,7 @@ public class UpgradeMenuManager : MonoBehaviour
 
         Instance = this;
 
-        // precution.
+        // precaution.
         if (GameStatsManager.Instance == null) throw new NullReferenceException($"Cannot function correctly if {nameof(GameStatsManager)} doesn't exist!");
 
         // these two hold upgradeable stats. Could simplify the whole system with one dynamic stat class.
@@ -143,7 +143,7 @@ public class UpgradeMenuManager : MonoBehaviour
             case StatType.ShotsPerFullCharge:
                 return (currentPStats.ShotsPerFullChargeStat, upgradedButNotAppliedPStats.ShotsPerFullChargeStat);
             case StatType.OverheatForceCoolDown:
-                return (currentPStats.OverheatForceCooldownStat, upgradedButNotAppliedPStats.OverheatForceCooldownStat);
+                return (currentPStats.OverheatForceCoolDownStat, upgradedButNotAppliedPStats.OverheatForceCoolDownStat);
 
             // MELEE
             case StatType.MeleeDamage:
@@ -205,7 +205,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.ShotsPerFullChargeStat);
                 break;
             case StatType.OverheatForceCoolDown:
-                currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.OverheatForceCooldownStat);
+                currentCost += UpgradeOnce(ref upgradedButNotAppliedPStats.OverheatForceCoolDownStat);
                 break;
 
             // MELEE
@@ -278,7 +278,7 @@ public class UpgradeMenuManager : MonoBehaviour
                 currentCost += RemoveUpgradeOnce(ref currentPStats.ShotsPerFullChargeStat, ref upgradedButNotAppliedPStats.ShotsPerFullChargeStat);
                 break;
             case StatType.OverheatForceCoolDown:
-                currentCost += RemoveUpgradeOnce(ref currentPStats.OverheatForceCooldownStat, ref upgradedButNotAppliedPStats.OverheatForceCooldownStat);
+                currentCost += RemoveUpgradeOnce(ref currentPStats.OverheatForceCoolDownStat, ref upgradedButNotAppliedPStats.OverheatForceCoolDownStat);
                 break;
 
             // MELEE
@@ -410,7 +410,14 @@ public class UpgradeMenuManager : MonoBehaviour
 
     public void UpdateStatUI()
     {
+        AddChipModifiersIn(); // stinky
         OnStatsUpdated?.Invoke();
+    }
+
+    private void AddChipModifiersIn()
+    {
+        ChipManager.Instance.ModifyStatChipData(ref currentPStats, ref currentMiscStats);
+        ChipManager.Instance.ModifyStatChipData(ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats);
     }
 
     public void GetConfirmApplyStats()
@@ -452,4 +459,6 @@ public class UpgradeMenuManager : MonoBehaviour
         RevertStats();
         menuManager.OpenMenu(mainMenuKey);
     }
+
+
 }

@@ -186,7 +186,7 @@ public class PlayerCombat : MonoBehaviour
         standardSecondsPerShot = stats.StandardSecondsPerShot;
         chargedSecondsPerShot = stats.ChargedSecondsPerShot;
         delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
-        overheatForceCoolDown = stats.OverheatForceCooldownStat.GetCurrentValue();
+        overheatForceCoolDown = stats.OverheatForceCoolDownStat.GetCurrentValue();
         // projectileFireRate = stats.ProjectileFireRate;
         // projectileMagSize = stats.ProjectileMagSize;
 

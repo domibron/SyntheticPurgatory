@@ -86,7 +86,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     // these are most likely stored references and not copies!
     UpgradablePlayerStat currentStat;
-    UpgradablePlayerStat upgradedButNotApploedStat;
+    UpgradablePlayerStat upgradedButNotAppliedStat;
 
 
 
@@ -158,7 +158,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             else
                 hoveringOver = HoveringOver.StatBar;
         }
-        else if (!isBeingHovered) currentLingerTime -= Time.deltaTime;
+        else if (!isBeingHovered && currentLingerTime > 0) currentLingerTime -= Time.deltaTime;
 
 
         if (currentLingerTime > 0 && currentLerpValue <= 1) currentLerpValue += Time.deltaTime * (1 / slideLerpSpeed);
@@ -211,28 +211,40 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             throw new NullReferenceException($"Urm, {nameof(UpgradeMenuManager)} is null but you called update stats.");
         }
 
-        (currentStat, upgradedButNotApploedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statBarType);
+        (currentStat, upgradedButNotAppliedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statBarType);
 
-        if (currentStat == null || upgradedButNotApploedStat == null)
+        if (currentStat == null || upgradedButNotAppliedStat == null)
         {
             throw new NullReferenceException($"Fetched stats are NULL what the hell, did you add them in {nameof(UpgradeMenuManager)}?");
         }
 
         if (currentStat.IsIncreasingStat)
         {
-            currentStatAmount = currentStat.GetCurrentValue();
-            float diff = upgradedButNotApploedStat.GetCurrentValue() - currentStat.GetCurrentValue();
+            // currentStat.GetCurrentValue(); // gets the total.
+            currentStatAmount = currentStat.CurrentValue;
+            float diff = upgradedButNotAppliedStat.CurrentValue - currentStat.CurrentValue;
             upgradedStatAmount = diff;
+
+            // chip
+            currentChip = currentStat.ChipIncreaseAmount;
+            float chipDiff = upgradedButNotAppliedStat.ChipIncreaseAmount - currentStat.ChipIncreaseAmount;
+            upgradedChip = chipDiff;
         }
         else
         {
-            float offset = currentStat.GetCurrentValue() - upgradedButNotApploedStat.GetCurrentValue();
-            currentStatAmount = currentStat.GetCurrentValue() - offset;
+            float offset = currentStat.CurrentValue - upgradedButNotAppliedStat.CurrentValue;
+            currentStatAmount = currentStat.CurrentValue - offset;
 
             upgradedStatAmount = offset;
+
+            // Chip
+            float chipOffset = currentStat.ChipIncreaseAmount - upgradedButNotAppliedStat.ChipIncreaseAmount;
+            currentChip = currentStat.ChipIncreaseAmount - chipOffset;
+
+            upgradedChip = chipOffset;
         }
 
-        if (upgradedButNotApploedStat.UpgradedAmount <= currentStat.UpgradedAmount)
+        if (upgradedButNotAppliedStat.UpgradedAmount <= currentStat.UpgradedAmount)
         {
             removeButtonEnabled = false;
         }
@@ -242,7 +254,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
 
 
-        if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotApploedStat.UpgradeCost() < 0)
+        if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotAppliedStat.UpgradeCost() < 0)
         {
             addButtonEnabled = false;
         }
@@ -251,11 +263,13 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             addButtonEnabled = true;
         }
 
-        text.text = upgradedButNotApploedStat.GetName() + " - " + upgradedButNotApploedStat.GetValueWithPreAndSuf();
+        text.text = upgradedButNotAppliedStat.GetName() + " - " + upgradedButNotAppliedStat.GetValueWithPreAndSuf();
     }
 
     public void UpdateStatBar()
     {
+        total = currentStatAmount + upgradedStatAmount + currentChip + upgradedChip;
+
         float currentPercentage = 0f;
 
         currentBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (currentStatAmount / total) * parentWidth);
@@ -317,7 +331,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
 
-        if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotApploedStat.UpgradeCost() < 0) return; // Prevents and purchases that puts the player into negative.
+        if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotAppliedStat.UpgradeCost() < 0) return; // Prevents and purchases that puts the player into negative.
 
         UpgradeMenuManager.Instance.AddUpgradeOnce(statBarType);
 
@@ -328,7 +342,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (UpgradeMenuManager.Instance == null) throw new NullReferenceException($"Cannot find the {nameof(UpgradeMenuManager)}!");
 
-        if (upgradedButNotApploedStat.UpgradedAmount <= currentStat.UpgradedAmount) return; // Stops accidental downgrades that eat into current stats.
+        if (upgradedButNotAppliedStat.UpgradedAmount <= currentStat.UpgradedAmount) return; // Stops accidental downgrades that eat into current stats.
 
         UpgradeMenuManager.Instance.RemoveUpgradeOnce(statBarType);
 

@@ -4,7 +4,7 @@ using UnityEngine;
 // TODO: Use a base class ideally but eh, screw it.
 
 [Serializable]
-public class PlayerStats : ICloneable
+public class PlayerStats : CoreStats, ICloneable
 {
     public UpgradablePlayerStat MaxHealthStat = new UpgradablePlayerStat(100f);
 
@@ -38,7 +38,7 @@ public class PlayerStats : ICloneable
     public float StandardSecondsPerShot = 0.4f;
     public float ChargedSecondsPerShot = 0.1f;
     public float DelayAfterFireBeforeRecharging = 0.4f;
-    public UpgradablePlayerStat OverheatForceCooldownStat = new(3f);
+    public UpgradablePlayerStat OverheatForceCoolDownStat = new(3f);
 
 
     public UpgradablePlayerStat MeleeAttackDelayStat = new(0.5f);
@@ -49,7 +49,7 @@ public class PlayerStats : ICloneable
     public UpgradablePlayerStat BashForceStat = new(10f);
     public UpgradablePlayerStat BashAttackDelayStat = new(0.5f);
 
-    public void RefreshStats()
+    protected override UpgradablePlayerStat[] GetAllUpgradableStats()
     {
         UpgradablePlayerStat[] upgradablePlayerStats =
         {
@@ -61,7 +61,7 @@ public class PlayerStats : ICloneable
             ProjectileDamageStat,
             RechargeSecondsStat,
             ShotsPerFullChargeStat,
-            OverheatForceCooldownStat,
+            OverheatForceCoolDownStat,
             MeleeAttackDelayStat,
             MeleeDamageStat,
             MeleeReachStat,
@@ -70,13 +70,10 @@ public class PlayerStats : ICloneable
             BashAttackDelayStat,
         };
 
-        foreach (var stat in upgradablePlayerStats)
-        {
-            stat.ResetStat();
-        }
+        return upgradablePlayerStats;
     }
 
-    public object Clone()
+    public override object Clone()
     {
         return new PlayerStats
         {
@@ -105,7 +102,7 @@ public class PlayerStats : ICloneable
             StandardSecondsPerShot = StandardSecondsPerShot,
             ChargedSecondsPerShot = ChargedSecondsPerShot,
             DelayAfterFireBeforeRecharging = DelayAfterFireBeforeRecharging,
-            OverheatForceCooldownStat = (UpgradablePlayerStat)OverheatForceCooldownStat.Clone(),
+            OverheatForceCoolDownStat = (UpgradablePlayerStat)OverheatForceCoolDownStat.Clone(),
             // ProjectileFireRate = ProjectileFireRate,
 
 
@@ -139,5 +136,6 @@ public class PlayerStatsSO : StatsCoreSO
     void OnValidate()
     {
         stats.RefreshStats();
+        stats.ResetAllChipStats(); // make sure there are no lingering data.
     }
 }
