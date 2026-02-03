@@ -9,7 +9,7 @@ public class PercentIncreaseChipSO : ChipSO
 
     public override void ModifyStats(ref PlayerStats pStats, ref MiscellaneousStats mStats)
     {
-        // foreach the enum and use the value to cycle through and increase.
+        // foreach the enum and use the value to cycle through and increase. ~ Ur using ref so much, I just came back from c++ I want to make sure that I have a ref.
         IncreaseStat(ref UpgradeMenuManager.ConvertEnumToStat(targetStat, ref pStats, ref mStats));
     }
 
@@ -21,7 +21,7 @@ public class PercentIncreaseChipSO : ChipSO
         }
         else
         {
-            pStat.AddToChipIncreaseAmount(pStat.GetCurrentValue() * -percentIncrease); // cant wait for bugs :3
+            pStat.AddToChipIncreaseAmount(pStat.BaseStat * -percentIncrease); // built in checks prevent going over the max. No, not to this function call.
         }
     }
 }

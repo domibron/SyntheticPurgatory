@@ -18,10 +18,15 @@ public class ChipSO : ScriptableObject
     [SerializeField]
     GameObject BoardItem;
 
+    /// <summary>
+    /// This is called to modify the stats per chip. Presume the current stored chip values have been reset and add to the variable.
+    /// </summary>
+    /// <param name="pStats">The player stats to modify.</param>
+    /// <param name="miscStats">The miscellaneous stats to modify.</param>
     public virtual void ModifyStats(ref PlayerStats pStats, ref MiscellaneousStats miscStats)
     {
         // Modify the stats, remember to add to the chip stats. They will all be reset to 0 before this is called.
-        pStats.MaxHealthStat.AddToChipIncreaseAmount(pStats.MaxHealthStat.CurrentValue * 1f); // TEMP
+        //pStats.MaxHealthStat.AddToChipIncreaseAmount(pStats.MaxHealthStat.CurrentValue * 1f); // TEMP
     }
 
     public virtual Vector2Int GetSize()
