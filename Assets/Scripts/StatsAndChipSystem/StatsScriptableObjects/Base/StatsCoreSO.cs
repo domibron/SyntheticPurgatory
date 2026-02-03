@@ -206,11 +206,28 @@ public class UpgradablePlayerStat : ICloneable
 
     public float GetCurrentValue()
     {
-        // * im not sure about this
+        // returns the max if current exceeds the max or the current value.
+        return GetValueOrMax(CurrentValue + ChipIncreaseAmount);
+
+        // Obsolete code.
+        // * im not sure about this #/#/# (weeks ago) - old 2/2/26
         // if (IsIncreasingStat)
-        return CurrentValue + ChipIncreaseAmount;
+        // return CurrentValue + ChipIncreaseAmount;
         // else
         //     return CurrentValue - ChipIncreaseAmount;
+    }
+
+    public float GetValueOrMax(float value)
+    {
+        if (!IsThereAMax) return value; // this is handled inside the isExceedingMax check, doubled just in case of future changes.
+        // performance at this level does not matter.
+
+        if (IsExceedingMax(value))
+        {
+            return MaxStat;
+        }
+
+        return value;
     }
 
     public object Clone() // fingers crossed that initilized can work to stop setting current cost and that to base.
