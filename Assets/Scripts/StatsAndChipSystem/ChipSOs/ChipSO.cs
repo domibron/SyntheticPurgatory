@@ -8,6 +8,12 @@ public class ChipSO : ScriptableObject
     public const int Y_ROW = 0;
 
     [SerializeField]
+    string chipName = "Name";
+
+    [SerializeField, TextArea]
+    string chipDescription = "Description";
+
+    [SerializeField]
     Vector2Int[] blockLayout = { Vector2Int.zero };
 
     [SerializeField]
@@ -122,8 +128,6 @@ public class ChipSO : ScriptableObject
         }
     }
 
-
-
     protected bool IsSlotOccupied(ref int[,] chipBoard, Vector2Int targetGridPos, int currentID = -1)
     {
         // Y, X - R, C
@@ -145,4 +149,13 @@ public class ChipSO : ScriptableObject
         return blockLayout; // TODO: prevent direct ref. Return only copy.
     }
 
+    public string GetNameOfChip()
+    {
+        return chipName;
+    }
+
+    public string GetDescriptionOfChip()
+    {
+        return chipDescription;
+    }
 }

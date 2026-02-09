@@ -49,10 +49,16 @@ MonoBehaviour:
   maxLives: 3
   commonUpgradeAmount: 2
   commonDowngradeAmount: 1
+  commonBaseUnlockCost: 200
+  commonCostIncrease: 25
   rareUpgradeAmount: 4
   rareDowngradeAmount: 1
+  rareBaseUnlockCost: 400
+  rareCostIncrease: 50
   epicUpgradeAmount: 5
   epicDowngradeAmount: 0
+  epicBaseUnlockCost: 600
+  epicCostIncrease: 100
 --- !u!114 &7383289994067013109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,6 +93,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   common_Chips:
+  - {fileID: 11400000, guid: 6d0183451b2a09e4b99118040d0aeef0, type: 2}
+  - {fileID: 11400000, guid: f44667b1d503ebd47a1ef7a5a17cebea, type: 2}
+  rare_Chips:
   - {fileID: 11400000, guid: 3d551c5606b64a342820fd4c5a2d5c7f, type: 2}
-  rare_Chips: []
-  epic_Chips: []
+  - {fileID: 11400000, guid: d3996d33f753cef4b8a9b0c74bedbd4c, type: 2}
+  epic_Chips:
+  - {fileID: 11400000, guid: 3328b510e6d48344699ab2c274b4ba23, type: 2}
+  - {fileID: 11400000, guid: 29576dbf7aac41a4691c2219bde452ca, type: 2}

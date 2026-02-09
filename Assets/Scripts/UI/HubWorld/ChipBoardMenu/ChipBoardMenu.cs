@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
 {
-    public float UnitSize = 200f;
+    public const float UnitSize = 200f;
     public int Width = 4;
     public int Height = 3;
 
@@ -125,6 +125,24 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
         {
             CreateAndAddToBoard(chip, placedChips[chip], false); // we are working of a existing list. So we dont need to update it.
         }
+    }
+
+    public void CreateNewInventoryChip(int id)
+    {
+        if (inventoryChips.ContainsKey(id))
+        {
+            Debug.LogError("Key already exists!");
+            return;
+        }
+
+
+        ChipSO chipData = chipManager.GetChipDataFromID(id); // can be null
+
+        GameObject invItem = Instantiate(InventoryChipItem, inventorySection);
+
+        invItem.GetComponent<ChipInvHoverSelectDetect>().SetUp(id, this, chipData);
+
+        inventoryChips.Add(id, invItem);
     }
 
     private void AddToInventory(int id)

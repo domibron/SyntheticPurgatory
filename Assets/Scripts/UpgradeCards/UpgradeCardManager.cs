@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 
-
 public enum CardTier
 {
     Common,

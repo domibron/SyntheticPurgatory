@@ -59,11 +59,11 @@ public class SteamTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SteamAPICall_t handle = SteamUserStats.GetNumberOfCurrentPlayers();
-            m_NumberOfCurrentPlayers.Set(handle);
-            Debug.Log("Called GetNumberOfCurrentPlayers()");
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     SteamAPICall_t handle = SteamUserStats.GetNumberOfCurrentPlayers();
+        //     m_NumberOfCurrentPlayers.Set(handle);
+        //     Debug.Log("Called GetNumberOfCurrentPlayers()");
+        // }
     }
 }

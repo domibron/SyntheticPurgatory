@@ -24,7 +24,7 @@ public class ChipManager : MonoBehaviour
     [SerializeField]
     ChipSO[] epic_Chips;
 
-    // id, chip. This acts as a ref for all chips.
+    // id, chip. This acts as a ref for all chips. Where unlocked / collected chips are stored.
     Dictionary<int, ChipSO> allChips = new Dictionary<int, ChipSO>();
 
     int[,] chipBoard = new int[3, 4]; // Hard coded size, grid on the chip menu on hub does not update to fit this!
@@ -48,8 +48,8 @@ public class ChipManager : MonoBehaviour
 
     void Start()
     {
-        OpenModule(ChipType.Common);
-        OpenModule(ChipType.Common);
+        // OpenModule(ChipType.Common); // DEBUG REMOVE
+        // OpenModule(ChipType.Common);
     }
 
     private void SetUpBoard()
@@ -118,13 +118,15 @@ public class ChipManager : MonoBehaviour
         }
     }
 
-    public void OpenModule(ChipType type)
+    public ChipSO OpenModule(ChipType type)
     {
         ChipSO newChip = GetRandomChipFromModule(type);
 
         int newID = allChips.Keys.Count;
         allChips.Add(newID, newChip); // add to lookup table.
         AddChipToInventory(newID);
+
+        return newChip;
     }
 
     public ChipSO GetRandomChipFromModule(ChipType chipType)
@@ -165,6 +167,11 @@ public class ChipManager : MonoBehaviour
         if (!allChips.ContainsKey(id)) return null;
 
         return allChips[id];
+    }
+
+    public int GetTotalChipCount()
+    {
+        return allChips.Count;
     }
 
     public int GetChipIdFromGridPos(Vector2Int pos)
