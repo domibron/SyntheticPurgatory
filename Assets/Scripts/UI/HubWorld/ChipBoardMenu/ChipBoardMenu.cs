@@ -164,7 +164,9 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
 
         ChipSO chipData = chipManager.GetChipDataFromID(id);
 
-        GameObject chipBoardObject = Instantiate(chipData.GetBoardChipObject(), placeChipsSection);
+        // GameObject chipBoardObject = Instantiate(chipData.GetBoardChipObject(), placeChipsSection);
+        GameObject chipBoardObject = chipData.CreateAndReturnBoardItem();
+        chipBoardObject.transform.SetParent(placeChipsSection);
 
         chipBoardObject.transform.localPosition = ConvertedGridPosToRealPos(pos);
 
@@ -194,7 +196,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
     {
         if (!placedChips.ContainsKey(id))
         {
-            Debug.LogError("NO MATCHING ID ON BOARD!");
+            Debug.LogError("NO MATCHING ID ON THE BOARD!");
             return;
         }
 
@@ -220,7 +222,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
 
         chipManager.RemoveChipFromBoard(id);
 
-        print(chipManager.BoardToString());
+        // print(chipManager.BoardToString());
     }
 
     // public void OnPointerClick(PointerEventData eventData)
