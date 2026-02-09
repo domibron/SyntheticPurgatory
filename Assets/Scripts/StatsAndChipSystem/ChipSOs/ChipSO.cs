@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "ScriptableObjects/Chips/BaseChip", fileName = "SO_BaseChip")]
@@ -16,7 +17,13 @@ public class ChipSO : ScriptableObject
     Sprite inventoryImage = null;
 
     [SerializeField]
-    GameObject BoardItem;
+    GameObject boardItem;
+
+    [SerializeField]
+    private bool hasAGenerativeBoardItem = true;
+
+    [SerializeField]
+    private Color generatedColor = Color.red;
 
     /// <summary>
     /// This is called to modify the stats per chip. Presume the current stored chip values have been reset and add to the variable.
@@ -34,14 +41,35 @@ public class ChipSO : ScriptableObject
         return size;
     }
 
+    // TODO: decide if this is worth to keep.
     public virtual Sprite GetInventoryImage()
     {
         return inventoryImage;
     }
 
+    // TODO: decide if this is worth to keep.
     public virtual GameObject GetBoardChipObject()
     {
-        return BoardItem;
+        return boardItem;
+    }
+
+    public virtual GameObject CreateAndReturnBoardItem()
+    {
+        GameObject go = Instantiate(boardItem);
+
+        if (IsGenerativeBoardItem()) go.GetComponent<GenerateChip>().GenerateVisualChip(this);
+
+        return go;
+    }
+
+    public virtual Color GetGenerativeColor()
+    {
+        return generatedColor;
+    }
+
+    public bool IsGenerativeBoardItem()
+    {
+        return hasAGenerativeBoardItem;
     }
 
     public virtual bool CanPlaceAtTargetSlot(ref int[,] chipBoard, Vector2Int targetGridPos, int currentID = -1)
@@ -112,5 +140,9 @@ public class ChipSO : ScriptableObject
         chipBoard[targetGridPos.y, targetGridPos.x] = currentID;
     }
 
+    public virtual Vector2Int[] GetBlockLayout()
+    {
+        return blockLayout; // TODO: prevent direct ref. Return only copy.
+    }
 
 }

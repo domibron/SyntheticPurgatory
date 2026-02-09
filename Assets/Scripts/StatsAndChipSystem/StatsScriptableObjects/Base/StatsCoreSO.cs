@@ -181,7 +181,7 @@ public class UpgradablePlayerStat : ICloneable
 
     public string GetValueWithPreAndSuf()
     {
-        return Prefix + CurrentValue.ToString(StringModifiers) + Suffix;
+        return Prefix + GetCurrentValue().ToString(StringModifiers) + Suffix;
     }
 
     public string GetName()

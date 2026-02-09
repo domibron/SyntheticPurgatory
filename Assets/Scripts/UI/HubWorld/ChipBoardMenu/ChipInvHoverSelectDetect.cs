@@ -41,7 +41,10 @@ public class ChipInvHoverSelectDetect : MonoBehaviour, IPointerEnterHandler, IPo
 
         const float bevel = 20f;// 20 px.
 
-        GameObject boardItem = Instantiate(chipData.GetBoardChipObject(), backImageTransform);
+        // GameObject boardItem = Instantiate(chipData.GetBoardChipObject(), backImageTransform);
+        GameObject boardItem = chipData.CreateAndReturnBoardItem();
+        boardItem.transform.SetParent(backImageTransform);
+
         Vector2Int chipSize = chipData.GetSize();
         RectTransform rectBack = backImageTransform.GetComponent<RectTransform>();
         // boardItem.transform.localPosition = new Vector3(-(chipSize.x * chipBoardMenu.UnitSize) / 2f, (chipSize.y * chipBoardMenu.UnitSize) / 2f, 0);
