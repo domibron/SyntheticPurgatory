@@ -6,7 +6,7 @@ public class GenerateChip : MonoBehaviour
     [SerializeField]
     private GameObject ChipSlotObj;
 
-    private const float UNIT_SIZE = 200.0f;
+    // private const float UNIT_SIZE = 200.0f;
 
     private bool generatedShape = false;
 
@@ -37,7 +37,7 @@ public class GenerateChip : MonoBehaviour
             GameObject blockObj = Instantiate(ChipSlotObj);
             blockObj.transform.SetParent(transform);
 
-            blockObj.transform.localPosition = new Vector3(block.x * UNIT_SIZE, block.y * UNIT_SIZE, 0);
+            blockObj.transform.localPosition = new Vector3(block.x * ChipBoardMenu.UnitSize, block.y * ChipBoardMenu.UnitSize, 0);
 
             blockObj.GetComponent<Image>().color = chipData.GetGenerativeColor();
         }

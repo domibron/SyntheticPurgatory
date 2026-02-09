@@ -18,7 +18,7 @@ public class ChipBoardHover : MonoBehaviour
 
     void Start()
     {
-        halfSize = new Vector2((chipBoardMenu.Width / 2f) * chipBoardMenu.UnitSize, (chipBoardMenu.Height / 2f) * chipBoardMenu.UnitSize);
+        halfSize = new Vector2((chipBoardMenu.Width / 2f) * ChipBoardMenu.UnitSize, (chipBoardMenu.Height / 2f) * ChipBoardMenu.UnitSize);
 
         lowerBounds = new Vector2(transform.position.x - halfSize.x, transform.position.y - halfSize.y);
         upperBounds = new Vector2(transform.position.x + halfSize.x, transform.position.y + halfSize.y);
@@ -42,8 +42,8 @@ public class ChipBoardHover : MonoBehaviour
 
         if (isBeingHovered)
         {
-            int localizedPosX = Mathf.FloorToInt((mousePos.x - lowerBounds.x) / chipBoardMenu.UnitSize);
-            int localizedPosY = Mathf.FloorToInt((upperBounds.y - mousePos.y) / chipBoardMenu.UnitSize); // inverted because grid is top to bottom not bottom to top.
+            int localizedPosX = Mathf.FloorToInt((mousePos.x - lowerBounds.x) / ChipBoardMenu.UnitSize);
+            int localizedPosY = Mathf.FloorToInt((upperBounds.y - mousePos.y) / ChipBoardMenu.UnitSize); // inverted because grid is top to bottom not bottom to top.
             mousePosOnGrid = new Vector2Int(localizedPosX, localizedPosY);
         }
         else

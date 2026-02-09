@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,10 +22,19 @@ public class GameManager : MonoBehaviour
 
     private int currentLives = 1;
 
-    [SerializeField]
+    [SerializeField] // TODO: turn this either into structs or classes.
     private int commonUpgradeAmount = 2;
     [SerializeField]
     private int commonDowngradeAmount = 1;
+
+    [SerializeField]
+    private int commonBaseUnlockCost = 200;
+
+    [SerializeField]
+    private int commonCostIncrease = 25;
+
+    private int commonOpenAmount = 0;
+    private int commonCurrentCost = 0;
 
     private int commonCards = 0;
 
@@ -36,12 +43,30 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int rareDowngradeAmount = 1;
 
+    [SerializeField]
+    private int rareBaseUnlockCost = 400;
+
+    [SerializeField]
+    private int rareCostIncrease = 50;
+
+    private int rareOpenAmount = 0;
+    private int rareCurrentCost = 0;
+
     private int rareCards = 0;
 
     [SerializeField]
     private int epicUpgradeAmount = 5;
     [SerializeField]
     private int epicDowngradeAmount = 0;
+
+    [SerializeField]
+    private int epicBaseUnlockCost = 600;
+
+    [SerializeField]
+    private int epicCostIncrease = 100;
+
+    private int epicOpenAmount = 0;
+    private int epicCurrentCost = 0;
 
     private int epicCards = 0;
 
@@ -70,6 +95,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this);
         currentLives = maxLives;
 
+        commonCurrentCost = commonBaseUnlockCost;
+        rareCurrentCost = rareBaseUnlockCost;
+        epicCurrentCost = epicBaseUnlockCost;
     }
 
     void Start()
@@ -219,7 +247,7 @@ public class GameManager : MonoBehaviour
         }
         Random.InitState(GetLevelSeed());
 
-        SetLevelSeed(Random.Range(-999999999, 999999999));
+        SetLevelSeed(Random.Range(int.MinValue, int.MaxValue)); // TF? "Random.Range(-999999999, 999999999)" was the original
 
         print("world seed: " + GetWorldSeed() + "     " + "randomlevel: " + GetLevelSeed());
 
@@ -242,9 +270,9 @@ public class GameManager : MonoBehaviour
         return currentDifficulty;
     }
 
-    public int GetCardCount(CardTier cardTeir)
+    public int GetCardCount(CardTier cardTier)
     {
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 return commonCards;
@@ -257,9 +285,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RemoveFromStoredCards(CardTier cardTeir, int amountToTake)
+    public void RemoveFromStoredCards(CardTier cardTier, int amountToTake)
     {
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 commonCards -= amountToTake;
@@ -273,9 +301,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddToStoredCards(CardTier cardTeir, int amountToAdd)
+    public void AddToStoredCards(CardTier cardTier, int amountToAdd)
     {
-        switch (cardTeir)
+        switch (cardTier)
         {
             case CardTier.Common:
                 commonCards += amountToAdd;
@@ -287,6 +315,42 @@ public class GameManager : MonoBehaviour
                 epicCards += amountToAdd;
                 break;
         }
+    }
+
+    public int GetCardCost(CardTier cardTier)
+    {
+        switch (cardTier)
+        {
+            default:
+                return 0;
+            case CardTier.Common:
+                return commonCurrentCost;
+            case CardTier.Rare:
+                return rareCurrentCost;
+            case CardTier.Epic:
+                return epicCurrentCost;
+        }
+    }
+
+    public void UnlockCard(CardTier cardTier)
+    {
+        switch (cardTier)
+        {
+            case CardTier.Common:
+                RemoveFromDepositedScrap(commonCurrentCost);
+                commonCurrentCost += commonCostIncrease;
+                break;
+            case CardTier.Rare:
+                RemoveFromDepositedScrap(rareCurrentCost);
+                rareCurrentCost += rareCostIncrease;
+                break;
+            case CardTier.Epic:
+                RemoveFromDepositedScrap(epicCurrentCost);
+                epicCurrentCost += epicCostIncrease;
+                break;
+        }
+
+        RemoveFromStoredCards(cardTier, 1);
     }
 
     public int GetCurrentLives()

@@ -37,7 +37,7 @@ public class ChipInvHoverSelectDetect : MonoBehaviour, IPointerEnterHandler, IPo
         if (setup) return;
 
         this.id = id;
-        this.chipBoardMenu = chipBoardMenu;
+        this.chipBoardMenu = chipBoardMenu; // store the ref to board for calling functions.
 
         const float bevel = 20f;// 20 px.
 
@@ -49,7 +49,7 @@ public class ChipInvHoverSelectDetect : MonoBehaviour, IPointerEnterHandler, IPo
         RectTransform rectBack = backImageTransform.GetComponent<RectTransform>();
         // boardItem.transform.localPosition = new Vector3(-(chipSize.x * chipBoardMenu.UnitSize) / 2f, (chipSize.y * chipBoardMenu.UnitSize) / 2f, 0);
         boardItem.transform.localPosition = new Vector3(-(rectBack.sizeDelta.x - bevel) / 2f, (rectBack.sizeDelta.x - bevel) / 2f, 0);
-        float newScale = (Mathf.Min(rectBack.sizeDelta.x - bevel, rectBack.sizeDelta.y - bevel) / chipBoardMenu.UnitSize) / Mathf.Max(chipSize.x, chipSize.y);
+        float newScale = (Mathf.Min(rectBack.sizeDelta.x - bevel, rectBack.sizeDelta.y - bevel) / ChipBoardMenu.UnitSize) / Mathf.Max(chipSize.x, chipSize.y);
         boardItem.transform.localScale = new Vector3(newScale, newScale, newScale);
 
 
