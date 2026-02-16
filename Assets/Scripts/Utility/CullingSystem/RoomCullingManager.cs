@@ -128,118 +128,13 @@ public class RoomCullingManager : SequenceBase
         }
     }
 
-    // private void UpdateRoomCulling(Vector2Int currentRoomCoordinates)
-    // {
-    //     int currentRoomID = levelGenerator.GetRoomIDFromCoordinates(currentRoomCoordinates);
-
-    //     SpawnedLevelRoomData currentRoomData = levelGenerator.GetSpawnedLevelRoomData(currentRoomID);
-
-    //     if (currentRoomData == null)
-    //     {
-    //         throw new NullReferenceException("Room data was null");
-    //     }
-
-    //     List<int> ignoredIDs = new List<int> { currentRoomID };
-
-    //     // 1st ring around the rooms.
-    //     List<int> firstLayerRoomIDs = GetConnectingRoomIDs(currentRoomData, levelGenerator);
-
-    //     ignoredIDs.AddRange(firstLayerRoomIDs);
-
-    //     List<int> secondLayerRoomIDs = new List<int>();
-
-    //     foreach (int firstLayerRoomID in firstLayerRoomIDs)
-    //     {
-    //         List<int> secondLayerRoomPartial = GetConnectingRoomIDs(levelGenerator.GetSpawnedLevelRoomData(firstLayerRoomID), levelGenerator, ignoredIDs.ToArray());
-
-    //         secondLayerRoomIDs.AddRange(secondLayerRoomPartial);
-
-    //         ignoredIDs.AddRange(secondLayerRoomPartial);
-    //     }
-
-    //     if (lastLoadedRooms.Contains(currentRoomID))
-    //     {
-    //         lastLoadedRooms.Remove(currentRoomID);
-    //     }
-
-    //     currentRoomData.GetRoomObject().GetComponent<RoomCulling>().SetRendererState(VisibleState.Maximum);
-
-    //     foreach (int roomID in firstLayerRoomIDs)
-    //     {
-    //         if (lastLoadedRooms.Contains(roomID))
-    //             lastLoadedRooms.Remove(roomID);
-
-    //         SpawnedLevelRoomData roomData = levelGenerator.GetSpawnedLevelRoomData(roomID);
-
-    //         roomData.GetRoomObject()?.GetComponent<RoomCulling>()?.SetRendererState(VisibleState.Medium);
-    //     }
-
-    //     foreach (int roomID in secondLayerRoomIDs)
-    //     {
-    //         if (lastLoadedRooms.Contains(roomID))
-    //             lastLoadedRooms.Remove(roomID);
-
-    //         SpawnedLevelRoomData roomData = levelGenerator.GetSpawnedLevelRoomData(roomID);
-
-    //         roomData.GetRoomObject()?.GetComponent<RoomCulling>()?.SetRendererState(VisibleState.Minimal);
-    //     }
-
-    //     foreach (int roomID in lastLoadedRooms)
-    //     {
-    //         SpawnedLevelRoomData roomData = levelGenerator.GetSpawnedLevelRoomData(roomID);
-
-    //         roomData.GetRoomObject()?.GetComponent<RoomCulling>()?.SetRendererState(VisibleState.Unload);
-    //     }
-
-    //     lastLoadedRooms.Clear();
-
-    //     // TODO: this is shitty, replace with remove range something.
-
-    //     lastLoadedRooms.Add(currentRoomID);
-    //     lastLoadedRooms.AddRange(firstLayerRoomIDs);
-    //     lastLoadedRooms.AddRange(secondLayerRoomIDs);
-    // }
 
     private void UpdateRoomCulling(Vector2Int currentRoomCoordinates)
     {
-        int xPos = currentRoomCoordinates.x;
-        int yPos = currentRoomCoordinates.y;
+        int xRoomPos = currentRoomCoordinates.x;
+        int yRoomPos = currentRoomCoordinates.y;
 
         Vector2Int checkingPos = Vector2Int.zero;
-
-        // room crawling culling.
-        // int currentRoomID = levelGenerator.GetRoomIDFromCoordinates(currentRoomCoordinates);
-
-        // SpawnedLevelRoomData currentRoomData = levelGenerator.GetSpawnedLevelRoomData(currentRoomID);
-
-        // if (currentRoomData == null)
-        // {
-        //     throw new NullReferenceException("Room data was null");
-        // }
-
-        // List<int> collectedRooms = new List<int> { currentRoomID };
-
-        // // 1st ring around the rooms.
-        // List<int> closedDoors = new List<int>();
-        // List<int> toCheckRooms = GetConnectingRoomIDs(currentRoomData, levelGenerator, out closedDoors, doorGenerator);
-        // collectedRooms.AddRange(toCheckRooms);
-
-        // List<int> foundRooms = new List<int>();
-
-        // for (int i = 0; i < radius; i++)
-        // {
-        //     foundRooms.Clear();
-
-        //     foreach (int roomID in toCheckRooms)
-        //     {
-        //         foundRooms.AddRange(GetConnectingRoomIDs(currentRoomData, levelGenerator, out closedDoors, doorGenerator, collectedRooms.ToArray()));
-        //     }
-
-        //     collectedRooms.AddRange(foundRooms);
-        // }
-
-        // print("Found " + collectedRooms.Count);
-
 
 
         // This does the radius of rooms.
@@ -250,43 +145,100 @@ public class RoomCullingManager : SequenceBase
 
         print("Trying to set render states");
 
-        for (int searchRadius = 0; searchRadius <= radius; searchRadius++) // move out one by one
+        // * a attempt to fix the culling until i realized I could do x = 1 (radius) and 1 (radius) - x = y. Should then generate a circle.
+        // for (int xRow = checkingPos.x - radius; xRow <= checkingPos.x + radius; xRow++)
+        // {
+        //     for (int yRow = checkingPos.y - radius; yRow <= checkingPos.y + radius; yRow++)
+        //     {
+        //         checkingPos = new Vector2Int(xRow, yRow);
+
+        //         if (checkingPos.x < 0 || checkingPos.x >= levelGridSize.x) continue;
+        //         if (checkingPos.y < 0 || checkingPos.y >= levelGridSize.y) continue;
+
+        //         int roomID = levelGenerator.GetRoomIDFromCoordinates(checkingPos);
+        //         if (roomID == LevelGenerator.BLANK_ID) continue;
+
+
+        //         if (ignoredIDs.Contains(roomID)) continue;
+        //         use xRoomPos please instead of checking pos.
+        //         int distFromCenter = Mathf.Abs(xRow - checkingPos.x) + Mathf.Abs(yRow - checkingPos.y);
+
+        //         if (distFromCenter < mediumStart)
+        //         {
+        //             // if (ignoredIDs.Contains(roomID)) continue;
+        //             highDetailRooms.Add(roomID);
+        //             ignoredIDs.Add(roomID);
+        //         }
+        //         else if (distFromCenter < lowStart)
+        //         {
+        //             // if (ignoredIDs.Contains(roomID)) continue;
+        //             mediumDetailRooms.Add(roomID);
+        //             ignoredIDs.Add(roomID);
+        //         }
+        //         else if (distFromCenter <= radius)
+        //         {
+        //             // if (ignoredIDs.Contains(roomID)) continue;
+        //             lowDetailRooms.Add(roomID);
+        //             ignoredIDs.Add(roomID);
+        //         }
+        //     }
+        // }
+
+
+        // row is X and col is Y, but because how arrays are, top left is 0,0 and this is a brain fuck.
+        for (int row = -radius; row <= radius; row++)
         {
-            // row is X and col is Y, but because how arrays are, top left is 0,0 and this is a brain fuck.
-            for (int row = -searchRadius; row <= searchRadius; row++)
+            checkingPos.x = xRoomPos + row;
+            if (checkingPos.x < 0 || checkingPos.x >= levelGridSize.x) continue;
+
+            for (int col = -radius; col <= radius; col++) // does check extra rooms we dont need, we could use for (int col = -(radius - row); col <= (radius - row); col++) instead
             {
-                checkingPos.x = xPos + row;
-                if (checkingPos.x < 0 || checkingPos.x >= levelGridSize.x) continue;
+                checkingPos.y = yRoomPos + col;
+                if (checkingPos.y < 0 || checkingPos.y >= levelGridSize.y) continue;
 
-                for (int col = -searchRadius; col <= searchRadius; col++)
+                int roomID = levelGenerator.GetRoomIDFromCoordinates(checkingPos);
+                if (roomID == LevelGenerator.BLANK_ID) continue;
+
+                // if (ignoredIDs.Contains(roomID)) continue;
+
+                int distFromCenter = Mathf.Abs(xRoomPos - checkingPos.x) + Mathf.Abs(yRoomPos - checkingPos.y);
+
+                if (distFromCenter < mediumStart) // ? could flip for more performance? so low med then high?
                 {
-                    checkingPos.y = yPos + col;
-                    if (checkingPos.y < 0 || checkingPos.y >= levelGridSize.y) continue;
+                    if (ignoredIDs.Contains(roomID) && mediumDetailRooms.Contains(roomID))
+                    {
+                        mediumDetailRooms.Remove(roomID);
+                    }
+                    else if (ignoredIDs.Contains(roomID) && lowDetailRooms.Contains(roomID))
+                    {
+                        lowDetailRooms.Remove(roomID);
+                    }
+                    else if (ignoredIDs.Contains(roomID)) continue;
+                    else ignoredIDs.Add(roomID);
 
-                    int roomID = levelGenerator.GetRoomIDFromCoordinates(checkingPos);
-                    if (roomID == LevelGenerator.BLANK_ID) continue;
+                    highDetailRooms.Add(roomID);
+                }
+                else if (distFromCenter < lowStart)
+                {
+                    if (ignoredIDs.Contains(roomID) && lowDetailRooms.Contains(roomID))
+                    {
+                        lowDetailRooms.Remove(roomID);
+                    }
+                    else if (ignoredIDs.Contains(roomID)) continue;
+                    else ignoredIDs.Add(roomID);
 
-                    if (Mathf.Abs(row) + Mathf.Abs(col) < mediumStart)
-                    {
-                        if (ignoredIDs.Contains(roomID)) continue;
-                        highDetailRooms.Add(roomID);
-                        ignoredIDs.Add(roomID);
-                    }
-                    else if (Mathf.Abs(row) + Mathf.Abs(col) < lowStart)
-                    {
-                        if (ignoredIDs.Contains(roomID)) continue;
-                        mediumDetailRooms.Add(roomID);
-                        ignoredIDs.Add(roomID);
-                    }
-                    else if (Mathf.Abs(row) + Mathf.Abs(col) <= radius)
-                    {
-                        if (ignoredIDs.Contains(roomID)) continue;
-                        lowDetailRooms.Add(roomID);
-                        ignoredIDs.Add(roomID);
-                    }
+                    mediumDetailRooms.Add(roomID);
+                }
+                else if (distFromCenter <= radius)
+                {
+                    if (ignoredIDs.Contains(roomID)) continue;
+                    else ignoredIDs.Add(roomID);
+
+                    lowDetailRooms.Add(roomID);
                 }
             }
         }
+
 
         foreach (int roomID in highDetailRooms)
         {
@@ -337,7 +289,7 @@ public class RoomCullingManager : SequenceBase
 
         lastLoadedRooms.Clear();
 
-        // TODO: this is shitty, replace with remove range something.
+        // TODO: this is shitty, replace with remove range something. What? legacy comment?
 
         // lastLoadedRooms.Add(currentRoomID);
         lastLoadedRooms.AddRange(highDetailRooms);
