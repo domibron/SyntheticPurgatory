@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 957889875997872005}
   - component: {fileID: 869913012940802341}
   - component: {fileID: 7787621922817867008}
+  - component: {fileID: 1833725023259584392}
   m_Layer: 3
   m_Name: Fog5
   m_TagString: Untagged
@@ -120,6 +121,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1833725023259584392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805285758380863888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 1, y: 0}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &829001646750638357
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,6 +278,7 @@ GameObject:
   - component: {fileID: 5097926854722001588}
   - component: {fileID: 7163700175812019678}
   - component: {fileID: 6729614195664003542}
+  - component: {fileID: 2610864581878424155}
   m_Layer: 3
   m_Name: Fog6
   m_TagString: Untagged
@@ -334,6 +354,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2610864581878424155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076913799592912631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 1, y: 0}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &1138991948573154078
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,8 +484,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 83
-  grAccel: 20
-  airAccel: 20
   gravityScalar: 1.45
   cameraTarget: {fileID: 7882557659218615182}
   orientation: {fileID: 7927393379924898325}
@@ -627,6 +663,7 @@ GameObject:
   - component: {fileID: 8562309354439475163}
   - component: {fileID: 5166766095076852658}
   - component: {fileID: 7773117302293439239}
+  - component: {fileID: 1684797388880628291}
   m_Layer: 3
   m_Name: Fog1
   m_TagString: Untagged
@@ -702,6 +739,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1684797388880628291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274454125277432389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: -1, y: 0}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &1641319585377853168
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +799,7 @@ GameObject:
   - component: {fileID: 8465620311685225231}
   - component: {fileID: 2110151281202671109}
   - component: {fileID: 2944456843477087697}
+  - component: {fileID: 4635035171624428231}
   m_Layer: 3
   m_Name: Fog4
   m_TagString: Untagged
@@ -819,6 +875,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4635035171624428231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3730946209283107479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 1, y: 0}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &3856513188942808750
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,6 +1032,7 @@ GameObject:
   - component: {fileID: 2480708368255211151}
   - component: {fileID: 5435271854603594042}
   - component: {fileID: 2021334484268744865}
+  - component: {fileID: 2009995911878760946}
   m_Layer: 3
   m_Name: Fog7
   m_TagString: Untagged
@@ -1033,6 +1108,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2009995911878760946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3975733376505220119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 0, y: -1}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &4005582368946543032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1271,6 +1364,7 @@ GameObject:
   - component: {fileID: 8294751168022043074}
   - component: {fileID: 1434152624229238295}
   - component: {fileID: 930486171704419240}
+  - component: {fileID: 3273639344250834987}
   m_Layer: 3
   m_Name: Fog2
   m_TagString: Untagged
@@ -1346,6 +1440,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3273639344250834987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6315243368827703863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 1, y: 0}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &7402787399744720992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1391,6 +1503,7 @@ GameObject:
   - component: {fileID: 3630721782852782206}
   - component: {fileID: 8869507380485700472}
   - component: {fileID: 8041215834388440007}
+  - component: {fileID: 538191181172877049}
   m_Layer: 3
   m_Name: Fog3
   m_TagString: Untagged
@@ -1466,6 +1579,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &538191181172877049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7928182076766432318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 0, y: -1}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &8800077241461326463
 GameObject:
   m_ObjectHideFlags: 0
@@ -1477,8 +1608,9 @@ GameObject:
   - component: {fileID: 2742404066560840411}
   - component: {fileID: 185834381862355957}
   - component: {fileID: 7810742576585697120}
+  - component: {fileID: 3849554285271877426}
   m_Layer: 3
-  m_Name: Fog1 (1)
+  m_Name: Fog0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1552,6 +1684,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3849554285271877426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8800077241461326463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ffda35f546f745b80b8b7f513e39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollDirection: {x: 1, y: 0}
+  ScrollSpeed: 0.01
+  IsScrolling: 1
+  IsReversed: 0
+  materialIndex: 0
+  isToon: 0
 --- !u!1 &9216443515870733347
 GameObject:
   m_ObjectHideFlags: 0
