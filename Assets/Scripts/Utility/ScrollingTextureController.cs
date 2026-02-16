@@ -18,6 +18,9 @@ public class ScrollingTextureController : MonoBehaviour
 
     private Vector2 currentScroll;
 
+    [SerializeField]
+    private bool isToon = true;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,6 +34,7 @@ public class ScrollingTextureController : MonoBehaviour
         }
 
         material = GetComponent<MeshRenderer>().materials[materialIndex];
+
     }
 
     // Update is called once per frame
@@ -59,7 +63,15 @@ public class ScrollingTextureController : MonoBehaviour
             currentScroll += (IsReversed ? -1 : 1) * ScrollDirection * Time.deltaTime * ScrollSpeed;
         }
 
-        material.SetTextureOffset("_MainTex", currentScroll);
-        material.SetTextureOffset("_NormalMap", currentScroll);
+        if (isToon)
+        {
+            material.SetTextureOffset("_MainTex", currentScroll);
+            material.SetTextureOffset("_NormalMap", currentScroll);
+        }
+        else
+        {
+            material.mainTextureOffset = currentScroll;
+        }
+
     }
 }

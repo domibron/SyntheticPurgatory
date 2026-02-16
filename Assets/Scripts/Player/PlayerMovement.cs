@@ -207,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
         if (wantToCrouch)
         {
 
-            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 20f);
+            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
             if (!isCrouched)
             {
                 CrouchBoost(); // so lazy

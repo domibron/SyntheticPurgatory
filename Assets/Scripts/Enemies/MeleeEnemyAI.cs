@@ -274,6 +274,13 @@ public class MeleeEnemyAI : BaseEnemy
 
     public void AttemptAttack(bool endOfAttacks)
     {
+        if (endOfAttacks)
+        {
+            curAttackCooldown = attackCooldown; // Reset attack cooldown
+            isAttacking = false;
+            return;
+        }
+
         Collider[] hits = Physics.OverlapBox(transform.position + transform.forward, new Vector3(0.5f, 1.3f, 0.7f), Quaternion.identity);
         foreach (Collider hit in hits)
         {
@@ -283,11 +290,6 @@ public class MeleeEnemyAI : BaseEnemy
             }
         }
 
-        if(endOfAttacks)
-        {
-            curAttackCooldown = attackCooldown; // Reset attack cooldown
-            isAttacking = false;
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
