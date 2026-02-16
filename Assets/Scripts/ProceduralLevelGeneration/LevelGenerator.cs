@@ -935,7 +935,7 @@ public class LevelGenerator : SequenceBase
         return levelGrid[cords.x, cords.y];
     }
 
-    public SpawnedLevelRoomData GetSpawnedLevelRoomData(int roomID)
+    public SpawnedLevelRoomData GetRoomDataFromID(int roomID)
     {
         if (levelData.ContainsKey(roomID))
             return levelData[roomID];
