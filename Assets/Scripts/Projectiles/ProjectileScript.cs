@@ -13,9 +13,14 @@ public class ProjectileScript : MonoBehaviour
 
     private bool hasHit;
 
+    public Transform SourceForProjectile;
+
     private void OnTriggerEnter(Collider collider)
     {
         if (hasHit) return;
+
+        collider.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
+
 
         if (collider.isTrigger)
         {

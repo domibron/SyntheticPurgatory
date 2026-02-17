@@ -238,6 +238,7 @@ public class BossAI : BaseEnemy
         transform.rotation = Quaternion.LookRotation(new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position, Vector3.up);
         GameObject projectile = Instantiate(bossProjectile, transform.position + transform.up + transform.forward, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = 20f;
+        projectile.GetComponent<ProjectileScript>().SourceForProjectile = transform;
 
         Vector3 dirNeeded = (player.position - projectile.transform.position).normalized;
         projectile.GetComponent<Rigidbody>()?.AddForce(dirNeeded * 20f, ForceMode.VelocityChange);

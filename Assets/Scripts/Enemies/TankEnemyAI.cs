@@ -95,7 +95,7 @@ public class TankEnemyAI : BaseEnemy
         }
 
         // Mid-charge logic
-        if (isCharging) 
+        if (isCharging)
         {
             HandleCharging();
             return;
@@ -103,10 +103,10 @@ public class TankEnemyAI : BaseEnemy
         else if (!agent.isActiveAndEnabled) { return; }
 
         // Movement
-        if (Alerted) 
+        if (Alerted)
         {
             MoveToTarget(goal.transform.position, true);
-            
+
         }
         else
         {
@@ -148,7 +148,7 @@ public class TankEnemyAI : BaseEnemy
         {
             agent.speed = BaseSpeed;
             agent.angularSpeed = 80;
-            
+
             oldRotation = transform.rotation.eulerAngles; // Save old angle
             previousSpeed = rb.linearVelocity.magnitude;
             return;
@@ -258,7 +258,8 @@ public class TankEnemyAI : BaseEnemy
         {
             return;
         }
-        
+
+        // NOTE: Objects can have multiple of these scripts so its not advisable to only check against one due to our based component system.
         if (collision.transform.GetComponent<KickableObject>())
         {
             Vector3 kickDir = collision.transform.position - transform.position;
@@ -267,12 +268,13 @@ public class TankEnemyAI : BaseEnemy
         else if (collision.transform.GetComponent<Health>())
         {
             collision.transform.GetComponent<Health>().AddToHealth(-15);
+            collision.transform.GetComponent<IDamageDirection>()?.DamagedFrom(transform.position);
         }
         else
         {
             if (rb.linearVelocity.magnitude < 0.5f)
             {
-                StopCharge(Mathf.Min(previousSpeed / 3 , 1.5f));
+                StopCharge(Mathf.Min(previousSpeed / 3, 1.5f));
             }
 
         }
@@ -296,7 +298,7 @@ public class TankEnemyAI : BaseEnemy
         while (currentChargeSpeed < maxChargeSpeed)
         {
             totalChargeTime += 0.1f;
-            if(totalChargeTime > 0.5f)
+            if (totalChargeTime > 0.5f)
             {
                 currentChargeSpeed = Mathf.Min(currentChargeSpeed + 0.3f, maxChargeSpeed);
 

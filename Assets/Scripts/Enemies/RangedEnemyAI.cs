@@ -179,9 +179,9 @@ public class RangedEnemyAI : BaseEnemy
         {
             agent.speed = BaseSpeed * followSpeedMult;
         }
-        else if(Vector3.Distance(agent.destination, transform.position) < maxFleeDistance) // Too close to target, start fleeing
+        else if (Vector3.Distance(agent.destination, transform.position) < maxFleeDistance) // Too close to target, start fleeing
         {
-            Vector3 targetPos = target - ((target - transform.position).normalized * minFollowRange); 
+            Vector3 targetPos = target - ((target - transform.position).normalized * minFollowRange);
 
             NavMeshHit myNavHit;
             if (NavMesh.SamplePosition(targetPos, out myNavHit, 100, -1)) // Check if target destination is on navmesh and store nearest point
@@ -189,7 +189,7 @@ public class RangedEnemyAI : BaseEnemy
 
                 if (Vector3.Distance(myNavHit.position, targetPos) > maxStuckDistance) // Target is too close and destination is out of reach, likely stuck in corner
                 {
-                    Vector3 oldPosition = (target - transform.position).normalized; 
+                    Vector3 oldPosition = (target - transform.position).normalized;
                     agent.destination = target + (new Vector3(oldPosition.z, oldPosition.y, oldPosition.x) * 30); // Try another position
                     agent.speed = BaseSpeed * stuckSpeedMult;
                 }
@@ -204,8 +204,8 @@ public class RangedEnemyAI : BaseEnemy
         {
             if (EnableDodge) // Start dodging movement
             {
-                dodgeSwapTimer -= Time.fixedDeltaTime; 
-                if (dodgeSwapTimer < 0) 
+                dodgeSwapTimer -= Time.fixedDeltaTime;
+                if (dodgeSwapTimer < 0)
                 {
                     dodgeDirection *= -1; // Switch direction
                     dodgeSwapTimer = UnityEngine.Random.Range(1f, 3f); // Set random timer for next switch
@@ -277,6 +277,7 @@ public class RangedEnemyAI : BaseEnemy
         projectile.GetComponent<Rigidbody>().AddForce(projDir * projectileSpeed, ForceMode.VelocityChange); // Apply directional force
 
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = damage; // Set damage of projectile
+        projectile.GetComponent<ProjectileScript>().SourceForProjectile = transform; // Set damage of projectile
 
         curAttackCooldown = attackCooldown; // Restart attack cooldown
     }

@@ -499,7 +499,7 @@ public class PlayerMovement : MonoBehaviour
 
         float heightIncrement = stepHeight / (float)(rayCount - 1f);
 
-        print("H: " + heightIncrement);
+        // print("H: " + heightIncrement);
 
         bool canStep = false;
         int iteration = 0;
@@ -511,20 +511,20 @@ public class PlayerMovement : MonoBehaviour
 
             if (rayRes)
             {
-                print(hitInfo.transform.gameObject.name);
+                // print(hitInfo.transform.gameObject.name);
                 Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), hitInfo.point, Color.red, 10f);
             }
 
             if (i == 0 && !rayRes)
             {
-                print("cannot step on air");
+                // print("cannot step on air");
                 break; // we dont need to step.
             }
             else if (i == 0 && rayRes)
             {
                 if (Vector3.Angle(hitInfo.normal, Vector3.up) < 80f || Vector3.Angle(hitInfo.normal, Vector3.up) > 100f)
                 {
-                    print("failed angle check");
+                    // print("failed angle check");
                     break;
                 }
             }
@@ -532,7 +532,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (!rayRes)
             {
-                print("can step");
+                // print("can step");
                 canStep = true;
                 iteration = i;
                 break;
@@ -541,11 +541,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (!canStep)
         {
-            print("Cannot step up a wall");
+            // print("Cannot step up a wall");
             return;
         }
 
-        print("able to step");
+        // print("able to step");
 
         Vector3 upAmount = (Vector3.up * (heightIncrement * iteration));
 

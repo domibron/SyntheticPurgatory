@@ -241,7 +241,7 @@ public class MeleeEnemyAI : BaseEnemy
                 return false;
             }
         }
-        
+
         // Return true if all checks weren't triggered
         return true;
     }
@@ -287,6 +287,7 @@ public class MeleeEnemyAI : BaseEnemy
             if (hit.gameObject == goal)
             {
                 goal.GetComponent<Health>().AddToHealth(-damage);
+                goal.GetComponent<IDamageDirection>()?.DamagedFrom(transform.position);
             }
         }
 
@@ -299,6 +300,7 @@ public class MeleeEnemyAI : BaseEnemy
             if (collision.transform.CompareTag("Player") && !hasHitPlayer)
             {
                 collision.transform.GetComponent<Health>().AddToHealth(-damage);
+                goal.GetComponent<IDamageDirection>()?.DamagedFrom(transform.position);
                 hasHitPlayer = true;
             }
         }
@@ -330,7 +332,7 @@ public class MeleeEnemyAI : BaseEnemy
             {
                 wheel.GetComponent<SimpleSpin>().spinSpeed = leftSpeed;
             }
-                
+
         }
 
         foreach (GameObject wheel in rightWheels)
