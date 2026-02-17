@@ -335,7 +335,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: easy
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
   m_sharedMaterial: {fileID: -5401748459840433787, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
@@ -2491,7 +2491,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: normal
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
   m_sharedMaterial: {fileID: -5401748459840433787, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
@@ -3348,7 +3348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7467847, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 50, y: 0, z: 50, w: 0}
   m_Maskable: 1
@@ -5124,7 +5124,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1134067336}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 653946340}
+        m_TargetAssemblyTypeName: SetupScreen, Assembly-CSharp
+        m_MethodName: ReturnToMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1134067336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5220,7 +5232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: hard
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
   m_sharedMaterial: {fileID: -5401748459840433787, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
@@ -5958,7 +5970,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1344320704}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 653946340}
+        m_TargetAssemblyTypeName: SetupScreen, Assembly-CSharp
+        m_MethodName: StartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1344320704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6079,7 +6103,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1368700507}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 452769790}
+        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
+        m_MethodName: OpenSettings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1368700507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8162,7 +8198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7467847, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 50, y: 0, z: 50, w: 0}
   m_Maskable: 1
@@ -8451,7 +8487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7467847, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 50, y: 0, z: 50, w: 0}
   m_Maskable: 1
