@@ -134,7 +134,7 @@ public class RoomCulling : MonoBehaviour
 
     public void SetRendererState(VisibleState state)
     {
-        SetRenderStateBasedOnVisiblityState(state);
+        SetRenderStateBasedOnVisibilityState(state);
 
 
         switch (state) // I do feel this is a bit bad, but eh, fuck it.
@@ -144,7 +144,7 @@ public class RoomCulling : MonoBehaviour
                 SetAnimatorState(false);
                 break;
             case VisibleState.Minimal: // 2nd layer rooms
-                SetEntityCulling(false);
+                SetEntityCulling(true);
                 SetAnimatorState(false);
                 break;
             case VisibleState.Medium: // 1st layer rooms
@@ -158,7 +158,7 @@ public class RoomCulling : MonoBehaviour
         }
     }
 
-    private void SetRenderStateBasedOnVisiblityState(VisibleState visibleState)
+    private void SetRenderStateBasedOnVisibilityState(VisibleState visibleState)
     {
         switch (visibleState) // I do feel this is a bit bad, but eh, fuck it.
         {

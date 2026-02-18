@@ -12,7 +12,7 @@ public class EntityCulling : MonoBehaviour
 
     bool overrideCulling = false;
 
-    Vector2Int gridCoordiantes = Vector2Int.zero;
+    Vector2Int gridCoordinates = Vector2Int.zero;
 
     LevelGenerator levelGenerator;
 
@@ -39,14 +39,14 @@ public class EntityCulling : MonoBehaviour
 
         if (LevelGenObjectRefGetter.Instance == null)
         {
-            Debug.LogWarning("NONE CRITICAL: LevelGenObjectRefGetter could not be found!");
+            Debug.LogWarning("NON CRITICAL: LevelGenObjectRefGetter could not be found!");
 
         }
         else
         {
             levelGenerator = LevelGenObjectRefGetter.Instance.transform.GetComponent<LevelGenerator>();
 
-            gridCoordiantes = levelGenerator.GetGridCoordinates(transform.position);
+            gridCoordinates = levelGenerator.GetGridCoordinates(transform.position);
 
             isReady = true;
 
@@ -61,7 +61,7 @@ public class EntityCulling : MonoBehaviour
 
         if (player == null) return;
 
-        if (levelGenerator.GetGridCoordinates(transform.position) != gridCoordiantes)
+        if (levelGenerator.GetGridCoordinates(transform.position) != gridCoordinates)
         {
             overrideCulling = false; // object is on the move.
         }
@@ -71,21 +71,21 @@ public class EntityCulling : MonoBehaviour
 
         if (Vector3.Distance(player.position, transform.position) > maxDistance)
         {
-            SetMeshVisiblity(false);
+            SetMeshVisibility(false);
         }
         else
         {
-            SetMeshVisiblity(true);
+            SetMeshVisibility(true);
         }
     }
 
-    private void SetMeshVisiblity(bool isVisible = true)
+    private void SetMeshVisibility(bool isVisible = true)
     {
-        StartCoroutine(TrySetMeshVisiblity(isVisible));
+        StartCoroutine(TrySetMeshVisibility(isVisible));
     }
 
 
-    private IEnumerator TrySetMeshVisiblity(bool isVisible)
+    private IEnumerator TrySetMeshVisibility(bool isVisible)
     {
         while (!isReady) yield return null;
 
@@ -110,6 +110,6 @@ public class EntityCulling : MonoBehaviour
     {
         if (!overrideCulling) return;
 
-        SetMeshVisiblity(isVisible);
+        SetMeshVisibility(isVisible);
     }
 }
