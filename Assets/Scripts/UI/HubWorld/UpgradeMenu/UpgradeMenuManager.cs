@@ -294,7 +294,7 @@ public class UpgradeMenuManager : MonoBehaviour
             case StatType.RegenerationAmount:
                 return ref pStats.RegenerationAmountStat;
             case StatType.GroundSpeed:
-                return ref pStats.GroundSpeedStat;
+                return ref pStats.GroundRunSpeedStat;
             case StatType.SlideBoostForce:
                 return ref pStats.SlideBoostPercentageStat;
             case StatType.AirBoostForce:
