@@ -15,7 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     //Ground
     // [SerializeField]
-    float groundSpeed = 4f;
+    float runSpeed = 4f;
+    float walkSpeed = 2f;
     // [SerializeField]
     // float runSpeed = 6f;
     // [SerializeField]
@@ -84,10 +85,15 @@ public class PlayerMovement : MonoBehaviour
     bool wantToJump;
     bool wantToCrouch;
 
+    bool isSprinting = false; // dunno where to put this.
+
+
+
     InputAction movementInput;
     InputAction jumpInput;
     InputAction crouchInput;
     InputAction lookInput;
+    InputAction sprintInput;
 
     private bool showVel = false;
 
@@ -101,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
         jumpInput = InputSystem.actions.FindAction("Jump");
         crouchInput = InputSystem.actions.FindAction("Crouch");
         lookInput = InputSystem.actions.FindAction("Look");
+        sprintInput = InputSystem.actions.FindAction("Sprint");
 
         // var bindings = BindingFlags.Public | BindingFlags.Instance;
 
@@ -208,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
         {
 
             col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
-            if (!isCrouched)
+            if (!isCrouched && isSprinting)
             {
                 CrouchBoost(); // so lazy
                 AirBoost();
@@ -250,7 +257,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (grounded && !isCrouched)
         {
-            Vector3 velocityToAdd = GroundedMovement(dir, groundSpeed, grAccel);
+            Vector3 velocityToAdd = GroundedMovement(dir, isSprinting ? runSpeed : walkSpeed, grAccel);
             velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
             rb.AddForce(velocityToAdd, ForceMode.Acceleration);
 
@@ -263,30 +270,32 @@ public class PlayerMovement : MonoBehaviour
             // jumping
             if (wantToJump && !isJumping)
             {
-                rb.AddForce(groundNormalAverage * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
+                rb.AddForce(Vector3.up * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
                 isJumping = true;
             }
         }
         else if (grounded && isCrouched)
         {
-            if (rb.linearVelocity.magnitude > groundSpeed)
+            if (rb.linearVelocity.magnitude > walkSpeed)
             {
-                Vector3 velToAdd = AirMovement(dir, groundSpeed, grAccel);
+                Vector3 velToAdd = AirMovement(dir, walkSpeed, grAccel);
                 rb.AddForce(velToAdd, ForceMode.VelocityChange);
 
-                Vector3 friction = GetFrictionVector(groundSpeed, groundFriction);
+                Vector3 friction = GetFrictionVector(walkSpeed, groundFriction);
                 rb.AddForce(friction, ForceMode.VelocityChange);
             }
             else
             {
-                Vector3 velocityToAdd = GroundedMovement(dir, groundSpeed, grAccel);
+                Vector3 velocityToAdd = GroundedMovement(dir, walkSpeed, grAccel);
                 velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
                 rb.AddForce(velocityToAdd, ForceMode.Acceleration);
             }
 
+            // WHAT? duplicate jumping.
             if (wantToJump && !isJumping)
             {
-                rb.AddForce(groundNormalAverage * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
+                // rb.AddForce(groundNormalAverage * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
+                rb.AddForce(Vector3.up * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
                 isJumping = true;
             }
         }
@@ -295,7 +304,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 velToAdd = AirMovement(dir, airSpeed, airAccel);
             rb.AddForce(velToAdd, ForceMode.VelocityChange);
 
-            Vector3 friction = GetFrictionVector(groundSpeed, airFriction);
+            Vector3 friction = GetFrictionVector(runSpeed, airFriction);
             rb.AddForce(friction, ForceMode.VelocityChange);
             // if (isJumping) isJumping = false; // this is cursed.
         }
@@ -317,17 +326,18 @@ public class PlayerMovement : MonoBehaviour
             // return;
         }
 
-        groundSpeed = stats.GroundSpeedStat.GetCurrentValue();
+        walkSpeed = stats.WalkSpeed;
+        runSpeed = stats.GroundRunSpeedStat.GetCurrentValue();
         airSpeed = stats.AirSpeed;
 
-        grAccel = stats.GroundSpeedStat.GetCurrentValue() * stats.GroundAccelerationPercentBase;
+        grAccel = stats.GroundRunSpeedStat.GetCurrentValue() * stats.GroundAccelerationPercentBase;
         airAccel = stats.AirSpeed * stats.AirAccelerationPercentBase;
 
         jumpUpSpeed = stats.JumpForce;
         // slideBoostForce = stats.SlideBoostForce;
         // airBoostForce = stats.AirBoostForce;
 
-        slideBoostForce = stats.GroundSpeedStat.GetCurrentValue() * stats.SlideBoostPercentageStat.GetCurrentValue();
+        slideBoostForce = stats.GroundRunSpeedStat.GetCurrentValue() * stats.SlideBoostPercentageStat.GetCurrentValue();
         airBoostForce = stats.AirSpeed * stats.AirBoostPercentageStat.GetCurrentValue();
 
         groundFriction = stats.GroundFriction;
@@ -347,6 +357,8 @@ public class PlayerMovement : MonoBehaviour
         dir = orientation.transform.TransformDirection(inputInWorld);
 
         wantToJump = jumpInput.IsPressed();
+
+        isSprinting = sprintInput.IsPressed();
 
         wantToCrouch = crouchInput.IsPressed();
 

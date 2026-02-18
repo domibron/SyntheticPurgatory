@@ -12,7 +12,8 @@ public class PlayerStats : CoreStats, ICloneable
     public float RegenerationSpeed = 1f;
     public UpgradablePlayerStat RegenerationAmountStat = new(5f);
 
-    public UpgradablePlayerStat GroundSpeedStat = new(5.5f);
+    public float WalkSpeed = 4f;
+    public UpgradablePlayerStat GroundRunSpeedStat = new(5.5f);
     public float AirSpeed = 3f; // TODO: should be a fraction from gound speed.
 
     // public float GroundAcceleration = 30f;
@@ -55,7 +56,7 @@ public class PlayerStats : CoreStats, ICloneable
         {
             MaxHealthStat,
             RegenerationAmountStat,
-            GroundSpeedStat,
+            GroundRunSpeedStat,
             SlideBoostPercentageStat,
             AirBoostPercentageStat,
             ProjectileDamageStat,
@@ -82,7 +83,8 @@ public class PlayerStats : CoreStats, ICloneable
             RegenerationSpeed = RegenerationSpeed,
             RegenerationAmountStat = (UpgradablePlayerStat)RegenerationAmountStat.Clone(),
 
-            GroundSpeedStat = (UpgradablePlayerStat)GroundSpeedStat.Clone(),
+            WalkSpeed = WalkSpeed,
+            GroundRunSpeedStat = (UpgradablePlayerStat)GroundRunSpeedStat.Clone(),
             AirSpeed = AirSpeed,
 
             GroundAccelerationPercentBase = GroundAccelerationPercentBase,
