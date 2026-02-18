@@ -8,7 +8,7 @@ public class EntityCulling : MonoBehaviour
 
     Transform player;
 
-    float maxDistance = 24;
+    float maxDistance = 48;
 
     bool overrideCulling = false;
 
