@@ -61,7 +61,11 @@ public class Sequencer : MonoBehaviour
             yield return null;
         }
 
-        // Start the sequence.
+        StartTheSequence();
+    }
+
+    public void StartTheSequence()
+    {
         StartCoroutine(StartSequence());
     }
 

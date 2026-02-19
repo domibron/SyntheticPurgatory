@@ -84,14 +84,19 @@ public class DoorGenerator : SequenceBase
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Initialize();
+
+        // levelGenerator.onLevelGenerationComplete += OnLevelGenerated;
+    }
+
+    public void Initialize()
+    {
         levelGenerator = GetComponent<LevelGenerator>();
 
         if (levelGenerator == null)
         {
             throw new NullReferenceException("LevelGenerator is null!");
         }
-
-        // levelGenerator.onLevelGenerationComplete += OnLevelGenerated;
     }
 
     // void Update()
@@ -277,6 +282,7 @@ public class DoorGenerator : SequenceBase
     public override void StartSequence()
     {
         currentProgress = 0f;
+        Initialize();
         OnLevelGenerated();
     }
 

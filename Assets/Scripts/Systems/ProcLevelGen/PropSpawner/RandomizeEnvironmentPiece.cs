@@ -40,15 +40,24 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        SpawnRandomProps();
+    }
+
+    public void SpawnRandomProps()
+    {
         if (noActivationChance > Random.Range(0, 99))
         {
-            Destroy(temporaryPiece); // Destroy the piece used for creation
-            Destroy(this);
+            // Destroy the piece used for creation
+            if (!Application.isPlaying) DestroyImmediate(temporaryPiece);
+            else Destroy(temporaryPiece);
+
+            if (!Application.isPlaying) DestroyImmediate(this);
+            else Destroy(this);
             return;
         }
 
         // Select second group of objects randomly
-        GameObject[] chosenObjects = objectPrefabs; 
+        GameObject[] chosenObjects = objectPrefabs;
         if (secondaryGroupChance > Random.Range(0, 99))
         {
             chosenObjects = secondaryObjectPrefabs;
@@ -60,9 +69,13 @@ public class RandomizeEnvironmentPiece : MonoBehaviour
         {
             newobject.transform.rotation = Quaternion.Euler(newobject.transform.rotation.eulerAngles.x, Random.Range(0, 359), newobject.transform.rotation.eulerAngles.z);
         }
-        
-        Destroy(temporaryPiece); // Destroy the piece used for creation
-        Destroy(this);
+
+        // Destroy the piece used for creation
+        if (!Application.isPlaying) DestroyImmediate(temporaryPiece);
+        else Destroy(temporaryPiece);
+
+        if (!Application.isPlaying) DestroyImmediate(this);
+        else Destroy(this);
     }
 
 }

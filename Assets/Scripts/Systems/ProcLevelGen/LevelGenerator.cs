@@ -62,6 +62,7 @@ public class LevelGenerator : SequenceBase
         ExtendableRoom,
     }
 
+    private bool isGenerating = false;
 
     void Awake()
     {
@@ -94,6 +95,8 @@ public class LevelGenerator : SequenceBase
 
     private IEnumerator StartLevelGeneration()
     {
+        isGenerating = true;
+
         currentLevelGenerationProgress = 0;
 
         onLevelGenerationStart?.Invoke();
@@ -164,12 +167,14 @@ public class LevelGenerator : SequenceBase
             onLevelGenerationComplete?.Invoke();
 
         }
+
+        isGenerating = false;
     }
 
     /// <summary>
     /// Initilizes and populates all the room lists with all the room pieces and their rotatable variants.
     /// </summary>
-    private void SetupRoomGeneration()
+    public void SetupRoomGeneration()
     {
         allRepeatableRooms.Clear();
         allEndCaps.Clear();
@@ -983,6 +988,14 @@ public class LevelGenerator : SequenceBase
 
     public override void StartSequence()
     {
+        if (isGenerating)
+        {
+            Debug.LogError("Level is still being generated!");
+            return;
+        }
+
+        SetupRoomGeneration(); // * this allows the editor buttons to still work.
+
         currentLevelGenerationProgress = 0f;
         roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
     }

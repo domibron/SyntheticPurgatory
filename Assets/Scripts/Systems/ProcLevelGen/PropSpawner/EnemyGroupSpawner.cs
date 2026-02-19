@@ -5,7 +5,7 @@ public class EnemyGroupSpawner : MonoBehaviour
     /// <summary>
     /// Tier of enemy groups to spawn
     /// </summary>
-    [SerializeField, Range(1,4)]
+    [SerializeField, Range(1, 4)]
     private int groupTier = 1;
     /// <summary>
     /// List of enemy group objects counted as 'tier 1'
@@ -60,13 +60,16 @@ public class EnemyGroupSpawner : MonoBehaviour
         LevelGenObjectRefGetter.Instance.GetComponent<Sequencer>().OnSequencesEnd += SpawnEnemies;
     }
 
-    void SpawnEnemies()
+    public void SpawnEnemies()
     {
         if (noActivationChance > Random.Range(0, 99))
         {
             // print(Random.Range(0, 99));
-            Destroy(temporaryPiece); // Destroy the piece used for creation
-            Destroy(this);
+            if (!Application.isPlaying) DestroyImmediate(temporaryPiece);
+            else Destroy(temporaryPiece);
+
+            if (!Application.isPlaying) DestroyImmediate(this);
+            else Destroy(this);
             return;
         }
 
@@ -82,7 +85,7 @@ public class EnemyGroupSpawner : MonoBehaviour
         }
 
 
-        
+
         GameObject[] chosenGroup;
         chosenGroup = tier1GroupPrefabs;
 
@@ -110,8 +113,11 @@ public class EnemyGroupSpawner : MonoBehaviour
             newobject.transform.rotation = Quaternion.Euler(newobject.transform.rotation.eulerAngles.x, Random.Range(0, 359), newobject.transform.rotation.eulerAngles.z);
         }
 
-        Destroy(temporaryPiece); // Destroy the piece used for creation
-        Destroy(this);
+        if (!Application.isPlaying) DestroyImmediate(temporaryPiece);
+        else Destroy(temporaryPiece);
+
+        if (!Application.isPlaying) DestroyImmediate(this);
+        else Destroy(this);
     }
 
 }
