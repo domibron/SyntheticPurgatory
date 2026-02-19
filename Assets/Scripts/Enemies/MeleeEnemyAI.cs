@@ -92,6 +92,9 @@ public class MeleeEnemyAI : BaseEnemy
     [SerializeField]
     private Animator animator;
 
+    [SerializeField]
+    private TrailRenderer launchTrail;
+
     /// <summary>
     /// Position of the enemy on start
     /// </summary>
@@ -257,6 +260,7 @@ public class MeleeEnemyAI : BaseEnemy
             launching = true;
             KnockbackAI(1);
 
+            launchTrail.enabled = true;
             float distance = Vector3.Distance(goalPos.transform.position, transform.position);
             Vector3 targetDir = (goalPos.transform.position - transform.position) + Vector3.up / 2 * distance;
             GetComponent<Rigidbody>().AddForce(targetDir.normalized * Mathf.Clamp(distance * 2, 6, 8), ForceMode.VelocityChange);
@@ -312,7 +316,18 @@ public class MeleeEnemyAI : BaseEnemy
     public override void GetUp()
     {
         base.GetUp();
-        curLaunchCooldown = launchCooldown;
+        if (launchAtTarget)
+        {
+            curLaunchCooldown = launchCooldown;
+            StartCoroutine(DisableTrail());
+        }
+        
+    }
+
+    IEnumerator DisableTrail()
+    {
+        yield return new WaitForSeconds(0.5f);
+        launchTrail.enabled = false;
     }
 
     /// <summary>

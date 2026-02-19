@@ -77,7 +77,7 @@ public class Sequencer : MonoBehaviour
             totalProgress += sequence.SequenceBase.GetProgress();
         }
 
-        print(totalProgress / sequences.Length);
+        //print(totalProgress / sequences.Length);
         return totalProgress / sequences.Length;
     }
 

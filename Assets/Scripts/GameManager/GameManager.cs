@@ -229,6 +229,7 @@ public class GameManager : MonoBehaviour
 
     public void SetLevelSeed(int newSeed)
     {
+        print(newSeed);
         levelSeed = newSeed;
     }
 
