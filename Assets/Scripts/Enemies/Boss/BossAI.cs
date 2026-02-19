@@ -12,7 +12,8 @@ public class BossAI : BaseEnemy
         OperateButtons,
         ThinkingOfAttack,
         MeleeLunge,
-        FireProjectile,
+        FireHoming,
+        FireBarrage,
         EnterArena,
         EnterControlRoom,
     }
@@ -42,7 +43,8 @@ public class BossAI : BaseEnemy
     private LayerMask ground;
 
     private bool isMeleeLunging = false;
-    private bool isFiringGun = false;
+    private bool isFiringMissile = false;
+    private bool isFiringBarrage = false;
 
     private float defaultSpeed = 0f;
 
@@ -69,6 +71,17 @@ public class BossAI : BaseEnemy
 
     private bool wantsToGoToControlRoom = false;
 
+    [SerializeField]
+    GameObject missilePrefab;
+
+    [SerializeField]
+    Transform missileSpawnPoint;
+
+    [SerializeField]
+    float barrageCoolDown = 30f;
+
+    float currentBarrageCoolDown;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -91,11 +104,11 @@ public class BossAI : BaseEnemy
     private void OnTakeDamage(float newHealth, float oldHealth)
     {
 
-        if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
-        {
-            lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
-            wantsToGoToControlRoom = true;
-        }
+        // if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
+        // {
+        //     lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
+        //     wantsToGoToControlRoom = true;
+        // }
     }
 
     private void OnDeath()
@@ -108,7 +121,15 @@ public class BossAI : BaseEnemy
     {
         base.Update();
 
+        if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
+        {
+            lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
+            wantsToGoToControlRoom = true;
+        }
+
         if (currentGunCooldown > 0) currentGunCooldown -= Time.deltaTime;
+        if (currentBarrageCoolDown > 0) currentBarrageCoolDown -= Time.deltaTime;
+
 
     }
 
@@ -157,12 +178,17 @@ public class BossAI : BaseEnemy
             case CurrentState.MeleeLunge:
                 if (!isMeleeLunging) StartCoroutine(MeleeLunge());
                 break;
-            case CurrentState.FireProjectile:
-                if (!isFiringGun) StartCoroutine(FireGun());
+            case CurrentState.FireBarrage:
+                if (!isFiringBarrage) StartCoroutine(FireBarrage());
+                break;
+            case CurrentState.FireHoming:
+                if (!isFiringMissile) StartCoroutine(FireGun());
                 break;
         }
 
     }
+
+
 
     public void PlayerEnteredArena()
     {
@@ -176,7 +202,8 @@ public class BossAI : BaseEnemy
     }
 
 
-
+    #region ThinkingOfAttack
+    #endregion
     private void ThinkingOfAttack()
     {
 
@@ -191,14 +218,18 @@ public class BossAI : BaseEnemy
         }
 
         float playerDistance = Vector3.Distance(player.position, transform.position);
-        if (playerDistance < 5f) // lunge distance.
+        if (playerDistance < 5f && !Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground"))) // lunge distance.
         {
             SetCurrentState(CurrentState.MeleeLunge);
         }
         else if (!Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground")) && currentGunCooldown <= 0f)
         {
             // TODO: this please, check the fucking layers please. Later, later
-            SetCurrentState(CurrentState.FireProjectile);
+            SetCurrentState(CurrentState.FireHoming);
+        }
+        else if (Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground")) && currentBarrageCoolDown <= 0f)
+        {
+
         }
         else if (UnityEngine.AI.NavMesh.SamplePosition(player.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
         {
@@ -221,7 +252,7 @@ public class BossAI : BaseEnemy
 
     private IEnumerator FireGun()
     {
-        isFiringGun = true;
+        isFiringMissile = true;
         agent.speed = 0f;
 
         // charge up the attack
@@ -254,7 +285,7 @@ public class BossAI : BaseEnemy
 
         currentGunCooldown = gunCooldown;
         agent.speed = defaultSpeed;
-        isFiringGun = false;
+        isFiringMissile = false;
         SetCurrentState(CurrentState.ThinkingOfAttack);
         yield return null;
     }
@@ -373,6 +404,29 @@ public class BossAI : BaseEnemy
         // end
         agent.speed = defaultSpeed;
         isMeleeLunging = false;
+        SetCurrentState(CurrentState.ThinkingOfAttack);
+        yield return null;
+    }
+
+    private IEnumerator FireBarrage()
+    {
+        isFiringBarrage = true;
+
+        agent.destination = player.position;
+
+        int needToFire = 5;
+
+        while (needToFire > 0)
+        {
+            GameObject missile = Instantiate(missilePrefab, missileSpawnPoint.position, Quaternion.identity);
+            missile.GetComponent<Rocket>().SetUpRocket(player.position);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        currentBarrageCoolDown = barrageCoolDown;
+
+
+        isFiringBarrage = false;
         SetCurrentState(CurrentState.ThinkingOfAttack);
         yield return null;
     }

@@ -443,6 +443,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f82ef59ac2769a5479d244f21af10916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startOpen: 0
 --- !u!114 &2436420973149316004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -665,7 +666,6 @@ MonoBehaviour:
   - {fileID: 4427628415408339441, guid: b5442ebd22d5b6b49b0f1bf46636e056, type: 3}
   leftSpawnPoint: {fileID: 4507708974611684897}
   rightSpawnPoint: {fileID: 7607739447312198538}
-  enemyCountAtGate: 5
 --- !u!1 &3243101851864146036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1541,6 +1541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f82ef59ac2769a5479d244f21af10916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startOpen: 0
 --- !u!114 &4935763902797674146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2659,6 +2660,7 @@ MonoBehaviour:
   IsScrolling: 1
   IsReversed: 0
   materialIndex: 1
+  isToon: 1
 --- !u!1 &3108871206810071212 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3565814163051357792, guid: b24caa4f59e95884ea64987393d3cfc6, type: 3}
@@ -3136,6 +3138,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7520798562422339518, guid: 1d69ce24f830f344b8cf3852489034b0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8652561325713280209, guid: 1d69ce24f830f344b8cf3852489034b0, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8652561325713280209, guid: 1d69ce24f830f344b8cf3852489034b0, type: 3}
