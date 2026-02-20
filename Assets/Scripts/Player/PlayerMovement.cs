@@ -84,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 dir = Vector3.zero;
     bool wantToJump;
     bool wantToCrouch;
+    bool wantToSprint;
 
     bool isSprinting = false; // dunno where to put this.
 
@@ -211,15 +212,29 @@ public class PlayerMovement : MonoBehaviour
             isJumping = false;
         }
 
-        if (wantToCrouch)
+        if (wantToSprint)
         {
-
-            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
-            if (!isCrouched && isSprinting)
+            if (!isSprinting)
             {
                 CrouchBoost(); // so lazy
                 AirBoost();
             }
+            isSprinting = true;
+        }
+        else
+        {
+            isSprinting = false;
+        }
+
+        if (wantToCrouch)
+        {
+
+            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
+            // if (!isCrouched && isSprinting)
+            // {
+            //     CrouchBoost(); // so lazy
+            //     AirBoost();
+            // }
 
             isCrouched = true;
         }
@@ -358,7 +373,7 @@ public class PlayerMovement : MonoBehaviour
 
         wantToJump = jumpInput.IsPressed();
 
-        isSprinting = sprintInput.IsPressed();
+        wantToSprint = sprintInput.IsPressed();
 
         wantToCrouch = crouchInput.IsPressed();
 
