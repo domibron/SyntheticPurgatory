@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2383231502051152128}
   - component: {fileID: 2456641787852511614}
   - component: {fileID: 572888061648109767}
+  - component: {fileID: 4176171978625599237}
   - component: {fileID: 4423898340952435041}
   - component: {fileID: 3707416984729077131}
   - component: {fileID: 2484577062712518179}
@@ -60,6 +61,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyKnockedBack: 0
   enemyStunned: 0
+  isToaster: 0
   controlRoom: {fileID: 0}
   arenaAttacks: {fileID: 0}
   ground:
@@ -72,6 +74,7 @@ MonoBehaviour:
   missileSpawnPoint: {fileID: 3770593432184270713}
   barrageSpawnPoint: {fileID: 6784364488004350804}
   barrageCoolDown: 30
+  barrageCount: 5
 --- !u!114 &572888061648109767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,6 +88,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1000
+--- !u!114 &4176171978625599237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1303000234867677999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c909b86e9a4814793464bd8cb043a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 0
 --- !u!114 &4423898340952435041
 MonoBehaviour:
   m_ObjectHideFlags: 0
