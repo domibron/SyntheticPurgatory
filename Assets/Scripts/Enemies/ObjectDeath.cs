@@ -23,6 +23,10 @@ public class ObjectDeath : MonoBehaviour
     [SerializeField] 
     private float upForce = 2f;
 
+    [SerializeField]
+    private bool addToKillCounter = true;
+    [SerializeField]
+    private int enemyScore = 10;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -36,6 +40,13 @@ public class ObjectDeath : MonoBehaviour
     void KillObject()
     {
         transform.GetComponent<ScrapDropper>().SpawnScrapGroup(ScrapDrop, sideForce, upForce); // Spawn Scrap
+
+        if (addToKillCounter)
+        {
+            GameManager.Instance.statsHolder.enemiesDefeated++;
+            GameManager.Instance.statsHolder.enemiesDefeatedScore += enemyScore;
+        }
+
         Destroy(gameObject); // Destroy object
     }
 }

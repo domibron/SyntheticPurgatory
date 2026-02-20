@@ -4,11 +4,11 @@ public class KillZone : MonoBehaviour
 {
     void OnTriggerEnter(Collider other)
     {
-        other.GetComponent<Health>()?.AddToHealth(-999999f);
+        other.GetComponent<Health>()?.InstantKill();
     }
 
     void OnTriggerStay(Collider other)
     {
-        other.GetComponent<Health>()?.AddToHealth(-999999f);
+        other.GetComponent<Health>()?.InstantKill();
     }
 }
