@@ -27,6 +27,7 @@ public class BossAI : BaseEnemy
     private const int maxButtonAttackCount = 1; // what the helly
 
     private bool inControlRoom = true; // fuck me
+    private bool isLeavingControlRoom = false;
 
     private int lastAttackIndex = 0;
 
@@ -47,9 +48,6 @@ public class BossAI : BaseEnemy
     private bool isFiringBarrage = false;
 
     private float defaultSpeed = 0f;
-
-    [SerializeField]
-    private GameObject bossProjectile;
 
     [SerializeField]
     private float gunCooldown = 3f;
@@ -78,7 +76,13 @@ public class BossAI : BaseEnemy
     Transform missileSpawnPoint;
 
     [SerializeField]
+    Transform barrageSpawnPoint;
+
+    [SerializeField]
     float barrageCoolDown = 30f;
+
+    [SerializeField, Min(1)]
+    int barrageCount = 5;
 
     float currentBarrageCoolDown;
 
@@ -182,7 +186,7 @@ public class BossAI : BaseEnemy
                 if (!isFiringBarrage) StartCoroutine(FireBarrage());
                 break;
             case CurrentState.FireHoming:
-                if (!isFiringMissile) StartCoroutine(FireGun());
+                if (!isFiringMissile) StartCoroutine(FireHomingMissile());
                 break;
         }
 
@@ -218,18 +222,20 @@ public class BossAI : BaseEnemy
         }
 
         float playerDistance = Vector3.Distance(player.position, transform.position);
-        if (playerDistance < 5f && !Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground"))) // lunge distance.
+        bool playerLineOfSightBlocked = Physics.Linecast(player.position, transform.position + Vector3.up, ground);
+
+
+        if (playerDistance < 5f && !playerLineOfSightBlocked) // lunge distance.
         {
             SetCurrentState(CurrentState.MeleeLunge);
         }
-        else if (!Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground")) && currentGunCooldown <= 0f)
+        else if (!playerLineOfSightBlocked && currentGunCooldown <= 0f)
         {
-            // TODO: this please, check the fucking layers please. Later, later
             SetCurrentState(CurrentState.FireHoming);
         }
-        else if (Physics.Linecast(player.position, transform.position, LayerMask.GetMask("Default", "Ground")) && currentBarrageCoolDown <= 0f)
+        else if (playerLineOfSightBlocked && currentBarrageCoolDown <= 0f)
         {
-
+            SetCurrentState(CurrentState.FireBarrage);
         }
         else if (UnityEngine.AI.NavMesh.SamplePosition(player.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
         {
@@ -241,19 +247,14 @@ public class BossAI : BaseEnemy
             UnityEngine.AI.NavMesh.SamplePosition(transform.position + UnityEngine.Random.insideUnitSphere.normalized * 5f, out hit, 10f, NavMesh.AllAreas);
             agent.destination = hit.position;
         }
-
-
-        // else // TODO: this is shit, fix this terrible shit.
-        // {
-        //     SetCurrentState(CurrentState.EnterControlRoom);
-        // }
     }
 
 
-    private IEnumerator FireGun()
+    private IEnumerator FireHomingMissile()
     {
         isFiringMissile = true;
         agent.speed = 0f;
+        agent.destination = transform.position;
 
         // charge up the attack
         float timer = 1f;
@@ -265,17 +266,14 @@ public class BossAI : BaseEnemy
             // print("timer wait " + timer);
         }
 
-        // fire!
-        transform.rotation = Quaternion.LookRotation(new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position, Vector3.up);
-        GameObject projectile = Instantiate(bossProjectile, transform.position + transform.up + transform.forward, Quaternion.identity);
-        projectile.GetComponent<ProjectileScript>().ProjectileDamage = 20f;
-        projectile.GetComponent<ProjectileScript>().SourceForProjectile = transform;
 
-        Vector3 dirNeeded = (player.position - projectile.transform.position).normalized;
-        projectile.GetComponent<Rigidbody>()?.AddForce(dirNeeded * 20f, ForceMode.VelocityChange);
+        transform.rotation = Quaternion.LookRotation(new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position, Vector3.up);
+
+        GameObject missile = Instantiate(missilePrefab, missileSpawnPoint.position, Quaternion.FromToRotation(Vector3.forward, player.position - missileSpawnPoint.position));
+        missile.GetComponent<Rocket>().SetUpRocket(player, false);
 
         // recover
-        timer = 1f;
+        timer = 0.5f;
         while (timer > 0)
         {
             yield return new WaitForEndOfFrame();
@@ -308,9 +306,15 @@ public class BossAI : BaseEnemy
             if (quitTimer <= 0)
             {
                 SetCurrentState(CurrentState.ThinkingOfAttack); // Rethink your actions!
+                isMeleeLunging = false;
                 yield break; // Get the fuck out
             }
             // print("distance");
+        }
+
+        if (!isMeleeLunging)
+        {
+            print("UH OH");
         }
 
         agent.destination = transform.position;
@@ -347,7 +351,7 @@ public class BossAI : BaseEnemy
         Vector3 jumpAngle = Quaternion.AngleAxis(angleNeeded, directionRight) * (playerPosWithYSameAsUs - transform.position);
 
         rb.AddForce(-rb.linearVelocity + (jumpAngle.normalized * force), ForceMode.VelocityChange);
-        print(rb.linearVelocity);
+        // print(rb.linearVelocity);
         // while (true)
         // {
         //     if (Vector3.Distance(transform.position, lungeTarget) < 1f) break;
@@ -395,8 +399,12 @@ public class BossAI : BaseEnemy
         //     agent.enabled = true;
         // }
 
-        print("End of melee");
-        UnityEngine.AI.NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas);
+        // print("End of melee");
+        NavMeshHit hit;
+        while (!UnityEngine.AI.NavMesh.SamplePosition(transform.position, out hit, 100f, NavMesh.AllAreas))
+        {
+            yield return new WaitForFixedUpdate();
+        }
 
         transform.position = hit.position;
         agent.enabled = true;
@@ -412,19 +420,19 @@ public class BossAI : BaseEnemy
     {
         isFiringBarrage = true;
 
-        agent.destination = player.position;
+        agent.destination = transform.position;
 
-        int needToFire = 5;
+        int needToFire = barrageCount;
 
         while (needToFire > 0)
         {
-            GameObject missile = Instantiate(missilePrefab, missileSpawnPoint.position, Quaternion.identity);
-            missile.GetComponent<Rocket>().SetUpRocket(player.position);
+            GameObject missile = Instantiate(missilePrefab, barrageSpawnPoint.position, Quaternion.identity);
+            missile.GetComponent<Rocket>().SetUpRocket(player);
+            needToFire--;
             yield return new WaitForSeconds(0.5f);
         }
 
         currentBarrageCoolDown = barrageCoolDown;
-
 
         isFiringBarrage = false;
         SetCurrentState(CurrentState.ThinkingOfAttack);
@@ -446,13 +454,14 @@ public class BossAI : BaseEnemy
 
     private void EnterControlRoom()
     {
-        agent.SetDestination(controlRoom.position);
+        if (agent.destination != controlRoom.position)
+            agent.destination = controlRoom.position;
         bossDoor.SetDoorState(true);
 
 
         if (inControlRoom && Vector3.Distance(agent.destination, transform.position) < 3f)
         {
-            agent.SetDestination(transform.position);
+            agent.destination = transform.position;
             bossDoor.SetDoorState(false);
             SetCurrentState(CurrentState.OperateButtons);
         }
@@ -461,12 +470,17 @@ public class BossAI : BaseEnemy
     // Get the fuck out of control room // GET OUT! ~ Tuco Salamanca
     private void ExitControlRoom()
     {
-        agent.SetDestination(player.position);
-        bossDoor.SetDoorState(true);
+        if (!isLeavingControlRoom)
+        {
+            agent.destination = player.position;
+            bossDoor.SetDoorState(true);
+            isLeavingControlRoom = true;
+        }
 
         if (!inControlRoom)
         {
             SetCurrentState(CurrentState.ThinkingOfAttack);
+            isLeavingControlRoom = false;
         }
     }
 
