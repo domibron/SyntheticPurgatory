@@ -26,8 +26,20 @@ public class Sequencer : MonoBehaviour
 
     public event Action OnSequencesEnd;
 
-    void Start()
+    IEnumerator Start()
     {
+        if (LevelLoading.Instance == null)
+        {
+            StartCoroutine(StartSequence());
+            yield break;
+        }
+        
+        
+        while(!LevelLoading.Instance.IsCoreLoaded())
+        {
+            yield return null;
+        }
+        
         StartCoroutine(StartSequence());
     }
 

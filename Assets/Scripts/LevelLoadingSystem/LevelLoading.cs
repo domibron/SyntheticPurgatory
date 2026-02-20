@@ -44,6 +44,8 @@ public class LevelLoading : MonoBehaviour
 	private float loadingBarOverrideValue = 0;
 
 	private bool holdingLoading = false;
+	
+	private bool hasLoadedCore = false;
 
 	// progress of loading the scene.
 	private float totalSceneProgress;
@@ -146,7 +148,9 @@ public class LevelLoading : MonoBehaviour
 	public void LoadScene(int indexNumber)
 	{
 		if (OverrideAll) return;
-
+		
+		hasLoadedCore = false;
+		
 		holdingLoading = true;
 
 		IsLoading = true;
@@ -239,6 +243,8 @@ public class LevelLoading : MonoBehaviour
 	public void Reload()
 	{
 		if (OverrideAll) return;
+		hasLoadedCore = false;
+		
 		SetIsOverriding();
 		holdingLoading = true;
 
@@ -313,8 +319,11 @@ public class LevelLoading : MonoBehaviour
 		{
 			SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 		}
+		
+		hasLoadedCore = true;
+		
 		// we should have a hold until release command here instead. Have a script to tell this its free to unlock.
-
+		
 		while (holdingLoading)
 		{
 
@@ -346,5 +355,10 @@ public class LevelLoading : MonoBehaviour
 		holdingLoading = false;
 		Debug.Log("Released level loading");
 		SetIsOverriding();
+	}
+	
+	public bool IsCoreLoaded()
+	{
+	    return hasLoadedCore;
 	}
 }

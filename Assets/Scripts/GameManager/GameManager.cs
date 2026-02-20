@@ -10,8 +10,9 @@ public class GameManager : MonoBehaviour
 
     private int worldSeed = -1;
     private int levelSeed = -1;
-
-    private int depositedScrap = 0;
+    
+    // TODO: FIX LATER 20-2-2026
+    private int depositedScrap = 500;
 
     private float timePerLevel = 120f;
 
@@ -38,8 +39,9 @@ public class GameManager : MonoBehaviour
 
     private int commonOpenAmount = 0;
     private int commonCurrentCost = 0;
-
-    private int commonCards = 0;
+    
+    // TODO: Fix layer 20-2-2026
+    private int commonCards = 3;
 
     [SerializeField]
     private int rareUpgradeAmount = 4;
@@ -54,8 +56,9 @@ public class GameManager : MonoBehaviour
 
     private int rareOpenAmount = 0;
     private int rareCurrentCost = 0;
-
-    private int rareCards = 0;
+    
+    // TODO: Fix layer 20-2-2026
+    private int rareCards = 3;
 
     [SerializeField]
     private int epicUpgradeAmount = 5;
@@ -70,8 +73,9 @@ public class GameManager : MonoBehaviour
 
     private int epicOpenAmount = 0;
     private int epicCurrentCost = 0;
-
-    private int epicCards = 0;
+    
+    // TODO: Fix layer 20-2-2026
+    private int epicCards = 3;
 
     private int currentDifficulty = 0;
 

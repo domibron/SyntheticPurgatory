@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DeParentObject : MonoBehaviour
 {
-    void Awake()
+    void Start()
     {
         transform.parent = null;
     }

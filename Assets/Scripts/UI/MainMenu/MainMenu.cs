@@ -41,7 +41,7 @@ public class MainMenu : MonoBehaviour
     {
         if (newDevice == InputManager.InputDeviceType.Gamepad)
         {
-            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+            EventSystem.current.SetSelectedGameObject(startGameButton);
             Cursor.visible = false;
         }
         else

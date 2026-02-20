@@ -179,7 +179,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                         ToolTipTextDisplay.Instance.SetDisplayText("REMOVE STAT");
                         break;
                     case HoveringOver.AddButton:
-                        ToolTipTextDisplay.Instance.SetDisplayText("ADD STAT");
+                        ToolTipTextDisplay.Instance.SetDisplayText(upgradedButNotAppliedStat.UpgradeCost() + "sc");
                         break;
                 }
             }

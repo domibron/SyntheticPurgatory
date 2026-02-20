@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9873dac9d8a57ee4eafd72db1cd79dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeSprite: {fileID: 21300000, guid: 79d85f1e7041cc345be569732023a959, type: 3}
-  brokenLifeSprite: {fileID: 21300000, guid: 9112607b4e300cd4dafc8e52c8f7e881, type: 3}
+  lifeSprite: {fileID: 21300000, guid: fd65590138a46124298eaa04e7f67e7e, type: 3}
+  brokenLifeSprite: {fileID: 21300000, guid: 8d147edc14cd3314fbb7e46937dee458, type: 3}
   lifeObject: {fileID: 4799691936513342399, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
   lifeHolder: {fileID: 4981988035196733994}
 --- !u!1 &4981988035196733994
@@ -222,8 +222,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Lives Remaining
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
+  m_sharedMaterial: {fileID: -5401748459840433787, guid: 8007504d4b4c8694c95619c78b4d0351, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -253,7 +253,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 9
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -299,6 +299,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6819311913268033528}
     m_Modifications:
+    - target: {fileID: 714511344025539262, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: fd65590138a46124298eaa04e7f67e7e, type: 3}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -313,7 +317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_AnchorMin.x
@@ -321,15 +325,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 65
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 65
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -361,11 +365,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 112.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -17.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 740752139657354101, guid: 4e768437ee2a8524f9871852d21f85b4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
