@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 7576286844709180698}
   - component: {fileID: 9169388589387901843}
   - component: {fileID: 7479287925834451414}
+  - component: {fileID: 3442713779235369882}
   - component: {fileID: 1355763804615776122}
   - component: {fileID: 8981124634935467710}
   - component: {fileID: 7750138056243450060}
@@ -149,6 +150,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 80
+--- !u!114 &3442713779235369882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427628415408339441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c909b86e9a4814793464bd8cb043a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 0
 --- !u!114 &1355763804615776122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +178,8 @@ MonoBehaviour:
   ScrapDrop: 10
   sideForce: 2.5
   upForce: 2
+  addToKillCounter: 1
+  enemyScore: 40
 --- !u!114 &8981124634935467710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +224,9 @@ MonoBehaviour:
   viewPointOffset: {x: 0, y: 1.7, z: 0}
   detectionRange: 17
   detectionTimer: 1
+  canLoseAgro: 0
+  ignoreRange: 25
+  loseTimer: 10
   alertOthersRange: 20
   EnableDetectChaining: 0
   MaxDetectionChain: 2

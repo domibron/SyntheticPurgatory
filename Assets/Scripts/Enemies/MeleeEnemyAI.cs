@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 // By Vince Pressey
 
@@ -111,6 +110,7 @@ public class MeleeEnemyAI : BaseEnemy
 
         startPosition = transform.position;
 
+        if (launchAtTarget) { isToaster = true; }
     }
 
     private void FixedUpdate()

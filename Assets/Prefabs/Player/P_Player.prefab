@@ -386,6 +386,7 @@ GameObject:
   - component: {fileID: 2934475978545377804}
   - component: {fileID: 1366173621609098140}
   - component: {fileID: 7812274978082621966}
+  - component: {fileID: 5509226561940670868}
   - component: {fileID: 6780135534344894972}
   - component: {fileID: 547660062812337290}
   - component: {fileID: 2243016284772517855}
@@ -528,6 +529,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+--- !u!114 &5509226561940670868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138991948573154078}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c909b86e9a4814793464bd8cb043a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 1
 --- !u!114 &6780135534344894972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1148,6 +1162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5087617910665705332}
+  - component: {fileID: 6950606201038040553}
   m_Layer: 3
   m_Name: Fog
   m_TagString: Untagged
@@ -1178,6 +1193,18 @@ Transform:
   - {fileID: 2480708368255211151}
   m_Father: {fileID: 6842064774368568808}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6950606201038040553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4005582368946543032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a024e1077cbd24f8898b15908e256b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4863898153748189822
 GameObject:
   m_ObjectHideFlags: 0

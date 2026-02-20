@@ -20,6 +20,9 @@ public class BaseEnemy : MonoBehaviour
 
     protected bool isGettingUp;
     protected Vector3 targetGetupPosition;
+     
+    public bool isToaster = false; // Silly bullshit ignore or fix later
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Awake()
@@ -58,16 +61,20 @@ public class BaseEnemy : MonoBehaviour
 
 
 
-    public void KnockbackAI(float minimumTime = 0.3f)
+    public void KnockbackAI(float minimumTime = 0.3f, bool playerSourced = false)
     {
         rb.useGravity = true;
         rb.angularDamping = 0;
         rb.linearDamping = 0;
-
         knockbackTimer = minimumTime;
 
         enemyKnockedBack = true;
         agent.enabled = false;
+
+        if (playerSourced && isToaster)
+        {
+            GameManager.Instance.statsHolder.todPunts++;
+        }
 
     }
     protected virtual void OnCollisionStay(Collision collision)
@@ -77,7 +84,7 @@ public class BaseEnemy : MonoBehaviour
             LayerMask obstacles = LayerMask.GetMask("Default", "Ground"); // Set layers the raycast will detect
 
             RaycastHit hit;
-            Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hit, 2);
+            Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hit, 2f);
             if (hit.collider)
             {
                 rb.useGravity = false;

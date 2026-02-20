@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8654365021144973641}
   - component: {fileID: 1205268038597720294}
   - component: {fileID: 8974925264865158891}
+  - component: {fileID: 2082321297910345580}
   - component: {fileID: 634660276249451943}
   - component: {fileID: 4858192178450015649}
   - component: {fileID: 4933814812532915132}
@@ -137,6 +138,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 20
+--- !u!114 &2082321297910345580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581709180727947209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c909b86e9a4814793464bd8cb043a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 0
 --- !u!114 &634660276249451943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +166,8 @@ MonoBehaviour:
   ScrapDrop: 5
   sideForce: 2.5
   upForce: 2
+  addToKillCounter: 0
+  enemyScore: 10
 --- !u!114 &4858192178450015649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +268,8 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   onDeathTarget: {fileID: 0}
   ensureOnlyOneActivation: 1
+  addForce: 0
+  forceOrigin: {fileID: 0}
 --- !u!1001 &4549750765960618172
 PrefabInstance:
   m_ObjectHideFlags: 0
