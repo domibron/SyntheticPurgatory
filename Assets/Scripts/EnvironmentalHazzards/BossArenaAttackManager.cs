@@ -20,6 +20,9 @@ public class BossArenaAttackManager : BossArenaAttack
 
     private bool waitingForEnemiesToSpawn = false;
 
+    [SerializeField]
+    bool debugRemoveAttacks = false;
+
     void Awake()
     {
         oshaViolationManager.OnEnemySpawnAttackConcluded += EnemySpawnAttackConcluded;
@@ -150,6 +153,12 @@ public class BossArenaAttackManager : BossArenaAttack
 
     public override void StartAttack()
     {
+        if (debugRemoveAttacks)
+        {
+            AttackFinished();
+            return;
+        }
+
         StartCoroutine(BeginAttacks());
     }
 }

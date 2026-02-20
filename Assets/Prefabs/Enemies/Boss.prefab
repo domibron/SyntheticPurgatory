@@ -42,6 +42,8 @@ Transform:
   m_Children:
   - {fileID: 8844229440722824634}
   - {fileID: 3031827374682126254}
+  - {fileID: 3770593432184270713}
+  - {fileID: 6784364488004350804}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &2456641787852511614
@@ -63,10 +65,13 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 65
-  bossProjectile: {fileID: 1360570209722618760, guid: 858b3283081f54f4faf52f281e1d78bb, type: 3}
   gunCooldown: 3
   fallBackAfterTakenDamage: 0.3333333
   bossDoor: {fileID: 0}
+  missilePrefab: {fileID: 7663279396724139643, guid: 1cb7024dadfa6704d8f6b54a95bb51cf, type: 3}
+  missileSpawnPoint: {fileID: 3770593432184270713}
+  barrageSpawnPoint: {fileID: 6784364488004350804}
+  barrageCoolDown: 30
 --- !u!114 &572888061648109767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,7 +155,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 7
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -158,7 +163,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 2.5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -186,7 +191,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 2
+  m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!136 &7307343574459912920
@@ -209,9 +214,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 2.5
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.25, z: 0}
 --- !u!114 &2862685252554123172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,6 +238,8 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   onDeathTarget: {fileID: 0}
   ensureOnlyOneActivation: 1
+  addForce: 0
+  forceOrigin: {fileID: 0}
 --- !u!114 &6868968307293970838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +269,68 @@ MonoBehaviour:
   materialName: DamageFlash
   opacity: 100
   hurtDuration: 0.2
+--- !u!1 &1362388594090891688
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3770593432184270713}
+  m_Layer: 9
+  m_Name: Missile Homing Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3770593432184270713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362388594090891688}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00000017881395, y: 2.25, z: 0.5000001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2383231502051152128}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1626278242470736274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6784364488004350804}
+  m_Layer: 9
+  m_Name: Missile Barrage Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6784364488004350804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626278242470736274}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00000017881388, y: 1.75, z: -0.7500002}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2383231502051152128}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1439413348929715299
 PrefabInstance:
   m_ObjectHideFlags: 0
