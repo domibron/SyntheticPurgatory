@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class RemoveDuplicateEventSystem : MonoBehaviour
 {
-    void Awake()
+    void OnEnable()
     {
         if (GetComponent<EventSystem>() == null) Debug.LogError("HEY! I need to be attached to event systems!");
 

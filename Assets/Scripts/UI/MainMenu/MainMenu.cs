@@ -11,7 +11,18 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
-        EventSystem.current.SetSelectedGameObject(startGameButton);
+        if (InputManager.Instance.GetCurrentInputDevice() == InputManager.InputDeviceType.Gamepad)
+        {
+            EventSystem.current.SetSelectedGameObject(startGameButton);
+            Cursor.visible = false;
+            print("controller detected");
+        }
+        else
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            Cursor.visible = true;
+            print("KaM detected");
+        }
     }
 
     void OnEnable()
@@ -35,6 +46,7 @@ public class MainMenu : MonoBehaviour
         }
         else
         {
+            EventSystem.current.SetSelectedGameObject(null);
             Cursor.visible = true;
         }
     }
