@@ -16,7 +16,6 @@ public class DDIElement : MonoBehaviour
 
         float angle = Vector3.Angle(direction, playerCamTransform.forward.normalized);
         float dot = Vector3.Dot(direction, playerCamTransform.right.normalized);
-        print(angle);
 
         rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, (dot > 0 ? -angle : angle)));
     }

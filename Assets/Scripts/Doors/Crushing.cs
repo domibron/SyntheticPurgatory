@@ -5,7 +5,7 @@ public class Crushing : MonoBehaviour
 {
     private List<Collider> detectedColliders = new List<Collider>();
 
-    private float damage = 99999f;
+    //private float damage = 99999f;
 
     private bool isActive = true;
 
@@ -35,7 +35,8 @@ public class Crushing : MonoBehaviour
         // print(other.name);
         if (detectedColliders.Contains(other))
         {
-            other.GetComponent<Health>()?.AddToHealth(-damage);
+            //other.GetComponent<Health>()?.AddToHealth(-damage);
+            other.GetComponent<Health>()?.InstantKill();
             detectedColliders.Remove(other);
         }
         else

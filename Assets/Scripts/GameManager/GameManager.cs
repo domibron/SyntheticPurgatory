@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -16,6 +17,8 @@ public class GameManager : MonoBehaviour
 
     private float currentTime = 1f;
     private bool inDungeon = false;
+
+    private int currentLevel = 0;
 
     [SerializeField]
     private int maxLives = 3;
@@ -82,6 +85,9 @@ public class GameManager : MonoBehaviour
 
     private float lowTime = 60f;
 
+    public StatsHolder statsHolder = new StatsHolder();
+
+
     void Awake()
     {
         // yeah, no, this is wrong. We need to destroy the other one.
@@ -103,6 +109,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.GetCurrentValue();
+        StartCoroutine(TrackGameTime());
     }
 
     void Update()
@@ -201,6 +208,7 @@ public class GameManager : MonoBehaviour
         else
         {
             AddToDepositedScrap(ScrapManager.Instance.GetAllDepositedScrap());
+            statsHolder.totalScrap += ScrapManager.Instance.GetAllDepositedScrap();
 
             // so bad, but fuck it.
             commonCards += UpgradeCardManager.Instance.GetAllCardCountOfType(CardTier.Common);
@@ -229,6 +237,7 @@ public class GameManager : MonoBehaviour
 
     public void SetLevelSeed(int newSeed)
     {
+        currentLevel++; // Not the best place but works here
         print(newSeed);
         levelSeed = newSeed;
     }
@@ -378,5 +387,26 @@ public class GameManager : MonoBehaviour
     public bool IsTimerHidden()
     {
         return timerHidden;
+    }
+
+    public int GetCurrentLevel()
+    {
+        return currentLevel;
+    }
+
+
+    //Stats
+    public IEnumerator TrackGameTime()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1); // Less accurate but don't need to track milliseconds
+
+            if (inDungeon)
+            {
+                statsHolder.runTime++;
+            }
+        }
+
     }
 }

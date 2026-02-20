@@ -92,6 +92,20 @@ public class Health : MonoBehaviour
     }
 
     /// <summary>
+    /// Set the objects health to 0 and invoke death
+    /// </summary>
+    public virtual void InstantKill()
+    {
+        currentHealth = 0;
+
+        if (!calledOnDeathEvent)
+        {
+            calledOnDeathEvent = true; // prevent spamming the event.
+            InvokeOnDeath();
+        }
+    }
+
+    /// <summary>
     /// Gets a normalized version of the health aka as a percentage from 0 to 1.
     /// </summary>
     /// <returns>The percentage from 0 to 1.</returns>
