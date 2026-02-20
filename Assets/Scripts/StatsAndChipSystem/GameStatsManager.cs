@@ -23,9 +23,7 @@ public enum Stats
 
 public class GameStatsManager : MonoBehaviour
 {
-    public static GameStatsManager Instance { get => instance; }
-
-    private static GameStatsManager instance;
+    public static GameStatsManager Instance { get; private set; }
 
     [SerializeField]
     private StatData[] baseStats = new StatData[0]; // This store the raw stat classes, aka the scriptable objects.
@@ -35,17 +33,17 @@ public class GameStatsManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(Instance.gameObject); // GET OUT ~Tuco
-            // instance = this;
-        }
-        else
-        {
+        // if (Instance != null && Instance != this)
+        // {
+        //     Destroy(Instance.gameObject); // GET OUT ~Tuco
+        //     // instance = this;
+        // }
+        // else
+        // {
 
-        }
+        // }
 
-        instance = this;
+        Instance = this;
         SetUpStats();
     }
 
