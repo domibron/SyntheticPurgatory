@@ -25,6 +25,10 @@ public class VersionTag : MonoBehaviour
         if (GetComponent<TMP_Text>() != null)
         {
             uiText = GetComponent<TMP_Text>();
+        }
+
+        if (uiText != null)
+        {
             uiText.text = GetText();
         }
     }
