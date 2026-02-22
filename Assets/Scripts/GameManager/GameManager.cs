@@ -10,9 +10,9 @@ public class GameManager : MonoBehaviour
 
     private int worldSeed = -1;
     private int levelSeed = -1;
-    
-    // TODO: FIX LATER 20-2-2026
-    private int depositedScrap = 500;
+
+
+    private int depositedScrap = 0;
 
     private float timePerLevel = 120f;
 
@@ -26,27 +26,18 @@ public class GameManager : MonoBehaviour
 
     private int currentLives = 1;
 
-    [SerializeField] // TODO: turn this either into structs or classes.
-    private int commonUpgradeAmount = 2;
-    [SerializeField]
-    private int commonDowngradeAmount = 1;
-
+    // TODO: turn this either into structs or classes. maybe...
     [SerializeField]
     private int commonBaseUnlockCost = 200;
 
     [SerializeField]
     private int commonCostIncrease = 25;
 
-    private int commonOpenAmount = 0;
     private int commonCurrentCost = 0;
-    
-    // TODO: Fix layer 20-2-2026
-    private int commonCards = 3;
 
-    [SerializeField]
-    private int rareUpgradeAmount = 4;
-    [SerializeField]
-    private int rareDowngradeAmount = 1;
+
+    private int commonCards = 0;
+
 
     [SerializeField]
     private int rareBaseUnlockCost = 400;
@@ -54,16 +45,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int rareCostIncrease = 50;
 
-    private int rareOpenAmount = 0;
     private int rareCurrentCost = 0;
-    
-    // TODO: Fix layer 20-2-2026
-    private int rareCards = 3;
 
-    [SerializeField]
-    private int epicUpgradeAmount = 5;
-    [SerializeField]
-    private int epicDowngradeAmount = 0;
+
+    private int rareCards = 0;
+
 
     [SerializeField]
     private int epicBaseUnlockCost = 600;
@@ -71,11 +57,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int epicCostIncrease = 100;
 
-    private int epicOpenAmount = 0;
     private int epicCurrentCost = 0;
-    
-    // TODO: Fix layer 20-2-2026
-    private int epicCards = 3;
+
+
+    private int epicCards = 0;
 
     private int currentDifficulty = 0;
 
@@ -143,21 +128,6 @@ public class GameManager : MonoBehaviour
     public void InvokeRemindTime()
     {
         OnWarnTime?.Invoke(currentTime);
-    }
-
-    public (int, int) GetUPandDOWNAmounts(CardTier cardTeir)
-    {
-        switch (cardTeir)
-        {
-            case CardTier.Common:
-                return (commonUpgradeAmount, commonDowngradeAmount);
-            case CardTier.Rare:
-                return (rareUpgradeAmount, rareDowngradeAmount);
-            case CardTier.Epic:
-                return (epicUpgradeAmount, epicDowngradeAmount);
-            default:
-                return (1, 0);
-        }
     }
 
     public void AddToDepositedScrap(int amount)
