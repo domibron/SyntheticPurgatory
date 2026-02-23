@@ -30,7 +30,12 @@ public class ModuleSpawner : MonoBehaviour
 
     public void SpawnCard()
     {
+        upgradeCardToSpawn = UpgradeCardManager.Instance?.GetUpgradeCardPrefab(cardTier);
+
         Instantiate(upgradeCardToSpawn, transform.position, Quaternion.identity);
-        Destroy(temporaryObject);
+        if (!Application.isPlaying)
+            DestroyImmediate(temporaryObject);
+        else
+            Destroy(temporaryObject);
     }
 }

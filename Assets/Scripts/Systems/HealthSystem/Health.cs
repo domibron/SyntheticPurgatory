@@ -61,6 +61,7 @@ public class Health : MonoBehaviour
     /// <param name="amount">The value to add to the health.</param>
     public virtual void AddToHealth(float amount)
     {
+        if (immortal) return;
 
         if (amount != 0) InvokeOnHealthChanged(currentHealth + amount, currentHealth);
         currentHealth += amount;
@@ -79,6 +80,8 @@ public class Health : MonoBehaviour
     /// </summary>
     public virtual void InstantKill()
     {
+        if (immortal) return;
+
         currentHealth = 0;
 
         CallOnDeathEvent();
@@ -130,6 +133,8 @@ public class Health : MonoBehaviour
     /// <param name="setCurrentHealth">Set the current health too.</param>
     public void SetMaxHealth(float value, bool setCurrentHealth = true)
     {
+        if (immortal) return;
+
         maxHealth = value;
 
         if (setCurrentHealth)

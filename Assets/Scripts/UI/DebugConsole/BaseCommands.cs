@@ -34,6 +34,8 @@ public class BaseCommands
 
     public static Command refreshUpgradeMenu;
     public static Command<bool> errorsOnly;
+    public static Command<bool> godMode;
+    public static Command<bool> hideHud;
 
     public BaseCommands(DebugConsole console)
     {
@@ -396,10 +398,32 @@ public class BaseCommands
             UpgradeMenuManager.Instance.UpdateStatUI();
         });
 
-        errorsOnly = new Command<bool>("errorsOnly", "Only log errors in console", "errorsOnly <bool>", (b) =>
+        errorsOnly = new Command<bool>("errorsonly", "Only log errors in console", "errorsOnly <bool>", (b) =>
         {
             console.ChangeWatchMessage(b);
         });
+
+        godMode = new Command<bool>("god", "Make the player immortal.", "god <bool>", (b) =>
+        {
+            if (PlayerRefFetcher.Instance == null)
+            {
+                throw new NullReferenceException($"Cannot find the {nameof(PlayerRefFetcher)}!");
+            }
+
+            PlayerRefFetcher.Instance.GetComponent<Health>().immortal = b;
+        });
+
+        hideHud = new Command<bool>("hidehud", "sets the visibility state of the hud.", "hidehud <bool>", (b) =>
+         {
+             if (PlayerHUDRefGetter.Instance == null)
+             {
+                 throw new NullReferenceException($"Cannot find the {nameof(PlayerHUDRefGetter)}!");
+             }
+
+             PlayerHUDRefGetter.Instance.GetRef().SetActive(!b);
+         });
+
+
 
         List<object> commandsToAdd = new List<object>()
         {
@@ -422,6 +446,7 @@ public class BaseCommands
             giveUpgradeCard,
             refreshUpgradeMenu,
             errorsOnly,
+            godMode,
         };
 
         foreach (var command in commandsToAdd)

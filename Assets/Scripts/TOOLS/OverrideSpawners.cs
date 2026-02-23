@@ -6,6 +6,8 @@ public class OverrideSpawners : SequenceBase
 {
     public override event Action OnThisSequenceEnd;
 
+    public UpgradeCardManager upgradeCardManager;
+
     public override float GetProgress()
     {
         return 0;
@@ -18,9 +20,15 @@ public class OverrideSpawners : SequenceBase
 
     IEnumerator BeginOverride()
     {
-        EnemyGroupSpawner[] enemySpawners = Transform.FindObjectsByType<EnemyGroupSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        EnemyGroupSpawner[] enemySpawners = FindObjectsByType<EnemyGroupSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
-        RandomizeEnvironmentPiece[] propSpawners = Transform.FindObjectsByType<RandomizeEnvironmentPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        RandomizeEnvironmentPiece[] propSpawners = FindObjectsByType<RandomizeEnvironmentPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+        UpgradeCardSpawner[] cardSpawners = FindObjectsByType<UpgradeCardSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+        upgradeCardManager.ActivateAndArm();
+
+
 
         foreach (EnemyGroupSpawner enemySpawner in enemySpawners)
         {
@@ -34,6 +42,14 @@ public class OverrideSpawners : SequenceBase
             yield return null;
         }
 
+        foreach (UpgradeCardSpawner cardSpawner in cardSpawners)
+        {
+            cardSpawner.SpawnCard();
+            yield return null;
+        }
+
         OnThisSequenceEnd?.Invoke();
+
+        print("Done with calling spawn entities.");
     }
 }
