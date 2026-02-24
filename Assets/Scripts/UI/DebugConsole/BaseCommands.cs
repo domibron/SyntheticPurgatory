@@ -447,6 +447,7 @@ public class BaseCommands
             refreshUpgradeMenu,
             errorsOnly,
             godMode,
+            hideHud,
         };
 
         foreach (var command in commandsToAdd)
