@@ -60,7 +60,12 @@ public class DiscordManager : MonoBehaviour
             Timestamps = new Discord.ActivityTimestamps
             {
                 Start = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds()
-            }
+            },
+
+            Assets = new Discord.ActivityAssets
+            {
+                LargeImage = "sp_icon"
+            },
         };
 
         activityManager.UpdateActivity(activity, (res) =>
