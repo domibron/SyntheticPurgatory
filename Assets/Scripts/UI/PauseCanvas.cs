@@ -87,6 +87,8 @@ public class PauseCanvas : MonoBehaviour
         {
             playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
         }
+
+        ResumeGame(); // closes the pause menu so the player can play the game.
     }
 
     private void Update()
