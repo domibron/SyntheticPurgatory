@@ -1,75 +1,71 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+// Hello there o/
+// Names here should be self explanatory.
 
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-
-
+/// <summary>
+/// Tags, Layers and anything that is reused in passing in functions.
+/// </summary>
 public class Constants
 {
-    #region Enemy stuff
-    /// <summary>
-    /// The tag for enemies.
-    /// </summary>
-    public const string EnemyTag = "Enemy";
+    // ****************************************
+    // *                ENEMY                 *
+    // ****************************************
 
-    /// <summary>
-    /// The name of the enemy layer.
-    /// </summary>
-    public const string EnemyLayer = "Enemy";
-
+    //                   TAGS
     public const string BossTag = "Boss";
 
-    #endregion
+    public const string EnemyTag = "Enemy";
 
-    #region  Player stuff
+    //                  LAYERS
+    public const string EnemyLayer = "Enemy";
 
-    /// <summary>
-    /// The tag for the player.
-    /// </summary>
+
+    // ****************************************
+    // *                PLAYER                *
+    // ****************************************
+
+    //                   TAGS
     public const string PlayerTag = "Player";
 
-    /// <summary>
-    /// The name of the player layer.
-    /// </summary>
+    //                  LAYERS
     public const string PlayerLayer = "Player";
 
 
-    #endregion
+    // ****************************************
+    // *                SCRAP                 *
+    // ****************************************
+
+    //                   TAGS
+    public const string DepoScrapTag = "DepoScrap";
 
     public const string ScrapTag = "Scrap";
 
-    public const string ScrapLayer = "Scrap";
-
-    public const string DepoScrapTag = "DepoScrap";
-
+    //                  LAYERS
     public const string DepoSrapLayer = "DepoScrap";
 
-    /// <summary>
-    /// The name of the item layer.
-    /// </summary>
-    // public const string ItemLayer = "Item";
-
-    public const string DefaultLayer = "Default";
-
-    // public const string CheckpointTag = "Checkpoint";
+    public const string ScrapLayer = "Scrap";
 
 
+    // ****************************************
+    // *             CULLING / LOD            *
+    // ****************************************
+    // These tags are in relation to the culling and LOD systems in Synthetic Purgatory.
 
-    // public const string DecorationTag = "Decor";
-
-    public const string CollapsibleFloorTag = "CollapsibleFloor";
-
-    public const string NavLineTag = "NavLine";
-
+    //                   TAGS
     public const string HighDetailTag = "HighDetail";
     public const string MediumDetailTag = "MediumDetail";
     public const string LowDetailTag = "LowDetail";
+
+    // ****************************************
+    // *                MISC                  *
+    // ****************************************
+
+    //                   TAGS
+    public const string CollapsibleFloorTag = "CollapsibleFloor";
+
+    public const string CollectableItemTag = "CollectableItem";
+
+    public const string NavLineTag = "NavLine";
+
+    //                  LAYERS
+    public const string DefaultLayer = "Default";
 }

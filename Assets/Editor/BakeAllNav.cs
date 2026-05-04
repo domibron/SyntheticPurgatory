@@ -1,11 +1,10 @@
 using Unity.AI.Navigation;
-using Unity.VisualScripting;
 using UnityEngine;
 
 # if UNITY_EDITOR
 using UnityEditor;
 [CustomEditor(typeof(BakeAllNav))]
-public class BakeAllNavGUI : UnityEditor.Editor
+public class BakeAllNavGUI : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -16,7 +15,7 @@ public class BakeAllNavGUI : UnityEditor.Editor
 
         if (GUILayout.Button("BakeAll"))
         {
-            NavMeshSurface[] navmeshes = target.GetComponents<NavMeshSurface>();
+            NavMeshSurface[] navmeshes = (target as GameObject).GetComponents<NavMeshSurface>();
 
             foreach (var nav in navmeshes)
             {
@@ -25,20 +24,10 @@ public class BakeAllNavGUI : UnityEditor.Editor
         }
     }
 }
+
 #endif
 public class BakeAllNav : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void BakeAll()
     {

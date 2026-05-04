@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 // By Vince Pressey
-
+// * Drops scrap when hit.
 public class HitScrapDropper : MonoBehaviour
 {
     ScrapDropper dropper;

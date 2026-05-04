@@ -8,7 +8,7 @@ public class CardCollectable : CollectableBase
     {
         if (!CanPlayerCollect()) return;
 
-        if (Vector3.Distance(transform.position, playerTransform.position) > collectItemRange) return;
+        if (Vector3.Distance(transform.position, targetTransform.position) > collectItemRange) return;
 
         UpgradeCardManager.Instance.CollectUpgradeCard(cardTeir);
         Destroy(gameObject);

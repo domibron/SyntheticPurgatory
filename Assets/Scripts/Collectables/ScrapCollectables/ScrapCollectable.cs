@@ -27,12 +27,15 @@ public class ScrapCollectable : CollectableBase
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     protected override void CollectItem()
     {
         // 
         if (!CanPlayerCollect()) return;
 
-        if (Vector3.Distance(transform.position, playerTransform.position) > collectItemRange) return;
+        if (Vector3.Distance(transform.position, targetTransform.position) > collectItemRange) return;
 
         // we drop any scrap we cannot fit into the inventory.
         int remaining = ScrapManager.Instance.CollectScrap(scrapWorth);
