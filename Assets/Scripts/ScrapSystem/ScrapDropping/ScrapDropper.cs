@@ -2,6 +2,9 @@ using UnityEngine;
 
 // By Vince Pressey
 
+
+// * Spawns scrap on function call.
+
 public class ScrapDropper : MonoBehaviour
 {
     ScrapManager scrapM;
@@ -30,7 +33,7 @@ public class ScrapDropper : MonoBehaviour
 
         while (scrapTotal > 0) // Keep spawning until total value is exhausted
         {
-            if (ScrapManager.Instance == null) { scrapTotal = 0;  return; }
+            if (ScrapManager.Instance == null) { scrapTotal = 0; return; }
             ScrapItemData nextScrap = ScrapManager.GetPrefabWithHighestWorth(scrapTotal, ScrapManager.Instance.ScrapPrefabsWithWorth);
 
             if (nextScrap.ScrapWorth * 2 >= scrapTotal && !skippedHighest && nextScrap.ScrapWorth != 1) // Check if can't spawn two of highest value, skips this if only one scrap is left
