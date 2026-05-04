@@ -39,8 +39,8 @@ public class InventoryUIPopupHooks : MonoBehaviour
         scrapManager.OnInventoryFull += OnInventoryFull;
 
 
-        UpgradeCardManager.Instance.OnUpgradeCardCollected += OnUpgradeCardCollected;
-        UpgradeCardManager.Instance.OnUpgradeCardDeposited += OnUpgradeCardDeposited;
+        ModuleManager.Instance.OnModuleCollected += OnModuleCollected;
+        ModuleManager.Instance.OnModuleDeposited += OnModuleDeposited;
 
         GameManager.Instance.OnLowTime += OnLowTime;
         GameManager.Instance.OnWarnTime += OnWarnTime;
@@ -75,12 +75,12 @@ public class InventoryUIPopupHooks : MonoBehaviour
         toolTipManager.DisplayTooltip($"<color=yellow>{(time / 60).ToString() + ":" + ((time % 60f) < 10 ? "0" : "") + (time % 60f).ToString("F0")} left!</color>", duration, 10);
     }
 
-    private void OnUpgradeCardDeposited(CardTier tier, int arg2)
+    private void OnModuleDeposited(ModuleTier tier, int arg2)
     {
         throw new NotImplementedException();
     }
 
-    private void OnUpgradeCardCollected(CardTier tier, int arg2)
+    private void OnModuleCollected(ModuleTier tier, int arg2)
     {
         throw new NotImplementedException();
     }

@@ -84,21 +84,21 @@ public class OpenCardMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        commonCounter.text = gameManager.GetCardCount(CardTier.Common).ToString("N0");
-        rareCounter.text = gameManager.GetCardCount(CardTier.Rare).ToString("N0");
-        epicCounter.text = gameManager.GetCardCount(CardTier.Epic).ToString("N0");
+        commonCounter.text = gameManager.GetCardCount(ModuleTier.Common).ToString("N0");
+        rareCounter.text = gameManager.GetCardCount(ModuleTier.Rare).ToString("N0");
+        epicCounter.text = gameManager.GetCardCount(ModuleTier.Epic).ToString("N0");
 
-        commonCost.text = gameManager.GetCardCost(CardTier.Common).ToString("N0") + "sc";
-        rareCost.text = gameManager.GetCardCost(CardTier.Rare).ToString("N0") + "sc";
-        epicCost.text = gameManager.GetCardCost(CardTier.Epic).ToString("N0") + "sc";
+        commonCost.text = gameManager.GetCardCost(ModuleTier.Common).ToString("N0") + "sc";
+        rareCost.text = gameManager.GetCardCost(ModuleTier.Rare).ToString("N0") + "sc";
+        epicCost.text = gameManager.GetCardCost(ModuleTier.Epic).ToString("N0") + "sc";
 
-        if (gameManager.GetCardCount(CardTier.Common) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(CardTier.Common)) commonButton.interactable = false;
+        if (gameManager.GetCardCount(ModuleTier.Common) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(ModuleTier.Common)) commonButton.interactable = false;
         else commonButton.interactable = true;
 
-        if (gameManager.GetCardCount(CardTier.Rare) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(CardTier.Rare)) rareButton.interactable = false;
+        if (gameManager.GetCardCount(ModuleTier.Rare) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(ModuleTier.Rare)) rareButton.interactable = false;
         else rareButton.interactable = true;
 
-        if (gameManager.GetCardCount(CardTier.Epic) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(CardTier.Epic)) epicButton.interactable = false;
+        if (gameManager.GetCardCount(ModuleTier.Epic) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(ModuleTier.Epic)) epicButton.interactable = false;
         else epicButton.interactable = true;
 
         if (commonButton.interactable || rareButton.interactable || epicButton.interactable) showPlayerCanUnlockCard.SetActive(true);
@@ -111,7 +111,7 @@ public class OpenCardMenu : MonoBehaviour
 
         OpenAndDisplayNewChip(ChipManager.ChipType.Common);
 
-        gameManager.UnlockCard(CardTier.Common);
+        gameManager.UnlockCard(ModuleTier.Common);
     }
 
     public void OpenRare()
@@ -120,7 +120,7 @@ public class OpenCardMenu : MonoBehaviour
 
         OpenAndDisplayNewChip(ChipManager.ChipType.Rare);
 
-        gameManager.UnlockCard(CardTier.Rare);
+        gameManager.UnlockCard(ModuleTier.Rare);
     }
 
     public void OpenEpic()
@@ -130,7 +130,7 @@ public class OpenCardMenu : MonoBehaviour
 
         OpenAndDisplayNewChip(ChipManager.ChipType.Epic);
 
-        gameManager.UnlockCard(CardTier.Epic);
+        gameManager.UnlockCard(ModuleTier.Epic);
     }
 
     private void OpenAndDisplayNewChip(ChipManager.ChipType chipType)
