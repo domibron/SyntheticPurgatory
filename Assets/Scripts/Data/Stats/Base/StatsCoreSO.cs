@@ -20,7 +20,7 @@ public class UpgradablePlayerStat : ICloneable
     /// <summary>
     /// Enables a max for the stat.
     /// </summary>
-    public bool IsThereAMax = false;
+    public bool StatHasMax = false;
 
     /// <summary>
     /// The max value the stat can be. If decreasing, this is the minimum.
@@ -109,10 +109,14 @@ public class UpgradablePlayerStat : ICloneable
     [ReadOnly]
     public float ChipIncreaseAmount;
 
+
     // ****************************************
     // *            CONSTRUCTORS              *
     // ****************************************
 
+    /// <summary>
+    /// Sets the current values to the base amount when created.
+    /// </summary>
     public UpgradablePlayerStat()
     {
         CurrentValue = BaseStat;
@@ -120,6 +124,10 @@ public class UpgradablePlayerStat : ICloneable
         CurrentUpgradeAmount = IncreaseAmount;
     }
 
+    /// <summary>
+    /// Creates a stat with a base value, useful for setting the starting value if something like the stats manager fails.
+    /// </summary>
+    /// <param name="baseVal">The base value to set.</param>
     public UpgradablePlayerStat(float baseVal) // If needed we can have a custom constructor for cloning.
     {
         BaseStat = baseVal;
@@ -129,11 +137,15 @@ public class UpgradablePlayerStat : ICloneable
         CurrentUpgradeAmount = IncreaseAmount;
     }
 
+
     // ****************************************
     // *            MODIFICATION              *
     // ****************************************
 
-
+    /// <summary>
+    /// Sets the stats to the base amount and removes all upgrades.
+    /// <br />This does not reset the chip modifiers.
+    /// </summary>
     public void ResetStat()
     {
         UpgradedAmount = 0;
@@ -142,9 +154,14 @@ public class UpgradablePlayerStat : ICloneable
         CurrentUpgradeAmount = IncreaseAmount;
     }
 
+    /// <summary>
+    /// Upgrades the stat by the given amount or 1 if left empty.
+    /// </summary>
+    /// <param name="amount">The amount of times to upgrade this stat.</param>
+    /// <returns>The remaining amount of upgrades when reaching the max.</returns>
     public int UpgradeStat(int amount = 1)
     {
-        int count = GetHowManyTimesToUpgradeBeforeMaxing(amount);
+        int count = GetMaxUpgradeCountPossible(amount);
 
         // Checks to see if there is no max. If so, the count is set to the amount.
         if (count == -1) count = amount; // we can just apply it directly. 
@@ -166,24 +183,37 @@ public class UpgradablePlayerStat : ICloneable
         else return amount - count;
     }
 
+    /// <summary>
+    /// Sets the chip modifier amount. If left empty, this will set the chip modifier to 0 basically resetting it.
+    /// </summary>
+    /// <param name="amount">The value to set the chip modifier.</param>
     public void SetChipIncreaseAmount(float amount = 0)
     {
         ChipIncreaseAmount = amount;
     }
 
+    /// <summary>
+    /// Adds the the chip modifier.
+    /// </summary>
+    /// <param name="amount">The amount to add to the chip modifier.</param>
     public void AddToChipIncreaseAmount(float amount)
     {
         ChipIncreaseAmount += amount;
     }
 
     // ****************************************
-    // *              GET INFO                *
+    // *              GET DATA                *
     // ****************************************
 
     // TODO: any checks with this needs to be reworked so it upgrades can touch the max rather than be near it.
+    /// <summary>
+    /// Does this value exceed the max value. Works for both increasing and decreasing stats.
+    /// </summary>
+    /// <param name="val">The value to compare.</param>
+    /// <returns>True if this value exceeds the max. Will return False if the is no max.</returns>
     public bool IsExceedingMax(float val)
     {
-        if (!IsThereAMax) return false;
+        if (!StatHasMax) return false;
 
         if (IsIncreasingStat)
         {
@@ -197,9 +227,14 @@ public class UpgradablePlayerStat : ICloneable
         }
     }
 
-    public int GetHowManyTimesToUpgradeBeforeMaxing(int amount = 1)
+    /// <summary>
+    /// Get the amount you can upgrade the stat before it reaches the max value.
+    /// </summary>
+    /// <param name="amount">The amount you want to upgrade by.</param>
+    /// <returns>The amount you can upgrade before reaching the max.</returns>
+    public int GetMaxUpgradeCountPossible(int amount = 1)
     {
-        if (!IsThereAMax) return -1;
+        if (!StatHasMax) return -1;
 
         if (IsExceedingMax(CurrentValue)) return 0; // 
 
@@ -225,7 +260,7 @@ public class UpgradablePlayerStat : ICloneable
     /// <summary>
     /// Get the values for upgrading the stat a set amount.
     /// </summary>
-    /// <param name="amount"></param>
+    /// <param name="amount">The amount to upgrade by.</param>
     /// <returns>New current amount, new increase amount.</returns>
     public (float, float) GetUpgradeAmounts(int amount = 1)
     {
@@ -241,6 +276,12 @@ public class UpgradablePlayerStat : ICloneable
         return (curAmount, tempIncrease);
     }
 
+    /// <summary>
+    /// Gets the cost of the upgrade with the given amount.
+    /// </summary>
+    /// <param name="amount">The amount to upgrade by.</param>
+    /// <param name="additionalOne">Add an additional one upgrade.</param>
+    /// <returns>The cost to reach the upgrade amount.</returns>
     public int UpgradeCost(int amount = 1, bool additionalOne = false)
     {
         int cost = CurrentCost;
@@ -259,6 +300,11 @@ public class UpgradablePlayerStat : ICloneable
         return cost;
     }
 
+    /// <summary>
+    /// Get the cost value after the upgrade amount.
+    /// </summary>
+    /// <param name="amount">The amount to upgrade by.</param>
+    /// <returns>The cost after the upgrade amount.</returns>
     public int IncreaseUpgradeCost(int amount = 1)
     {
         int cost = CurrentCost;
@@ -271,32 +317,46 @@ public class UpgradablePlayerStat : ICloneable
         return cost;
     }
 
-    public string GetTextWithPreAndSuf(string text)
-    {
-        return Prefix + text + Suffix;
-    }
 
+    //TODO: replace as ToString.
+    /// <summary>
+    /// Gets the stat value as a display text.
+    /// </summary>
+    /// <returns>The display text.</returns>
     public string GetValueWithPreAndSuf()
     {
         return Prefix + GetCurrentValue().ToString(StringModifiers) + Suffix;
     }
 
+    /// <summary>
+    /// Get the name of the stat.
+    /// </summary>
+    /// <returns></returns>
     public string GetName()
     {
         return StatName;
     }
 
+    /// <summary>
+    /// Get the stat's description.
+    /// </summary>
+    /// <returns></returns>
     public string GetDescription()
     {
         return StatDescription;
     }
 
 
-
+    /// <summary>
+    /// Get the current value with chip modifiers. Both are combined and compared against the max.
+    /// </summary>
+    /// <returns>The final stat value.</returns>
     public float GetCurrentValue()
     {
         // returns the max if current exceeds the max or the current value.
         return GetValueOrMax(CurrentValue + ChipIncreaseAmount);
+
+        // This does look like it's old since the chip should be the correct value but additional checks would not hurt.
 
         // Obsolete code.
         // * im not sure about this #/#/# (weeks ago) - old 2/2/26
@@ -306,10 +366,16 @@ public class UpgradablePlayerStat : ICloneable
         //     return CurrentValue - ChipIncreaseAmount;
     }
 
+    /// <summary>
+    /// Returns the max value if the value exceeds the max otherwise it returns the value.
+    /// </summary>
+    /// <param name="value">The value to compare against the max.</param>
+    /// <returns>The value clamped blow / above the max.</returns>
     public float GetValueOrMax(float value)
     {
-        if (!IsThereAMax) return value; // this is handled inside the isExceedingMax check, doubled just in case of future changes.
+        if (!StatHasMax) return value; // this is handled inside the isExceedingMax check, doubled just in case of future changes.
         // performance at this level does not matter.
+        // huh? you know what needs more performance, the level rendering.
 
         if (IsExceedingMax(value))
         {
@@ -319,17 +385,21 @@ public class UpgradablePlayerStat : ICloneable
         return value;
     }
 
+
     // ****************************************
     // *               CLONING                *
     // ****************************************
 
-
+    /// <summary>
+    /// Returns a copy of this stat with all the values.
+    /// </summary>
+    /// <returns>The stats as a copy.</returns>
     public object Clone()
     {
         var clone = new UpgradablePlayerStat
         {
             BaseStat = BaseStat,
-            IsThereAMax = IsThereAMax,
+            StatHasMax = StatHasMax,
             MaxStat = MaxStat,
             IncreaseAmount = IncreaseAmount,
             IncreasePerLevel = IncreasePerLevel,
@@ -355,6 +425,9 @@ public class UpgradablePlayerStat : ICloneable
     }
 }
 
+/// <summary>
+/// The base stats for anything stat related.
+/// </summary>
 public class CoreStats : ICloneable
 {
     protected virtual UpgradablePlayerStat[] GetAllUpgradableStats()

@@ -157,7 +157,7 @@ public class UpgradeMenuManager : MonoBehaviour
 
     private int UpgradeOnce(ref UpgradablePlayerStat upgradingStat)
     {
-        if (upgradingStat.GetHowManyTimesToUpgradeBeforeMaxing() == 0) return 0;
+        if (upgradingStat.GetMaxUpgradeCountPossible() == 0) return 0;
 
         int cost = upgradingStat.UpgradeCost();
         upgradingStat.UpgradeStat();
