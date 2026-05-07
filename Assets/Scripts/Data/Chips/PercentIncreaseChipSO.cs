@@ -26,7 +26,7 @@ public class PercentIncreaseChipSO : ChipSO
     /// Increases the stat if the stat is increase otherwise it will decrease the stat.
     /// </summary>
     /// <param name="pStat">A reference to he stat to modify.</param>
-    protected virtual void IncreaseStat(ref UpgradablePlayerStat pStat)
+    protected virtual void IncreaseStat(ref UpgradableStat pStat)
     {
         if (pStat.IsIncreasingStat)
         {

@@ -85,8 +85,8 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     float hoverTime = 0;
 
     // these are most likely stored references and not copies!
-    UpgradablePlayerStat currentStat;
-    UpgradablePlayerStat upgradedButNotAppliedStat;
+    UpgradableStat currentStat;
+    UpgradableStat upgradedButNotAppliedStat;
 
 
 

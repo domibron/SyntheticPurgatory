@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Controls the main depot animation.
+/// </summary>
 public class DepotGrateController : MonoBehaviour
 {
     [SerializeField]

@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public class MiscellaneousStats : CoreStats, ICloneable
 {
-    public UpgradablePlayerStat MaxCollectionRangeStat = new(1.5f);
+    public UpgradableStat MaxCollectionRangeStat = new(1.5f);
     public float CollectItemIntoInventoryRange = 1f;
 
     public float FlyAccel = 15f;
@@ -13,17 +13,17 @@ public class MiscellaneousStats : CoreStats, ICloneable
 
     public float DepositRate = 0.5f;
 
-    public UpgradablePlayerStat MaxInventoryScrapStat = new(100);
+    public UpgradableStat MaxInventoryScrapStat = new(100);
 
     public int ScrapRangeUpgradeAmount = 0;
 
-    public UpgradablePlayerStat MaxLevelTimeStat = new(120f);
+    public UpgradableStat MaxLevelTimeStat = new(120f);
 
-    public UpgradablePlayerStat CriticalHitChanceStat = new(0.1f);
+    public UpgradableStat CriticalHitChanceStat = new(0.1f);
 
-    protected override UpgradablePlayerStat[] GetAllUpgradableStats()
+    protected override UpgradableStat[] GetAllUpgradableStats()
     {
-        UpgradablePlayerStat[] upgradablePlayerStats =
+        UpgradableStat[] upgradablePlayerStats =
         {
             MaxCollectionRangeStat,
             MaxInventoryScrapStat,
@@ -38,7 +38,7 @@ public class MiscellaneousStats : CoreStats, ICloneable
     {
         return new MiscellaneousStats
         {
-            MaxCollectionRangeStat = (UpgradablePlayerStat)MaxCollectionRangeStat.Clone(),
+            MaxCollectionRangeStat = (UpgradableStat)MaxCollectionRangeStat.Clone(),
             CollectItemIntoInventoryRange = CollectItemIntoInventoryRange,
 
             FlyAccel = FlyAccel,
@@ -47,13 +47,13 @@ public class MiscellaneousStats : CoreStats, ICloneable
 
             DepositRate = DepositRate,
 
-            MaxInventoryScrapStat = (UpgradablePlayerStat)MaxInventoryScrapStat.Clone(),
+            MaxInventoryScrapStat = (UpgradableStat)MaxInventoryScrapStat.Clone(),
 
             ScrapRangeUpgradeAmount = ScrapRangeUpgradeAmount,
 
-            MaxLevelTimeStat = (UpgradablePlayerStat)MaxLevelTimeStat.Clone(),
+            MaxLevelTimeStat = (UpgradableStat)MaxLevelTimeStat.Clone(),
 
-            CriticalHitChanceStat = (UpgradablePlayerStat)CriticalHitChanceStat.Clone(),
+            CriticalHitChanceStat = (UpgradableStat)CriticalHitChanceStat.Clone(),
         };
     }
 
@@ -63,7 +63,7 @@ public class MiscellaneousStats : CoreStats, ICloneable
 public class MiscellaneousStatsSO : StatsCoreSO
 {
     // Please make sure the variables that you want to access are not able to be modified.
-    // Example below shows you one way to achive this.
+    // Example below shows you one way to achieve this.
 
     [SerializeField]
     private MiscellaneousStats stats;

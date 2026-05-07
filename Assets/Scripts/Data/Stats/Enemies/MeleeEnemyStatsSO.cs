@@ -4,11 +4,11 @@ using UnityEngine;
 // TODO: Use a base class ideally but eh, screw it.
 
 [Serializable]
-public class MeleeEnemyStats : ICloneable
+public class MeleeEnemyStats : CoreStats, ICloneable
 {
     public float health = 0f;
 
-    public object Clone()
+    public override object Clone()
     {
         return new MeleeEnemyStats
         {
@@ -24,7 +24,7 @@ public class MeleeEnemyStats : ICloneable
 public class MeleeEnemyStatsSO : StatsCoreSO
 {
     // Please make sure the variables that you want to access are not able to be modified.
-    // Example below shows you one way to achive this.
+    // Example below shows you one way to achieve this.
 
     [SerializeField]
     private MeleeEnemyStats stats;
