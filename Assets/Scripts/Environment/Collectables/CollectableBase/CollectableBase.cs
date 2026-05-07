@@ -114,8 +114,8 @@ public class CollectableBase : MonoBehaviour
 
 
     /// <summary>
-    /// Sets the player transform if this item can see the player.
-    /// <br /><b>NOTE:</b><i> Override this to change checks but make sure to set playerTransform.</i>
+    /// Sets the target transform if this item can see the target. (Default target is the player)
+    /// <br /><b>NOTE:</b><i> Override this to change checks but make sure to set targetTransform.</i>
     /// </summary>
     protected virtual void CheckForTarget()
     {
@@ -139,12 +139,12 @@ public class CollectableBase : MonoBehaviour
     }
 
     /// <summary>
-    /// Moves the item towards the player.
+    /// Moves the item towards the target.
     /// <br /><b>NOTE:</b><i> Only override if you are changing the move towards behavior.</i>
     /// </summary>
     protected virtual void MoveTowardsTarget()
     {
-        if (!CanPlayerCollect())
+        if (!CanTargetCollect())
         {
             rb.useGravity = true;
             return;
@@ -174,11 +174,11 @@ public class CollectableBase : MonoBehaviour
     protected virtual void CollectItem() { }
 
     /// <summary>
-    /// Checks if the player can collect this item.
+    /// Checks if the target can collect this item.
     /// <br /><b>NOTE:</b><i> You can override this function to run your own collection check logic.</i>
     /// </summary>
-    /// <returns>Whether the player are able to collect the item.</returns>
-    protected virtual bool CanPlayerCollect()
+    /// <returns>Whether the target are able to collect the item.</returns>
+    protected virtual bool CanTargetCollect()
     {
         if (targetTransform == null)
             return false;

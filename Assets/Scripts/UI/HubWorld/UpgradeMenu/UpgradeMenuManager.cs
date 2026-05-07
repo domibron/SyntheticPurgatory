@@ -119,7 +119,7 @@ public class UpgradeMenuManager : MonoBehaviour
         }
     }
 
-    public (UpgradablePlayerStat, UpgradablePlayerStat) GetCurrentStat(StatType statType)
+    public (UpgradableStat, UpgradableStat) GetCurrentStat(StatType statType)
     {
         return (ConvertEnumToStat(statType, ref currentPStats, ref currentMiscStats), ConvertEnumToStat(statType, ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats));
 
@@ -142,7 +142,7 @@ public class UpgradeMenuManager : MonoBehaviour
         UpdateStatUI();
     }
 
-    private int RemoveUpgradeOnce(ref UpgradablePlayerStat currentStat, ref UpgradablePlayerStat upgradingStat)
+    private int RemoveUpgradeOnce(ref UpgradableStat currentStat, ref UpgradableStat upgradingStat)
     {
         int diff = upgradingStat.UpgradedAmount - currentStat.UpgradedAmount;
         if (diff - 1 < 0) return 0;
@@ -155,7 +155,7 @@ public class UpgradeMenuManager : MonoBehaviour
         return costRemoval;
     }
 
-    private int UpgradeOnce(ref UpgradablePlayerStat upgradingStat)
+    private int UpgradeOnce(ref UpgradableStat upgradingStat)
     {
         if (upgradingStat.GetMaxUpgradeCountPossible() == 0) return 0;
 
@@ -166,7 +166,7 @@ public class UpgradeMenuManager : MonoBehaviour
     }
 
     // we can just modify the memory directly, no need to copy into a temp variable.
-    private void ReduceStatByOne(ref UpgradablePlayerStat stat)
+    private void ReduceStatByOne(ref UpgradableStat stat)
     {
         int currentAmount = stat.UpgradedAmount;
 
@@ -204,7 +204,7 @@ public class UpgradeMenuManager : MonoBehaviour
         return gameManager.GetCurrentScrapCount() - currentCost;
     }
 
-    public int GetRemainingFromCost(ref UpgradablePlayerStat stat, int amount = 1)
+    public int GetRemainingFromCost(ref UpgradableStat stat, int amount = 1)
     {
         return GetRemainingScrap() + stat.UpgradeCost(amount);
     }
@@ -283,7 +283,7 @@ public class UpgradeMenuManager : MonoBehaviour
         menuManager.OpenMenu(mainMenuKey);
     }
 
-    public static ref UpgradablePlayerStat ConvertEnumToStat(StatType statType, ref PlayerStats pStats, ref MiscellaneousStats mStats)
+    public static ref UpgradableStat ConvertEnumToStat(StatType statType, ref PlayerStats pStats, ref MiscellaneousStats mStats)
     {
         switch (statType)
         {

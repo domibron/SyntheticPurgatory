@@ -3,20 +3,6 @@ using System.Collections;
 using UnityEngine;
 
 
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-// ▄▄▄▄    ▄▄▄▄         ▄▄   ▄  ▄▄▄▄ ▄▄▄▄▄▄▄        ▄    ▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄▄▄  ▄▄▄▄▄▄▄     ▄
-// █   ▀▄ ▄▀  ▀▄        █▀▄  █ ▄▀  ▀▄   █           ██  ██ ▄▀  ▀▄ █   ▀▄   █    █      ▀▄ ▄▀ 
-// █    █ █    █        █ █▄ █ █    █   █           █ ██ █ █    █ █    █   █    █▄▄▄▄▄  ▀█▀  
-// █    █ █    █        █  █ █ █    █   █           █ ▀▀ █ █    █ █    █   █    █        █   
-// █▄▄▄▀   █▄▄█         █   ██  █▄▄█    █           █    █  █▄▄█  █▄▄▄▀  ▄▄█▄▄  █        █   
-
 
 /// <summary>
 /// The health class to give objects health.
@@ -45,15 +31,10 @@ public class Health : MonoBehaviour
     /// </summary>
     public event Action onDeath;
 
-    // /// <summary>
-    // /// Called when taking damage, provided float is how much damage to take (its positive).
-    // /// </summary>
-    // public event Action<float> onTakeDamage;
-
     /// <summary>
     /// Called when adding to the health, the provided float is what to add to the health. new, old.
     /// </summary>
-    public event OnHealthChangedDelegate OnHealthChanged; // * NOTE TO SELF: use a delegate as that allows you to change param names.
+    public event OnHealthChangedDelegate OnHealthChanged;
 
     public delegate void OnHealthChangedDelegate(float newHealthValue, float oldHealthValue);
 
@@ -84,10 +65,9 @@ public class Health : MonoBehaviour
 
         if (currentHealth > maxHealth) currentHealth = maxHealth;
 
-        if (currentHealth <= 0 && !calledOnDeathEvent)
+        if (currentHealth <= 0)
         {
-            calledOnDeathEvent = true; // prevent spamming the event.
-            InvokeOnDeath();
+            CallOnDeathEvent();
         }
     }
 
@@ -98,11 +78,7 @@ public class Health : MonoBehaviour
     {
         currentHealth = 0;
 
-        if (!calledOnDeathEvent)
-        {
-            calledOnDeathEvent = true; // prevent spamming the event.
-            InvokeOnDeath();
-        }
+        CallOnDeathEvent();
     }
 
     /// <summary>
@@ -132,16 +108,14 @@ public class Health : MonoBehaviour
         return maxHealth;
     }
 
-    // ! These functions exist as you cannot call these events when inheriting.
-
-    // /// <summary>
-    // /// Calls the onTakeDamage event.
-    // /// </summary>
-    // /// <param name="amount">The amount of damage to take (positive number).</param>
-    // protected void InvokeOnTakeDamage(float amount)
-    // {
-    //     onTakeDamage?.Invoke(amount);
-    // }
+    protected virtual void CallOnDeathEvent()
+    {
+        if (!calledOnDeathEvent)
+        {
+            calledOnDeathEvent = true; // prevent spamming the event.
+            InvokeOnDeath();
+        }
+    }
 
     public void SetMaxHealth(float value, bool setCurrentHealth = true)
     {

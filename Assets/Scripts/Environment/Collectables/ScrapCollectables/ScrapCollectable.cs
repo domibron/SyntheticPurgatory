@@ -1,47 +1,32 @@
-using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class ScrapCollectable : CollectableBase
 {
-
     [SerializeField]
     int scrapWorth = 1;
 
-    // [SerializeField]
-    // float flyAccel = 5f; // TODO static constant thing.
-
-    // [SerializeField]
-    // float flyMaxSpeed = 15f;
-
-    // [SerializeField]
-    // float flyDistanceBoost = 10f;
-
-    // Update is called once per frame
 
     public void Initialize(int scrapWorth)
     {
         this.scrapWorth = scrapWorth;
-
-
     }
 
     /// <summary>
-    /// 
+    /// Adds as much scrap into the player's inventory.
     /// </summary>
     protected override void CollectItem()
     {
         // 
-        if (!CanPlayerCollect()) return;
+        if (!CanTargetCollect()) return;
 
         if (Vector3.Distance(transform.position, targetTransform.position) > collectItemRange) return;
 
         // we drop any scrap we cannot fit into the inventory.
         int remaining = ScrapManager.Instance.CollectScrap(scrapWorth);
 
-        // spawn the remaning scrap as objects in the world.
-        while (remaining > 0) // fingers cross this doesn't fuck up. It will in the future and cause a stutter, you watch. // Dont feel anything lol.
+        // spawn the remaining scrap as objects in the world.
+        while (remaining > 0) // slight stutter but barely noticeable, could replace with coroutine?
         {
             ScrapItemData prefabToSpawn = ScrapManager.GetPrefabWithHighestWorth(remaining, ScrapManager.Instance.ScrapPrefabsWithWorth);
 
@@ -53,9 +38,13 @@ public class ScrapCollectable : CollectableBase
         Destroy(gameObject);
     }
 
-    protected override bool CanPlayerCollect()
+    /// <summary>
+    /// Does the player have any available inventory space.
+    /// </summary>
+    /// <returns>True if there is some space.</returns>
+    protected override bool CanTargetCollect()
     {
-        if (!base.CanPlayerCollect()) return false;
+        if (!base.CanTargetCollect()) return false;
 
         if (!ScrapManager.Instance.HaveInventorySpace())
         {
