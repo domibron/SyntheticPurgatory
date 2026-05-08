@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// What state the door is overridden to.
+/// </summary>
 public enum DoorOverrideState
 {
     None,
@@ -8,26 +11,26 @@ public enum DoorOverrideState
     Open,
 }
 
+/// <summary>
+/// Allows for a simple open and close door animation to work.
+/// </summary>
 public class Door : MonoBehaviour
 {
+    [SerializeField]
     private bool isDoorOpen = false;
-    private bool desiredDoorState = false;
+    private bool desiredDoorState = false; // This was used to attempt to implement culling.
+    // A better was it to tie into animation events and have the door closed fire a success event here and a open event here to tie into the culling system.
+    // That would be in theory a more better and reliable solution than what ever this was. A key thing that was need was knowing when the door was fully closed.
 
     private DoorOverrideState doorOverrideState = DoorOverrideState.None;
 
     private Animator animator;
 
-    private bool inMotion = false;
+    private bool inMotion = false; // Legacy code?
 
-    [SerializeField]
-    private bool startOpen = false;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         animator = GetComponent<Animator>();
-
-        if (startOpen) OpenDoor();
     }
 
     // Update is called once per frame
@@ -78,6 +81,8 @@ public class Door : MonoBehaviour
 
     public void OpenDoor()
     {
+        // Due to how the coroutine is set up, you can have a edge case where the door needed stat is to close and has a delay of 0.01 
+        // but a open of a delay of 0.2 was called just before. You will will then have a open door, a door that is now in the wrong state.
         StartCoroutine(RandomDoorDelay(true)); // race conditions!
     }
 
@@ -86,18 +91,30 @@ public class Door : MonoBehaviour
         StartCoroutine(RandomDoorDelay(false)); // race conditions!
     }
 
+    /// <summary>
+    /// Sets the door override state to closed forcing the door to be kept close.
+    /// </summary>
     public void OverrideClose()
     {
         doorOverrideState = DoorOverrideState.Closed;
         desiredDoorState = false;
     }
 
+    /// <summary>
+    /// Sets the door override state to open forcing the door to be kept open.
+    /// </summary>
     public void OverrideOpen()
     {
         doorOverrideState = DoorOverrideState.Open;
         desiredDoorState = true;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="doorState"></param>
+    /// <param name="maxPossibleDelay"></param>
+    /// <returns></returns>
     IEnumerator RandomDoorDelay(bool doorState, float maxPossibleDelay = 0.2f)
     {
         desiredDoorState = doorState;
