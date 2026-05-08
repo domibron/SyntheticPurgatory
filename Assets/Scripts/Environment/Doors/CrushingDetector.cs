@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Adds the detected collider to the door crushing list and removes it if the collider leaves.
+/// </summary>
 public class CrushingDetector : MonoBehaviour
 {
     [SerializeField]

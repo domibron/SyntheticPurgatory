@@ -31,6 +31,10 @@ public class Crushing : MonoBehaviour
     }
 
     // If this does not work, then replace collider with health.
+    /// <summary>
+    /// Adds the collider to the list, if it already exists then it will get the health component and call InstantKill().
+    /// </summary>
+    /// <param name="other">The collider to add.</param>
     public void AddCollider(Collider other)
     {
         if (!isActive) return;
@@ -48,6 +52,10 @@ public class Crushing : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Removes the collider from the list if it exists.
+    /// </summary>
+    /// <param name="other">The collider to remove.</param>
     public void RemoveCollider(Collider other)
     {
         if (detectedColliders.Contains(other))
