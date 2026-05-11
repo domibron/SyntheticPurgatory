@@ -43,7 +43,7 @@ public class TankEnemyAI : BaseEnemy
     [SerializeField]
     private Vector3 viewPointOffset;
 
-    private float turnReductionMult = 1;
+    // private float turnReductionMult = 1;
 
     //private float regularTurnSpeed = 60;
 

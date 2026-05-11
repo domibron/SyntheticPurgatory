@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class UIMenuItem
@@ -16,12 +17,13 @@ public class MenuManager : MonoBehaviour
     [SerializeField]
     bool openMenuOnStart = true;
 
-    [SerializeField]
-    string defualtMenu = "";
+    [SerializeField, FormerlySerializedAs("defualtMenu")]
+    string defaultMenu = "";
 
     void Start()
     {
-        OpenMenu(defualtMenu);
+        if (openMenuOnStart)
+            OpenMenu(defaultMenu);
     }
 
 

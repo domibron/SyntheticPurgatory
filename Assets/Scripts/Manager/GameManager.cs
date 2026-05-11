@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
 
     private bool timerHidden = false;
 
-    private bool lowTimeEventCalled = false;
+    // private bool lowTimeEventCalled = false;
     public event Action<float> OnLowTime;
     public event Action<float> OnWarnTime;
 
@@ -159,7 +159,7 @@ public class GameManager : MonoBehaviour
     {
         inDungeon = false;
         timerHidden = false;
-        lowTimeEventCalled = false;
+        // lowTimeEventCalled = false;
     }
 
     public void ReturnToHubWorld(bool playerDied = false)

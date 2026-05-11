@@ -46,7 +46,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     AudioSource uiAudioSource;
 
     float total = 0;
-    bool displayWholeNumbersOnly = false;
+    // bool displayWholeNumbersOnly = false;
 
     float currentStatAmount = 0;
     float upgradedStatAmount = 0;

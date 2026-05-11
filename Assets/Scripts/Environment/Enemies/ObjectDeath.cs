@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ObjectDeath : MonoBehaviour
 {
-    public event Action onDeathEvent;
+    //public event Action onDeathEvent;
 
     /// <summary>
     /// Scrap dropped upon death
@@ -20,7 +20,7 @@ public class ObjectDeath : MonoBehaviour
     /// <summary>
     /// Force applied vertically to scrap object (Y) 
     /// </summary>
-    [SerializeField] 
+    [SerializeField]
     private float upForce = 2f;
 
     [SerializeField]

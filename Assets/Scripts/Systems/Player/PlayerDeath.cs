@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerDeath : MonoBehaviour
 {
-    public event Action onDeathEvent; // TEMPORARY MAKE PRIVATE + SERIALIZE
+    //public event Action onDeathEvent; // TEMPORARY MAKE PRIVATE + SERIALIZE
     /// <summary>
     /// DeathCanvas object to activate upon death
     /// </summary>

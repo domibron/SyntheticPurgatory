@@ -1,19 +1,21 @@
+using System;
 using TMPro;
 using UnityEngine;
 
+[Obsolete("Abandoned code, will remove later.", true)]
 public class TextBoxSizeAdjuster : MonoBehaviour
 {
     // Abandon, found layout element, and found content size fitter should go on elements such as text and not parents.
 
-    [SerializeField]
-    float minWidthSize = 0;
-    [SerializeField]
-    float minHeightSize = 0;
+    // [SerializeField]
+    // float minWidthSize = 0;
+    // [SerializeField]
+    // float minHeightSize = 0;
 
-    [SerializeField]
-    float maxWidthSize = 200;
-    [SerializeField]
-    float maxHeightSize = 100;
+    // [SerializeField]
+    // float maxWidthSize = 200;
+    // [SerializeField]
+    // float maxHeightSize = 100;
 
     [SerializeField]
     TMP_Text textBox;
