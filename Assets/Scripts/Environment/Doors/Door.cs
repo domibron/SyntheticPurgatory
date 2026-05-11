@@ -19,14 +19,14 @@ public class Door : MonoBehaviour
     [SerializeField]
     private bool isDoorOpen = false;
     private bool desiredDoorState = false; // This was used to attempt to implement culling.
-    // A better was it to tie into animation events and have the door closed fire a success event here and a open event here to tie into the culling system.
-    // That would be in theory a more better and reliable solution than what ever this was. A key thing that was need was knowing when the door was fully closed.
+                                           // A better was it to tie into animation events and have the door closed fire a success event here and a open event here to tie into the culling system.
+                                           // That would be in theory a more better and reliable solution than what ever this was. A key thing that was need was knowing when the door was fully closed.
 
     private DoorOverrideState doorOverrideState = DoorOverrideState.None;
 
     private Animator animator;
 
-    private bool inMotion = false; // Legacy code?
+    // private bool inMotion = false; // Legacy code?
 
     void Start()
     {
@@ -47,6 +47,10 @@ public class Door : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Set the override state of the door.
+    /// </summary>
+    /// <param name="overrideState">The desired override state.</param>
     public void SetOverrideState(DoorOverrideState overrideState)
     {
         doorOverrideState = overrideState;
@@ -62,23 +66,36 @@ public class Door : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Removes any override state on the door.
+    /// </summary>
     public void ResetOverrideState()
     {
         doorOverrideState = DoorOverrideState.None;
         desiredDoorState = isDoorOpen;
     }
 
+    /// <summary>
+    /// Set the door state directly.
+    /// </summary>
+    /// <param name="isOpen">Set true to set the door to open.</param>
     public void SetDoorState(bool isOpen)
     {
         isDoorOpen = isOpen;
         desiredDoorState = isOpen;
     }
 
+    /// <summary>
+    /// Toggle the door state.
+    /// </summary>
     public void ToggleDoorState()
     {
         StartCoroutine(RandomDoorDelay(!isDoorOpen));
     }
 
+    /// <summary>
+    /// Set the door state to open.
+    /// </summary>
     public void OpenDoor()
     {
         // Due to how the coroutine is set up, you can have a edge case where the door needed stat is to close and has a delay of 0.01 
@@ -86,6 +103,9 @@ public class Door : MonoBehaviour
         StartCoroutine(RandomDoorDelay(true)); // race conditions!
     }
 
+    /// <summary>
+    /// Set the door state to closed.
+    /// </summary>
     public void CloseDoor()
     {
         StartCoroutine(RandomDoorDelay(false)); // race conditions!
@@ -122,6 +142,10 @@ public class Door : MonoBehaviour
         SetDoorState(doorState);
     }
 
+    /// <summary>
+    /// Returns if the door is open or not.
+    /// </summary>
+    /// <returns>True if the door is open.</returns>
     public bool IsDoorOpen()
     {
         return desiredDoorState;

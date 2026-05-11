@@ -6,7 +6,9 @@ using UnityEngine.AI;
 
 public class BossAI : BaseEnemy
 {
-
+    /// <summary>
+    /// All boss states.
+    /// </summary>
     private enum CurrentState
     {
         OperateButtons,
@@ -18,6 +20,9 @@ public class BossAI : BaseEnemy
         EnterControlRoom,
     }
 
+    /// <summary>
+    /// The current state the boss is in.
+    /// </summary>
     CurrentState currentState = CurrentState.OperateButtons;
 
     private bool isUsingButtonAttack = false;
@@ -29,7 +34,7 @@ public class BossAI : BaseEnemy
     private bool inControlRoom = true; // fuck me
     private bool isLeavingControlRoom = false;
 
-    private int lastAttackIndex = 0;
+    // private int lastAttackIndex = 0;
 
     private Transform player;
 
@@ -37,7 +42,7 @@ public class BossAI : BaseEnemy
     private Transform controlRoom;
 
     [SerializeField]
-    private BossArenaAttackManager arenaAttacks;
+    private BossArenaAttackManager arenaAttackManager;
 
 
     [SerializeField]
@@ -107,7 +112,7 @@ public class BossAI : BaseEnemy
 
     private void OnTakeDamage(float newHealth, float oldHealth)
     {
-
+        // Below moved to update using a alternative method.
         // if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
         // {
         //     lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
@@ -249,6 +254,8 @@ public class BossAI : BaseEnemy
         }
     }
 
+    #region Attacks
+    #endregion
 
     private IEnumerator FireHomingMissile()
     {
@@ -467,7 +474,7 @@ public class BossAI : BaseEnemy
         }
     }
 
-    // Get the fuck out of control room // GET OUT! ~ Tuco Salamanca
+    // GET OUT! ~ Tuco Salamanca
     private void ExitControlRoom()
     {
         if (!isLeavingControlRoom)
@@ -515,7 +522,7 @@ public class BossAI : BaseEnemy
         //     attack.SetUpAttack(this);
         // }
 
-        arenaAttacks.SetUpAttack(this);
+        arenaAttackManager.SetUpAttack(this);
     }
 
     private void PickRandomAttackAndWait()
@@ -542,7 +549,7 @@ public class BossAI : BaseEnemy
 
         // arenaAttacks[attackIndex].StartAttack();
 
-        arenaAttacks.StartAttack();
+        arenaAttackManager.StartAttack();
 
     }
 }

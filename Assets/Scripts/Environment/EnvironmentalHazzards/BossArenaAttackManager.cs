@@ -141,10 +141,6 @@ public class BossArenaAttackManager : BossArenaAttack
         }
     }
 
-    private void AttackFinished()
-    {
-        bossAI.AttackConcluded();
-    }
 
     public override void SetUpAttack(BossAI bossAI)
     {

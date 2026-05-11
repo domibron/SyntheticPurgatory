@@ -72,7 +72,7 @@ public class MeleeEnemyAI : BaseEnemy
     /// </summary>
     private bool isAttacking;
     /// <summary>
-    /// Use alternative attack where they laucnh themselves at target
+    /// Use alternative attack where they launch themselves at target
     /// </summary>
     [SerializeField]
     private bool launchAtTarget;
@@ -321,7 +321,7 @@ public class MeleeEnemyAI : BaseEnemy
             curLaunchCooldown = launchCooldown;
             StartCoroutine(DisableTrail());
         }
-        
+
     }
 
     IEnumerator DisableTrail()

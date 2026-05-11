@@ -11,16 +11,16 @@ public class Crushing : MonoBehaviour
 
     private bool isActive = true;
 
-    private Door door; // TODO: REMOVE.
+    private Door door; // TODO: Move to its own script.
 
     void Start()
     {
-        door = GetComponent<Door>(); // TODO: REMOVE.
+        door = GetComponent<Door>(); // TODO: Move to its own script.
     }
 
     void Update()
     {
-        if (door.IsDoorOpen()) // TODO: REMOVE.
+        if (door.IsDoorOpen()) // TODO: Move to its own script.
         {
             isActive = false;
         }
