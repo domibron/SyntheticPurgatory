@@ -22,6 +22,7 @@ public class DiscordManager : MonoBehaviour
         }
         catch (ResultException ex)
         {
+            print("DISCORD: " + ex.Message);
             return; // fuck off
         }
     }
@@ -84,6 +85,7 @@ public class DiscordManager : MonoBehaviour
         }
         catch (ResultException ex)
         {
+            print("DISCORD: " + ex.Message);
             return; // fuck off
         }
     }

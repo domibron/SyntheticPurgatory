@@ -14,7 +14,7 @@ public class ChipInvHoverSelectDetect : MonoBehaviour, IPointerEnterHandler, IPo
 
     private int id;
 
-    private bool hovered = false; // currently used for debugging.
+    // private bool hovered = false; // currently used for debugging.
 
     ChipBoardMenu chipBoardMenu;
 
@@ -60,7 +60,7 @@ public class ChipInvHoverSelectDetect : MonoBehaviour, IPointerEnterHandler, IPo
     {
         if (!setup) return;
 
-        hovered = true;
+        // hovered = true;
         chipBoardMenu.HoveredInventoryItem(id);
     }
 
@@ -68,7 +68,7 @@ public class ChipInvHoverSelectDetect : MonoBehaviour, IPointerEnterHandler, IPo
     {
         if (!setup) return;
 
-        hovered = false;
+        // hovered = false;
         chipBoardMenu.RemoveHoverInventoryItem(id);
     }
 }

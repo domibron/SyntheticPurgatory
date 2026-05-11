@@ -43,7 +43,6 @@ public class ModuleManager : MonoBehaviour
 
     public void CollectModule(ModuleTier moduleTier)
     {
-
         switch (moduleTier)
         {
             case ModuleTier.Common:
@@ -56,6 +55,11 @@ public class ModuleManager : MonoBehaviour
                 currentT3Modules++;
                 break;
         }
+
+        // TODO: The modules are stored in inventory, then deposited. Please fully implement this future self.
+        OnModuleCollected?.Invoke(moduleTier, 1);
+        OnModuleDeposited?.Invoke(moduleTier, 1);
+
     }
 
     public int GetAllModuleCountOfType(ModuleTier moduleTier)
