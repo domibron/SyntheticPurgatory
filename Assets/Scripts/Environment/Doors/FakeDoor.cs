@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// A door that is a cardboard cutout. Can be used for other cardboard cutouts.
+/// </summary>
 public class FakeDoor : MonoBehaviour, IKickable, IShootable
 {
     private Rigidbody rb;

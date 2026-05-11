@@ -20,7 +20,7 @@ public class BaseEnemy : MonoBehaviour
 
     protected bool isGettingUp;
     protected Vector3 targetGetupPosition;
-     
+
     public bool isToaster = false; // Silly bullshit ignore or fix later
 
 
@@ -51,9 +51,10 @@ public class BaseEnemy : MonoBehaviour
 
         if (!enemyStunned) { return; }
 
-        CancelInvoke("ClearStun");
-        Invoke("ClearStun", stunTime);
+        CancelInvoke(nameof(ClearStun));
+        Invoke(nameof(ClearStun), stunTime);
     }
+
     public void ClearStun()
     {
         enemyStunned = false;
@@ -77,6 +78,7 @@ public class BaseEnemy : MonoBehaviour
         }
 
     }
+
     protected virtual void OnCollisionStay(Collision collision)
     {
         if (enemyKnockedBack && knockbackTimer < 0 && rb.linearVelocity.y > -0.1f)
