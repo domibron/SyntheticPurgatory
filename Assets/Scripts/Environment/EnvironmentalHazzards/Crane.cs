@@ -1,16 +1,26 @@
-using System;
-using Unity.Mathematics;
 using UnityEngine;
 
+/// <summary>
+/// Tower crane script to rotate and move pieces of the crane to align the boom to a target point. Like a IK script but for a tower crane.
+/// </summary>
 [ExecuteInEditMode]
 public class Crane : MonoBehaviour
 {
+    /// <summary>
+    /// The current point being tracked.
+    /// </summary>
     [Header("Crane Target"), SerializeField]
     private Transform currentTargetPoint;
 
+    /// <summary>
+    /// The default transform target for the crane to move to. You can move this point or override the current target point to move the crane.
+    /// </summary>
     [SerializeField]
-    private Transform defaultTargetPoint;
+    private Transform defaultTargetPoint; // is this default because this is overridden in the code.
 
+    /// <summary>
+    /// The crane's current target point / "boom IK target position". The crane will align to this point. This has all the lerping applied.
+    /// </summary>
     [SerializeField]
     private Transform followPoint;
 
@@ -133,7 +143,7 @@ public class Crane : MonoBehaviour
 
     private void FixCurrentTargetIfNull()
     {
-        if (currentTargetPoint == null)
+        if (currentTargetPoint == null) // if default target point is null, does this break?
         {
             Debug.LogWarning($"{nameof(currentTargetPoint)} is null. Fixing.");
             currentTargetPoint = defaultTargetPoint;
@@ -214,6 +224,8 @@ public class Crane : MonoBehaviour
     private void UpdateCarriage(Vector3 targetPos, Vector3 carriageFullMax)
     {
         // TODO: make this lerp and not cause the carriage to go in and out when the crane is rotating.
+        // We know the dist from the crane, we should not use the current pos of the crane but the final pos of the crane at that point.
+        // But we need to do this after we have rotated. We should bring in the boom / carriage then rotate then extend.
 
         // set the carriage before the arm, we can adjust arm to the carriage.
         float targetDistanceFromCrane = Vector3.Distance(Vector3.zero, GetVectorWithLevelY(targetPos, 0));
