@@ -4,16 +4,37 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+/// <summary>
+/// Data class for a single stack of containers, has the crane that places the containers, target location and all currently placed containers.
+/// </summary>
 [Serializable]
 public class ContainerPlacement
 {
+    // TODO: have rotation also be taken into account.
+
+    /// <summary>
+    /// The crane that will add and remove containers.
+    /// </summary>
     public CraneController craneControllerResponsible;
+
+    /// <summary>
+    /// The target point for the first container.
+    /// </summary>
     public GameObject containerPlacementTarget;
+
+    /// <summary>
+    /// List of all currently placed containers.
+    /// </summary>
     public List<GameObject> containers = new List<GameObject>();
 
+    /// <summary>
+    /// Try to get the crane to place a container down with the desired offset.
+    /// </summary>
+    /// <param name="offset">How high to place the container from the placement point.</param>
+    /// <returns>True if the crane was given the job successfully.</returns>
     public bool GetCraneToPlaceContainer(float offset)
     {
-
         bool res = craneControllerResponsible.PlaceContainerWall(containerPlacementTarget.transform.position + (Vector3.up * offset * containers.Count), out GameObject container);
 
         if (res)
@@ -24,6 +45,10 @@ public class ContainerPlacement
         return res;
     }
 
+    /// <summary>
+    /// Try to get the crane to remove one container of off the stack.
+    /// </summary>
+    /// <returns>True if the crane was given the job successfully.</returns>
     public bool GetCraneToRemoveContainer()
     {
         // container = null;
@@ -31,22 +56,35 @@ public class ContainerPlacement
 
         if (result)
         {
-            containers.RemoveAt(containers.Count - 1);
+            containers.RemoveAt(containers.Count - 1); // ? A stack might serve better.
         }
 
         return result;
     }
 
+    /// <summary>
+    /// Get the number of containers in this stack.
+    /// </summary>
+    /// <returns></returns>
     public int GetContainerCount()
     {
         return containers.Count;
     }
 
-    public bool StillHaveContainers()
+    /// <summary>
+    /// Returns whether there there are containers remaining.
+    /// </summary>
+    /// <returns>True if there are containers remaining.</returns>
+    public bool IsThereContainersRemaining()
     {
         return containers.Count > 0;
     }
 
+    /// <summary>
+    /// Spawn in a container into the stack bypassing the crane placement.
+    /// </summary>
+    /// <param name="stackCount">How many to stack.</param>
+    /// <param name="offset">How much to offset them from each other.</param>
     public void SpawnInContainer(int stackCount, float offset)
     {
         for (int i = 0; i < stackCount; i++)
@@ -58,45 +96,89 @@ public class ContainerPlacement
     }
 }
 
+// ? Why do we make a shitty [][] array when one layer suffices, not like we use both row and column for anything.
+
+/// <summary>
+/// A collection of container placement points.
+/// </summary>
 [Serializable]
 public class ContainerRow
 {
+    // I do not want to rename anything in case it breaks serialization.
+    /// <summary>
+    /// All the container placement points in this row.
+    /// </summary>
     public ContainerPlacement[] containerPlacementPoint = new ContainerPlacement[0];
 }
 
+/// <summary>
+/// A collection of a grid of container placement points.
+/// </summary>
 [Serializable]
 public class ContainerLayout
 {
+    /// <summary>
+    /// All the rows that make up this container layout.
+    /// </summary>
     public ContainerRow[] containerRows = new ContainerRow[0];
 }
 
+/// <summary>
+/// Handles all the container walls placements, removal and random generation.
+/// </summary>
 public class ArenaWallsManager : MonoBehaviour
 {
+    /// <summary>
+    /// All the container walls in this arena.
+    /// </summary>
     [SerializeField]
     private ContainerLayout containerLayout;
 
+    /// <summary>
+    /// 
+    /// </summary>
     [SerializeField]
     int RowCount = 4;
 
     [SerializeField]
     int ColumnCount = 10;
 
+    // ? Why a 2d grid? This can be done in a better way.
+    /// <summary>
+    /// The grid layout of the containers.
+    /// </summary>
     int[,] gridPlacement;
 
+    /// <summary>
+    /// The max amount of containers allowed to stack.
+    /// </summary>
     [SerializeField, Min(1)]
     int totalWallLayers = 2;
 
+    /// <summary>
+    /// The height of the container.
+    /// </summary>
     [SerializeField]
     float wallHeight = 3.064f;
 
+    /// <summary>
+    /// All cranes that are linked in the container placement. No duplicates, only unique.
+    /// </summary>
     private List<CraneController> allCranes = new List<CraneController>();
 
+    /// <summary>
+    /// Is this arena wall manager currently doing something? 
+    /// </summary>
     private bool inJob = false;
 
+    /// <summary>
+    /// Invoked when the current job was completed.
+    /// </summary>
     public event Action OnJobCompleted;
 
     void Awake()
     {
+        // get all the cranes referenced in the container placements.
         for (int i = 0; i < containerLayout.containerRows.Length; i++)
         {
             for (int j = 0; j < containerLayout.containerRows[i].containerPlacementPoint.Length; j++)
@@ -107,21 +189,23 @@ public class ArenaWallsManager : MonoBehaviour
             }
         }
 
-
+        // randomly generate the walls.
         StartCoroutine(PregenWithContainers());
     }
 
-    void Start()
-    {
-
-        // StartCoroutine(JuggleContainerWalls());
-    }
-
+    /// <summary>
+    /// Check to see if there is a job currently being performed.
+    /// </summary>
+    /// <returns>True if there is a job currently in progress.</returns>
     public bool IsStillInJob()
     {
         return inJob;
     }
 
+    /// <summary>
+    /// Gets a random wait time between 0 and 1 seconds.
+    /// </summary>
+    /// <returns>Random float value between 0 and 1.</returns>
     private float GetRandomWaitTime()
     {
         return UnityEngine.Random.Range(0f, 1f);
@@ -300,7 +384,7 @@ public class ArenaWallsManager : MonoBehaviour
 
             if (containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].GetCraneToRemoveContainer())
             {
-                if (!containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].StillHaveContainers())
+                if (!containerLayout.containerRows[randomChoice.x].containerPlacementPoint[randomChoice.y].IsThereContainersRemaining())
                     placements.Remove(randomChoice);
                 yield return new WaitForSeconds(GetRandomWaitTime());
             }
