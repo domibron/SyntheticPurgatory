@@ -272,7 +272,7 @@ public class PlayerHUD : MonoBehaviour
 
     private void UpdateScrapCounters() // Peak programming // yes, yes it is.
     {
-        if (ScrapManager.Instance == null)
+        if (ScrapLevelM.Instance == null)
         {
             bottomRightUI.SetActive(false);
             return;
@@ -282,18 +282,18 @@ public class PlayerHUD : MonoBehaviour
             bottomRightUI.SetActive(true);
         }
 
-        int targetInvScrap = ScrapManager.Instance.currentInventoryScrap;
+        int targetInvScrap = ScrapLevelM.Instance.currentInventoryScrap;
         if (curHeldScrapNum < targetInvScrap) { curHeldScrapNum++; }
         else if (curHeldScrapNum > targetInvScrap) { curHeldScrapNum--; }
 
-        int targetDepoScrap = ScrapManager.Instance.currentDepositedScrap;
+        int targetDepoScrap = ScrapLevelM.Instance.currentDepositedScrap;
         if (curDepoScrapNum < targetDepoScrap) { curDepoScrapNum++; }
         else if (curDepoScrapNum > targetDepoScrap) { curDepoScrapNum--; }
 
         heldScrapText.text = curHeldScrapNum.ToString().PadLeft(3, '0');
         depositedScrapText.text = curDepoScrapNum.ToString().PadLeft(3, '0');
 
-        if (curHeldScrapNum >= ScrapManager.Instance.GetMaxScrapInventory())
+        if (curHeldScrapNum >= ScrapLevelM.Instance.GetMaxScrapInventory())
         {
             heldScrapText.color = Color.red;
         }

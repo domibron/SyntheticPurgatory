@@ -1,7 +1,13 @@
 using UnityEngine;
 
+/// <summary>
+/// When the player touches this trigger they are sent back to the hub world.
+/// </summary>
 public class ExitTrigger : MonoBehaviour
 {
+    /// <summary>
+    /// Whether to load the tutorial hub world (true) or the regular hub world.
+    /// </summary>
     [SerializeField]
     private bool isTutorial;
 
@@ -9,15 +15,15 @@ public class ExitTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag(Constants.PlayerTag))
         {
-            if (!isTutorial)
-            {
-                GameManager.Instance?.ReturnToHubWorld();
-            }
-            else
+            if (isTutorial)
             {
                 LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.TutorialHub.ToString());
             }
-            
+            else
+            {
+                GameManager.Instance?.ReturnToHubWorld();
+            }
+
         }
     }
 }

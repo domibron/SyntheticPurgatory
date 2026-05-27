@@ -1,13 +1,12 @@
 using UnityEngine;
 
-// By Vince Pressey
 
-
-// * Spawns scrap on function call.
-
+/// <summary>
+/// Spawns scrap and adds forces to them.
+/// </summary>
 public class ScrapDropper : MonoBehaviour
 {
-    ScrapManager scrapM;
+    ScrapLevelM scrapM;
 
     /// <summary>
     /// Offset of position for spawning scrap
@@ -18,7 +17,7 @@ public class ScrapDropper : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        scrapM = ScrapManager.Instance;
+        scrapM = ScrapLevelM.Instance;
     }
 
     /// <summary>
@@ -33,19 +32,19 @@ public class ScrapDropper : MonoBehaviour
 
         while (scrapTotal > 0) // Keep spawning until total value is exhausted
         {
-            if (ScrapManager.Instance == null) { scrapTotal = 0; return; }
-            ScrapItemData nextScrap = ScrapManager.GetPrefabWithHighestWorth(scrapTotal, ScrapManager.Instance.ScrapPrefabsWithWorth);
+            if (ScrapLevelM.Instance == null) { scrapTotal = 0; return; }
+            ScrapItemData nextScrap = ScrapLevelM.GetPrefabWithHighestWorth(scrapTotal, ScrapLevelM.Instance.ScrapPrefabsWithWorth);
 
             if (nextScrap.ScrapWorth * 2 >= scrapTotal && !skippedHighest && nextScrap.ScrapWorth != 1) // Check if can't spawn two of highest value, skips this if only one scrap is left
             {
                 // Get second highest value scrap, assumes that it is halve the value of the previous
-                nextScrap = ScrapManager.GetPrefabWithHighestWorth(Mathf.FloorToInt(scrapTotal / 2), ScrapManager.Instance.ScrapPrefabsWithWorth);
+                nextScrap = ScrapLevelM.GetPrefabWithHighestWorth(Mathf.FloorToInt(scrapTotal / 2), ScrapLevelM.Instance.ScrapPrefabsWithWorth);
 
                 GameObject newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position + spawnOffset); // Spawns first scrap object
-                YeetObject(newScrap, xzForce, yForce);
+                Utils.ThrowObject(newScrap, xzForce, yForce);
 
                 newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position + spawnOffset); // Spawns second scrap object
-                YeetObject(newScrap, xzForce, yForce);
+                Utils.ThrowObject(newScrap, xzForce, yForce);
 
                 scrapTotal -= nextScrap.ScrapWorth * 2; // Subtracts value of the two spawned scrap from total
 
@@ -54,7 +53,7 @@ public class ScrapDropper : MonoBehaviour
             else // Normal scrap spawning method, overall works like binary
             {
                 GameObject newScrap = scrapM.SpawnScrap(nextScrap.ScrapWorth, transform.position + spawnOffset); // Spawns scrap object
-                YeetObject(newScrap, xzForce, yForce);
+                Utils.ThrowObject(newScrap, xzForce, yForce);
 
                 scrapTotal -= nextScrap.ScrapWorth;
             }
@@ -63,22 +62,5 @@ public class ScrapDropper : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Yeet an object in a random direction
-    /// </summary>
-    /// <param name="toYeet">Object that will be flung</param>
-    /// <param name="xzForce">Force applied horizontally</param>
-    /// <param name="yForce">Force applied vertically</param>
-    public void YeetObject(GameObject toYeet, float xzForce, float yForce)
-    {
-        // Choose random direction
-        float angle = Random.Range(0, 359) * Mathf.PI / 180;
-        float dirX = Mathf.Cos(angle);
-        float dirZ = Mathf.Sin(angle);
 
-        // Add force to object in the previously created direction, multiplied changeable force and additional random number for variety
-        toYeet.GetComponent<Rigidbody>().AddForce
-            (new Vector3(dirX * xzForce * Random.Range(0.8f, 1.2f), yForce, dirZ * xzForce * Random.Range(0.8f, 1.2f)), ForceMode.Impulse);
-
-    }
 }

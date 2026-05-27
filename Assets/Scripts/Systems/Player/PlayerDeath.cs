@@ -51,8 +51,8 @@ public class PlayerDeath : MonoBehaviour
         if (GameManager.Instance.GetCurrentLives() > 1)
         {
             deathCanvasScript.ActivateCanvas(true); // Activate death screen
-            if (ScrapManager.Instance != null)
-                deathCanvasScript.ShowStats(ScrapManager.Instance.currentDepositedScrap, ScrapManager.Instance.currentInventoryScrap);
+            if (ScrapLevelM.Instance != null)
+                deathCanvasScript.ShowStats(ScrapLevelM.Instance.currentDepositedScrap, ScrapLevelM.Instance.currentInventoryScrap);
         }
         else
         {

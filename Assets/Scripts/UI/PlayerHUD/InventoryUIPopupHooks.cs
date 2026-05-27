@@ -17,7 +17,7 @@ public class InventoryUIPopupHooks : MonoBehaviour
 
     private float duration = 3f;
 
-    private ScrapManager scrapManager;
+    private ScrapLevelM scrapManager;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -32,15 +32,15 @@ public class InventoryUIPopupHooks : MonoBehaviour
             return;
         }
 
-        scrapManager = ScrapManager.Instance;
+        scrapManager = ScrapLevelM.Instance;
 
         scrapManager.OnDepositedScrap += OnDepositedScrap;
         scrapManager.OnCollectedScrap += OnCollectedScrap;
         scrapManager.OnInventoryFull += OnInventoryFull;
 
 
-        ModuleManager.Instance.OnModuleCollected += OnModuleCollected;
-        ModuleManager.Instance.OnModuleDeposited += OnModuleDeposited;
+        ModuleLevelM.Instance.OnModuleCollected += OnModuleCollected;
+        ModuleLevelM.Instance.OnModuleDeposited += OnModuleDeposited;
 
         GameManager.Instance.OnLowTime += OnLowTime;
         GameManager.Instance.OnWarnTime += OnWarnTime;

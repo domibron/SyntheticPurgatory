@@ -1,6 +1,10 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Allows a physics object to be kicked by the player.
+/// </summary>
+[RequireComponent(typeof(Rigidbody))]
 public class KickableObject : MonoBehaviour, IKickable
 {
     private Rigidbody rb;
@@ -9,7 +13,7 @@ public class KickableObject : MonoBehaviour, IKickable
     private bool disableNavAgent;
 
     [SerializeField]
-    private BaseEnemy enemyClass; // TODO: rmeove.
+    private BaseEnemy enemyClass; // TODO: remove. Use IKickable on the enemy instead.
 
     public event Action<Vector3> OnKicked;
 
