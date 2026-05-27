@@ -1,27 +1,36 @@
-using Unity.AI.Navigation;
 using UnityEngine;
 
+/// <summary>
+/// Container placement check to make sure the container can be placed down without overlap or missing floor.
+/// </summary>
 public class ContainerPlacementCheck : MonoBehaviour
 {
-
+    /// <summary>
+    /// The bounds of the check.
+    /// </summary>
     BoxCollider boxCollider;
 
+
+    /// <summary>
+    /// The layers to check for.
+    /// </summary>
     [SerializeField]
     LayerMask layerMask;
 
+    /// <summary>
+    /// All the falling floor tiles.
+    /// </summary>
     [SerializeField]
     FallingTileArenaManager fallingTileArenaManager;
 
+    /// <summary>
+    /// The out of bounds reset position once check has been completed.
+    /// </summary>
     private Vector3 resetPoint;
 
     void Awake()
     {
         resetPoint = transform.position;
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
         boxCollider = GetComponent<BoxCollider>();
     }
 
@@ -34,11 +43,19 @@ public class ContainerPlacementCheck : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Moves the check box out of bounds.
+    /// </summary>
     public void ResetPosition()
     {
         transform.position = resetPoint;
     }
 
+    /// <summary>
+    /// Check the target position if it is a valid position.
+    /// </summary>
+    /// <param name="targetPos">The target position to check at.</param>
+    /// <returns>True if it's a valid position.</returns>
     public bool SampleContainerPosition(Vector3 targetPos)
     {
         transform.position = targetPos;

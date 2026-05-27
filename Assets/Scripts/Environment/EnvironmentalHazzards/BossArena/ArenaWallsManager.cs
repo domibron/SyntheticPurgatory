@@ -211,6 +211,10 @@ public class ArenaWallsManager : MonoBehaviour
         return UnityEngine.Random.Range(0f, 1f);
     }
 
+    /// <summary>
+    /// Coroutine that gets all the cranes to move back to their default locations.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator ResetAllCranes()
     {
         List<CraneController> cranesToReset = allCranes;
@@ -229,6 +233,10 @@ public class ArenaWallsManager : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Coroutine that randomly spawns in the container walls skipping the cranes.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator PregenWithContainers()
     {
         inJob = true;
@@ -265,6 +273,10 @@ public class ArenaWallsManager : MonoBehaviour
         // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
+    /// <summary>
+    /// Tries to start the wall random job using the cranes.
+    /// </summary>
+    /// <returns>True if the arena manager managed to start this job.</returns>
     public bool StartJuggleJob()
     {
         if (inJob) return false;
@@ -273,6 +285,10 @@ public class ArenaWallsManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Coroutine that handles the random generation and assignment of the containers to move them around using the cranes.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator JuggleContainerWalls()
     {
         inJob = true;
@@ -325,6 +341,12 @@ public class ArenaWallsManager : MonoBehaviour
         // StartCoroutine(JuggleContainerWalls()); // ! DEBUG CODE
     }
 
+    /// <summary>
+    /// Coroutine that gets the cranes to just place down containers.
+    /// This was used but was replaced with randomly generating and spawning in the walls directly.
+    /// </summary>
+    /// <param name="generateNewGrid">True to generate a new layout.</param>
+    /// <returns></returns>
     private IEnumerator PlaceContainerWalls(bool generateNewGrid = false)
     {
         if (generateNewGrid)
@@ -363,6 +385,11 @@ public class ArenaWallsManager : MonoBehaviour
         print("Completed Wall Placement");
     }
 
+
+    /// <summary>
+    /// Coroutine that will remove all the containers from the area.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator ClearAllWalls()
     {
 
@@ -396,6 +423,11 @@ public class ArenaWallsManager : MonoBehaviour
         print("Completed Wall Removal");
     }
 
+    /// <summary>
+    /// Generate a new container layout for the room.
+    /// </summary>
+    /// <param name="maxLayers">The max amount the containers can stack.</param>
+    /// <returns>The new grid layout.</returns>
     private int[,] GenerateData(int maxLayers)
     {
         int[,] gridPlacement = new int[RowCount, ColumnCount];
@@ -420,6 +452,12 @@ public class ArenaWallsManager : MonoBehaviour
         return gridPlacement;
     }
 
+    /// <summary>
+    /// Generate random holes in the walls so the player can pass through them.
+    /// </summary>
+    /// <param name="doorwayAmount">The amount of holes to add.</param>
+    /// <param name="columnSize">The max size of the column.</param>
+    /// <returns>The position of the doorway on the row.</returns>
     private int[] RandomDoorways(int doorwayAmount, int columnSize)
     {
         int[] randomDoorways = new int[doorwayAmount];

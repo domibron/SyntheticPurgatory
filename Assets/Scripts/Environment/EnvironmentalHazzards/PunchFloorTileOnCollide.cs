@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Add this to physics object so when they hit <see cref="DroppablePlatform"/>, it will cause them to fall.
+/// </summary>
 public class PunchFloorTileOnCollide : MonoBehaviour
 {
 
