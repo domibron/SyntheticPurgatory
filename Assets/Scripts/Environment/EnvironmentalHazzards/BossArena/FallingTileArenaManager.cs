@@ -1,10 +1,19 @@
 using UnityEngine;
 
+/// <summary>
+/// used to check for falling tiles.
+/// </summary>
 public class FallingTileArenaManager : MonoBehaviour
 {
+    /// <summary>
+    /// All the falling tiles in the arena.
+    /// </summary>
     [SerializeField]
     DroppablePlatform[] fallingTiles;
 
+    /// <summary>
+    /// The bounds of one tiles.
+    /// </summary>
     Bounds boundsOfOneTile;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -13,17 +22,17 @@ public class FallingTileArenaManager : MonoBehaviour
         boundsOfOneTile = fallingTiles[0].GetBounds();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    /// <summary>
+    /// Check to see if any tiles have falling in the specified bounds.
+    /// </summary>
+    /// <param name="checkArea">The centre point of the check.</param>
+    /// <param name="halfExtents">The half extents of the check.</param>
+    /// <returns></returns>
     public bool CheckTilesFallenInArea(Vector3 checkArea, Vector3 halfExtents)
     {
         // disregard y values.
         checkArea = ResetYValue(checkArea);
-        halfExtents = ResetYValue(halfExtents);
+        halfExtents = ResetYValue(halfExtents); // * Bug? setting y to 0?
 
         Vector3 backRight = checkArea + halfExtents;
         Vector3 frontLeft = checkArea - halfExtents;
@@ -43,6 +52,14 @@ public class FallingTileArenaManager : MonoBehaviour
 
     }
 
+
+    // TODO: should be in a universal util class not randomly dotted around all the scripts.
+
+    /// <summary>
+    /// Resets the y value to 0.
+    /// </summary>
+    /// <param name="vector">The vector to use data from.</param>
+    /// <returns>The new vector.</returns>
     private Vector3 ResetYValue(Vector3 vector)
     {
         return new Vector3(vector.x, 0, vector.z);

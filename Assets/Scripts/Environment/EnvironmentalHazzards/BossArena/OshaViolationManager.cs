@@ -70,7 +70,7 @@ public class OshaViolationManager : MonoBehaviour
         return true;
     }
 
-    public bool StartADozerAttack()
+    public bool TryStartSingleDozerAttack()
     {
         if (inJob || currentCoolDown > 0) return false;
 

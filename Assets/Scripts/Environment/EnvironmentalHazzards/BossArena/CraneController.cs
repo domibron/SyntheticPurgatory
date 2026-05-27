@@ -5,61 +5,101 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// For the boss arena
+/// Crane controller for the boss arena.
 /// </summary>
 public class CraneController : MonoBehaviour
 {
+    /// <summary>
+    /// The container for walls. Used to spawn in duplicates.
+    /// </summary>
     [SerializeField]
     private GameObject containerWalls;
 
+    /// <summary>
+    /// The container that will dorp and fall breaking the floor tiles. Used to spawn in duplicates.
+    /// </summary>
     [SerializeField]
     private GameObject physicsContainer;
 
+    // TODO: see if mem gets filled when phys containers are spawned and see if they are added to list.
+    /// <summary>
+    /// List of all spawned in containers this crane controller spawned.
+    /// </summary>
     private List<GameObject> allOurSpawnedContainers = new List<GameObject>();
 
+    /// <summary>
+    /// The spawn point for the duplicated containers.
+    /// </summary>
     [SerializeField]
     private Transform containerSpawnPoint;
 
+    /// <summary>
+    /// The current container being moved.
+    /// </summary>
     private GameObject currentContainer;
 
+    /// <summary>
+    /// The crane responsible for moving the containers.
+    /// </summary>
     [SerializeField]
     private Crane crane;
 
+    /// <summary>
+    /// Event for other scripts to listen to know when this job was concluded.
+    /// </summary>
     public event Action OnJobCompleted;
 
+    /// <summary>
+    /// The resting point for the crane.
+    /// </summary>
     [SerializeField]
     private Transform restingPoint;
 
+    /// <summary>
+    /// Used to check if there is a job being completed.
+    /// </summary>
     private bool inJob = false;
 
+    /// <summary>
+    /// Alarm sfx for when the crane is doing stuff.
+    /// </summary>
     [SerializeField]
     private AudioSource alarm;
 
+    /// <summary>
+    /// Crane movement sfx for when the crane is moving.
+    /// </summary>
     [SerializeField]
     private AudioSource creaking;
 
+    /// <summary>
+    /// Crane light to indicate to the player that the crane is doing something. AKA Danger, you will die to it. Because it's an enemy.
+    /// </summary>
     [SerializeField]
     private LightFlash craneLightFlash;
 
-    const float FLOATING_POINT_FUCKERY = 0.1f;
+    /// <summary>
+    /// I hate floats sometimes. Used for leniency since floats can be imprecise at small values.
+    /// </summary>
+    const float FLOATING_POINT_EPSILON = 0.1f;
 
+    /// <summary>
+    /// Time out for when the crane is not in a job to move it back to the reset position.
+    /// </summary>
     private float lastJob = 0f;
 
+    /// <summary>
+    /// The dorp area for the crane to drop container in.
+    /// </summary>
     [SerializeField]
     private BoxCollider dropZone;
 
+    /// <summary>
+    /// Container placement checker to check if its a valid placement in the area with no overlap with "static" objects.
+    /// </summary>
     [SerializeField]
     private ContainerPlacementCheck containerPlacementCheck;
 
-    // private GameObject currentContainer;
-
-    // private float lastMoveCheck = 0f;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        // StartCoroutine(GetAndPlaceContainerWall());
-    }
 
     // Update is called once per frame
     void Update()
@@ -79,11 +119,18 @@ public class CraneController : MonoBehaviour
         else if (inJob) lastJob = 1f;
     }
 
+    /// <summary>
+    /// Is the crane controller currently performing a job.
+    /// </summary>
+    /// <returns>True if the crane is currently in a job.</returns>
     public bool IsStillInJob()
     {
         return inJob;
     }
 
+    /// <summary>
+    /// Enables and sets variables to mark this crane as in a job. Does the lights and sfx.
+    /// </summary>
     private void JobStart()
     {
         inJob = true;
@@ -91,6 +138,9 @@ public class CraneController : MonoBehaviour
         craneLightFlash.StartFlashing();
     }
 
+    /// <summary>
+    /// Disables the job and resets the variables, lights and sfx. 
+    /// </summary>
     private void JobEnd()
     {
         currentContainer = null;
@@ -103,7 +153,10 @@ public class CraneController : MonoBehaviour
         OnJobCompleted?.Invoke();
     }
 
-
+    /// <summary>
+    /// Tries to get the crane to reset.
+    /// </summary>
+    /// <returns>True if the job was given successfully.</returns>
     public bool ResetCrane()
     {
         if (inJob) return false;
@@ -111,7 +164,10 @@ public class CraneController : MonoBehaviour
         return true;
     }
 
-
+    /// <summary>
+    /// Coroutine to move the crane to the resting position.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator ResetCraneJob()
     {
         inJob = true;
@@ -120,7 +176,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(restingPoint);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -129,6 +185,12 @@ public class CraneController : MonoBehaviour
         inJob = false;
     }
 
+    /// <summary>
+    /// Tries to place a container wall at the target position.
+    /// </summary>
+    /// <param name="targetPoint">The target position to place the container.</param>
+    /// <param name="container">The container to move to the target position.</param>
+    /// <returns>True if the job was successfully assigned.</returns>
     public bool PlaceContainerWall(Vector3 targetPoint, out GameObject container)
     {
         container = null;
@@ -142,6 +204,10 @@ public class CraneController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Trie to start the drop container attack.
+    /// </summary>
+    /// <returns>True if the job was assigned successfully.</returns>
     public bool StartDropContainerJob()
     {
         if (inJob) return false;
@@ -150,6 +216,10 @@ public class CraneController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Coroutine for making the crane dropping the physics container.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator DropContainer()
     {
         JobStart();
@@ -195,7 +265,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -204,7 +274,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(craneGrabbable.GetGrabPoint());
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -213,7 +283,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(false);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -233,7 +303,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0); // then override in a frame
         yield return new WaitForEndOfFrame(); // then we can wait another frame.
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -243,7 +313,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(targetPoint + new Vector3(0, craneGrabbable.GetGrabPoint().position.y - craneGrabbable.GetPlacementPoint().position.y, 0));
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -262,6 +332,11 @@ public class CraneController : MonoBehaviour
         JobEnd();
     }
 
+    /// <summary>
+    /// Coroutine that spawns in a container wall and places it down using the crane.
+    /// </summary>
+    /// <param name="targetPoint">The target position to place the container at.</param>
+    /// <returns></returns>
     private IEnumerator GetAndPlaceContainerWall(Vector3 targetPoint)
     {
         JobStart();
@@ -281,7 +356,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -292,7 +367,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(craneGrabbable.GetGrabPoint());
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -305,7 +380,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -324,7 +399,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0); // then override in a frame
         yield return new WaitForEndOfFrame(); // then we can wait another frame.
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -334,7 +409,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(targetPoint + new Vector3(0, craneGrabbable.GetGrabPoint().position.y - craneGrabbable.GetPlacementPoint().position.y, 0));
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -346,7 +421,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -362,7 +437,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -383,6 +458,12 @@ public class CraneController : MonoBehaviour
 
     }
 
+
+    /// <summary>
+    /// Try to get the crane to remove a container.
+    /// </summary>
+    /// <param name="container">The container to pickup and remove.</param>
+    /// <returns>True if the job was assigned successfully.</returns>
     public bool RemoveContainerWall(GameObject container)
     {
         if (inJob) return false;
@@ -391,6 +472,11 @@ public class CraneController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Coroutine that uses the crane pickup the target container and remove it. 
+    /// </summary>
+    /// <param name="container">The target container to pickup and remove.</param>
+    /// <returns></returns>
     private IEnumerator GetAndRemoveContainerWall(GameObject container)
     {
         JobStart();
@@ -410,7 +496,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -421,7 +507,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(craneGrabbable.GetGrabPoint());
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -434,7 +520,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -453,7 +539,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0); // then override in a frame
         yield return new WaitForEndOfFrame(); // then we can wait another frame.
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -463,7 +549,7 @@ public class CraneController : MonoBehaviour
         crane.SetTargetPoint(containerSpawnPoint.position + new Vector3(0, craneGrabbable.GetGrabPoint().position.y - craneGrabbable.GetPlacementPoint().position.y, 0));
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetXZDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetXZDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -475,7 +561,7 @@ public class CraneController : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -491,7 +577,7 @@ public class CraneController : MonoBehaviour
         crane.OverrideBoomDropDist(boomDropAmount: 0);
         yield return new WaitForEndOfFrame();
 
-        while (crane.GetYDistance() > FLOATING_POINT_FUCKERY)
+        while (crane.GetYDistance() > FLOATING_POINT_EPSILON)
         {
             yield return new WaitForEndOfFrame();
         }
@@ -515,17 +601,29 @@ public class CraneController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Add a container to the list for tracking.
+    /// </summary>
+    /// <param name="container">The container to add.</param>
     private void AddContainer(GameObject container)
     {
         allOurSpawnedContainers.Add(container);
     }
 
+    /// <summary>
+    /// Removes the container from the tracking list.
+    /// </summary>
+    /// <param name="container">The container to remove.</param>
     private void RemoveContainer(GameObject container)
     {
         allOurSpawnedContainers.Remove(container);
         Destroy(container);
     }
 
+    /// <summary>
+    /// Spawns in a container and returns a game object reference to it. (Also adds it to the tracking list)
+    /// </summary>
+    /// <returns>The container game object that was spawned.</returns>
     public GameObject SpawnInContainerWall()
     {
         GameObject returnedGO = Instantiate(containerWalls, containerSpawnPoint.position, Quaternion.identity);

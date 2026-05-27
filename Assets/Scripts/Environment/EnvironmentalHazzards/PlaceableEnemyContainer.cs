@@ -1,5 +1,7 @@
 using UnityEngine;
 
+//TODO: finish and comment code. maybe?
+
 public class PlaceableEnemyContainer : MonoBehaviour, ICraneGrabbable
 {
     [SerializeField]

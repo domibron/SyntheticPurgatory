@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// TODO: finish writing comments in this script.
+
 /// <summary>
 /// Tower crane script to rotate and move pieces of the crane to align the boom to a target point. Like a IK script but for a tower crane.
 /// </summary>
