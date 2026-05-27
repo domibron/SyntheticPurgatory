@@ -1,20 +1,41 @@
 using UnityEngine;
 
+/// <summary>
+/// Deposits the scrap from the inventory into the stash.
+/// </summary>
 public class ScrapDeposit : MonoBehaviour
 {
-
+    /// <summary>
+    /// The target point for the scrap to fly towards.
+    /// </summary>
     [SerializeField]
     Transform depoCollectionPoint;
 
+    /// <summary>
+    /// How much force to give the scrap to make it fly into the hole.
+    /// </summary>
     [SerializeField]
     float itemForce = 15f;
 
+    /// <summary>
+    /// Is the player in range to deposit.
+    /// </summary>
     private bool playerInRange = false;
 
+    /// <summary>
+    /// A short delay between each scrap.
+    /// </summary>
     private float currentDelay = 0f;
 
+    /// <summary>
+    /// The player's transform when within range.
+    /// </summary>
     private Transform playerTransform;
 
+    /// <summary>
+    /// How fast is the depositing of scrap.
+    /// This is assigned by the stats class.
+    /// </summary>
     private float depositRate = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -46,13 +67,13 @@ public class ScrapDeposit : MonoBehaviour
         if (playerInRange && currentDelay <= 0)
         {
             // * DEPO
-            if (ScrapManager.Instance.GetScrapInInventory() <= 0) return;
+            if (ScrapLevelM.Instance.GetScrapInInventory() <= 0) return;
 
 
-            ScrapItemData scrapItemData = ScrapManager.GetPrefabWithHighestWorth(ScrapManager.Instance.GetScrapInInventory(), ScrapManager.Instance.DepositScrapWithWorth);
+            ScrapItemData scrapItemData = ScrapLevelM.GetPrefabWithHighestWorth(ScrapLevelM.Instance.GetScrapInInventory(), ScrapLevelM.Instance.DepositScrapWithWorth);
 
             GameObject scrapObject = Instantiate(scrapItemData.ScrapPrefab, playerTransform.position, Quaternion.identity);
-            ScrapManager.Instance.DepositScrap(scrapItemData.ScrapWorth);
+            ScrapLevelM.Instance.DepositScrap(scrapItemData.ScrapWorth);
 
             // we need our angle needed to account for gravity for later.
             float angleNeededForProjectile = MathematicsUtility.GetAngleForFireProjectile(playerTransform.position, depoCollectionPoint.position, itemForce);

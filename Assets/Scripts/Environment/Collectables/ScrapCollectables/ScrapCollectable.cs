@@ -23,12 +23,12 @@ public class ScrapCollectable : CollectableBase
         if (Vector3.Distance(transform.position, targetTransform.position) > collectItemRange) return;
 
         // we drop any scrap we cannot fit into the inventory.
-        int remaining = ScrapManager.Instance.CollectScrap(scrapWorth);
+        int remaining = ScrapLevelM.Instance.CollectScrap(scrapWorth);
 
         // spawn the remaining scrap as objects in the world.
         while (remaining > 0) // slight stutter but barely noticeable, could replace with coroutine?
         {
-            ScrapItemData prefabToSpawn = ScrapManager.GetPrefabWithHighestWorth(remaining, ScrapManager.Instance.ScrapPrefabsWithWorth);
+            ScrapItemData prefabToSpawn = ScrapLevelM.GetPrefabWithHighestWorth(remaining, ScrapLevelM.Instance.ScrapPrefabsWithWorth);
 
             Instantiate(prefabToSpawn.ScrapPrefab, transform.position, Quaternion.identity);
 
@@ -46,9 +46,9 @@ public class ScrapCollectable : CollectableBase
     {
         if (!base.CanTargetCollect()) return false;
 
-        if (!ScrapManager.Instance.HaveInventorySpace())
+        if (!ScrapLevelM.Instance.IsSpaceInScrapInv())
         {
-            ScrapManager.Instance.InvokeOnInventoryFull();
+            ScrapLevelM.Instance.InvokeOnInventoryFull();
             return false;
         }
 

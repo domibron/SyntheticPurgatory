@@ -178,17 +178,17 @@ public class GameManager : MonoBehaviour
                 EndRun();
             }
 
-            AddToDepositedScrap(ScrapManager.Instance.GetDepositedScrap());
+            AddToDepositedScrap(ScrapLevelM.Instance.GetDepositedScrap());
         }
         else
         {
-            AddToDepositedScrap(ScrapManager.Instance.GetAllDepositedScrap());
-            statsHolder.totalScrap += ScrapManager.Instance.GetAllDepositedScrap();
+            AddToDepositedScrap(ScrapLevelM.Instance.GetAllCollectedScrap());
+            statsHolder.totalScrap += ScrapLevelM.Instance.GetAllCollectedScrap();
 
             // so bad, but fuck it.
-            commonCards += ModuleManager.Instance.GetAllModuleCountOfType(ModuleTier.Common);
-            rareCards += ModuleManager.Instance.GetAllModuleCountOfType(ModuleTier.Rare);
-            epicCards += ModuleManager.Instance.GetAllModuleCountOfType(ModuleTier.Epic);
+            commonCards += ModuleLevelM.Instance.GetAllModuleCountOfType(ModuleTier.Common);
+            rareCards += ModuleLevelM.Instance.GetAllModuleCountOfType(ModuleTier.Rare);
+            epicCards += ModuleLevelM.Instance.GetAllModuleCountOfType(ModuleTier.Epic);
         }
         ResetTimer();
         currentDifficulty++;

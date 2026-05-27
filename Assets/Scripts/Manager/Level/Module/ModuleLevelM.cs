@@ -2,6 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// All the module tiers.
+/// </summary>
 public enum ModuleTier
 {
     Common,
@@ -9,9 +12,15 @@ public enum ModuleTier
     Epic,
 }
 
-public class ModuleManager : MonoBehaviour
+/// <summary>
+/// Stores the modules in a temporary inventory. This is also used to spawn in modules.
+/// </summary>
+public class ModuleLevelM : MonoBehaviour
 {
-    public static ModuleManager Instance { get; private set; }
+    /// <summary>
+    /// Singleton for the module manager.
+    /// </summary>
+    public static ModuleLevelM Instance { get; private set; }
 
     // ? could replace with dictionary with enum + int, and have it auto init, this would allow for more expansion without too much recode.
     // That could in theory be automated.
@@ -34,13 +43,17 @@ public class ModuleManager : MonoBehaviour
         if (Instance != null && Instance != this)
         {
             Destroy(this);
-            Debug.LogError($"Two or more {nameof(ModuleManager)} exists, this one was removed! Make sure only one exists at all times.", this);
+            Debug.LogError($"Two or more {nameof(ModuleLevelM)} exists, this one was removed! Make sure only one exists at all times.", this);
             return;
         }
 
         Instance = this;
     }
 
+    /// <summary>
+    /// Add 1 to the currently stored modules in the dungeon / temporary inventory.
+    /// </summary>
+    /// <param name="moduleTier">The tier of card to collect.</param>
     public void CollectModule(ModuleTier moduleTier)
     {
         switch (moduleTier)
@@ -57,11 +70,17 @@ public class ModuleManager : MonoBehaviour
         }
 
         // TODO: The modules are stored in inventory, then deposited. Please fully implement this future self.
+        // What? huh?
         OnModuleCollected?.Invoke(moduleTier, 1);
         OnModuleDeposited?.Invoke(moduleTier, 1);
 
     }
 
+    /// <summary>
+    /// Get the current count of the module tier.
+    /// </summary>
+    /// <param name="moduleTier">The tier to get the quantity for.</param>
+    /// <returns>The amount of modules with that tier.</returns>
     public int GetAllModuleCountOfType(ModuleTier moduleTier)
     {
         switch (moduleTier)
@@ -77,6 +96,11 @@ public class ModuleManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Get the prefab for the specified tier of card.
+    /// </summary>
+    /// <param name="moduleTier">The tier of card to get the prefab for.</param>
+    /// <returns>The module card prefab with that tier.</returns>
     public GameObject GetModulePrefab(ModuleTier moduleTier)
     {
         switch (moduleTier)

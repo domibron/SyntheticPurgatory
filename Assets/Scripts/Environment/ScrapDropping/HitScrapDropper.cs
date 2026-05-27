@@ -1,8 +1,8 @@
-using System;
 using UnityEngine;
 
-// By Vince Pressey
-// * Drops scrap when hit.
+/// <summary>
+/// Drops scrap when the entity takes damage.
+/// </summary>
 public class HitScrapDropper : MonoBehaviour
 {
     ScrapDropper dropper;

@@ -31,8 +31,8 @@ public class FallingTileArenaManager : MonoBehaviour
     public bool CheckTilesFallenInArea(Vector3 checkArea, Vector3 halfExtents)
     {
         // disregard y values.
-        checkArea = ResetYValue(checkArea);
-        halfExtents = ResetYValue(halfExtents); // * Bug? setting y to 0?
+        checkArea = Utils.GetLevelVectorY(checkArea);
+        halfExtents = Utils.GetLevelVectorY(halfExtents); // * Bug? setting y to 0?
 
         Vector3 backRight = checkArea + halfExtents;
         Vector3 frontLeft = checkArea - halfExtents;
@@ -50,18 +50,5 @@ public class FallingTileArenaManager : MonoBehaviour
 
         return false;
 
-    }
-
-
-    // TODO: should be in a universal util class not randomly dotted around all the scripts.
-
-    /// <summary>
-    /// Resets the y value to 0.
-    /// </summary>
-    /// <param name="vector">The vector to use data from.</param>
-    /// <returns>The new vector.</returns>
-    private Vector3 ResetYValue(Vector3 vector)
-    {
-        return new Vector3(vector.x, 0, vector.z);
     }
 }

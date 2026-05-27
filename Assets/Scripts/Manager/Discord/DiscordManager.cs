@@ -3,6 +3,12 @@ using Discord;
 using UnityEngine;
 // using Discord;
 
+/*
+Attention!
+This script is still being developed on.
+Still researching and playing around with the discord sdk.
+*/
+
 public class DiscordManager : MonoBehaviour
 {
     [SerializeField]

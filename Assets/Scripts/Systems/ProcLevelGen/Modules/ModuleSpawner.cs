@@ -20,7 +20,7 @@ public class ModuleSpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        upgradeCardToSpawn = ModuleManager.Instance?.GetModulePrefab(moduleTier);
+        upgradeCardToSpawn = ModuleLevelM.Instance?.GetModulePrefab(moduleTier);
 
         if (spawnOnStart)
         {

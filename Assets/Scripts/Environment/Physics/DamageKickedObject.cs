@@ -1,7 +1,10 @@
 using UnityEngine;
 
-// By Vincent Pressey
 
+/// <summary>
+/// Physics based damage taking, works both against static and other physics objects with health scripts.
+/// </summary>
+[RequireComponent(typeof(Rigidbody), typeof(Health))]
 public class DamageKickedObject : MonoBehaviour
 {
     Rigidbody rb;
@@ -23,11 +26,13 @@ public class DamageKickedObject : MonoBehaviour
     /// </summary>
     [Header("Damage"), SerializeField]
     private float normalDamageMult = 2;
+
     /// <summary>
     /// Damage multiplier if an object with Health is hit, damage is dealt to both this and the other object
     /// </summary>
     [SerializeField]
     private float sharedDamageMult = 4;
+
     /// <summary>
     /// Cap at remaining HP of this object
     /// </summary>
@@ -36,7 +41,7 @@ public class DamageKickedObject : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
         healthScript = GetComponent<Health>();

@@ -14,7 +14,7 @@ public class ModuleCollectable : CollectableBase
 
         if (Vector3.Distance(transform.position, targetTransform.position) > collectItemRange) return;
 
-        ModuleManager.Instance.CollectModule(cardTier);
+        ModuleLevelM.Instance.CollectModule(cardTier);
         Destroy(gameObject);
     }
 

@@ -56,7 +56,7 @@ public class ScrapSpawnSystem : MonoBehaviour
 
         if (res)
         {
-            ScrapManager.Instance.SpawnScrap(worth, hit.position + Vector3.up);
+            ScrapLevelM.Instance.SpawnScrap(worth, hit.position + Vector3.up);
         }
     }
 }

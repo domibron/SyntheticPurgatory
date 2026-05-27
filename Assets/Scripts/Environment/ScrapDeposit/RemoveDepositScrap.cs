@@ -1,21 +1,13 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Destroy any object with the depo scrap tag.
+/// </summary>
 public class RemoveDepositScrap : MonoBehaviour
 {
     public UnityEvent OnScrapRemoved;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -26,9 +18,4 @@ public class RemoveDepositScrap : MonoBehaviour
 
         Destroy(other.gameObject);
     }
-
-    // void OnTriggerExit(Collider other)
-    // {
-
-    // }
 }
