@@ -1,9 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-
+/// <summary>
+/// 
+/// </summary>
 public class ChipManager : MonoBehaviour
 {
     public static ChipManager Instance { get; private set; }
