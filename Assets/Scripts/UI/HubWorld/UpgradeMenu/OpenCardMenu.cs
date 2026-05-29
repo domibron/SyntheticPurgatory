@@ -57,7 +57,7 @@ public class OpenCardMenu : MonoBehaviour
 
     private GameManager gameManager;
 
-    private ChipManager chipManager;
+    private ChipRunM chipManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -70,13 +70,13 @@ public class OpenCardMenu : MonoBehaviour
 
         gameManager = GameManager.Instance;
 
-        if (ChipManager.Instance == null)
+        if (ChipRunM.Instance == null)
         {
             Debug.LogError("ChipManager Instance is null!");
             return;
         }
 
-        chipManager = ChipManager.Instance;
+        chipManager = ChipRunM.Instance;
 
         CloseDisplayNewChipUI();
     }
@@ -109,7 +109,7 @@ public class OpenCardMenu : MonoBehaviour
     {
         if (!commonButton.interactable) return;
 
-        OpenAndDisplayNewChip(ChipManager.ChipType.Common);
+        OpenAndDisplayNewChip(ChipRunM.ChipType.Common);
 
         gameManager.UnlockCard(ModuleTier.Common);
     }
@@ -118,7 +118,7 @@ public class OpenCardMenu : MonoBehaviour
     {
         if (!rareButton.interactable) return;
 
-        OpenAndDisplayNewChip(ChipManager.ChipType.Rare);
+        OpenAndDisplayNewChip(ChipRunM.ChipType.Rare);
 
         gameManager.UnlockCard(ModuleTier.Rare);
     }
@@ -128,12 +128,12 @@ public class OpenCardMenu : MonoBehaviour
 
         if (!epicButton.interactable) return;
 
-        OpenAndDisplayNewChip(ChipManager.ChipType.Epic);
+        OpenAndDisplayNewChip(ChipRunM.ChipType.Epic);
 
         gameManager.UnlockCard(ModuleTier.Epic);
     }
 
-    private void OpenAndDisplayNewChip(ChipManager.ChipType chipType)
+    private void OpenAndDisplayNewChip(ChipRunM.ChipType chipType)
     {
         // GameObject boardItem = Instantiate(chipData.GetBoardChipObject(), backImageTransform);
 

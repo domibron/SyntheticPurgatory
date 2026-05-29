@@ -8,15 +8,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "ScriptableObjects/Chips/BaseChip", fileName = "SO_BaseChip")]
 public class ChipSO : ScriptableObject
 {
-    /// <summary>
-    /// The X represented in the 2d array.
-    /// </summary>
-    public const int X_ROW = 1;
 
-    /// <summary>
-    /// The Y represented in the 2d array.
-    /// </summary>
-    public const int Y_ROW = 0;
 
 
     [SerializeField]
@@ -92,7 +84,7 @@ public class ChipSO : ScriptableObject
         return inventoryImage;
     }
 
-    // TODO: decide if this is worth to keep.
+
     /// <summary>
     /// Gets the board game object.
     /// </summary>
@@ -102,18 +94,7 @@ public class ChipSO : ScriptableObject
         return boardItem;
     }
 
-    /// <summary>
-    /// Instantiates the board item and returns a reference to the game object that was created.
-    /// </summary>
-    /// <returns>Reference to the created board game object.</returns>
-    public virtual GameObject CreateAndReturnBoardItem()
-    {
-        GameObject go = Instantiate(boardItem);
 
-        if (IsGenerativeBoardItem()) go.GetComponent<GenerateChip>().GenerateVisualChip(this);
-
-        return go;
-    }
 
     /// <summary>
     /// Gets the colour to use for the generative board item.
@@ -133,102 +114,7 @@ public class ChipSO : ScriptableObject
         return hasAGenerativeBoardItem;
     }
 
-    /// <summary>
-    /// Checks whether this chip can be placed at that target grid coordinates.
-    /// </summary>
-    /// <param name="chipBoard">A reference to the chip board to check on.</param>
-    /// <param name="targetGridPos">The target placement of the chip on the board.</param>
-    /// <param name="currentID">The id of the chip if it's already placed on the board.</param>
-    /// <returns>True if the chip can be placed at the target coordinates.</returns>
-    public virtual bool CanPlaceAtTargetSlot(ref int[,] chipBoard, Vector2Int targetGridPos, int currentID = -1)
-    {
-        foreach (Vector2Int chipPart in blockLayout)
-        {
-            Vector2Int checkingPos = targetGridPos + new Vector2Int(chipPart.x, -chipPart.y);
 
-            if (checkingPos.x < 0 || checkingPos.y < 0 || checkingPos.y >= chipBoard.GetLength(Y_ROW) || checkingPos.x >= chipBoard.GetLength(X_ROW))
-            {
-                // Debug.Log("out of bounds");
-                return false; // Out of bounds.
-            }
-
-            if (IsSlotOccupied(ref chipBoard, checkingPos, currentID))
-            {
-                // Debug.Log("Slot is occupied");
-                return false; // Slot not available.
-            }
-        }
-
-        return true;
-    }
-
-
-    /// <summary>
-    /// Checks to see if the chip can be placed and tries to place the chip at the target grid coordinates if able.
-    /// </summary>
-    /// <param name="chipBoard">The reference to the board to modify / place the chip on.</param>
-    /// <param name="targetGridPos">The target coordinates of the chip on the board.</param>
-    /// <param name="currentID">The id to write to the board to represent this chip.</param>
-    /// <returns>True if the operation was successful.</returns>
-    public virtual bool PlaceChipAtTargetSlot(ref int[,] chipBoard, Vector2Int targetGridPos, int currentID)
-    {
-        if (!CanPlaceAtTargetSlot(ref chipBoard, targetGridPos)) return false;
-
-        foreach (Vector2Int chipPart in blockLayout)
-        {
-            // invert the Y because +1 y means up on screen but not on the board. Top to bottom, 0 to X.
-            Vector2Int chipPartPos = targetGridPos + new Vector2Int(chipPart.x, -chipPart.y);
-
-            SetIDAtTargetSlot(ref chipBoard, chipPartPos, currentID);
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Removes the chip from the board.
-    /// </summary>
-    /// <param name="chipBoard">The reference to the board to modify.</param>
-    /// <param name="currentID">The id of the chip to remove.</param>
-    public virtual void RemoveChipFromBoard(ref int[,] chipBoard, int currentID)
-    {
-        for (int y = 0; y < chipBoard.GetLength(Y_ROW); y++)
-        {
-            for (int x = 0; x < chipBoard.GetLength(X_ROW); x++)
-            {
-                if (chipBoard[y, x] == currentID) chipBoard[y, x] = -1;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Checks of the single slot is occupied at the target coordinates on the board.
-    /// </summary>
-    /// <param name="chipBoard">A reference to the board to check on.</param>
-    /// <param name="targetGridPos">The target slot coordinates.</param>
-    /// <param name="currentID">The id of the chip to ignore.</param>
-    /// <returns>True if the slot is occupied.</returns>
-    protected bool IsSlotOccupied(ref int[,] chipBoard, Vector2Int targetGridPos, int currentID = -1)
-    {
-        // Y, X - R, C
-        //[0, 0] top left,
-        //[X, 0] bottom left
-        //[0, X] top right
-        return chipBoard[targetGridPos.y, targetGridPos.x] != -1 && chipBoard[targetGridPos.y, targetGridPos.x] != currentID;
-    }
-
-    /// <summary>
-    /// Sets the id at the target coordinates on the board.
-    /// </summary>
-    /// <param name="chipBoard">A reference to the board to modify.</param>
-    /// <param name="targetGridPos">The target coordinates to set the id for.</param>
-    /// <param name="currentID">The id to set the slot to.</param>
-    protected void SetIDAtTargetSlot(ref int[,] chipBoard, Vector2Int targetGridPos, int currentID)
-    {
-        if (targetGridPos.x < 0 || targetGridPos.y < 0 || targetGridPos.y >= chipBoard.GetLength(Y_ROW) || targetGridPos.x >= chipBoard.GetLength(X_ROW)) return;
-
-        chipBoard[targetGridPos.y, targetGridPos.x] = currentID;
-    }
 
     /// <summary>
     /// Gets the block layer, a collections of positions the chip occupies.

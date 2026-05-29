@@ -79,11 +79,11 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // yeah, no, this is wrong. We need to destroy the other one.
-        if (GameManager.Instance != null && GameManager.Instance != this)
+        // Terminate the other game manager since it needs to be replaced with this one for a fresh run.
+        if (Instance != null && Instance != this)
         {
             // Destroy(this);
-            Destroy(GameManager.Instance.gameObject); // Terminate the other game manager since it was brought over from a prev game.
+            Destroy(Instance.gameObject); // Terminate the other game manager since it was brought over from a prev game.
             print("Other game manager has been removed!");
         }
 
