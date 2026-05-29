@@ -22,7 +22,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
     [SerializeField]
     GameObject InventoryChipItem;
 
-    private ChipManager chipManager;
+    private ChipRunM chipManager;
 
     private Vector3 pos;
     private RectTransform rectTransform;
@@ -50,7 +50,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
     {
         rectTransform = GetComponent<RectTransform>();
         pos = rectTransform.localPosition;
-        chipManager = ChipManager.Instance;
+        chipManager = ChipRunM.Instance;
 
         Init();
     }

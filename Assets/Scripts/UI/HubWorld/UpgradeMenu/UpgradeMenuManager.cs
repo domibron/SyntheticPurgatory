@@ -239,8 +239,8 @@ public class UpgradeMenuManager : MonoBehaviour
 
     private void AddChipModifiersIn()
     {
-        ChipManager.Instance.ModifyStatChipData(ref currentPStats, ref currentMiscStats);
-        ChipManager.Instance.ModifyStatChipData(ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats);
+        ChipRunM.Instance.ModifyStatChipData(ref currentPStats, ref currentMiscStats);
+        ChipRunM.Instance.ModifyStatChipData(ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats);
     }
 
     public void GetConfirmApplyStats()
