@@ -109,9 +109,9 @@ public class ScrapLevelM : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (GameManager.Instance != null)
+        if (RunManager.Instance != null)
         {
-            MiscellaneousStats collectableStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
+            MiscellaneousStats collectableStats = RunStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
             if (collectableStats == null)
             {

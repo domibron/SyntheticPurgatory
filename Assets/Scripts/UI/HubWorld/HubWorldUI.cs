@@ -97,10 +97,10 @@ public class HubWorldUI : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        if (GameManager.Instance != null)
+        if (RunManager.Instance != null)
         {
             // remove this so no issues occur.
-            Destroy(GameManager.Instance.gameObject);
+            Destroy(RunManager.Instance.gameObject);
         }
 
         if (LevelLoading.Instance != null)

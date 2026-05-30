@@ -183,7 +183,7 @@ public class ChipBoardMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHan
         ChipSO chipData = chipManager.GetChipDataFromID(id);
 
         // GameObject chipBoardObject = Instantiate(chipData.GetBoardChipObject(), placeChipsSection);
-        GameObject chipBoardObject = chipData.CreateAndReturnBoardItem();
+        GameObject chipBoardObject = ChipUtil.CreateAndReturnBoardItem(chipData);
         chipBoardObject.transform.SetParent(placeChipsSection);
 
         chipBoardObject.transform.localPosition = ConvertedGridPosToRealPos(pos);

@@ -49,7 +49,7 @@ public class UpgradeMenuManager : MonoBehaviour
 
     private int currentCost = 0;
 
-    private GameManager gameManager;
+    private RunManager gameManager;
 
     // public event Action OnStatsAppliedOrReset;
     public event Action OnStatsUpdated;
@@ -75,11 +75,11 @@ public class UpgradeMenuManager : MonoBehaviour
         Instance = this;
 
         // precaution.
-        if (GameStatsManager.Instance == null) throw new NullReferenceException($"Cannot function correctly if {nameof(GameStatsManager)} doesn't exist!");
+        if (RunStatsManager.Instance == null) throw new NullReferenceException($"Cannot function correctly if {nameof(RunStatsManager)} doesn't exist!");
 
         // these two hold upgradeable stats. Could simplify the whole system with one dynamic stat class.
-        currentPStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
-        currentMiscStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
+        currentPStats = RunStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+        currentMiscStats = RunStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
         upgradedButNotAppliedPStats = (PlayerStats)currentPStats.Clone();
         upgradedButNotAppliedMiscStats = (MiscellaneousStats)currentMiscStats.Clone();
@@ -90,7 +90,7 @@ public class UpgradeMenuManager : MonoBehaviour
     {
         OnStatsUpdated?.Invoke();
 
-        gameManager = GameManager.Instance;
+        gameManager = RunManager.Instance;
         ConfirmationBox.Instance.OnConfirmation += OnConfirmation;
     }
 
@@ -185,8 +185,8 @@ public class UpgradeMenuManager : MonoBehaviour
             currentPStats = (PlayerStats)upgradedButNotAppliedPStats.Clone();
             currentMiscStats = (MiscellaneousStats)upgradedButNotAppliedMiscStats.Clone();
 
-            GameStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, currentPStats);
-            GameStatsManager.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, currentMiscStats);
+            RunStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, currentPStats);
+            RunStatsManager.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, currentMiscStats);
         }
         else
         {
@@ -239,8 +239,8 @@ public class UpgradeMenuManager : MonoBehaviour
 
     private void AddChipModifiersIn()
     {
-        ChipRunM.Instance.ModifyStatChipData(ref currentPStats, ref currentMiscStats);
-        ChipRunM.Instance.ModifyStatChipData(ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats);
+        ChipRunM.Instance.ModifyStatsFromAllBoardChips(ref currentPStats, ref currentMiscStats);
+        ChipRunM.Instance.ModifyStatsFromAllBoardChips(ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats);
     }
 
     public void GetConfirmApplyStats()

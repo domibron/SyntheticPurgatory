@@ -6,12 +6,12 @@ public class DisplayCurrentScrap : MonoBehaviour
     TMP_Text text;
 
 
-    GameManager gameManager;
+    RunManager gameManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        gameManager = GameManager.Instance;
+        gameManager = RunManager.Instance;
         text = GetComponent<TMP_Text>();
     }
 

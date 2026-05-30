@@ -55,6 +55,6 @@ public class LivesSelectorUI : MonoBehaviour
 
     public void UpdateMaxLives(int amount)
     {
-        GameManager.Instance.SetMaxLives(amount);
+        RunManager.Instance.SetMaxLives(amount);
     }
 }

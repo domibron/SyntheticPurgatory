@@ -4,6 +4,6 @@ public class WinGame : MonoBehaviour
 {
     public void WinDaGame()
     {
-        GameManager.Instance.statsHolder.outcome = true;
+        RunManager.Instance.statsHolder.outcome = true;
     }
 }

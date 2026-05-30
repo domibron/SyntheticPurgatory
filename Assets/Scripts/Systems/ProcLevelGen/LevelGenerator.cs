@@ -255,9 +255,9 @@ public class LevelGenerator : SequenceBase
     {
         // Tries to get game manager seed, if it cant find the game manager, then it will generate one with old method.
 
-        if (GameManager.Instance != null)
+        if (RunManager.Instance != null)
         {
-            Seed = GameManager.Instance.GenerateNextSeed();
+            Seed = RunManager.Instance.GenerateNextSeed();
         }
         else
         {

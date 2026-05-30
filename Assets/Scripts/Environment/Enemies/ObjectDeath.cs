@@ -43,8 +43,8 @@ public class ObjectDeath : MonoBehaviour
 
         if (addToKillCounter)
         {
-            GameManager.Instance.statsHolder.enemiesDefeated++;
-            GameManager.Instance.statsHolder.enemiesDefeatedScore += enemyScore;
+            RunManager.Instance.statsHolder.enemiesDefeated++;
+            RunManager.Instance.statsHolder.enemiesDefeatedScore += enemyScore;
         }
 
         Destroy(gameObject); // Destroy object

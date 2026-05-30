@@ -8,7 +8,7 @@ public class StartTimer : MonoBehaviour
     {
         while (PlayerRefFetcher.Instance == null) yield return new WaitForEndOfFrame();
 
-        if (GameManager.Instance != null) GameManager.Instance.StartTimer(); // TODO: move to level generator.
+        if (RunManager.Instance != null) RunManager.Instance.StartTimer(); // TODO: move to level generator.
 
     }
 }

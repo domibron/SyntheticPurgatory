@@ -47,18 +47,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxLives: 3
-  commonUpgradeAmount: 2
-  commonDowngradeAmount: 1
-  commonBaseUnlockCost: 200
-  commonCostIncrease: 25
-  rareUpgradeAmount: 4
-  rareDowngradeAmount: 1
-  rareBaseUnlockCost: 400
-  rareCostIncrease: 50
-  epicUpgradeAmount: 5
-  epicDowngradeAmount: 0
-  epicBaseUnlockCost: 600
-  epicCostIncrease: 100
+  commonModuleData:
+    Cost: 200
+    CostIncreaseAmount: 25
+  rareModuleData:
+    Cost: 400
+    CostIncreaseAmount: 50
+  epicModuleData:
+    Cost: 600
+    CostIncreaseAmount: 100
 --- !u!114 &7383289994067013109
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ public class PlayerHUD : MonoBehaviour
     private PlayerCombat playerCombat;
     private Health playerHealth;
 
-    GameManager gameManager;
+    RunManager gameManager;
 
     // [SerializeField]
     // private TMP_Text ammoText;
@@ -88,7 +88,7 @@ public class PlayerHUD : MonoBehaviour
         playerHealth = playerObject.GetComponent<Health>();
         playerHealth.OnHealthChanged += OnHealthChanged;
 
-        gameManager = GameManager.Instance;
+        gameManager = RunManager.Instance;
 
         savedAlpha = damageVignette.color.a;
         damageVignette.color = new Color(damageVignette.color.a, damageVignette.color.g, damageVignette.color.b, 0);
@@ -161,12 +161,12 @@ public class PlayerHUD : MonoBehaviour
 
         if (playerDied) { return; }
 
-        if (GameManager.Instance != null)
+        if (RunManager.Instance != null)
         {
-            if (gameManager == null) gameManager = GameManager.Instance;
+            if (gameManager == null) gameManager = RunManager.Instance;
 
 
-            if (!GameManager.Instance.IsTimerHidden())
+            if (!RunManager.Instance.IsTimerHidden())
                 currentTimeText.text = ((int)gameManager.GetCurrentTime() / 60).ToString() + ":" + (((float)gameManager.GetCurrentTime() % 60f) < 10 ? "0" : "") + ((float)gameManager.GetCurrentTime() % 60f).ToString("F2");
             else
                 currentTimeText.text = "";
@@ -177,7 +177,7 @@ public class PlayerHUD : MonoBehaviour
                 lastDivisible = ((int)gameManager.GetCurrentTime() / 30);
                 if (lastDivisible > 1)
                 {
-                    GameManager.Instance.InvokeRemindTime();
+                    RunManager.Instance.InvokeRemindTime();
                     StartCoroutine(FlashTimer());
                 }
                 else

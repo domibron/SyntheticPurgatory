@@ -21,7 +21,7 @@ public class ExitTrigger : MonoBehaviour
             }
             else
             {
-                GameManager.Instance?.ReturnToHubWorld();
+                RunManager.Instance?.ReturnToHubWorld();
             }
 
         }

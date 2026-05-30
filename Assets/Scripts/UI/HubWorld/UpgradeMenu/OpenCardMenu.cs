@@ -55,20 +55,20 @@ public class OpenCardMenu : MonoBehaviour
     private GameObject displayedChip; // so we can destroy it later.
 
 
-    private GameManager gameManager;
+    private RunManager gameManager;
 
     private ChipRunM chipManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (GameManager.Instance == null)
+        if (RunManager.Instance == null)
         {
             Debug.LogError("GameManager Instance is null!");
             return;
         }
 
-        gameManager = GameManager.Instance;
+        gameManager = RunManager.Instance;
 
         if (ChipRunM.Instance == null)
         {
@@ -84,21 +84,21 @@ public class OpenCardMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        commonCounter.text = gameManager.GetCardCount(ModuleTier.Common).ToString("N0");
-        rareCounter.text = gameManager.GetCardCount(ModuleTier.Rare).ToString("N0");
-        epicCounter.text = gameManager.GetCardCount(ModuleTier.Epic).ToString("N0");
+        commonCounter.text = gameManager.GetModuleCount(ModuleTier.Common).ToString("N0");
+        rareCounter.text = gameManager.GetModuleCount(ModuleTier.Rare).ToString("N0");
+        epicCounter.text = gameManager.GetModuleCount(ModuleTier.Epic).ToString("N0");
 
-        commonCost.text = gameManager.GetCardCost(ModuleTier.Common).ToString("N0") + "sc";
-        rareCost.text = gameManager.GetCardCost(ModuleTier.Rare).ToString("N0") + "sc";
-        epicCost.text = gameManager.GetCardCost(ModuleTier.Epic).ToString("N0") + "sc";
+        commonCost.text = gameManager.GetModuleCost(ModuleTier.Common).ToString("N0") + "sc";
+        rareCost.text = gameManager.GetModuleCost(ModuleTier.Rare).ToString("N0") + "sc";
+        epicCost.text = gameManager.GetModuleCost(ModuleTier.Epic).ToString("N0") + "sc";
 
-        if (gameManager.GetCardCount(ModuleTier.Common) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(ModuleTier.Common)) commonButton.interactable = false;
+        if (gameManager.GetModuleCount(ModuleTier.Common) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetModuleCost(ModuleTier.Common)) commonButton.interactable = false;
         else commonButton.interactable = true;
 
-        if (gameManager.GetCardCount(ModuleTier.Rare) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(ModuleTier.Rare)) rareButton.interactable = false;
+        if (gameManager.GetModuleCount(ModuleTier.Rare) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetModuleCost(ModuleTier.Rare)) rareButton.interactable = false;
         else rareButton.interactable = true;
 
-        if (gameManager.GetCardCount(ModuleTier.Epic) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetCardCost(ModuleTier.Epic)) epicButton.interactable = false;
+        if (gameManager.GetModuleCount(ModuleTier.Epic) <= 0 || gameManager.GetCurrentScrapCount() < gameManager.GetModuleCost(ModuleTier.Epic)) epicButton.interactable = false;
         else epicButton.interactable = true;
 
         if (commonButton.interactable || rareButton.interactable || epicButton.interactable) showPlayerCanUnlockCard.SetActive(true);
@@ -109,18 +109,18 @@ public class OpenCardMenu : MonoBehaviour
     {
         if (!commonButton.interactable) return;
 
-        OpenAndDisplayNewChip(ChipRunM.ChipType.Common);
+        OpenAndDisplayNewChip(ModuleTier.Common);
 
-        gameManager.UnlockCard(ModuleTier.Common);
+        gameManager.OpenModule(ModuleTier.Common);
     }
 
     public void OpenRare()
     {
         if (!rareButton.interactable) return;
 
-        OpenAndDisplayNewChip(ChipRunM.ChipType.Rare);
+        OpenAndDisplayNewChip(ModuleTier.Rare);
 
-        gameManager.UnlockCard(ModuleTier.Rare);
+        gameManager.OpenModule(ModuleTier.Rare);
     }
 
     public void OpenEpic()
@@ -128,23 +128,23 @@ public class OpenCardMenu : MonoBehaviour
 
         if (!epicButton.interactable) return;
 
-        OpenAndDisplayNewChip(ChipRunM.ChipType.Epic);
+        OpenAndDisplayNewChip(ModuleTier.Epic);
 
-        gameManager.UnlockCard(ModuleTier.Epic);
+        gameManager.OpenModule(ModuleTier.Epic);
     }
 
-    private void OpenAndDisplayNewChip(ChipRunM.ChipType chipType)
+    private void OpenAndDisplayNewChip(ModuleTier moduleTier)
     {
         // GameObject boardItem = Instantiate(chipData.GetBoardChipObject(), backImageTransform);
 
-        ChipSO chipData = chipManager.OpenModule(chipType);
+        ChipSO chipData = chipManager.OpenModule(moduleTier);
 
         unlockTitle.text = "Unlocked " + chipData.GetNameOfChip();
-        unlockDescription.text = $"<b>Tier:</b>\n{chipType}\n<b>Description:</b>\n{chipData.GetDescriptionOfChip()}";
+        unlockDescription.text = $"<b>Tier:</b>\n{moduleTier}\n<b>Description:</b>\n{chipData.GetDescriptionOfChip()}";
 
         if (displayedChip != null) Destroy(displayedChip);
 
-        displayedChip = chipData.CreateAndReturnBoardItem();
+        displayedChip = ChipUtil.CreateAndReturnBoardItem(chipData);
         displayedChip.transform.SetParent(chipDisplaySection);
 
         Vector2Int chipSize = chipData.GetSize();

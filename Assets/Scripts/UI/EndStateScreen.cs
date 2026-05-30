@@ -55,7 +55,7 @@ public class EndStateScreen : MonoBehaviour
         int calculatedScore = 0;
         int curHeldScore;
 
-        GameManager gm = GameManager.Instance;
+        RunManager gm = RunManager.Instance;
 
 
         // TIMED SCORE
@@ -71,7 +71,7 @@ public class EndStateScreen : MonoBehaviour
         calculatedScore += curHeldScore;
 
         // GAME OUTCOME SCORE
-        if (GameManager.Instance.statsHolder.outcome) // Won
+        if (RunManager.Instance.statsHolder.outcome) // Won
         {
             outcome.GetChild(0).GetComponent<TMP_Text>().text = "Victory";
             outcome.GetChild(1).GetComponent<TMP_Text>().text = "4000";
@@ -125,7 +125,7 @@ public class EndStateScreen : MonoBehaviour
 
 
         // LEVELS CLEARED TEXT (Not a scorable stat as it can be abused)
-        levelsCleared.GetChild(0).GetComponent<TMP_Text>().text = (GameManager.Instance.GetCurrentLevel() - 2).ToString();
+        levelsCleared.GetChild(0).GetComponent<TMP_Text>().text = (RunManager.Instance.GetCurrentLevel() - 2).ToString();
     }
 
 
