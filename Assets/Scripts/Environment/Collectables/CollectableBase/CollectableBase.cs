@@ -93,9 +93,9 @@ public class CollectableBase : MonoBehaviour
     /// </summary>
     protected virtual void Initialize()
     {
-        if (GameManager.Instance != null)
+        if (RunManager.Instance != null)
         {
-            MiscellaneousStats collectableStats = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
+            MiscellaneousStats collectableStats = RunStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
             if (collectableStats == null)
             {

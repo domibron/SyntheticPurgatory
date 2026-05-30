@@ -26,7 +26,7 @@ public class InventoryUIPopupHooks : MonoBehaviour
         popupManager = PopupManager.Instance;
         toolTipManager = ToolTipManager.Instance;
 
-        if (GameManager.Instance == null)
+        if (RunManager.Instance == null)
         {
             Debug.LogWarning("Cannot find game manager!");
             return;
@@ -42,8 +42,8 @@ public class InventoryUIPopupHooks : MonoBehaviour
         ModuleLevelM.Instance.OnModuleCollected += OnModuleCollected;
         ModuleLevelM.Instance.OnModuleDeposited += OnModuleDeposited;
 
-        GameManager.Instance.OnLowTime += OnLowTime;
-        GameManager.Instance.OnWarnTime += OnWarnTime;
+        RunManager.Instance.OnLowTime += OnLowTime;
+        RunManager.Instance.OnWarnTime += OnWarnTime;
     }
 
     void Update()

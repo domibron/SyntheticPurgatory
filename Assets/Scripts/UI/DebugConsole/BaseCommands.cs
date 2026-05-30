@@ -353,22 +353,22 @@ public class BaseCommands
 
         giveScrap = new Command<int>("givescrap", "Gives the desired amount of scrap into inventory.", "givescrap <int>", (scrap) =>
         {
-            if (GameManager.Instance == null)
+            if (RunManager.Instance == null)
             {
                 console.TextToConsole("<color=red>Cannot find the game manager</color>");
                 return;
             }
 
 
-            GameManager.Instance.AddToDepositedScrap(scrap);
+            RunManager.Instance.AddToDepositedScrap(scrap);
 
-            console.TextToConsole($"Gave {scrap}. Current amount is {GameManager.Instance.GetCurrentScrapCount()}");
+            console.TextToConsole($"Gave {scrap}. Current amount is {RunManager.Instance.GetCurrentScrapCount()}");
 
         });
 
         giveUpgradeCard = new Command<int, int>("giveupcard", "Gives the desired amount of the upgrade card.", "giveupcard <int card type> <int amount>", (type, amount) =>
         {
-            if (GameManager.Instance == null)
+            if (RunManager.Instance == null)
             {
                 console.TextToConsole("<color=red>Cannot find the game manager</color>");
                 return;
@@ -387,9 +387,9 @@ public class BaseCommands
             }
 
 
-            GameManager.Instance.AddToStoredCards(cardTeir.Value, amount);
+            RunManager.Instance.AddToStoredModules(cardTeir.Value, amount);
 
-            console.TextToConsole($"Gave {amount} of {cardTeir.Value.ToString()}. Current amount is {GameManager.Instance.GetCardCount(cardTeir.Value)}");
+            console.TextToConsole($"Gave {amount} of {cardTeir.Value.ToString()}. Current amount is {RunManager.Instance.GetModuleCount(cardTeir.Value)}");
         });
 
         refreshUpgradeMenu = new Command("refupmenu", "Refreshes the upgrade menu.", "refupmenu", () =>

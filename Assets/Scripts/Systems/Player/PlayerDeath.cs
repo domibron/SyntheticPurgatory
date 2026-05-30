@@ -28,7 +28,7 @@ public class PlayerDeath : MonoBehaviour
         transform.GetComponent<PlayerMovement>().DisablePlayerMovement(2);
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
 
-        GameManager.Instance.statsHolder.LoseLife();
+        RunManager.Instance.statsHolder.LoseLife();
 
         Cursor.lockState = CursorLockMode.None;
 
@@ -48,7 +48,7 @@ public class PlayerDeath : MonoBehaviour
             Cursor.visible = true;
         }
 
-        if (GameManager.Instance.GetCurrentLives() > 1)
+        if (RunManager.Instance.GetCurrentLives() > 1)
         {
             deathCanvasScript.ActivateCanvas(true); // Activate death screen
             if (ScrapLevelM.Instance != null)

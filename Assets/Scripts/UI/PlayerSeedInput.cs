@@ -16,7 +16,7 @@ public class PlayerSeedInput : MonoBehaviour
 
         if (seedInputField.text == string.Empty)
         {
-            GameManager.Instance.SetWorldSeed(-1, true);
+            RunManager.Instance.SetRunSeed(-1, true);
             disabledUnlockText.SetActive(false);
         }
         else
@@ -26,11 +26,11 @@ public class PlayerSeedInput : MonoBehaviour
             {
                 seedInputField.text = Mathf.Abs(int.Parse(seedInputField.text)).ToString();
             }
-            
-            GameManager.Instance.SetWorldSeed(int.Parse(seedInputField.text), true);
+
+            RunManager.Instance.SetRunSeed(int.Parse(seedInputField.text), true);
             disabledUnlockText.SetActive(true);
         }
-        
+
     }
 
 

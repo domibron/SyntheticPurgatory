@@ -9,9 +9,9 @@ public class PlayerStatsSetter : MonoBehaviour
     void Start()
     {
         PlayerStats playerStats = null;
-        if (GameStatsManager.Instance != null)
+        if (RunStatsManager.Instance != null)
         {
-            playerStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
+            playerStats = RunStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
         }
         else
         {

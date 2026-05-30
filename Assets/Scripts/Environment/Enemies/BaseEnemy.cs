@@ -74,7 +74,7 @@ public class BaseEnemy : MonoBehaviour
 
         if (playerSourced && isToaster)
         {
-            GameManager.Instance.statsHolder.todPunts++;
+            RunManager.Instance.statsHolder.todPunts++;
         }
 
     }

@@ -145,10 +145,10 @@ public class ChipRunM : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Add the modifiers to the stat classes.
     /// </summary>
-    /// <param name="playerStats"></param>
-    /// <param name="miscellaneousStats"></param>
+    /// <param name="playerStats">A reference to the player stats.</param>
+    /// <param name="miscellaneousStats">A reference to the miscellaneous stats for scrap and other things.</param>
     public void AddChipModifiers(ref PlayerStats playerStats, ref MiscellaneousStats miscellaneousStats)
     {
         foreach (int chip in allPlacedChips.Keys)
@@ -157,9 +157,14 @@ public class ChipRunM : MonoBehaviour
         }
     }
 
-    public ChipSO OpenModule(ChipType type)
+    /// <summary>
+    /// Open a module to get a chip and add it to the inventory.
+    /// </summary>
+    /// <param name="type">The tier of the module to open.</param>
+    /// <returns>The chip data that was unlocked.</returns>
+    public ChipSO OpenModule(ModuleTier type)
     {
-        ChipSO newChip = GetRandomChipFromModule(type);
+        ChipSO newChip = GetRandomChipFromModule((ChipType)type);
 
         int newID = allChips.Keys.Count;
         allChips.Add(newID, newChip); // add to lookup table.
@@ -168,6 +173,11 @@ public class ChipRunM : MonoBehaviour
         return newChip;
     }
 
+    /// <summary>
+    /// Get a random chip based on the tier of the chip.
+    /// </summary>
+    /// <param name="chipType">The tier of the chip.</param>
+    /// <returns>The random chip that was selected.</returns>
     public ChipSO GetRandomChipFromModule(ChipType chipType)
     {
         switch (chipType)
@@ -183,6 +193,11 @@ public class ChipRunM : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Get a random chip from the collection of chips.
+    /// </summary>
+    /// <param name="collection">The collection of chips to select from.</param>
+    /// <returns>A random chip form this collection.</returns>
     private ChipSO GetRandomChipFromCollection(ChipSO[] collection)
     {
         if (collection.Length <= 0) return null;
@@ -191,16 +206,29 @@ public class ChipRunM : MonoBehaviour
         return collection[Random.Range(0, collection.Length)];
     }
 
+    /// <summary>
+    /// Get all the chips in the inventory.
+    /// </summary>
+    /// <returns>The list of ids.</returns>
     public List<int> GetAllInventoryChips()
     {
         return allInventoryChips;
     }
 
+    /// <summary>
+    /// Get all the chips that are placed on the board.
+    /// </summary>
+    /// <returns>A collection of chips with id key and vector2Int position on the board.</returns>
     public Dictionary<int, Vector2Int> GetAllPlacedChips()
     {
         return allPlacedChips;
     }
 
+    /// <summary>
+    /// Get the chip data from the id.
+    /// </summary>
+    /// <param name="id">The id to look for the associated data for.</param>
+    /// <returns>The chip data if found or null if not.</returns>
     public ChipSO GetChipDataFromID(int id)
     {
         if (!allChips.ContainsKey(id)) return null;
@@ -208,11 +236,20 @@ public class ChipRunM : MonoBehaviour
         return allChips[id];
     }
 
+    /// <summary>
+    /// Get the cound of all unlocked chips.
+    /// </summary>
+    /// <returns>The total chips the player currently has in total.</returns>
     public int GetTotalChipCount()
     {
         return allChips.Count;
     }
 
+    /// <summary>
+    /// Get the id of a chip from the coordinates on the board.
+    /// </summary>
+    /// <param name="pos">The coordinates to look up at.</param>
+    /// <returns>The chip id or -1 if null / blank.</returns>
     public int GetChipIdFromGridPos(Vector2Int pos)
     {
         if (pos.x < 0 || pos.y < 0 || pos.y >= chipBoard.GetLength(ChipUtil.Y_ROW) || pos.x >= chipBoard.GetLength(ChipUtil.X_ROW)) return -1;
@@ -220,6 +257,10 @@ public class ChipRunM : MonoBehaviour
         return chipBoard[pos.y, pos.x];
     }
 
+    /// <summary>
+    /// Get the board as a string. Mainly used for debugging.
+    /// </summary>
+    /// <returns>The board as a string.</returns>
     public string BoardToString()
     {
         int[,] data = chipBoard;
@@ -237,7 +278,12 @@ public class ChipRunM : MonoBehaviour
         return returnedString;
     }
 
-    public void ModifyStatChipData(ref PlayerStats pStats, ref MiscellaneousStats mStats)
+    /// <summary>
+    /// Modify the stats with all the currently placed down chips on the board.
+    /// </summary>
+    /// <param name="pStats">A reference to the player stats.</param>
+    /// <param name="mStats">A reference to the miscellaneous stats.</param>
+    public void ModifyStatsFromAllBoardChips(ref PlayerStats pStats, ref MiscellaneousStats mStats)
     {
         pStats.ResetAllChipStats();
         mStats.ResetAllChipStats();
@@ -248,20 +294,12 @@ public class ChipRunM : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Instantiates the board item and returns a reference to the game object that was created.
-    /// </summary>
-    /// <returns>Reference to the created board game object.</returns>
-    public GameObject CreateAndReturnBoardItem(ChipSO chip)
-    {
-        GameObject go = Instantiate(chip.GetBoardChipObject());
 
-        if (chip.IsGenerativeBoardItem()) go.GetComponent<GenerateChip>().GenerateVisualChip(chip);
-
-        return go;
-    }
 }
 
+/// <summary>
+/// Utility class for the chip system.
+/// </summary>
 public static class ChipUtil
 {
     /// <summary>
@@ -374,5 +412,16 @@ public static class ChipUtil
     }
 
 
+    /// <summary>
+    /// Instantiates the board item and returns a reference to the game object that was created.
+    /// </summary>
+    /// <returns>Reference to the created board game object.</returns>
+    public static GameObject CreateAndReturnBoardItem(ChipSO chip)
+    {
+        GameObject go = Object.Instantiate(chip.GetBoardChipObject());
 
+        if (chip.IsGenerativeBoardItem()) go.GetComponent<GenerateChip>().GenerateVisualChip(chip);
+
+        return go;
+    }
 }

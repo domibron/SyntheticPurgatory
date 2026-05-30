@@ -6,11 +6,11 @@ public class DeltDamageStorer : MonoBehaviour
     [SerializeField]
     bool isPlayer = false;
 
-    GameManager gameManager;
+    RunManager gameManager;
 
     void Awake()
     {
-        gameManager = GameManager.Instance;
+        gameManager = RunManager.Instance;
         GetComponent<Health>().OnHealthChanged += OnHealthChanged;
     }
 

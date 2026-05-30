@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 [Serializable]
@@ -21,9 +20,9 @@ public enum Stats
     miscellaneous,
 }
 
-public class GameStatsManager : MonoBehaviour
+public class RunStatsManager : MonoBehaviour
 {
-    public static GameStatsManager Instance { get; private set; }
+    public static RunStatsManager Instance { get; private set; }
 
     [SerializeField]
     private StatData[] baseStats = new StatData[0]; // This store the raw stat classes, aka the scriptable objects.

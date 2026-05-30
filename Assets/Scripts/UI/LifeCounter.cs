@@ -34,17 +34,17 @@ public class LifeCounter : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        if (GameManager.Instance == null)
+        if (RunManager.Instance == null)
         {
             GameObject heart = Instantiate(lifeObject, lifeHolder.transform);
             heart.GetComponent<Image>().sprite = brokenLifeSprite;
             return;
         }
 
-        for (int i = 0; i < GameManager.Instance.GetMaxLives(); i++)
+        for (int i = 0; i < RunManager.Instance.GetMaxLives(); i++)
         {
             GameObject heart = Instantiate(lifeObject, lifeHolder.transform);
-            if (i >= GameManager.Instance.GetCurrentLives())
+            if (i >= RunManager.Instance.GetCurrentLives())
             {
                 heart.GetComponent<Image>().sprite = brokenLifeSprite;
             }
