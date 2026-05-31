@@ -43,7 +43,7 @@ public class ScrapDeposit : MonoBehaviour
     {
         if (RunManager.Instance != null)
         {
-            MiscellaneousStats collectableStats = RunStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
+            MiscellaneousStats collectableStats = RunStatsM.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
             if (collectableStats == null)
             {
