@@ -1,53 +1,34 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-// ▄▄▄▄    ▄▄▄▄         ▄▄   ▄  ▄▄▄▄ ▄▄▄▄▄▄▄        ▄    ▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄▄▄  ▄▄▄▄▄▄▄     ▄
-// █   ▀▄ ▄▀  ▀▄        █▀▄  █ ▄▀  ▀▄   █           ██  ██ ▄▀  ▀▄ █   ▀▄   █    █      ▀▄ ▄▀ 
-// █    █ █    █        █ █▄ █ █    █   █           █ ██ █ █    █ █    █   █    █▄▄▄▄▄  ▀█▀  
-// █    █ █    █        █  █ █ █    █   █           █ ▀▀ █ █    █ █    █   █    █        █   
-// █▄▄▄▀   █▄▄█         █   ██  █▄▄█    █           █    █  █▄▄█  █▄▄▄▀  ▄▄█▄▄  █        █   
-
-
 /// <summary>
-/// Auto shield this should be renamed to, used on enemies.
+/// Shield with a automatic restoring shield.
 /// </summary>
 public class HealthWithShield : HealthWithBasicShield
 {
+    /// <summary>
+    /// The time to wait before reactivating the shield.
+    /// </summary>
     [SerializeField]
     private float coolDownTime = 10f;
+
+    /// <summary>
+    /// The current time for the shield cool down.
+    /// </summary>
     private float currentCoolDownTime = 0;
 
+    /// <summary>
+    /// Should we be resetting the shield.
+    /// </summary>
     private bool resetShield = false;
 
 
     void Update()
     {
+        // shield reset.
         if (currentCoolDownTime > 0) currentCoolDownTime -= Time.deltaTime;
         else if (currentCoolDownTime < 0 && resetShield) ActivateShield();
-
     }
 
-    public override void AddToHealth(float amount)
-    {
-        if (shieldActive && amount < 0)
-        {
-            InvokeOnShieldHit();
-            return;
-        }
-
-        base.AddToHealth(amount);
-    }
 
     public override void ActivateShield()
     {
@@ -56,6 +37,7 @@ public class HealthWithShield : HealthWithBasicShield
         base.ActivateShield();
     }
 
+
     public override void BreakShield()
     {
         ShieldDeactivate();
@@ -63,6 +45,9 @@ public class HealthWithShield : HealthWithBasicShield
     }
 
 
+    /// <summary>
+    /// Start the shield reset timer.
+    /// </summary>
     protected void ShieldDeactivate()
     {
         currentCoolDownTime = coolDownTime;

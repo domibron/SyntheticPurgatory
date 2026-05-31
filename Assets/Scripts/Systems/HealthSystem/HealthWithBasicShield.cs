@@ -1,31 +1,26 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-// ▄▄▄▄    ▄▄▄▄         ▄▄   ▄  ▄▄▄▄ ▄▄▄▄▄▄▄        ▄    ▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄▄▄  ▄▄▄▄▄▄▄     ▄
-// █   ▀▄ ▄▀  ▀▄        █▀▄  █ ▄▀  ▀▄   █           ██  ██ ▄▀  ▀▄ █   ▀▄   █    █      ▀▄ ▄▀ 
-// █    █ █    █        █ █▄ █ █    █   █           █ ██ █ █    █ █    █   █    █▄▄▄▄▄  ▀█▀  
-// █    █ █    █        █  █ █ █    █   █           █ ▀▀ █ █    █ █    █   █    █        █   
-// █▄▄▄▀   █▄▄█         █   ██  █▄▄█    █           █    █  █▄▄█  █▄▄▄▀  ▄▄█▄▄  █        █   
-
+/// <summary>
+/// Health with a basic shield that needs to be broken before damage can be dealt.
+/// </summary>
 public class HealthWithBasicShield : Health
 {
+	/// <summary>
+	/// The shield object attached to the entity.
+	/// </summary>
 	[Header("Shield Settings")]
 	[SerializeField]
 	protected GameObject shieldObject;
 
+	/// <summary>
+	/// Should the shield be activated on start.
+	/// </summary>
 	public bool shieldActiveOnStart = true;
 
+	/// <summary>
+	/// Is the shield active.
+	/// </summary>
 	[HideInInspector]
 	public bool shieldActive = true;
 
@@ -78,6 +73,9 @@ public class HealthWithBasicShield : Health
 		ActivateShield();
 	}
 
+	/// <summary>
+	/// Break the shield.
+	/// </summary>
 	public virtual void BreakShield()
 	{
 		shieldActive = false;
@@ -87,6 +85,10 @@ public class HealthWithBasicShield : Health
 		InvokeOnShieldBreak();
 	}
 
+	/// <summary>
+	/// Add to the health but block negative values if the shield is still up.
+	/// </summary>
+	/// <param name="amount">The amount to add.</param>
 	public override void AddToHealth(float amount)
 	{
 		if (shieldActive && amount < 0)
@@ -99,13 +101,15 @@ public class HealthWithBasicShield : Health
 	}
 
 
+	/// <summary>
+	/// Activates the shield.
+	/// </summary>
 	public virtual void ActivateShield()
 	{
 		shieldActive = true;
 		shieldObject.SetActive(true);
 		InvokeOnShieldActivate();
 	}
-
 
 
 	protected void InvokeOnShieldHit()

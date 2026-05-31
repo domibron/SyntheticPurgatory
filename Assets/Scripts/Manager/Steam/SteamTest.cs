@@ -2,6 +2,11 @@ using System;
 using Steamworks;
 using UnityEngine;
 
+/*
+Testing the steam works sdk.
+This is still a nightmare to look at.
+*/
+
 public class SteamTest : MonoBehaviour
 {
     protected Callback<GameOverlayActivated_t> m_GameOverlayActivated;

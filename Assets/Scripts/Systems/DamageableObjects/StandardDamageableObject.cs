@@ -1,15 +1,18 @@
-using System;
-using TMPro;
 using UnityEngine;
 
 
-
+/// <summary>
+/// A simple script that deals damage to the entity.
+/// </summary>
 public class StandardDamageableObject : MonoBehaviour, IDamageable
 {
+    /// <summary>
+    /// The health class attached to this entity.
+    /// </summary>
     private Health health;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    void Awake()
     {
         health = GetComponent<Health>();
     }
