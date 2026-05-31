@@ -75,11 +75,11 @@ public class UpgradeMenuManager : MonoBehaviour
         Instance = this;
 
         // precaution.
-        if (RunStatsManager.Instance == null) throw new NullReferenceException($"Cannot function correctly if {nameof(RunStatsManager)} doesn't exist!");
+        if (RunStatsM.Instance == null) throw new NullReferenceException($"Cannot function correctly if {nameof(RunStatsM)} doesn't exist!");
 
         // these two hold upgradeable stats. Could simplify the whole system with one dynamic stat class.
-        currentPStats = RunStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
-        currentMiscStats = RunStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
+        currentPStats = RunStatsM.Instance.GetStats<PlayerStats>(Stats.player);
+        currentMiscStats = RunStatsM.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous);
 
         upgradedButNotAppliedPStats = (PlayerStats)currentPStats.Clone();
         upgradedButNotAppliedMiscStats = (MiscellaneousStats)currentMiscStats.Clone();
@@ -185,8 +185,8 @@ public class UpgradeMenuManager : MonoBehaviour
             currentPStats = (PlayerStats)upgradedButNotAppliedPStats.Clone();
             currentMiscStats = (MiscellaneousStats)upgradedButNotAppliedMiscStats.Clone();
 
-            RunStatsManager.Instance.UpdateStats<PlayerStats>(Stats.player, currentPStats);
-            RunStatsManager.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, currentMiscStats);
+            RunStatsM.Instance.UpdateStats<PlayerStats>(Stats.player, currentPStats);
+            RunStatsM.Instance.UpdateStats<MiscellaneousStats>(Stats.miscellaneous, currentMiscStats);
         }
         else
         {

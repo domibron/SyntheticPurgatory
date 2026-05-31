@@ -263,7 +263,7 @@ public class RunManager : MonoBehaviour
         // should be impossible but just in case.
         // timePerLevel = GameStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.GetCurrentValue();
 
-        currentTime = RunStatsManager.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.GetCurrentValue();
+        currentTime = RunStatsM.Instance.GetStats<MiscellaneousStats>(Stats.miscellaneous).MaxLevelTimeStat.GetCurrentValue();
         inDungeon = true;
         isPaused = false;
     }
