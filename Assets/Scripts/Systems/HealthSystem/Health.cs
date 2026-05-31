@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using UnityEngine;
-
 
 
 /// <summary>
@@ -34,9 +32,14 @@ public class Health : MonoBehaviour
     /// <summary>
     /// Called when adding to the health, the provided float is what to add to the health. new, old.
     /// </summary>
-    public event OnHealthChangedDelegate OnHealthChanged;
+    public event OnValueChangedDelegate OnHealthChanged;
 
-    public delegate void OnHealthChangedDelegate(float newHealthValue, float oldHealthValue);
+    /// <summary>
+    /// A delegate for when a value was changed sending both the original and updated values.
+    /// </summary>
+    /// <param name="newValue">The new value after the change.</param>
+    /// <param name="oldValue">The original value before the change.</param>
+    public delegate void OnValueChangedDelegate(float newValue, float oldValue);
 
     protected virtual void Start()
     {
@@ -108,6 +111,9 @@ public class Health : MonoBehaviour
         return maxHealth;
     }
 
+    /// <summary>
+    /// Calls the on death event if it was not called.
+    /// </summary>
     protected virtual void CallOnDeathEvent()
     {
         if (!calledOnDeathEvent)
@@ -117,6 +123,11 @@ public class Health : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the current max health.
+    /// </summary>
+    /// <param name="value">The new max health.</param>
+    /// <param name="setCurrentHealth">Set the current health too.</param>
     public void SetMaxHealth(float value, bool setCurrentHealth = true)
     {
         maxHealth = value;

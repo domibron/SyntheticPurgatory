@@ -1,6 +1,8 @@
-using System;
 using UnityEngine;
 
+/// <summary>
+/// 
+/// </summary>
 public class Regeneration : MonoBehaviour
 {
     private Health health;
@@ -9,7 +11,7 @@ public class Regeneration : MonoBehaviour
     private float regenerationRate = 1f; // one per second.
 
     [SerializeField]
-    private float regnerationDelay = 5f;
+    private float regenerationDelay = 5f;
 
     private float currentDelay = 0f;
 
@@ -23,7 +25,7 @@ public class Regeneration : MonoBehaviour
     public void SetUpRegeneration(float regenRate, float delay)
     {
         regenerationRate = regenRate;
-        regnerationDelay = delay;
+        regenerationDelay = delay;
     }
 
     private void OnHealthChanged(float newHealth, float oldHealth)
@@ -31,7 +33,7 @@ public class Regeneration : MonoBehaviour
         if (newHealth < oldHealth)
         {
             // pause regeneration
-            currentDelay = regnerationDelay;
+            currentDelay = regenerationDelay;
         }
     }
 

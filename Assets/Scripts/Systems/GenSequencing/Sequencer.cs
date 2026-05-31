@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Stores a sequence that can be enabled or disabled.
+/// </summary>
 [Serializable]
 public class Sequence
 {
@@ -16,33 +18,57 @@ public class Sequence
     }
 }
 
+/// <summary>
+/// The controller for all the sequencers linked to this, will automatically start.
+/// </summary>
 public class Sequencer : MonoBehaviour
 {
+
+    /// <summary>
+    /// All the sequences that will be ran in order.
+    /// </summary>
     [SerializeField]
     private Sequence[] sequences;
 
+    /// <summary>
+    /// Are we currently waiting for a sequence to finish.
+    /// </summary>
     private bool waitingForASequence = false;
+
+    /// <summary>
+    /// The current sequence index we are on.
+    /// </summary>
     private int currentSequence = 0;
 
+    /// <summary>
+    /// Event for when all sequences have been completed.
+    /// </summary>
     public event Action OnSequencesEnd;
+
 
     IEnumerator Start()
     {
+        // Loading is missing. Just run the sequence and exit.
         if (LevelLoading.Instance == null)
         {
             StartCoroutine(StartSequence());
-            yield break;
+            yield break; // exit.
         }
-        
-        
-        while(!LevelLoading.Instance.IsCoreLoaded())
+
+        // Wait until the level is fully loaded.
+        while (!LevelLoading.Instance.IsCoreLoaded())
         {
             yield return null;
         }
-        
+
+        // Start the sequence.
         StartCoroutine(StartSequence());
     }
 
+    /// <summary>
+    /// Sequence runner.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator StartSequence()
     {
         for (int i = 0; i < sequences.Length; i++)
@@ -80,19 +106,34 @@ public class Sequencer : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Get the progress for the sequencer.
+    /// </summary>
+    /// <returns></returns>
     private float GetOverallProgress()
     {
         float totalProgress = 0;
+        int length = sequences.Length;
+
 
         foreach (Sequence sequence in sequences)
         {
+            if (!sequence.IsEnabled) // skip disabled sequences.
+            {
+                length--;
+                continue;
+            }
+
             totalProgress += sequence.SequenceBase.GetProgress();
         }
 
         //print(totalProgress / sequences.Length);
-        return totalProgress / sequences.Length;
+        return totalProgress / length;
     }
 
+    /// <summary>
+    /// Once a sequence ends unsubscribe to their event and mark <see cref="waitingForASequence"/> as false.
+    /// </summary>
     private void SequenceEnd()
     {
         sequences[currentSequence].SequenceBase.OnThisSequenceEnd -= SequenceEnd;
