@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Lever : MonoBehaviour, IKickable, IShootable, IMeleeable
+public class Lever : MonoBehaviour, IKickable, IShootable, IMeleeAble
 {
     private int roomID = -1;
 

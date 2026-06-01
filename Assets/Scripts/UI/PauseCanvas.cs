@@ -1,9 +1,7 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 
 public class PauseCanvas : MonoBehaviour
@@ -12,8 +10,6 @@ public class PauseCanvas : MonoBehaviour
 
     private PlayerMovement playerMovement;
     private PlayerCombat playerCombat;
-    [SerializeField]
-    private CameraController playerCamera;
 
     /// <summary>
     /// Object on the canvas that contains all the pause canvas GUI
@@ -83,20 +79,11 @@ public class PauseCanvas : MonoBehaviour
         playerMovement = playerObject.GetComponent<PlayerMovement>();
         playerCombat = playerObject.GetComponent<PlayerCombat>();
 
-        if (playerCamera == null)
-        {
-            playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
-        }
-
         ResumeGame(); // closes the pause menu so the player can play the game.
     }
 
     private void Update()
     {
-        if (playerCamera == null)
-        {
-            playerCamera = Camera.main.gameObject.GetComponent<CameraController>();
-        }
 
         // if (pauseCanvasCollection.activeSelf)
         // {
@@ -158,14 +145,10 @@ public class PauseCanvas : MonoBehaviour
     public void OpenPauseMenu()
     {
         unpausedPlayerMoveState = playerMovement.DisabledType;
-        unpausedPlayerCombatState = playerCombat.IsDisabled;
-        if (playerCamera != null)
-            unpausedCameraState = playerCamera.IsCameraDisabled();
+        unpausedPlayerCombatState = playerCombat.IsCombatDisabled();
 
         playerMovement.DisablePlayerMovement(1);
         playerCombat.DisablePlayerCombat(true);
-        if (playerCamera != null)
-            playerCamera.SetCameraDisabled(true);
 
         Cursor.lockState = CursorLockMode.None;
 
@@ -195,8 +178,6 @@ public class PauseCanvas : MonoBehaviour
     {
         playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
-        if (playerCamera != null)
-            playerCamera.SetCameraDisabled(unpausedCameraState);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -225,8 +206,6 @@ public class PauseCanvas : MonoBehaviour
     {
         playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
-        if (playerCamera != null)
-            playerCamera.SetCameraDisabled(unpausedCameraState);
 
         Time.timeScale = 1;
 
