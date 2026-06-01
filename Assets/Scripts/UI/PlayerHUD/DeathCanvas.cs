@@ -86,7 +86,7 @@ public class DeathCanvas : MonoBehaviour
     /// </summary>
     public void ReturnToHUB()
     {
-        // TODO: temp stuff.
+        // TODO: temp stuff. Game manager should know what to load.
         if (LevelCollection.DoesSceneMatchStoredKey(SceneManager.GetActiveScene().name, LevelCollection.LevelKey.BossWorld.ToString()))
         {
             LevelLoading.Instance.LoadMainMenu();

@@ -3,54 +3,89 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System;
 
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-// Im scared of this script.
 
 /// <summary>
 /// This is how levels are loaded with the splash screen.
-/// You just need to call the loadScene func to load the scene you want.
+/// You just need to call the <see cref="LoadScene(string)"/> func to load the scene you want.
 /// </summary>
 public class LevelLoading : MonoBehaviour
 {
-	// Instance so other scripts can call functions.
+	/// <summary>
+	/// Singleton for the <see cref="LevelLoading"/>.
+	/// </summary>
 	public static LevelLoading Instance;
 
 	// The loading screen UI.
+
+	// TODO: scripts should hook into this, we should only manage loading a level.
+
+	/// <summary>
+	/// The object to show when hiding the level loading.
+	/// </summary>
 	public GameObject LoadingScreen;
+
+	/// <summary>
+	/// The progress bar for the loading screen.
+	/// </summary>
 	public Slider ProgressBar;
 
+	/// <summary>
+	/// The main menu scene name to load after boot strap.
+	/// </summary>
 	[SerializeField]
 	private string MainMenuSceneName = "MainMenu";
 
-	// used to stop loading the level multiple times when reloading is called more than once when loading.
+
+	/// <summary>
+	/// Check to stop reloading the same scene  multiple times.
+	/// </summary>
 	private bool isReloading = false;
 
-	// if the level is being loaded.
+	/// <summary>
+	/// Are we waiting for things to load.
+	/// </summary>
 	public bool IsLoading = false;
 
-	// this prevents loading when enabled. this seems stupid not going to lie.
+
+
+	/// <summary>
+	/// Debug to prevent level loading from loading to test loading screens and other things.
+	/// </summary>
 	public bool OverrideAll = false;
 
+
+	/// <summary>
+	/// Is something overriding the loading bar.
+	/// </summary>
 	private bool isOverridingLoadingBar = false;
+
+	/// <summary>
+	/// The override value for the loading bar if <see cref="isOverridingLoadingBar"/> is TRUE.
+	/// </summary>
 	private float loadingBarOverrideValue = 0;
 
-	private bool holdingLoading = false;
 
-	private bool hasLoadedCore = false;
+	/// <summary>
+	/// Are we waiting for something to release loading.
+	/// </summary>
+	private bool isHoldingLoading = false;
+
+	/// <summary>
+	/// Has the core of the level been loaded. (Just the scenes)
+	/// </summary>
+	private bool isCoreLoaded = false;
 
 	// progress of loading the scene.
+	/// <summary>
+	/// The total progress of loading all the scenes requested.
+	/// </summary>
 	private float totalSceneProgress;
 
 	// This is used to keep track of levels being loaded.
+	/// <summary>
+	/// List of all tracked level async loading. Used to track progress.
+	/// </summary>
 	List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
 
 	#region Awake
@@ -131,9 +166,9 @@ public class LevelLoading : MonoBehaviour
 	{
 		if (OverrideAll) return;
 
-		hasLoadedCore = false;
+		isCoreLoaded = false;
 
-		holdingLoading = true;
+		isHoldingLoading = true;
 
 		IsLoading = true;
 		LoadingScreen.gameObject.SetActive(true);
@@ -162,8 +197,8 @@ public class LevelLoading : MonoBehaviour
 	public void LoadScene(string sceneName)
 	{
 		if (OverrideAll) return;
-		SetIsOverriding();
-		holdingLoading = true;
+		SetIsOverridingLoadingBar();
+		isHoldingLoading = true;
 
 
 		IsLoading = true;
@@ -191,8 +226,8 @@ public class LevelLoading : MonoBehaviour
 	public void LoadScene(string[] mapNames)
 	{
 		if (OverrideAll) return;
-		SetIsOverriding();
-		holdingLoading = true;
+		SetIsOverridingLoadingBar();
+		isHoldingLoading = true;
 
 
 		IsLoading = true;
@@ -225,10 +260,10 @@ public class LevelLoading : MonoBehaviour
 	public void Reload()
 	{
 		if (OverrideAll) return;
-		hasLoadedCore = false;
+		isCoreLoaded = false;
 
-		SetIsOverriding();
-		holdingLoading = true;
+		SetIsOverridingLoadingBar();
+		isHoldingLoading = true;
 
 		IsLoading = true;
 		if (isReloading) return;
@@ -280,6 +315,9 @@ public class LevelLoading : MonoBehaviour
 			{
 				totalSceneProgress = 0;
 
+				//TODO: look at this https://docs.unity3d.com/ScriptReference/AsyncOperation-progress.html
+				// Unity specified using allowSceneActivation to false to use loading bars.
+
 				foreach (AsyncOperation operation in scenesLoading)
 				{
 					totalSceneProgress += operation.progress;
@@ -302,11 +340,11 @@ public class LevelLoading : MonoBehaviour
 			SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 		}
 
-		hasLoadedCore = true;
+		isCoreLoaded = true;
 
 		// we should have a hold until release command here instead. Have a script to tell this its free to unlock.
 
-		while (holdingLoading)
+		while (isHoldingLoading)
 		{
 
 			yield return null;
@@ -320,27 +358,42 @@ public class LevelLoading : MonoBehaviour
 	}
 	#endregion
 
-	public void SetIsOverriding(bool isOverriding = false)
+	/// <summary>
+	/// Set if the loading bar is being overridden.
+	/// </summary>
+	/// <param name="isOverriding">True will mark as being overridden.</param>
+	public void SetIsOverridingLoadingBar(bool isOverriding = false)
 	{
 		isOverridingLoadingBar = isOverriding;
 
 		if (!isOverriding) SetLoadingBarValue();
 	}
 
+	/// <summary>
+	/// Set the loading bar value if it was overridden.
+	/// </summary>
+	/// <param name="value">The value to set it to. (0-1)</param>
 	public void SetLoadingBarValue(float value = 0f)
 	{
 		loadingBarOverrideValue = value;
 	}
 
+	/// <summary>
+	/// Releases the loading screen so the player can play.
+	/// </summary>
 	public void ReleaseLevelLoading()
 	{
-		holdingLoading = false;
+		isHoldingLoading = false;
 		Debug.Log("Released level loading");
-		SetIsOverriding();
+		SetIsOverridingLoadingBar();
 	}
 
+	/// <summary>
+	/// Get if all the requested scenes have been loaded.
+	/// </summary>
+	/// <returns>True if all the requested scenes were loaded.</returns>
 	public bool IsCoreLoaded()
 	{
-		return hasLoadedCore;
+		return isCoreLoaded;
 	}
 }

@@ -1,38 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-
 /// <summary>
 /// Allows developers working on levels to click play on their level and load the level loader.
-/// DO NOT use this on scenes that are not on the build index!
+/// <br/>DO NOT use this on scenes that are not on the build index!
 /// </summary>
 public class HotReloader : MonoBehaviour
 {
-    public static HotReloader instance;
+    // Stop duplicate instances from taking over loading.
 
+    /// <summary>
+    /// Singleton for the <see cref="HotReloader"/>.
+    /// </summary>
+    public static HotReloader Instance { get; private set; }
+
+    /// <summary>
+    /// Are we performing a reload of a scene.
+    /// </summary>
     private bool isReloading = false;
 
+    /// <summary>
+    /// The name of the scene to reload.
+    /// </summary>
     private string sceneNameToReload;
 
     void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this.gameObject);
         }
         else
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
     }
@@ -40,7 +40,13 @@ public class HotReloader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (LevelLoading.Instance != null) return;
+        // Check to see if the level loading is there (persistent script from boot strap).
+        if (LevelLoading.Instance != null)
+        {
+            // Disable this since we don't need check again.
+            this.enabled = false;
+            return;
+        }
 
         sceneNameToReload = SceneManager.GetActiveScene().name;
 
@@ -72,6 +78,9 @@ public class HotReloader : MonoBehaviour
         {
             LevelLoading.Instance.LoadScene(sceneNameToReload);
         }
+
+        // To remind developers that they did not load into the game correctly and errors may be from a hot reload.
+        // Fun fact, developers did not read the error messages and still reported "errors" in the console when they were from before a reload.
 
         Debug.Log("Keep in mind that there will be errors from when the scene was first loaded!", this);
         Debug.LogWarning("Keep in mind that there will be errors from when the scene was first loaded!", this);
