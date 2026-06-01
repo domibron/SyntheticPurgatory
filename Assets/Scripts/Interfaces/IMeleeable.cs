@@ -1,9 +1,8 @@
-using UnityEngine;
 
 /// <summary>
 /// Allows the object to be melee-ed by the player.
 /// </summary>
-public interface IMeleeable
+public interface IMeleeAble
 {
     /// <summary>
     /// Melee this object.

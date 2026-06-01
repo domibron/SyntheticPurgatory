@@ -1,13 +1,15 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Player combat controller.
+/// </summary>
 public class PlayerCombat : MonoBehaviour
 {
     /// <summary>
     /// Disable all combat abilities if enabled
     /// </summary>
-    public bool IsDisabled = false;
+    private bool isDisabled = false;
 
     [SerializeField]
     LayerMask gunAlignmentLayers;
@@ -57,11 +59,11 @@ public class PlayerCombat : MonoBehaviour
 
     // int currentAmmoCount = 0;s
 
-    // float currentKickCooldown = 0;
+    // float currentKickCoolDown = 0;
 
-    float currentProjectileCooldown = 0f;
-    float currentMeleeCooldown = 0f;
-    float currentKickCooldown = 0f;
+    float currentProjectileCoolDown = 0f;
+    float currentMeleeCoolDown = 0f;
+    float currentKickCoolDown = 0f;
 
     // NEW CANNON
     // Charging
@@ -153,9 +155,6 @@ public class PlayerCombat : MonoBehaviour
 
 
         animator = GetComponent<Animator>();
-
-        // // TODO: Move to stats read write thingy. // EPIK COMMENT
-        // chargePerShot = 1f / (float)shotsPerFullCharge;s
     }
 
     #region Start
@@ -200,7 +199,7 @@ public class PlayerCombat : MonoBehaviour
         // reloadTime = stats.ReloadTime;
         // rechargeRate = stats.ReloadTime;
 
-        // TODO: calc charge heere.
+        // TODO: calc charge here.
     }
 
     #region Update
@@ -208,11 +207,11 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsDisabled) return;
+        if (isDisabled) return;
 
-        if (currentKickCooldown > 0) currentKickCooldown -= Time.deltaTime;
-        if (currentMeleeCooldown > 0) currentMeleeCooldown -= Time.deltaTime;
-        if (currentProjectileCooldown > 0) currentProjectileCooldown -= Time.deltaTime;
+        if (currentKickCoolDown > 0) currentKickCoolDown -= Time.deltaTime;
+        if (currentMeleeCoolDown > 0) currentMeleeCoolDown -= Time.deltaTime;
+        if (currentProjectileCoolDown > 0) currentProjectileCoolDown -= Time.deltaTime;
         if (currentOverheatCoolDown > 0) currentOverheatCoolDown -= Time.deltaTime;
 
         // did this so it can recharge the weapon before a shot can be fired. otherwise you only shoot one if this is a else if.
@@ -222,12 +221,6 @@ public class PlayerCombat : MonoBehaviour
             overheated = false;
         }
 
-        // if (currentReloadTime > 0) currentReloadTime -= Time.deltaTime;
-        // else if (currentKickCooldown <= 0 && isReloading)
-        // {
-        //     currentAmmoCount = projectileMagSize;
-        //     isReloading = false;
-        // }
 
         PollInput();
 
@@ -243,7 +236,7 @@ public class PlayerCombat : MonoBehaviour
 
             velocity = 1;
 
-            if (currentProjectileCooldown <= 0)
+            if (currentProjectileCoolDown <= 0)
             {
                 FireProjectile();
             }
@@ -258,12 +251,12 @@ public class PlayerCombat : MonoBehaviour
         gunSpinBit.Rotate(Vector3.forward * velocity * spinRate); // * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar)));
 
 
-        if (wantToMelee && currentMeleeCooldown <= 0)
+        if (wantToMelee && currentMeleeCoolDown <= 0)
         {
             MeleeAttack();
         }
 
-        if (wantToKick && currentKickCooldown <= 0)
+        if (wantToKick && currentKickCoolDown <= 0)
         {
             BashAttack();
         }
@@ -278,8 +271,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void WeaponCharging()
     {
-        currentMeleeChargeBar = currentMeleeCooldown / (meleeAttackDelay - 0.05f);
-        currentBashChargeBar = currentKickCooldown / (kickAttackDelay - 0.05f);
+        currentMeleeChargeBar = currentMeleeCoolDown / (meleeAttackDelay - 0.05f);
+        currentBashChargeBar = currentKickCoolDown / (kickAttackDelay - 0.05f);
         if (currentOverheatCoolDown > 0) return;
 
         if (rechargeDelay <= 0)
@@ -323,10 +316,7 @@ public class PlayerCombat : MonoBehaviour
             Transform cam = Camera.main.transform;
             Vector3 offsetPos = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
 
-            // newTransform.position = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
-            // Gizmos.matrix = Matrix4x4.TRS(offsetPos,
-            //     Quaternion.LookRotation((offsetPos - cam.position), cam.up),
-            //     cam.localScale);
+
             Gizmos.matrix = Matrix4x4.TRS(offsetPos,
                 Quaternion.LookRotation(cam.forward, cam.up),
                 cam.localScale);
@@ -347,21 +337,15 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    // #region Reload
-    // #endregion
-    // private void Reload()
-    // {
-    //     isReloading = true;
-    //     currentReloadTime = reloadTime;
-    // }
+
     #region BashAttack
     #endregion
     private void BashAttack()
     {
-        // does knockback
+        // does knock back
         animator.SetTrigger("Bash");
 
-        // if (currentKickCooldown > 0) return; // Dunno if i want to do timer check here or update?
+        // if (currentKickCoolDown > 0) return; // Dunno if i want to do timer check here or update?
         Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f, transform.rotation);
 
         if (hits.Length > 0)
@@ -370,20 +354,12 @@ public class PlayerCombat : MonoBehaviour
             {
                 Vector3 kickDir = c.transform.position - transform.position;
                 c.GetComponent<IKickable>()?.KickObject(kickDir * kickForce, ForceMode.VelocityChange);
-                // IKickable[] kickables = c.GetComponents<IKickable>();
-                // if (kickables.Length > 0)
-                // {
-                //     foreach (var kickable in kickables)
-                //     {
-                //         kickable.KickObject(kickDir * kickForce, ForceMode.VelocityChange);
-                //     }
-                // }
             }
         }
 
         //Debug.Log("Kick!");
 
-        currentKickCooldown = kickAttackDelay;
+        currentKickCoolDown = kickAttackDelay;
 
     }
 
@@ -393,7 +369,6 @@ public class PlayerCombat : MonoBehaviour
     {
         // does damage
 
-        // if (currentMeleeCooldown > 0) return;
         animator.SetTrigger("Melee");
 
         Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * meleeOffset.z) + (mainCamera.right * meleeOffset.x) + (mainCamera.up * meleeOffset.y), meleeBounds / 2f, transform.rotation);
@@ -405,15 +380,8 @@ public class PlayerCombat : MonoBehaviour
             {
                 // print(c.gameObject.name);
                 if (c.gameObject.CompareTag(Constants.PlayerTag)) continue; // if player, go away.
-                c.GetComponent<IMeleeable>()?.MeleeObject();
-                // IMeleeable[] meleeables = c.GetComponents<IMeleeable>();
-                // if (meleeables.Length > 0)
-                // {
-                //     foreach (var meleeable in meleeables)
-                //     {
-                //         meleeable.MeleeObject();
-                //     }
-                // }
+                c.GetComponent<IMeleeAble>()?.MeleeObject();
+
 
                 c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, mainCamera.position + mainCamera.forward); // deal damage.
 
@@ -422,7 +390,7 @@ public class PlayerCombat : MonoBehaviour
 
         Debug.Log("Melee!");
 
-        currentMeleeCooldown = meleeAttackDelay;
+        currentMeleeCoolDown = meleeAttackDelay;
     }
 
     #region FireProjectile
@@ -437,7 +405,7 @@ public class PlayerCombat : MonoBehaviour
 
         currentGunChargeBar -= chargeDegradePerShot;
         // currentProjectileCooldown = projectileFireRate;
-        currentProjectileCooldown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar / 2));
+        currentProjectileCoolDown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar / 2));
 
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
@@ -476,16 +444,16 @@ public class PlayerCombat : MonoBehaviour
         wantToKick = kickInput.IsPressed();
     }
 
-    // public int GetCurrentAmmo()
-    // {
-    //     return currentAmmoCount;
-    // }
-
 
     #region DisablePlayerCombat
     #endregion
-    public void DisablePlayerCombat(bool state)
+    public void DisablePlayerCombat(bool state = false)
     {
-        IsDisabled = state;
+        isDisabled = state;
+    }
+
+    public bool IsCombatDisabled()
+    {
+        return isDisabled;
     }
 }

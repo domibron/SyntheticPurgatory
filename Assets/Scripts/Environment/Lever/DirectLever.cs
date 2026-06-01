@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class DirectLever : MonoBehaviour, IKickable, IShootable, IMeleeable
+public class DirectLever : MonoBehaviour, IKickable, IShootable, IMeleeAble
 {
     public UnityEvent OnLeverActivate;
 

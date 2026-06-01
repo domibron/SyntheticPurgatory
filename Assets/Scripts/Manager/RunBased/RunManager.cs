@@ -82,11 +82,11 @@ public class RunManager : MonoBehaviour
     /// </summary>
     private int depositedScrap = 0;
 
-    /// <summary>
-    /// The time limit per level. This is set by stats. Not any more.
-    /// </summary>
-    [Obsolete("Stats assigned at the correct time.", true)]
-    private float timePerLevel = 120f;
+    // /// <summary>
+    // /// The time limit per level. This is set by stats. Not any more.
+    // /// </summary>
+    // [Obsolete("Stats assigned at the correct time.", true)]
+    // private float timePerLevel = 120f;
 
     /// <summary>
     /// The current time in the level.
