@@ -77,7 +77,7 @@ public class Sequencer : MonoBehaviour
 
             if (!sequences[i].IsEnabled) continue;
 
-            LevelLoading.Instance?.SetIsOverriding(true);
+            LevelLoading.Instance?.SetIsOverridingLoadingBar(true);
             LevelLoading.Instance?.SetLoadingBarValue(GetOverallProgress());
 
             waitingForASequence = true;
@@ -88,7 +88,7 @@ public class Sequencer : MonoBehaviour
 
             while (waitingForASequence)
             {
-                LevelLoading.Instance?.SetIsOverriding(true);
+                LevelLoading.Instance?.SetIsOverridingLoadingBar(true);
                 LevelLoading.Instance?.SetLoadingBarValue(GetOverallProgress());
 
                 yield return null;

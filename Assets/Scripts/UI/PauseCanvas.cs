@@ -160,12 +160,12 @@ public class PauseCanvas : MonoBehaviour
         unpausedPlayerMoveState = playerMovement.DisabledType;
         unpausedPlayerCombatState = playerCombat.IsDisabled;
         if (playerCamera != null)
-            unpausedCameraState = playerCamera.IsDisabled;
+            unpausedCameraState = playerCamera.IsCameraDisabled();
 
         playerMovement.DisablePlayerMovement(1);
         playerCombat.DisablePlayerCombat(true);
         if (playerCamera != null)
-            playerCamera.DisableCameraInput(true);
+            playerCamera.SetCameraDisabled(true);
 
         Cursor.lockState = CursorLockMode.None;
 
@@ -196,7 +196,7 @@ public class PauseCanvas : MonoBehaviour
         playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
         if (playerCamera != null)
-            playerCamera.DisableCameraInput(unpausedCameraState);
+            playerCamera.SetCameraDisabled(unpausedCameraState);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -226,7 +226,7 @@ public class PauseCanvas : MonoBehaviour
         playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
         if (playerCamera != null)
-            playerCamera.DisableCameraInput(unpausedCameraState);
+            playerCamera.SetCameraDisabled(unpausedCameraState);
 
         Time.timeScale = 1;
 

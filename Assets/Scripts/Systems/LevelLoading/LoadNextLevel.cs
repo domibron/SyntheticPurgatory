@@ -1,15 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
 
 
 /// <summary>
@@ -17,18 +7,24 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class LoadNextLevel : MonoBehaviour
 {
-    public string nameOfLevel;
+    /// <summary>
+    /// The name of the level in the scene index to load.
+    /// </summary>
+    public string NameOfLevel;
 
+    /// <summary>
+    /// Load the level specified with <see cref="NameOfLevel"/>.
+    /// </summary>
     public void LoadLevel()
     {
         if (LevelLoading.Instance != null)
         {
-            if (LevelCollection.CheckSceneInCollection(nameOfLevel))
+            if (LevelCollection.CheckSceneInCollection(NameOfLevel))
             {
-                LevelLoading.Instance.LoadScene(LevelCollection.GetCollectionNameFromScene(nameOfLevel));
+                LevelLoading.Instance.LoadScene(LevelCollection.GetCollectionNameFromScene(NameOfLevel));
             }
         }
         else
-            SceneManager.LoadSceneAsync(nameOfLevel);
+            SceneManager.LoadSceneAsync(NameOfLevel);
     }
 }

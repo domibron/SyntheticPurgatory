@@ -1,22 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
-
-//by    _                 _ _                     
-//     | |               (_) |                    
-//   __| | ___  _ __ ___  _| |__  _ __ ___  _ __  
-//  / _` |/ _ \| '_ ` _ \| | '_ \| '__/ _ \| '_ \ 
-// | (_| | (_) | | | | | | | |_) | | | (_) | | | |
-//  \__,_|\___/|_| |_| |_|_|_.__/|_|  \___/|_| |_|
-// © 2025 domibron
-
-// ▄▄▄▄    ▄▄▄▄         ▄▄   ▄  ▄▄▄▄ ▄▄▄▄▄▄▄        ▄    ▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄▄▄  ▄▄▄▄▄▄▄     ▄
-// █   ▀▄ ▄▀  ▀▄        █▀▄  █ ▄▀  ▀▄   █           ██  ██ ▄▀  ▀▄ █   ▀▄   █    █      ▀▄ ▄▀ 
-// █    █ █    █        █ █▄ █ █    █   █           █ ██ █ █    █ █    █   █    █▄▄▄▄▄  ▀█▀  
-// █    █ █    █        █  █ █ █    █   █           █ ▀▀ █ █    █ █    █   █    █        █   
-// █▄▄▄▀   █▄▄█         █   ██  █▄▄█    █           █    █  █▄▄█  █▄▄▄▀  ▄▄█▄▄  █        █   
 
 
 /// <summary>
@@ -78,16 +62,20 @@ public class HurtIndicatorAuto : MonoBehaviour
             }
         }
 
+
+
         // subscript to the take damage health event to flash when taking damage.
         if (GetComponent<Health>())
             GetComponent<Health>().OnHealthChanged += TakenDamage;
         else
-            Debug.LogWarning("Cannot find health for damage flash!", this.gameObject);
+            Debug.Log("Cannot find health for damage flash!", this.gameObject);
+
+
 
         if (GetComponent<KickableObject>())
             GetComponent<KickableObject>().OnKicked += KickObject;
         else
-            Debug.LogWarning("Cannot find kickable object for stun flash!", this.gameObject);
+            Debug.Log("Cannot find kickable object for stun flash!", this.gameObject);
     }
 
     // Update is called once per frame
@@ -138,6 +126,10 @@ public class HurtIndicatorAuto : MonoBehaviour
         currentColor = color;
     }
 
+    /// <summary>
+    /// Kick flash.
+    /// </summary>
+    /// <param name="forceAndDir"></param>
     protected void KickObject(Vector3 forceAndDir)
     {
         Flash(stunColor);
