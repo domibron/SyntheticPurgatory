@@ -77,12 +77,12 @@ public class InventoryUIPopupHooks : MonoBehaviour
 
     private void OnModuleDeposited(ModuleTier tier, int arg2)
     {
-        throw new NotImplementedException();
+
     }
 
     private void OnModuleCollected(ModuleTier tier, int arg2)
     {
-        throw new NotImplementedException();
+
     }
 
     private void OnInventoryFull()

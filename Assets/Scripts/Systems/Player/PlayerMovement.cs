@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Disable all movement if enabled
     /// </summary>
-    public int DisabledType = 0;
+    private int DisabledType = 0;
 
     [SerializeField]
     private LayerMask groundLayer = Physics.AllLayers;
