@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Player combat controller.
@@ -7,65 +8,92 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     /// <summary>
-    /// Disable all combat abilities if enabled
+    /// Disable the player combat and freezing it.
     /// </summary>
     private bool isDisabled = false;
 
+    /// <summary>
+    /// Layers the alignment raycast can hit to make the gun fire at the target location.
+    /// </summary>
     [SerializeField]
     LayerMask gunAlignmentLayers;
 
+    /// <summary>
+    /// The player gun projectile prefab that is fired from the cannon.
+    /// </summary>
     [SerializeField]
     GameObject projectilePrefab;
 
+    /// <summary>
+    /// The spawn point for the player's cannon projectile.
+    /// </summary>
     [SerializeField]
     Transform projectileSpawnLocation;
 
+    /// <summary>
+    /// The speed for the player's cannon projectile to fire at.
+    /// </summary>
     [SerializeField]
     float projectileSpeed = 10f;
 
-    // [SerializeField]
+    /// <summary>
+    /// How much damage the projectile will do. Stats set this.
+    /// </summary>
     float projectileDamage = 12f;
 
 
-    // float reloadTime = 2f;
-
-    // float currentReloadTime = 0f;
-
-    // bool isReloading = false;
-
+    /// <summary>
+    /// The melee box size.
+    /// </summary>
     [SerializeField]
     Vector3 meleeBounds = Vector3.one;
 
+    /// <summary>
+    /// The melee offset from the camera's position
+    /// </summary>
     [SerializeField]
     Vector3 meleeOffset = Vector3.forward;
 
-    // [SerializeField]
+    /// <summary>
+    /// The melee attack interval. Stats set this.
+    /// </summary>
     float meleeAttackDelay = 0.5f;
 
-    // [SerializeField]
+    /// <summary>
+    /// The damage the melee will do per hit. Stats set this.
+    /// </summary>
     float meleeDamage = 10f;
 
-    [SerializeField]
-    Vector3 kickBounds = Vector3.one;
+    /// <summary>
+    /// The kick check bounding box size.
+    /// </summary>
+    [SerializeField, FormerlySerializedAs("kickBounds")]
+    Vector3 bashBounds = Vector3.one;
 
-    [SerializeField]
-    Vector3 kickOffset = Vector3.forward;
+    /// <summary>
+    /// The offset for the kick bounding box.
+    /// </summary>
+    [SerializeField, FormerlySerializedAs("kickOffset")]
+    Vector3 bashOffset = Vector3.forward;
 
     // [SerializeField]
-    float kickForce = 10f; // 
+    /// <summary>
+    /// The force to apply to objects when they have been kicked. Stats set this.
+    /// </summary>
+    float bashForce = 10f;
 
-    // [SerializeField]
-    float kickAttackDelay = 0.5f; //
+    /// <summary>
+    /// The bash attack interval. Stats set this.
+    /// </summary>
+    float bashAttackDelay = 0.5f;
 
-    // int currentAmmoCount = 0;s
 
-    // float currentKickCoolDown = 0;
 
     float currentProjectileCoolDown = 0f;
     float currentMeleeCoolDown = 0f;
     float currentKickCoolDown = 0f;
 
-    // NEW CANNON
+
     // Charging
     bool isRecharging = false;
 
@@ -143,8 +171,8 @@ public class PlayerCombat : MonoBehaviour
 
     bool overheated = false;
 
-    #region Awake
-    #endregion
+    #region Mono Behaviour
+
     void Awake()
     {
         // currentAmmoCount = projectileMagSize;
@@ -157,9 +185,6 @@ public class PlayerCombat : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    #region Start
-    #endregion
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -167,43 +192,6 @@ public class PlayerCombat : MonoBehaviour
         // playerMovement = GetComponent<PlayerMovement>();
     }
 
-    #region UpdateVariablesWithStats
-    #endregion
-
-    public void UpdateVariablesWithStats(PlayerStats stats)
-    {
-        if (stats == null)
-        {
-            Debug.LogError("No player stats! Using default values!");
-            stats = new PlayerStats();
-            // return;
-        }
-
-        projectileDamage = stats.ProjectileDamageStat.GetCurrentValue();
-        rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
-        shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.GetCurrentValue();
-        standardSecondsPerShot = stats.StandardSecondsPerShot;
-        chargedSecondsPerShot = stats.ChargedSecondsPerShot;
-        delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
-        overheatForceCoolDown = stats.OverheatForceCoolDownStat.GetCurrentValue();
-        // projectileFireRate = stats.ProjectileFireRate;
-        // projectileMagSize = stats.ProjectileMagSize;
-
-        meleeAttackDelay = stats.MeleeAttackDelayStat.GetCurrentValue();
-        meleeDamage = stats.MeleeDamageStat.GetCurrentValue();
-        meleeBounds.z = stats.MeleeReachStat.GetCurrentValue();
-
-
-        kickForce = stats.BashForceStat.GetCurrentValue();
-        kickAttackDelay = stats.BashAttackDelayStat.GetCurrentValue();
-        // reloadTime = stats.ReloadTime;
-        // rechargeRate = stats.ReloadTime;
-
-        // TODO: calc charge here.
-    }
-
-    #region Update
-    #endregion
     // Update is called once per frame
     void Update()
     {
@@ -269,45 +257,6 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
-    private void WeaponCharging()
-    {
-        currentMeleeChargeBar = currentMeleeCoolDown / (meleeAttackDelay - 0.05f);
-        currentBashChargeBar = currentKickCoolDown / (kickAttackDelay - 0.05f);
-        if (currentOverheatCoolDown > 0) return;
-
-        if (rechargeDelay <= 0)
-        {
-            isRecharging = true;
-        }
-        else if (rechargeDelay > 0)
-        {
-            rechargeDelay -= Time.deltaTime;
-            isRecharging = false;
-        }
-
-        if (isRecharging)
-        {
-            currentGunChargeBar += Time.deltaTime * rechargeRate;
-        }
-        currentGunChargeBar = Mathf.Clamp01(currentGunChargeBar);
-    }
-
-    public float GetGunChargeAmount()
-    {
-        return currentGunChargeBar;
-    }
-    public float GetMeleeChargeAmount()
-    {
-        return currentMeleeChargeBar;
-    }
-    public float GetBashChargeAmount()
-    {
-        return currentBashChargeBar;
-    }
-
-
-    #region OnDrawGizmos
-    #endregion
     void OnDrawGizmos()
     {
         if (showMeleeBox && Camera.main != null)
@@ -327,44 +276,111 @@ public class PlayerCombat : MonoBehaviour
         if (showKickBox && Camera.main != null)
         {
             Transform cam = Camera.main.transform;
-            Vector3 offsetPos = cam.position + (cam.forward * kickOffset.z) + (cam.right * kickOffset.x) + (cam.up * kickOffset.y);
+            Vector3 offsetPos = cam.position + (cam.forward * bashOffset.z) + (cam.right * bashOffset.x) + (cam.up * bashOffset.y);
 
             Gizmos.matrix = Matrix4x4.TRS(offsetPos,
                 Quaternion.LookRotation(cam.forward, cam.up),
                 cam.localScale);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(Vector3.zero, kickBounds);
+            Gizmos.DrawWireCube(Vector3.zero, bashBounds);
         }
     }
 
-
-    #region BashAttack
     #endregion
+
+
+    #region Functions
+
+    public void UpdateVariablesWithStats(PlayerStats stats)
+    {
+        if (stats == null)
+        {
+            Debug.LogError("No player stats! Using default values!");
+            stats = new PlayerStats();
+            // return;
+        }
+
+        projectileDamage = stats.ProjectileDamageStat.GetCurrentValue();
+        rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
+        shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.GetCurrentValue();
+        standardSecondsPerShot = stats.StandardSecondsPerShot;
+        chargedSecondsPerShot = stats.ChargedSecondsPerShot;
+        delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
+        overheatForceCoolDown = stats.OverheatForceCoolDownStat.GetCurrentValue();
+        // projectileFireRate = stats.ProjectileFireRate;
+        // projectileMagSize = stats.ProjectileMagSize;
+
+        meleeAttackDelay = stats.MeleeAttackDelayStat.GetCurrentValue();
+        meleeDamage = stats.MeleeDamageStat.GetCurrentValue();
+        meleeBounds.z = stats.MeleeReachStat.GetCurrentValue();
+
+
+        bashForce = stats.BashForceStat.GetCurrentValue();
+        bashAttackDelay = stats.BashAttackDelayStat.GetCurrentValue();
+        // reloadTime = stats.ReloadTime;
+        // rechargeRate = stats.ReloadTime;
+
+        // TODO: calc charge here.
+    }
+
+
+    void PollInput()
+    {
+        wantToFireRanged = rangedWeaponInput.IsPressed();
+        wantToMelee = meleeWeaponInput.IsPressed();
+        wantToKick = kickInput.IsPressed();
+    }
+
+    private void WeaponCharging()
+    {
+        currentMeleeChargeBar = currentMeleeCoolDown / (meleeAttackDelay - 0.05f);
+        currentBashChargeBar = currentKickCoolDown / (bashAttackDelay - 0.05f);
+        if (currentOverheatCoolDown > 0) return;
+
+        if (rechargeDelay <= 0)
+        {
+            isRecharging = true;
+        }
+        else if (rechargeDelay > 0)
+        {
+            rechargeDelay -= Time.deltaTime;
+            isRecharging = false;
+        }
+
+        if (isRecharging)
+        {
+            currentGunChargeBar += Time.deltaTime * rechargeRate;
+        }
+        currentGunChargeBar = Mathf.Clamp01(currentGunChargeBar);
+    }
+
+
+
+
     private void BashAttack()
     {
         // does knock back
         animator.SetTrigger("Bash");
 
         // if (currentKickCoolDown > 0) return; // Dunno if i want to do timer check here or update?
-        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * kickOffset.z) + (mainCamera.right * kickOffset.x) + (mainCamera.up * kickOffset.y), kickBounds / 2f, transform.rotation);
+        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * bashOffset.z) + (mainCamera.right * bashOffset.x) + (mainCamera.up * bashOffset.y), bashBounds / 2f, transform.rotation);
 
         if (hits.Length > 0)
         {
             foreach (Collider c in hits)
             {
                 Vector3 kickDir = c.transform.position - transform.position;
-                c.GetComponent<IKickable>()?.KickObject(kickDir * kickForce, ForceMode.VelocityChange);
+                c.GetComponent<IKickable>()?.KickObject(kickDir * bashForce, ForceMode.VelocityChange);
             }
         }
 
         //Debug.Log("Kick!");
 
-        currentKickCoolDown = kickAttackDelay;
+        currentKickCoolDown = bashAttackDelay;
 
     }
 
-    #region MeleeAttack
-    #endregion
+
     private void MeleeAttack()
     {
         // does damage
@@ -393,8 +409,8 @@ public class PlayerCombat : MonoBehaviour
         currentMeleeCoolDown = meleeAttackDelay;
     }
 
-    #region FireProjectile
-    #endregion
+
+
     private void FireProjectile()
     {
         if (currentGunChargeBar < chargeDegradePerShot)
@@ -429,31 +445,46 @@ public class PlayerCombat : MonoBehaviour
         // Debug.Log("Fired ranged weapon");
 
     }
+    #endregion
 
+
+    #region Getters
     public float GetOverheatCoolDownNormalized()
     {
         return currentOverheatCoolDown / overheatForceCoolDown;
     }
 
-    #region PollInput
-    #endregion
-    void PollInput()
+    public float GetGunChargeAmount()
     {
-        wantToFireRanged = rangedWeaponInput.IsPressed();
-        wantToMelee = meleeWeaponInput.IsPressed();
-        wantToKick = kickInput.IsPressed();
+        return currentGunChargeBar;
     }
 
 
-    #region DisablePlayerCombat
-    #endregion
-    public void DisablePlayerCombat(bool state = false)
+    public float GetMeleeChargeAmount()
     {
-        isDisabled = state;
+        return currentMeleeChargeBar;
+    }
+
+
+    public float GetBashChargeAmount()
+    {
+        return currentBashChargeBar;
     }
 
     public bool IsCombatDisabled()
     {
         return isDisabled;
     }
+
+    #endregion
+
+
+
+    #region Setters
+    public void DisablePlayerCombat(bool state = false)
+    {
+        isDisabled = state;
+    }
+
+    #endregion
 }

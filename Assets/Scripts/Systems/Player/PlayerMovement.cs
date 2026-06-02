@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -170,6 +168,8 @@ public class PlayerMovement : MonoBehaviour
                 ySense = SettingsMenu.GetGamepadYSens() * GAMEPAD_SENS_MULT;
             }
         }
+
+
 
         // print(ySense + " " + xSense);
 

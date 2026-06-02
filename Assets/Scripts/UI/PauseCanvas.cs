@@ -144,7 +144,8 @@ public class PauseCanvas : MonoBehaviour
 
     public void OpenPauseMenu()
     {
-        unpausedPlayerMoveState = playerMovement.DisabledType;
+        // TODO: below, sort
+        // unpausedPlayerMoveState = playerMovement.DisabledType;
         unpausedPlayerCombatState = playerCombat.IsCombatDisabled();
 
         playerMovement.DisablePlayerMovement(1);
