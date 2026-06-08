@@ -1,10 +1,8 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
