@@ -1,81 +1,198 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// The player movement controller.
+/// </summary>
 public class PlayerMovement : MonoBehaviour
 {
     /// <summary>
-    /// Disable all movement if enabled
+    /// The player movement disable type.
     /// </summary>
-    private int DisabledType = 0;
+    public enum DisabledType
+    {
+        None,
+        MovementOnly,
+        MouseOnly,
+        All,
+    }
 
+    /// <summary>
+    /// The current disable state of the player movement.
+    /// </summary>
+    private DisabledType disabledState = DisabledType.None;
+
+    /// <summary>
+    /// ALl the layers that the player can run and jump on.
+    /// </summary>
     [SerializeField]
     private LayerMask groundLayer = Physics.AllLayers;
 
     //Ground
-    // [SerializeField]
+    /// <summary>
+    /// The speed the player will move on the ground when sprinting. Stats set this.
+    /// </summary>
     float runSpeed = 4f;
+
+    /// <summary>
+    /// The speed the player will move on the ground when they are not sprinting.
+    /// </summary>
     float walkSpeed = 2f;
-    // [SerializeField]
-    // float runSpeed = 6f;
-    // [SerializeField]
+
+    /// <summary>
+    /// How fast the player accelerate on the ground. Stats set this.
+    /// </summary>
     float grAccel = 30f;
 
     //Air
-    // [SerializeField]
+    /// <summary>
+    /// The speed the player moves in the air.
+    /// </summary>
     float airSpeed = 3f;
-    // [SerializeField]
+
+    /// <summary>
+    /// How fast the player accelerate in the air.
+    /// </summary>
     float airAccel = 20f;
 
     //Jump
-    // [SerializeField]
+    /// <summary>
+    /// The speed the player receives when they press jump whilst on the ground.
+    /// </summary>
     float jumpUpSpeed = 9.2f;
 
+    /// <summary>
+    /// The degrees at which a floor is considered a wall. Floor angle compared to vector up.
+    /// </summary>
     float wallFloorBarrier = 60f;
 
+    /// <summary>
+    /// Gravity scale for making the player feel heavier or lighter.
+    /// </summary>
     [SerializeField]
     float gravityScalar = 1f;
 
     // Sliding
-    // [SerializeField]
+    /// <summary>
+    /// The slide boost the player gets when the slide on the ground. Stats sets this.
+    /// </summary>
     float slideBoostForce = 5f;
 
-    // [SerializeField]
+    /// <summary>
+    /// The boost force when the player slide in the air. Stats set this.
+    /// </summary>
     float airBoostForce = 5f;
 
+    /// <summary>
+    /// The friction from the ground surface. Nerfs the slide boost.
+    /// </summary>
     private float groundFriction = 5f;
+
+    /// <summary>
+    /// The friction whilst in the air.
+    /// </summary>
     private float airFriction = 1f;
 
-    public bool IsGrounded { get => grounded; }
-
+    /// <summary>
+    /// Is the player grounded.
+    /// </summary>
     bool grounded;
+
+    /// <summary>
+    /// Is the player performing a jump.
+    /// </summary>
     bool isJumping;
+
+    /// <summary>
+    /// Is the player on a steep slope.
+    /// </summary>
     bool isOnSteepSlope;
+
+    /// <summary>
+    /// Is the player on a slight slope.
+    /// </summary>
     bool isOnSlightSlope;
 
+    /// <summary>
+    /// Is the player currently crouched.
+    /// </summary>
     bool isCrouched = false;
 
+    /// <summary>
+    /// Is the player currently sprinting.
+    /// </summary>
+    bool isSprinting = false;
+
+
+
+    /// <summary>
+    /// Can the player slide boost.
+    /// </summary>
     bool canSlideBoost = true;
+
+    /// <summary>
+    /// Has the player already performed a slide boost.
+    /// </summary>
     bool appliedSlideBoost = false;
+
+    /// <summary>
+    /// Can the player air slide boost.
+    /// </summary>
     bool canAirBoost = true;
+
+    /// <summary>
+    /// Has the player already applied the air slide boost.
+    /// </summary>
     bool appliedAirBoost = false;
 
 
+    /// <summary>
+    /// The normal up vector for a perfectly level ground.
+    /// </summary>
     Vector3 groundNormalAverage = Vector3.up;
 
+    /// <summary>
+    /// The attached capsule collider to adjust for crouching.
+    /// </summary>
     CapsuleCollider col;
+
+    /// <summary>
+    /// The attached rigidbody.
+    /// </summary>
     Rigidbody rb;
 
+
+    /// <summary>
+    /// The camera target to move the camera to.
+    /// </summary>
     [SerializeField]
     Transform cameraTarget;
 
+    /// <summary>
+    /// The current rotation of the player. (Rotating this and not the rigid body.)
+    /// </summary>
     [SerializeField]
     Transform orientation;
 
-    // [SerializeField]
+    /// <summary>
+    /// The default mouse sensitivity.
+    /// </summary>
     const float MOUSE_SENS_MULT = 0.01f;
+
+    /// <summary>
+    /// The default gamepad sensitivity.
+    /// </summary>
     const float GAMEPAD_SENS_MULT = 10f;
 
+
+    /// <summary>
+    /// Look input vector.
+    /// </summary>
     Vector2 lookDelta = Vector2.zero;
+
+    /// <summary>
+    /// The current camera vertical look.
+    /// </summary>
     float camXRot = 0f;
 
     // Input
@@ -84,16 +201,17 @@ public class PlayerMovement : MonoBehaviour
     bool wantToCrouch;
     bool wantToSprint;
 
-    bool isSprinting = false; // dunno where to put this.
-
-
-
+    // Movement Binds.
     InputAction movementInput;
     InputAction jumpInput;
     InputAction crouchInput;
     InputAction lookInput;
     InputAction sprintInput;
 
+
+    /// <summary>
+    /// Debug to show the velocity on screen.
+    /// </summary>
     private bool showVel = false;
 
 
@@ -108,39 +226,19 @@ public class PlayerMovement : MonoBehaviour
         lookInput = InputSystem.actions.FindAction("Look");
         sprintInput = InputSystem.actions.FindAction("Sprint");
 
-        // var bindings = BindingFlags.Public | BindingFlags.Instance;
-
-        // // PlayerStats stats = new PlayerStats();
-
-        // FieldInfo[] propertyInfos = typeof(PlayerStats).GetFields(bindings);
-
-        // foreach (var propertyInfo in propertyInfos)
-        // {
-        //     print(propertyInfo.Name);
-        // }
-
-        // propertyInfos[0].SetValue(this, 10);
-
-        // PlayerStats pStats = GameStatsManager.Instance.GetStats<PlayerStats>(Stats.player);
-
-        //print(pStats.MaxHealth);
-
+        // TODO: Remove this. This should not be here and be moved to a dedicated script.
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Start()
-    {
-
-    }
 
     void Update()
     {
-        if (DisabledType == 1) { return; }
-        if (DisabledType == 2) { rb.linearVelocity = Vector3.zero; return; }
+        PollInput();
+        if (disabledState == DisabledType.MovementOnly) { rb.linearVelocity = Vector3.zero; }
+        if (disabledState == DisabledType.MouseOnly || disabledState == DisabledType.All) { return; }
 
         // col.material.dynamicFriction = 0f;
-        PollInput();
 
         // camera stuff. default if input manager dies.
         bool useMouseLook = true;
@@ -201,7 +299,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (DisabledType > 0) return;
+        if (disabledState == DisabledType.MovementOnly || disabledState == DisabledType.All) return;
 
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
@@ -325,13 +423,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-        if (IsGrounded)
+        if (IsGrounded())
         {
             // if (rb.SweepTest(transform.worldToLocalMatrix * dir.normalized, out RaycastHit hitInfo, 1f))
             StepHandle(dir.normalized);
         }
     }
 
+    /// <summary>
+    /// Set the local variables from the player stats.
+    /// </summary>
+    /// <param name="stats">The stats to read from.</param>
     public void UpdateVariablesWithStats(PlayerStats stats)
     {
         if (stats == null)
@@ -359,11 +461,19 @@ public class PlayerMovement : MonoBehaviour
         airFriction = stats.AirFriction;
     }
 
+
+    /// <summary>
+    /// The the half height of the current player's height.
+    /// </summary>
+    /// <returns></returns>
     private float GetHalfHeight()
     {
         return Mathf.Max(col.height / 2f, col.radius);
     }
 
+    /// <summary>
+    /// Updates the variables with the input states.
+    /// </summary>
     private void PollInput()
     {
         Vector2 inputVector = movementInput.ReadValue<Vector2>();
@@ -380,6 +490,10 @@ public class PlayerMovement : MonoBehaviour
         lookDelta = lookInput.ReadValue<Vector2>();
     }
 
+
+    /// <summary>
+    /// Checks if the player is stood on solid ground, if it is sloped and updates the variables.
+    /// </summary>
     private void CheckForGround()
     {
         Collider[] results = Physics.OverlapSphere(transform.position - Vector3.down * GetHalfHeight(), col.radius - 0.05f, groundLayer); // TODO ground mask?
@@ -412,6 +526,11 @@ public class PlayerMovement : MonoBehaviour
         isOnSlightSlope = false;
     }
 
+    /// <summary>
+    /// Is the target point close to the player's feet.
+    /// </summary>
+    /// <param name="point">The point to check.</param>
+    /// <returns>True if within ground range.</returns>
     private bool WithinGroundRange(Vector3 point)
     {
         Vector3 feetPos = transform.position - Vector3.down * GetHalfHeight();
@@ -422,6 +541,10 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Get the current gravity vector to use in this current state.
+    /// </summary>
+    /// <returns></returns>
     Vector3 GetGravityVector()
     {
         if (grounded && !isOnSteepSlope)
@@ -434,6 +557,7 @@ public class PlayerMovement : MonoBehaviour
             return Physics.gravity * gravityScalar;
         }
     }
+
 
     void OnCollisionStay(Collision collision)
     {
@@ -471,45 +595,12 @@ public class PlayerMovement : MonoBehaviour
             groundNormalAverage = slopeNormalAverage;
         }
 
-        // angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
-        // print(angle);
-
-        // if (angle <= wallFloorBarrier)
-        // {
-        //     grounded = true;
-        //     isOnSteepSlope = false;
-        //     if (angle > 1)
-        //     {
-        //         isOnSlightSlope = true;
-        //     }
-        // }
-        // else if (VectorToGround().magnitude > 0.2f)
-        // {
-        //     grounded = false;
-        //     isOnSteepSlope = angle > wallFloorBarrier;
-        //     isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
-        // }
-        // else
-        // {
-        //     grounded = false;
-        //     isOnSteepSlope = angle > wallFloorBarrier;
-        //     isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
-        // }
-
     }
 
-    void OnCollisionExit(Collision collision)
-    {
-        // if (ground.Contains(collision.collider)) ground.Remove(collision.collider);
-
-        // if (collision.contactCount == 0)
-        // {
-        //     grounded = false;
-        //     isOnSteepSlope = false;
-        //     isOnSlightSlope = false;
-        // }
-    }
-
+    /// <summary>
+    /// Handles stepping up steps and small ledges.
+    /// </summary>
+    /// <param name="moveDirectionThisFrame">The direction the movement is this frame.</param>
     private void StepHandle(Vector3 moveDirectionThisFrame)
     {
         moveDirectionThisFrame.y = 0;
@@ -577,66 +668,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 upAmount = (Vector3.up * (heightIncrement * iteration));
 
         transform.position += upAmount;
-
-        // // Presuming that we casting in the move direction.
-        // // We also presume that something was hit, like a curb or a wall.
-
-        // float stepHeight = 0.3f;
-        // float stepDepthAllowed = 0.2f;
-
-        // float halfHeight = col.height / 2f;
-
-        // Vector3 halfAsVector = Vector3.up * GetHalfHeight();
-
-
-        // Vector3 point1 = transform.position - halfAsVector;
-        // Vector3 point2 = point1 + (halfAsVector * 2f);
-
-        // if (Physics.CapsuleCast(point1, point2, col.radius, Vector3.up, stepHeight, groundLayer)) return; // cant step up with something above our head.
-        // print("No air stopping");
-        // Vector3 airPoint = transform.position + (Vector3.up * stepHeight);
-
-        // point1 = airPoint - halfAsVector;
-        // point2 = point1 + (halfAsVector * 2f);
-
-        // // can we move over the step. 
-        // // float depthCheck = (stepDepthAllowed > moveDirectionThisFrame.magnitude) ? stepDepthAllowed : moveDirectionThisFrame.magnitude;
-        // float depthCheck = stepDepthAllowed;
-
-
-        // if (Physics.CapsuleCast(point1, point2, col.radius, moveDirectionThisFrame.normalized, depthCheck, groundLayer)) return;
-        // print("No dir stopping");
-
-        // airPoint += moveDirectionThisFrame.normalized * depthCheck;
-
-        // point1 = airPoint - halfAsVector;
-        // point2 = point1 + (halfAsVector * 2f);
-
-        // RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, col.radius, Vector3.down, stepHeight, groundLayer);
-
-        // float currentY = float.MinValue;
-
-        // foreach (RaycastHit hit in hits)
-        // {
-        //     if (hit.transform.gameObject.CompareTag(Constants.PlayerTag)) continue;
-
-        //     print(hit.normal + " " + hit.point + " " + hit.barycentricCoordinate + " " + hit.transform.gameObject.name);
-        //     Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.green, 10f);
-
-
-        //     if (hit.point.y > currentY) currentY = hit.point.y;
-        // }
-
-
-        // Vector3 pos = transform.position;
-
-        // float amountToAdd = currentY - (transform.position + (Vector3.down * halfHeight)).y;
-        // print(hits.Length);
-        // pos.y += Mathf.Max(amountToAdd, 0f);
-
-        // transform.position = pos;
     }
 
+    /// <summary>
+    /// Get the friction vector.
+    /// </summary>
+    /// <param name="maxSpeed">The max speed.</param>
+    /// <param name="friction">The friction to apply.</param>
+    /// <returns>The vector that will apply friction.</returns>
     Vector3 GetFrictionVector(float maxSpeed, float friction)
     {
         if (rb.linearVelocity.magnitude <= maxSpeed)
@@ -659,7 +698,13 @@ public class PlayerMovement : MonoBehaviour
         return counterDir * accelVel;
     }
 
-
+    /// <summary>
+    /// Get the vector to apply to the rigidbody for the movement.
+    /// </summary>
+    /// <param name="wishDir">The desired direction to move in.</param>
+    /// <param name="maxSpeed">The max speed.</param>
+    /// <param name="acceleration">The acceleration.</param>
+    /// <returns>The vector to apply this frame.</returns>
     Vector3 GroundedMovement(Vector3 wishDir, float maxSpeed, float acceleration)
     {
         wishDir = wishDir.normalized;
@@ -683,6 +728,13 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Get the vector to apply to the rigidbody for the air movement.
+    /// </summary>
+    /// <param name="wishDir">The desired direction to move in.</param>
+    /// <param name="maxSpeed">The max speed.</param>
+    /// <param name="acceleration">The acceleration.</param>
+    /// <returns></returns>
     Vector3 AirMovement(Vector3 wishDir, float maxSpeed, float acceleration)
     {
         wishDir.Normalize();
@@ -697,6 +749,13 @@ public class PlayerMovement : MonoBehaviour
         return wishDir.normalized * accelVel; // ForceMode.VelocityChange);
     }
 
+
+    /// <summary>
+    /// Get the boost force vector.
+    /// </summary>
+    /// <param name="wishDir">The wish direction for the boost.</param>
+    /// <param name="boostSpeed">The speed the boost will be.</param>
+    /// <returns>Vector to apply to the rigidbody.</returns>
     Vector3 GetBoostVector(Vector3 wishDir, float boostSpeed)
     {
         wishDir.Normalize();
@@ -711,7 +770,7 @@ public class PlayerMovement : MonoBehaviour
         return wishDir.normalized * boostVel; // ForceMode.VelocityChange);
     }
 
-
+    //TODO: remove this.
     Vector3 VectorToGround()
     {
         Vector3 position = transform.position;
@@ -726,6 +785,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Crouch boost.
+    /// </summary>
     void CrouchBoost()
     {
         if (!grounded || !canSlideBoost || appliedSlideBoost) return;
@@ -739,6 +801,9 @@ public class PlayerMovement : MonoBehaviour
         // if (canSlideBoost) StartCoroutine(HandleCrouchBoostCoolDown());
     }
 
+    /// <summary>
+    /// Air boost.
+    /// </summary>
     void AirBoost()
     {
         if (grounded || !canAirBoost || appliedAirBoost) return;
@@ -754,15 +819,30 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(GetBoostVector(boostDir, airBoostForce), ForceMode.VelocityChange);
     }
 
-    // IEnumerator HandleCrouchBoostCoolDown()
-    // {
-    //     canSlideBoost = false;
-    //     yield return new WaitForSeconds(1f);
-    //     canSlideBoost = true;
-    // }
-
-    public void DisablePlayerMovement(int state)
+    /// <summary>
+    /// Is the player currently on the ground.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsGrounded()
     {
-        DisabledType = state;
+        return grounded;
+    }
+
+    /// <summary>
+    /// Set the current disabled state of the movement.
+    /// </summary>
+    /// <param name="disabledState">The desired disabled state.</param>
+    public void SetDisabledState(DisabledType disabledState = DisabledType.None)
+    {
+        this.disabledState = disabledState;
+    }
+
+    /// <summary>
+    /// Get the current disabled state of the player movement.
+    /// </summary>
+    /// <returns>The current disable state.</returns>
+    public DisabledType GetDisabledState()
+    {
+        return disabledState;
     }
 }

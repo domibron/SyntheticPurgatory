@@ -205,7 +205,7 @@ public class PlayerHUD : MonoBehaviour
         else
         {
             gunChargeBarFill.color = Color.green;
-            gunChargeBarFill.fillAmount = playerCombat.GetGunChargeAmount();
+            gunChargeBarFill.fillAmount = playerCombat.GetCannonChargeAmount();
         }
         // gunChargeBarFill.fillAmount = playerCombat.GetGunChargeAmount();
         meleeChargeBarFill.fillAmount = 1 - playerCombat.GetMeleeChargeAmount();

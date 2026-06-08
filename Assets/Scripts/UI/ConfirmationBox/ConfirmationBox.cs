@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ public class ConfirmationBox : MonoBehaviour
     [SerializeField]
     TMP_Text boxConfirm;
     [SerializeField]
-    TMP_Text boxCencel;
+    TMP_Text boxCancel;
 
     void Awake()
     {
@@ -48,7 +47,7 @@ public class ConfirmationBox : MonoBehaviour
         boxTitle.text = title;
         boxDesc.text = message;
         boxConfirm.text = confirmMessage;
-        boxCencel.text = cancelMessage;
+        boxCancel.text = cancelMessage;
 
         confirmationBoxObject.SetActive(true);
     }
