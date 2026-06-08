@@ -89,87 +89,179 @@ public class PlayerCombat : MonoBehaviour
 
 
 
+
+    /// <summary>
+    /// The current cannon fire cool down before next firing.
+    /// </summary>
     float currentProjectileCoolDown = 0f;
+
+    /// <summary>
+    /// The current wait before the next melee can begin.
+    /// </summary>
     float currentMeleeCoolDown = 0f;
+
+    /// <summary>
+    /// The current wait before the next kick can begin.
+    /// </summary>
     float currentKickCoolDown = 0f;
 
 
-    // Charging
-    bool isRecharging = false;
+    /// <summary>
+    /// Is the cannon allowed to recharge.
+    /// </summary>
+    bool canStartRecharge = false;
 
-    // bool cursorGoingRight = true;
 
-    // int shotsPerFullCharge = 6; // 6 shots for a full charged bar (excluding overcharge)
-    // float chargePerShot = 0.5f; // How much to add or remove from current charge for a single shot.
+    /// <summary>
+    /// The current charge of the cannon.
+    /// </summary>
     float currentGunChargeBar = 1f;
-    float rechargeRate = 0.3f; // TODO: add to stats
+
+    /// <summary>
+    /// How fast the cannon recharges. Charge per second. Stats sets this.
+    /// </summary>
+    float rechargeRate = 0.3f;
+
+    /// <summary>
+    /// The current charge amount of the melee.
+    /// </summary>
     float currentMeleeChargeBar = 1f;
+
+    /// <summary>
+    /// The current charge amount of the bash.
+    /// </summary>
     float currentBashChargeBar = 1f;
 
-    int shotsPerFullCharge = 12; // TODO: add to stats
+
+    /// <summary>
+    /// How many shots before needing to recharge fully. Stats sets this.
+    /// </summary>
+    int shotsPerFullCharge = 12;
+
+    /// <summary>
+    /// How much to reduce the charge for the cannon per shot.
+    /// </summary>
     float chargeDegradePerShot { get => 1f / shotsPerFullCharge; } // 8 shots before standard.
 
-    float standardSecondsPerShot = 0.4f; // TODO: add to stats
-    float chargedSecondsPerShot = 0.1f;  // TODO: add to stats
 
-    float delayAfterFireBeforeRecharging = 0.4f;  // TODO: add to stats
+
+    /// <summary>
+    /// How fast to fire when low on charge. Stats sets this.
+    /// </summary>
+    float standardSecondsPerShot = 0.4f;
+
+    /// <summary>
+    /// How fast the cannon fires when fully charged. Stats sets this.
+    /// </summary>
+    float chargedSecondsPerShot = 0.1f;
+
+    /// <summary>
+    /// The delay after a shot before the cannon can start recharging. Stats sets this.
+    /// </summary>
+    float delayAfterFireBeforeRecharging = 0.4f;
+
+    /// <summary>
+    /// The current wait time before the cannon can being recharging.
+    /// </summary>
     float rechargeDelay = 0f;
 
-    float overheatForceCoolDown = 2.25f; // TODO: add to stats
+    /// <summary>
+    /// How long to disable the cannon before the player can fire again after full depletion. Stats sets this.
+    /// </summary>
+    float overheatForceCoolDown = 2.25f;
+
+    /// <summary>
+    /// The current overheat cool down for the cannon.
+    /// </summary>
     float currentOverheatCoolDown = 0f;
 
+    /// <summary>
+    /// Has the cannon overheated requiring a forced cool down.
+    /// </summary>
+    bool isCannonOverheated = false;
+
+
+
+    // TODO: move since this is visual and not related to the combat system.
+    /// <summary>
+    /// The cannon end to rotate when firing.
+    /// </summary>
     [SerializeField]
     private Transform gunSpinBit;
 
+    /// <summary>
+    /// The velocity of the rotating cannon.
+    /// </summary>
     private float velocity = 0f;
 
+    /// <summary>
+    /// How fast the spin the end of the cannon.
+    /// </summary>
     [SerializeField]
     private float spinRate = 20f;
 
-    // float cursorScrollSpeed = 1;
-
-    // float currentCursorPosition = 0.5f;
-
-    // bool isChargeOnLeftSide = false;
-    // float chargeUpPos = 0.3f;
-    // float chargeSize = 0.2f; // full width is 0.5f since the bars are split in half.
-
-    // int missDenominator = 4;
-
-    // bool hasPressedCharge = false;
-
-    // float rechargeRatePerShot = 0.1f; // 1th of a second.
-
-    // // mainly used for the player's hud.
-    // public Action OnChargeSuccess;
-    // public Action OnChargeFail;
-    // public Action OnShowChargeBar;
-    // public Action OnHideChargeBar;
 
 
-
-
-
-    // PlayerMovement playerMovement;
+    /// <summary>
+    /// The main camera to base aiming off of.
+    /// </summary>
     Transform mainCamera;
 
+
+
+    /// <summary>
+    /// Is the fire key being held.
+    /// </summary>
     bool wantToFireRanged = false;
+
+    /// <summary>
+    /// Is the melee key being held.
+    /// </summary>
     bool wantToMelee = false;
-    bool wantToKick = false;
 
+    /// <summary>
+    /// Is the kick key being held.
+    /// </summary>
+    bool wantToBash = false;
+
+
+    /// <summary>
+    /// The fire cannon key to bind to.
+    /// </summary>
     InputAction rangedWeaponInput;
-    InputAction meleeWeaponInput;
-    InputAction kickInput;
 
+    /// <summary>
+    /// The melee key to bind to.
+    /// </summary>
+    InputAction meleeWeaponInput;
+
+    /// <summary>
+    /// The bash key to bind to.
+    /// </summary>
+    InputAction bashInput;
+
+
+
+
+
+    /// <summary>
+    /// Debug to show the melee attack box.
+    /// </summary>
     [SerializeField]
     bool showMeleeBox = false;
 
+    /// <summary>
+    /// Debug to show the bash attack box.
+    /// </summary>
     [SerializeField]
-    bool showKickBox = false;
+    bool showBashBox = false;
 
+    /// <summary>
+    /// The weapon animator to control.
+    /// </summary>
     Animator animator;
 
-    bool overheated = false;
+
 
     #region Mono Behaviour
 
@@ -179,7 +271,7 @@ public class PlayerCombat : MonoBehaviour
 
         rangedWeaponInput = InputSystem.actions.FindAction("Attack");
         meleeWeaponInput = InputSystem.actions.FindAction("Melee");
-        kickInput = InputSystem.actions.FindAction("Interact");
+        bashInput = InputSystem.actions.FindAction("Interact");
 
 
         animator = GetComponent<Animator>();
@@ -203,10 +295,10 @@ public class PlayerCombat : MonoBehaviour
         if (currentOverheatCoolDown > 0) currentOverheatCoolDown -= Time.deltaTime;
 
         // did this so it can recharge the weapon before a shot can be fired. otherwise you only shoot one if this is a else if.
-        if (currentOverheatCoolDown <= 0 && overheated)
+        if (currentOverheatCoolDown <= 0 && isCannonOverheated)
         {
             currentGunChargeBar = 1f;
-            overheated = false;
+            isCannonOverheated = false;
         }
 
 
@@ -244,7 +336,7 @@ public class PlayerCombat : MonoBehaviour
             MeleeAttack();
         }
 
-        if (wantToKick && currentKickCoolDown <= 0)
+        if (wantToBash && currentKickCoolDown <= 0)
         {
             BashAttack();
         }
@@ -273,7 +365,7 @@ public class PlayerCombat : MonoBehaviour
             Gizmos.DrawWireCube(Vector3.zero, meleeBounds);
         }
 
-        if (showKickBox && Camera.main != null)
+        if (showBashBox && Camera.main != null)
         {
             Transform cam = Camera.main.transform;
             Vector3 offsetPos = cam.position + (cam.forward * bashOffset.z) + (cam.right * bashOffset.x) + (cam.up * bashOffset.y);
@@ -291,6 +383,10 @@ public class PlayerCombat : MonoBehaviour
 
     #region Functions
 
+    /// <summary>
+    /// Updates the player variables with the player stats.
+    /// </summary>
+    /// <param name="stats">The player stats to get the stats from.</param>
     public void UpdateVariablesWithStats(PlayerStats stats)
     {
         if (stats == null)
@@ -323,40 +419,49 @@ public class PlayerCombat : MonoBehaviour
         // TODO: calc charge here.
     }
 
-
+    /// <summary>
+    /// Check if the keys were pressed.
+    /// </summary>
     void PollInput()
     {
         wantToFireRanged = rangedWeaponInput.IsPressed();
         wantToMelee = meleeWeaponInput.IsPressed();
-        wantToKick = kickInput.IsPressed();
+        wantToBash = bashInput.IsPressed();
     }
 
+    /// <summary>
+    /// Handles the weapon recharging.
+    /// </summary>
     private void WeaponCharging()
     {
         currentMeleeChargeBar = currentMeleeCoolDown / (meleeAttackDelay - 0.05f);
         currentBashChargeBar = currentKickCoolDown / (bashAttackDelay - 0.05f);
         if (currentOverheatCoolDown > 0) return;
 
+
         if (rechargeDelay <= 0)
         {
-            isRecharging = true;
+            canStartRecharge = true;
         }
         else if (rechargeDelay > 0)
         {
             rechargeDelay -= Time.deltaTime;
-            isRecharging = false;
+            canStartRecharge = false;
         }
 
-        if (isRecharging)
+        if (canStartRecharge)
         {
             currentGunChargeBar += Time.deltaTime * rechargeRate;
         }
+
         currentGunChargeBar = Mathf.Clamp01(currentGunChargeBar);
     }
 
 
 
-
+    /// <summary>
+    /// Does the bash attack.
+    /// </summary>
     private void BashAttack()
     {
         // does knock back
@@ -381,6 +486,9 @@ public class PlayerCombat : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Does the melee attack.
+    /// </summary>
     private void MeleeAttack()
     {
         // does damage
@@ -410,13 +518,15 @@ public class PlayerCombat : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Fires the cannon.
+    /// </summary>
     private void FireProjectile()
     {
         if (currentGunChargeBar < chargeDegradePerShot)
         {
             currentOverheatCoolDown = overheatForceCoolDown;
-            overheated = true;
+            isCannonOverheated = true;
         }
 
         currentGunChargeBar -= chargeDegradePerShot;
@@ -449,28 +559,48 @@ public class PlayerCombat : MonoBehaviour
 
 
     #region Getters
+    /// <summary>
+    /// Get the overheat cool down time as a value between 0 and 1.
+    /// </summary>
+    /// <returns></returns>
     public float GetOverheatCoolDownNormalized()
     {
         return currentOverheatCoolDown / overheatForceCoolDown;
     }
 
-    public float GetGunChargeAmount()
+    /// <summary>
+    /// Get the cannon charge amount. Already 0 - 1.
+    /// </summary>
+    /// <returns></returns>
+    public float GetCannonChargeAmount()
     {
         return currentGunChargeBar;
     }
 
-
+    /// <summary>
+    /// Get the melee charge amount. Already 0 - 1.
+    /// </summary>
+    /// <returns></returns>
     public float GetMeleeChargeAmount()
     {
         return currentMeleeChargeBar;
     }
 
 
+    /// <summary>
+    /// Get the bash charge amount. Already 0 - 1.
+    /// </summary>
+    /// <returns></returns>
     public float GetBashChargeAmount()
     {
         return currentBashChargeBar;
     }
 
+
+    /// <summary>
+    /// Is the combat disabled.
+    /// </summary>
+    /// <returns></returns>
     public bool IsCombatDisabled()
     {
         return isDisabled;
@@ -481,6 +611,10 @@ public class PlayerCombat : MonoBehaviour
 
 
     #region Setters
+    /// <summary>
+    /// Set if the combat is disabled. Blocks all combat and cool downs essentially disabling this script.
+    /// </summary>
+    /// <param name="state">True to disable the combat of the player.</param>
     public void DisablePlayerCombat(bool state = false)
     {
         isDisabled = state;

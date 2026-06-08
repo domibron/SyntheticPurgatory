@@ -204,7 +204,7 @@ public class RunManager : MonoBehaviour
         else if (inDungeon && currentTime <= 0 && !isPaused)
         {
             isPaused = true;
-            PlayerRefFetcher.Instance?.GetPlayerRef()?.GetComponent<PlayerDeath>()?.KillPlayer();
+            PlayerRefFetcher.Instance?.GetPlayerRef()?.GetComponent<PlayerDeath>()?.OnPlayerDeath();
         }
     }
 

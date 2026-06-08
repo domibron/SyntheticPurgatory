@@ -36,7 +36,7 @@ public class PauseCanvas : MonoBehaviour
     InputAction pauseInput;
     bool settingsCloseBuffer = false;
 
-    private int unpausedPlayerMoveState;
+    private PlayerMovement.DisabledType unpausedPlayerMoveState;
     private bool unpausedPlayerCombatState;
     private bool unpausedCameraState;
 
@@ -144,11 +144,10 @@ public class PauseCanvas : MonoBehaviour
 
     public void OpenPauseMenu()
     {
-        // TODO: below, sort
-        // unpausedPlayerMoveState = playerMovement.DisabledType;
+        unpausedPlayerMoveState = playerMovement.GetDisabledState();
         unpausedPlayerCombatState = playerCombat.IsCombatDisabled();
 
-        playerMovement.DisablePlayerMovement(1);
+        playerMovement.SetDisabledState(PlayerMovement.DisabledType.All);
         playerCombat.DisablePlayerCombat(true);
 
         Cursor.lockState = CursorLockMode.None;
@@ -177,7 +176,7 @@ public class PauseCanvas : MonoBehaviour
 
     public void ResumeGame()
     {
-        playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
+        playerMovement.SetDisabledState(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
 
         Cursor.visible = false;
@@ -205,7 +204,7 @@ public class PauseCanvas : MonoBehaviour
     /// </summary>
     public void ReturnToMainMenu()
     {
-        playerMovement.DisablePlayerMovement(unpausedPlayerMoveState);
+        playerMovement.SetDisabledState(unpausedPlayerMoveState);
         playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
 
         Time.timeScale = 1;

@@ -1,15 +1,16 @@
-using System;
 using UnityEngine;
 
-// By Vince Pressey
-
+/// <summary>
+/// Handles showing the death canvas and other things when the player dies.
+/// </summary>
 public class PlayerDeath : MonoBehaviour
 {
-    //public event Action onDeathEvent; // TEMPORARY MAKE PRIVATE + SERIALIZE
     /// <summary>
     /// DeathCanvas object to activate upon death
     /// </summary>
     public DeathCanvas deathCanvasScript;
+
+
     /// <summary>
     /// EndStateScreen object to activate upon death
     /// </summary>
@@ -20,12 +21,15 @@ public class PlayerDeath : MonoBehaviour
     void Start()
     {
         endCanvasScript = deathCanvasScript.transform.GetComponent<EndStateScreen>(); //TEMPORARY
-        GetComponent<Health>().onDeath += KillPlayer;
+        GetComponent<Health>().onDeath += OnPlayerDeath;
     }
 
-    public void KillPlayer()
+    /// <summary>
+    /// Shows the canvas and shows the cursor if key board and mouse.
+    /// </summary>
+    public void OnPlayerDeath()
     {
-        transform.GetComponent<PlayerMovement>().DisablePlayerMovement(2);
+        transform.GetComponent<PlayerMovement>().SetDisabledState(PlayerMovement.DisabledType.All);
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
 
         RunManager.Instance.statsHolder.LoseLife();
@@ -58,7 +62,5 @@ public class PlayerDeath : MonoBehaviour
         {
             endCanvasScript.ActivateCanvas(true);
         }
-
-
     }
 }

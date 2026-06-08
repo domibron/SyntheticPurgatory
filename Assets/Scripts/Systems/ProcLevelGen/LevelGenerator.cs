@@ -122,8 +122,10 @@ public class LevelGenerator : SequenceBase
         int peakRooms = 0;
 
 
-        List<int> roomsWithEmptyDoorways = new List<int>();
-        roomsWithEmptyDoorways.Add(currentID);
+        List<int> roomsWithEmptyDoorways = new List<int>
+        {
+            currentID
+        };
 
         currentID++;
 
@@ -188,7 +190,7 @@ public class LevelGenerator : SequenceBase
     /// <summary>
     /// Removes all the room prefabs this level generator created. DO NOT remove other objects.
     /// </summary>
-    private void DestoryAllRooms()
+    private void DestroyAllRooms()
     {
         Transform[] children = transform.GetComponentsInChildren<Transform>();
 
