@@ -482,7 +482,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507a45da5bfeff844af8d5ce72f6c867, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisabledType: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 83
@@ -501,7 +500,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 257631cf6ddffea47bee25e8cc6618ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsDisabled: 0
   gunAlignmentLayers:
     serializedVersion: 2
     m_Bits: 16985
@@ -510,12 +508,12 @@ MonoBehaviour:
   projectileSpeed: 30
   meleeBounds: {x: 1.5, y: 1.5, z: 1.3}
   meleeOffset: {x: 0, y: -0.2, z: 1}
-  kickBounds: {x: 1.5, y: 1.6, z: 1.3}
-  kickOffset: {x: 0, y: -0.2, z: 1}
+  bashBounds: {x: 1.5, y: 1.6, z: 1.3}
+  bashOffset: {x: 0, y: -0.2, z: 1}
   gunSpinBit: {fileID: 4587322443021510247}
   spinRate: 5
   showMeleeBox: 0
-  showKickBox: 0
+  showBashBox: 0
 --- !u!114 &7812274978082621966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1205,6 +1203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9a024e1077cbd24f8898b15908e256b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetYLevel: 0
 --- !u!1 &4863898153748189822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1247,9 +1246,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3008816341041022680}
   - component: {fileID: 9087766604384551400}
-  - component: {fileID: 9054752911716268647}
   - component: {fileID: 37518283646450647}
   - component: {fileID: 2002000256570327740}
+  - component: {fileID: 8594357696635989631}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1325,14 +1324,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &9054752911716268647
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6241796870455745805}
-  m_Enabled: 1
 --- !u!114 &37518283646450647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1392,6 +1383,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetLocation: {fileID: 7882557659218615182}
+--- !u!114 &8594357696635989631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6241796870455745805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1 &6315243368827703863
 GameObject:
   m_ObjectHideFlags: 0

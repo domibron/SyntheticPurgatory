@@ -64,7 +64,7 @@ public class CraneController : MonoBehaviour
     /// Alarm sfx for when the crane is doing stuff.
     /// </summary>
     [SerializeField]
-    private AudioSource alarm;
+    private FMODUnity.StudioEventEmitter alarm;
 
     /// <summary>
     /// Crane movement sfx for when the crane is moving.

@@ -130,11 +130,11 @@ public class BossAI : BaseEnemy
     {
         base.Update();
 
-        if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
-        {
-            lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
-            wantsToGoToControlRoom = true;
-        }
+        // if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
+        // {
+        //     lastHealthPercentage = health.GetHealthNormalized(); // this could lead to issues down the line.
+        //     wantsToGoToControlRoom = true;
+        // }
 
         if (currentGunCooldown > 0) currentGunCooldown -= Time.deltaTime;
         if (currentBarrageCoolDown > 0) currentBarrageCoolDown -= Time.deltaTime;
