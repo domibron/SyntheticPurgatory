@@ -27,26 +27,35 @@ public class ProjectileScript : MonoBehaviour
 
         collider.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
 
+        IDamageable damageable = collider.gameObject.GetComponent<IDamageable>();
 
         if (collider.isTrigger)
         {
-
-            IDamageable damageArea = collider.gameObject.GetComponent<IDamageable>();
-            if (damageArea != null) // Damage object if it has the enemy damage area script attached
+            if (damageable != null) // Damage object if it has the enemy damage area script attached
             {
                 hasHit = true;
 
-                damageArea.TakeDamage(-ProjectileDamage, transform.position);
+                damageable.TakeDamage(-ProjectileDamage, transform.position);
 
                 Destroy(gameObject);
 
                 return;
             }
-            else return;
+            else
+            {
+                collider.gameObject.GetComponent<IShootable>()?.HitObject(); // just in case the trigger has this.
+                return; // cannot hit triggers
+            }
+        }
+        else
+        {
+            if (damageable != null)
+            {
+                damageable.TakeDamage(-ProjectileDamage, transform.position);
+                hasHit = true;
+            }
 
         }
-
-        collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(-ProjectileDamage, transform.position);
 
         collider.gameObject.GetComponent<IShootable>()?.HitObject();
 
