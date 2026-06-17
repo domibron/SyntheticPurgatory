@@ -54,15 +54,13 @@ public class SoundEventEmitterPlayer : MonoBehaviour
 
     public void Stop()
     {
+        emitter.Stop();
 
         if (is3DSound)
         {
             FMODUnity.RuntimeManager.DetachInstanceFromGameObject(eventInstance);
         }
 
-        emitter.Stop();
-
-        eventInstance.release();
 
     }
 }
