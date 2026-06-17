@@ -26,6 +26,9 @@ public class DeltDamageStorer : MonoBehaviour
 
         if (damageReceived <= 0) return;
 
+        // Bug fix, enemies not taking damage when not loading from persistent / boot strap
+        if (gameManager == null) return;
+
         if (!isPlayer)
             gameManager.statsHolder.damageDealt += damageReceived;
         else
