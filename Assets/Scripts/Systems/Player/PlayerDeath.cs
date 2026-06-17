@@ -32,7 +32,8 @@ public class PlayerDeath : MonoBehaviour
         transform.GetComponent<PlayerMovement>().SetDisabledState(PlayerMovement.DisabledType.All);
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
 
-        RunManager.Instance.statsHolder.LoseLife();
+        if (RunManager.Instance)
+            RunManager.Instance.statsHolder.LoseLife();
 
         Cursor.lockState = CursorLockMode.None;
 

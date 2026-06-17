@@ -7,7 +7,10 @@ public class SoundEventEmitterPlayer : MonoBehaviour
     FMOD.Studio.EventInstance eventInstance;
 
     [SerializeField]
-    bool pausable = true;
+    bool is3DSound = true;
+
+    [SerializeField]
+    bool isPausable = true;
 
     void Awake()
     {
@@ -24,13 +27,13 @@ public class SoundEventEmitterPlayer : MonoBehaviour
 
     void Start()
     {
-        eventInstance = FMODUnity.RuntimeManager.CreateInstance(emitter.EventReference);
-        FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, gameObject, true);
+        // eventInstance = FMODUnity.RuntimeManager.CreateInstance(emitter.EventReference);
+        // FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, gameObject, true);
     }
 
     void Update()
     {
-        if (!pausable || !eventInstance.isValid()) return;
+        if (!isPausable || !eventInstance.isValid()) return;
 
         bool paused = Time.timeScale == 0;
 
@@ -40,12 +43,26 @@ public class SoundEventEmitterPlayer : MonoBehaviour
     public void Play()
     {
         emitter.Play();
+
         eventInstance = emitter.EventInstance;
+
+        if (is3DSound)
+        {
+            FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, gameObject, true);
+        }
     }
 
     public void Stop()
     {
+
+        if (is3DSound)
+        {
+            FMODUnity.RuntimeManager.DetachInstanceFromGameObject(eventInstance);
+        }
+
         emitter.Stop();
+
         eventInstance.release();
+
     }
 }

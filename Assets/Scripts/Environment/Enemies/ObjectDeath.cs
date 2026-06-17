@@ -41,7 +41,7 @@ public class ObjectDeath : MonoBehaviour
     {
         transform.GetComponent<ScrapDropper>().SpawnScrapGroup(ScrapDrop, sideForce, upForce); // Spawn Scrap
 
-        if (addToKillCounter)
+        if (addToKillCounter && RunManager.Instance)
         {
             RunManager.Instance.statsHolder.enemiesDefeated++;
             RunManager.Instance.statsHolder.enemiesDefeatedScore += enemyScore;
