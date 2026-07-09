@@ -41,6 +41,8 @@ public class Health : MonoBehaviour
     /// <param name="oldValue">The original value before the change.</param>
     public delegate void OnValueChangedDelegate(float newValue, float oldValue);
 
+    public bool isImmortal = false;
+
     protected virtual void Start()
     {
         Reset();
@@ -61,7 +63,7 @@ public class Health : MonoBehaviour
     /// <param name="amount">The value to add to the health.</param>
     public virtual void AddToHealth(float amount)
     {
-        if (immortal) return;
+        if (isImmortal) return;
 
         if (amount != 0) InvokeOnHealthChanged(currentHealth + amount, currentHealth);
         currentHealth += amount;
@@ -80,7 +82,7 @@ public class Health : MonoBehaviour
     /// </summary>
     public virtual void InstantKill()
     {
-        if (immortal) return;
+        if (isImmortal) return;
 
         currentHealth = 0;
 
@@ -133,7 +135,7 @@ public class Health : MonoBehaviour
     /// <param name="setCurrentHealth">Set the current health too.</param>
     public void SetMaxHealth(float value, bool setCurrentHealth = true)
     {
-        if (immortal) return;
+        if (isImmortal) return;
 
         maxHealth = value;
 

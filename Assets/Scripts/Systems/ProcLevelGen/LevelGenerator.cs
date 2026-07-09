@@ -64,6 +64,8 @@ public class LevelGenerator : SequenceBase
 
     private bool isGenerating = false;
 
+
+
     void Awake()
     {
         // clear lists before using in case of some strange behaviours.
@@ -93,9 +95,13 @@ public class LevelGenerator : SequenceBase
 
     // }
 
+
+
     private IEnumerator StartLevelGeneration()
     {
         isGenerating = true;
+
+
 
         currentLevelGenerationProgress = 0;
 
@@ -149,7 +155,6 @@ public class LevelGenerator : SequenceBase
             yield return null;
         }
 
-
         // if (CHECKING_CRITERIA)
         // {
         //     DestoryAllRooms();
@@ -195,15 +200,19 @@ public class LevelGenerator : SequenceBase
     /// <summary>
     /// Removes all the room prefabs this level generator created. DO NOT remove other objects.
     /// </summary>
-    private void DestroyAllRooms()
+    public void DestroyAllRooms()
     {
         Transform[] children = transform.GetComponentsInChildren<Transform>();
 
         foreach (Transform child in children)
         {
+            if (!child) continue;
             if (child == transform) continue;
 
-            Destroy(child.gameObject);
+            if (Application.isPlaying)
+                Destroy(child.gameObject);
+            else
+                DestroyImmediate(child.gameObject);
         }
 
         onLevelGenerationDestroy?.Invoke();
@@ -230,20 +239,31 @@ public class LevelGenerator : SequenceBase
 
             if (!CanGenerateFurther(levelData[generatingRoomsFromID].GridCoordinates + doorway.Location + doorway.GetFacingAsVector()))
             {
-                if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, currentID) != RoomSpawnStatus.Failed)
+                RoomSpawnStatus res = SpawnRoomOrEndCap(generatingRoomsFromID, doorway, currentID);
+                if (res != RoomSpawnStatus.Failed)
                 {
                     roomsWithDoorsToReturn.Add(currentID);
                     currentID++;
 
                     doorsConnected++;
                 }
-            }
-            else if (SpawnRoomOrEndCap(generatingRoomsFromID, doorway, currentID, false) != RoomSpawnStatus.Failed)
-            {
-                roomsWithDoorsToReturn.Add(currentID);
-                currentID++;
 
-                doorsConnected++;
+                print("Forced room " + res);
+            }
+            else
+            {
+                RoomSpawnStatus res = SpawnRoomOrEndCap(generatingRoomsFromID, doorway, currentID, false);
+
+
+                if (res != RoomSpawnStatus.Failed)
+                {
+                    roomsWithDoorsToReturn.Add(currentID);
+                    currentID++;
+
+                    doorsConnected++;
+                }
+
+                print("non forced room  " + res);
             }
 
 
@@ -350,7 +370,9 @@ public class LevelGenerator : SequenceBase
             }
         }
 
-        if (FinalRooms.Count > 0 && FinalRoomsSpawnLocation.Count > 0 && !blockGeneration)
+
+
+        if (FinalRooms.Count > 0 && !blockGeneration)
         {
             int randomPieceIndex = Random.Range(0, FinalRooms.Count);
 
@@ -364,7 +386,7 @@ public class LevelGenerator : SequenceBase
             return RoomSpawnStatus.ExtendableRoom; // ! don't continue.
 
         }
-        else if (allValidLevelPieces.Count > 0 && gridSpawnLocation.Count > 0 && blockGeneration)
+        else if (allValidLevelPieces.Count > 0 && blockGeneration)
         {
             int randomPieceIndex = Random.Range(0, allValidLevelPieces.Count);
 
@@ -998,6 +1020,15 @@ public class LevelGenerator : SequenceBase
 
         currentLevelGenerationProgress = 0f;
         roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
+    }
+
+    public void AbortSequence()
+    {
+        if (isGenerating)
+        {
+            StopAllCoroutines();
+            isGenerating = false;
+        }
     }
 
     public override float GetProgress()

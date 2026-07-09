@@ -17,6 +17,12 @@ public class ForceGenerationButton : Editor
             levelGenerator.StartSequence();
         }
 
+        if (GUILayout.Button("Remove all rooms"))
+        {
+            levelGenerator.AbortSequence();
+            levelGenerator.DestroyAllRooms();
+        }
+
         DrawDefaultInspector();
     }
 }
@@ -31,6 +37,10 @@ public class ForceSequenceButton : Editor
         if (GUILayout.Button("Generate Random Level"))
         {
             sequencer.StartTheSequence();
+        }
+        if (GUILayout.Button("ABORT"))
+        {
+            sequencer.RESETSEQ();
         }
 
         DrawDefaultInspector();

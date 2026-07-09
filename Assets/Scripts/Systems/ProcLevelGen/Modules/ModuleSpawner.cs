@@ -30,7 +30,7 @@ public class ModuleSpawner : MonoBehaviour
 
     public void SpawnCard()
     {
-        upgradeCardToSpawn = UpgradeCardManager.Instance?.GetUpgradeCardPrefab(cardTier);
+        upgradeCardToSpawn = ModuleLevelM.Instance?.GetModulePrefab(moduleTier);
 
         Instantiate(upgradeCardToSpawn, transform.position, Quaternion.identity);
         if (!Application.isPlaying)

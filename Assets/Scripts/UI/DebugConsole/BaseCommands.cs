@@ -410,7 +410,7 @@ public class BaseCommands
                 throw new NullReferenceException($"Cannot find the {nameof(PlayerRefFetcher)}!");
             }
 
-            PlayerRefFetcher.Instance.GetComponent<Health>().immortal = b;
+            PlayerRefFetcher.Instance.GetComponent<Health>().isImmortal = b;
         });
 
         hideHud = new Command<bool>("hidehud", "sets the visibility state of the hud.", "hidehud <bool>", (b) =>

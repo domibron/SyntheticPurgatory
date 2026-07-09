@@ -115,5 +115,17 @@ public class ModuleLevelM : MonoBehaviour
                 return null;
         }
     }
+
+    public void ActivateAndArm()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            Debug.LogError($"Two or more {nameof(ModuleLevelM)} exists, this one was removed! Make sure only one exists at all times.", this);
+            return;
+        }
+
+        Instance = this;
+    }
 }
 

@@ -6,7 +6,11 @@ public class OverrideSpawners : SequenceBase
 {
     public override event Action OnThisSequenceEnd;
 
-    public UpgradeCardManager upgradeCardManager;
+    public ModuleLevelM upgradeCardManager;
+
+    private Coroutine A;
+    private Coroutine B;
+    private Coroutine C;
 
     public override float GetProgress()
     {
@@ -20,36 +24,59 @@ public class OverrideSpawners : SequenceBase
 
     IEnumerator BeginOverride()
     {
-        EnemyGroupSpawner[] enemySpawners = FindObjectsByType<EnemyGroupSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-
-        RandomizeEnvironmentPiece[] propSpawners = FindObjectsByType<RandomizeEnvironmentPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-
-        UpgradeCardSpawner[] cardSpawners = FindObjectsByType<UpgradeCardSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-
         upgradeCardManager.ActivateAndArm();
 
 
+        A = StartCoroutine(EnemySpawn(FindObjectsByType<EnemyGroupSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)));
 
-        foreach (EnemyGroupSpawner enemySpawner in enemySpawners)
+        B = StartCoroutine(RandomEnvPiece(FindObjectsByType<RandomizeEnvironmentPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)));
+
+        C = StartCoroutine(CardSpawn(FindObjectsByType<ModuleSpawner>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)));
+
+        while (A != null && B != null && C != null)
         {
-            enemySpawner.SpawnEnemies();
             yield return null;
         }
 
-        foreach (RandomizeEnvironmentPiece propSpawner in propSpawners)
-        {
-            propSpawner.SpawnRandomProps();
-            yield return null;
-        }
-
-        foreach (UpgradeCardSpawner cardSpawner in cardSpawners)
-        {
-            cardSpawner.SpawnCard();
-            yield return null;
-        }
 
         OnThisSequenceEnd?.Invoke();
 
         print("Done with calling spawn entities.");
+    }
+
+    IEnumerator EnemySpawn(EnemyGroupSpawner[] enemySpawners)
+    {
+        foreach (EnemyGroupSpawner enemySpawner in enemySpawners)
+        {
+            enemySpawner.SpawnEnemies();
+
+            yield return null;
+        }
+
+        A = null;
+    }
+
+    IEnumerator RandomEnvPiece(RandomizeEnvironmentPiece[] propSpawners)
+    {
+        foreach (RandomizeEnvironmentPiece propSpawner in propSpawners)
+        {
+            propSpawner.SpawnRandomProps();
+
+            yield return null;
+        }
+
+        B = null;
+    }
+
+    IEnumerator CardSpawn(ModuleSpawner[] cardSpawners)
+    {
+        foreach (ModuleSpawner cardSpawner in cardSpawners)
+        {
+            cardSpawner.SpawnCard();
+
+            yield return null;
+        }
+
+        C = null;
     }
 }

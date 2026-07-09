@@ -45,6 +45,9 @@ public class Sequencer : MonoBehaviour
     /// </summary>
     public event Action OnSequencesEnd;
 
+    private Coroutine main;
+    private Coroutine timeTracking;
+    private bool keepTime = false;
 
     IEnumerator Start()
     {
@@ -66,7 +69,7 @@ public class Sequencer : MonoBehaviour
 
     public void StartTheSequence()
     {
-        StartCoroutine(StartSequence());
+        main = StartCoroutine(StartSequence());
     }
 
     /// <summary>
@@ -75,6 +78,8 @@ public class Sequencer : MonoBehaviour
     /// <returns></returns>
     private IEnumerator StartSequence()
     {
+        timeTracking = StartCoroutine(TrackTime());
+
         for (int i = 0; i < sequences.Length; i++)
         {
             if (currentSequence != i) currentSequence = i;
@@ -106,6 +111,8 @@ public class Sequencer : MonoBehaviour
         OnSequencesEnd?.Invoke();
 
         LevelLoading.Instance?.ReleaseLevelLoading();
+
+        keepTime = false;
 
         yield return null;
     }
@@ -142,5 +149,37 @@ public class Sequencer : MonoBehaviour
     {
         sequences[currentSequence].SequenceBase.OnThisSequenceEnd -= SequenceEnd;
         waitingForASequence = false;
+    }
+
+    private IEnumerator TrackTime()
+    {
+        print("Time started: " + DateTime.Now.ToLongTimeString());
+        DateTime startTime = DateTime.Now;
+        TimeSpan timeSpan = DateTime.Now.Subtract(startTime);
+
+        keepTime = true;
+
+
+        while (keepTime)
+        {
+            timeSpan = DateTime.Now.Subtract(startTime);
+
+
+            print($"Elapsed: h{timeSpan.Hours}:m{timeSpan.Minutes}:s{timeSpan.Seconds}:ms{timeSpan.Milliseconds}");
+
+            yield return null;
+        }
+
+        timeSpan = DateTime.Now.Subtract(startTime);
+
+
+        print($"Ended with: h{timeSpan.TotalHours}:m{timeSpan.Minutes}:s{timeSpan.Seconds}:ms{timeSpan.Milliseconds}");
+    }
+
+    public void RESETSEQ()
+    {
+        StopCoroutine(timeTracking);
+        keepTime = false;
+        StopCoroutine(main);
     }
 }
