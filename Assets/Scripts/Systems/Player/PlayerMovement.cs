@@ -526,6 +526,7 @@ public class PlayerMovement : MonoBehaviour
         isOnSlightSlope = false;
     }
 
+    // TODO remove?
     /// <summary>
     /// Is the target point close to the player's feet.
     /// </summary>
@@ -562,38 +563,38 @@ public class PlayerMovement : MonoBehaviour
     void OnCollisionStay(Collision collision)
     {
 
-        Vector3 slopeNormalAverage = Vector3.zero;
+        // Vector3 slopeNormalAverage = Vector3.zero;
 
-        float angle;
-        int validContacts = 0;
-        foreach (ContactPoint contact in collision.contacts)
-        {
+        // float angle;
+        // int validContacts = 0;
+        // foreach (ContactPoint contact in collision.contacts)
+        // {
 
-            Vector3 contactPos = contact.point;
-            if (WithinGroundRange(contactPos)) continue;
+        //     Vector3 contactPos = contact.point;
+        //     if (WithinGroundRange(contactPos)) continue;
 
-            contactPos.y = transform.position.y;
-
-
-            if (Vector3.Distance(contactPos, transform.position) > col.radius - 0.03f) continue;
-
-            angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
+        //     contactPos.y = transform.position.y;
 
 
-            if (angle > 85) continue;
+        //     if (Vector3.Distance(contactPos, transform.position) > col.radius - 0.03f) continue;
 
-            validContacts++;
-            slopeNormalAverage += contact.normal;
+        //     angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
 
-        }
-        slopeNormalAverage /= validContacts;
-        groundNormalAverage = slopeNormalAverage;
 
-        if (validContacts == 0)
-        {
-            slopeNormalAverage = Vector3.up;
-            groundNormalAverage = slopeNormalAverage;
-        }
+        //     if (angle > 85) continue;
+
+        //     validContacts++;
+        //     slopeNormalAverage += contact.normal;
+
+        // }
+        // slopeNormalAverage /= validContacts;
+        // groundNormalAverage = slopeNormalAverage;
+
+        // if (validContacts == 0)
+        // {
+        //     slopeNormalAverage = Vector3.up;
+        //     groundNormalAverage = slopeNormalAverage;
+        // }
 
     }
 
