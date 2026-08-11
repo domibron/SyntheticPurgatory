@@ -54,7 +54,12 @@ public class DamagingArea : MonoBehaviour
                 continue;
             }
 
-            damageableObject.AddToHealth(-damagePerTick);
+            // Only damage entity if it is not immune to toxic
+            if (!damageableObject.GetToxicImmunity())
+            {
+                damageableObject.AddToHealth(-damagePerTick);
+            }
+
         }
 
 
