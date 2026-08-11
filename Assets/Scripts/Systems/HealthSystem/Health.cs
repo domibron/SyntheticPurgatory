@@ -20,6 +20,12 @@ public class Health : MonoBehaviour
     protected float currentHealth;
 
     /// <summary>
+    /// If entity can take damage from toxic sources
+    /// </summary>
+    [SerializeField]
+    protected bool toxicImmunity = false;
+
+    /// <summary>
     /// Used to only trigger the on death event once.
     /// </summary>
     protected bool calledOnDeathEvent = false;
@@ -109,6 +115,15 @@ public class Health : MonoBehaviour
     public virtual float GetMaxHealthValue()
     {
         return maxHealth;
+    }
+
+    /// <summary>
+    /// Get toxic immunity
+    /// </summary>
+    /// <returns>Boolean</returns>
+    public virtual bool GetToxicImmunity()
+    {
+        return toxicImmunity;
     }
 
     /// <summary>
