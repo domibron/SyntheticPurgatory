@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// The player movement disable type.
     /// </summary>
-    public enum DisabledType
+    public enum DisabledType : byte // Can use byte to reduce the size if we use a few values. (ideally used for structs)
     {
         None,
         MovementOnly,
@@ -184,6 +184,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     const float GAMEPAD_SENS_MULT = 10f;
 
+    #region Input
 
     /// <summary>
     /// Look input vector.
@@ -208,6 +209,8 @@ public class PlayerMovement : MonoBehaviour
     InputAction lookInput;
     InputAction sprintInput;
 
+    #endregion
+
 
     /// <summary>
     /// Debug to show the velocity on screen.
@@ -231,16 +234,48 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-
     void Update()
     {
         PollInput();
-        if (disabledState == DisabledType.MovementOnly) { rb.linearVelocity = Vector3.zero; }
+        HandleCameraMovement();
+    }
+
+    void FixedUpdate()
+    {
+        if (disabledState == DisabledType.MovementOnly) { rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
+        if (disabledState == DisabledType.MovementOnly || disabledState == DisabledType.All) return;
+
+        // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
+        // AirMove(dir, airSpeed, airAccel);
+        CheckForGround();
+        UpdateGroundNormalAverage();
+
+        ResetJumpWhenGrounded();
+        BoostAndSprinting();
+
+        Crouching();
+        SlopeAndNormalGravity();
+
+        ResetAirBoostWhenGrounded();
+
+        HandleMovement();
+
+        RunStepChecksOnGround();
+    }
+
+    void OnGUI()
+    {
+        // GUILayoutOption[] layout = { GUILayout.MinHeight(Screen.height / 10) };
+        if (!showVel) return;
+
+        GUILayout.Label($"<color=red><size={Screen.height / 20}>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
+        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + rb.linearVelocity.magnitude.ToString("F2"));
+    }
+
+    private void HandleCameraMovement()
+    {
         if (disabledState == DisabledType.MouseOnly || disabledState == DisabledType.All) { return; }
 
-        // col.material.dynamicFriction = 0f;
-
-        // camera stuff. default if input manager dies.
         bool useMouseLook = true;
         bool invertYLook = false;
         float xSense = 7f * MOUSE_SENS_MULT;
@@ -288,96 +323,26 @@ public class PlayerMovement : MonoBehaviour
         cameraTarget.localPosition = camPos;
     }
 
-    void OnGUI()
+    private void HandleMovement()
     {
-        // GUILayoutOption[] layout = { GUILayout.MinHeight(Screen.height / 10) };
-        if (!showVel) return;
-
-        GUILayout.Label($"<color=red><size={Screen.height / 20}>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
-        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + rb.linearVelocity.magnitude.ToString("F2"));
-    }
-
-    void FixedUpdate()
-    {
-        if (disabledState == DisabledType.MovementOnly || disabledState == DisabledType.All) return;
-
-        // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
-        // AirMove(dir, airSpeed, airAccel);
-        CheckForGround();
-
-        if (grounded && !isOnSteepSlope)
-        {
-            isJumping = false;
-        }
-
-        if (wantToSprint)
-        {
-            if (!isSprinting)
-            {
-                CrouchBoost(); // so lazy
-                AirBoost();
-            }
-            isSprinting = true;
-        }
-        else
-        {
-            isSprinting = false;
-        }
-
-        if (wantToCrouch)
-        {
-
-            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
-            // if (!isCrouched && isSprinting)
-            // {
-            //     CrouchBoost(); // so lazy
-            //     AirBoost();
-            // }
-
-            isCrouched = true;
-        }
-        else
-        {
-            col.height = col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
-            isCrouched = false;
-            appliedSlideBoost = false;
-        }
-
-        // Gravity.
-        if (isOnSteepSlope)
-        {
-            float gravOnSlope = Physics.gravity.magnitude * gravityScalar * 3f;
-
-
-            Vector3 gravAlongSlope = (Vector3.down * gravOnSlope).normalized + Vector3.ProjectOnPlane(Vector3.down * gravOnSlope, groundNormalAverage).normalized;
-
-
-
-            rb.AddForce(gravAlongSlope.normalized * gravOnSlope, ForceMode.Acceleration);
-
-            Debug.DrawLine(transform.position, transform.position + gravAlongSlope, Color.green, 10f);
-            Debug.DrawLine(transform.position, transform.position + Vector3.down, Color.red, 10f);
-        }
-        else
-        {
-            rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
-        }
-
-        if (grounded)
-        {
-            appliedAirBoost = false;
-        }
-
         if (grounded && !isCrouched)
         {
             Vector3 velocityToAdd = GroundedMovement(dir, isSprinting ? runSpeed : walkSpeed, grAccel);
             velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
             rb.AddForce(velocityToAdd, ForceMode.Acceleration);
 
-            // counter slope sliding when not inputing anything and dont have any vel, aka play is stopped so stop the player.
-            if (isOnSlightSlope && rb.linearVelocity.magnitude < 0.2f && dir.magnitude <= 0.1f)
+            // // counter slope sliding when not input-ing anything and dont have any vel, aka play is stopped so stop the player.
+            // if (isOnSlightSlope && rb.linearVelocity.magnitude < 0.2f && dir.magnitude <= 0.1f)
+            // {
+            //     rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
+            // }
+
+            // Counter slope grav.
+            if (isOnSlightSlope)
             {
-                rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
+                Vector3 gravProjected = Vector3.ProjectOnPlane(GetGravityVector(), groundNormalAverage);
+                gravProjected = -gravProjected;
+                rb.AddForce(gravProjected, ForceMode.Acceleration);
             }
 
             // jumping
@@ -421,12 +386,90 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(friction, ForceMode.VelocityChange);
             // if (isJumping) isJumping = false; // this is cursed.
         }
+    }
 
-
+    private void RunStepChecksOnGround()
+    {
         if (IsGrounded())
         {
             // if (rb.SweepTest(transform.worldToLocalMatrix * dir.normalized, out RaycastHit hitInfo, 1f))
             StepHandle(dir.normalized);
+        }
+    }
+
+    private void SlopeAndNormalGravity()
+    {
+        // Gravity.
+        if (isOnSteepSlope)
+        {
+            float gravOnSlope = Physics.gravity.magnitude * gravityScalar * 3f;
+
+
+            Vector3 gravAlongSlope = Vector3.ProjectOnPlane(Vector3.down * gravOnSlope, groundNormalAverage).normalized;
+
+
+
+            rb.AddForce(gravAlongSlope.normalized * gravOnSlope, ForceMode.Acceleration);
+
+            Debug.DrawLine(transform.position, transform.position + gravAlongSlope, Color.green, 10f);
+            Debug.DrawLine(transform.position, transform.position + Vector3.down, Color.red, 10f);
+        }
+        else if (isOnSlightSlope)
+        {
+
+        }
+        else
+        {
+            rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
+        }
+    }
+
+    private void ResetAirBoostWhenGrounded()
+    {
+        if (grounded)
+        {
+            appliedAirBoost = false;
+        }
+    }
+
+    private void Crouching()
+    {
+        if (wantToCrouch)
+        {
+            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
+
+            isCrouched = true;
+        }
+        else
+        {
+            col.height = col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
+            isCrouched = false;
+            appliedSlideBoost = false;
+        }
+    }
+
+    private void BoostAndSprinting()
+    {
+        if (wantToSprint)
+        {
+            if (!isSprinting)
+            {
+                TryCrouchBoost();
+                TryAirBoost();
+            }
+            isSprinting = true;
+        }
+        else
+        {
+            isSprinting = false;
+        }
+    }
+
+    private void ResetJumpWhenGrounded()
+    {
+        if (grounded && !isOnSteepSlope)
+        {
+            isJumping = false;
         }
     }
 
@@ -548,55 +591,110 @@ public class PlayerMovement : MonoBehaviour
     /// <returns></returns>
     Vector3 GetGravityVector()
     {
-        if (grounded && !isOnSteepSlope)
-        {
-            Vector3 gravityVector = Physics.gravity - Vector3.ProjectOnPlane(Physics.gravity, groundNormalAverage);
-            return gravityVector * gravityScalar;
-        }
-        else
-        {
-            return Physics.gravity * gravityScalar;
-        }
+        // if (grounded && !isOnSteepSlope)
+        // {
+        //     Vector3 gravityVector = Physics.gravity - Vector3.ProjectOnPlane(Physics.gravity, groundNormalAverage);
+        //     return gravityVector * gravityScalar;
+        // }
+        // else
+        // {
+        return Physics.gravity * gravityScalar;
+        // }
     }
 
-
-    void OnCollisionStay(Collision collision)
+    private Vector3 GetWorldFeetPos()
     {
-
-        // Vector3 slopeNormalAverage = Vector3.zero;
-
-        // float angle;
-        // int validContacts = 0;
-        // foreach (ContactPoint contact in collision.contacts)
-        // {
-
-        //     Vector3 contactPos = contact.point;
-        //     if (WithinGroundRange(contactPos)) continue;
-
-        //     contactPos.y = transform.position.y;
-
-
-        //     if (Vector3.Distance(contactPos, transform.position) > col.radius - 0.03f) continue;
-
-        //     angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
-
-
-        //     if (angle > 85) continue;
-
-        //     validContacts++;
-        //     slopeNormalAverage += contact.normal;
-
-        // }
-        // slopeNormalAverage /= validContacts;
-        // groundNormalAverage = slopeNormalAverage;
-
-        // if (validContacts == 0)
-        // {
-        //     slopeNormalAverage = Vector3.up;
-        //     groundNormalAverage = slopeNormalAverage;
-        // }
-
+        return transform.position - (transform.up * GetHalfHeight());
     }
+
+    private void UpdateGroundNormalAverage()
+    {
+        const float RANGE = 0.2f;
+        const int MAX_CHECKS = 9;
+
+        Vector3 collectedAverage = Vector3.zero;
+
+        Vector3 checkPos = GetWorldFeetPos();
+        Vector3 down = -transform.up;
+
+        RaycastHit hit;
+
+        for (int i = 0; i < MAX_CHECKS; i++)
+        {
+            // Check in the center of the player.
+            if (i == 0)
+            {
+                if (Physics.Raycast(checkPos, down, out hit, RANGE, groundLayer, QueryTriggerInteraction.Ignore))
+                {
+                    collectedAverage += hit.normal;
+                }
+                else
+                {
+                    collectedAverage += Vector3.up;
+                }
+
+                continue;
+            }
+
+            // Check in the 8 directions around the player.
+            checkPos += transform.forward * (col.radius - (col.radius * 0.2f));
+
+            // Rotate the vector (in our case with a max of 9, remove the center, so 8. We check ever 45 deg.)
+            checkPos = Quaternion.AngleAxis(360 / (MAX_CHECKS - 1), -down) * checkPos;
+
+            if (Physics.Raycast(checkPos, down, out hit, RANGE, groundLayer, QueryTriggerInteraction.Ignore))
+            {
+                collectedAverage += hit.normal;
+            }
+            else
+            {
+                collectedAverage += Vector3.up;
+            }
+        }
+
+        // return collectedAverage /= MAX_CHECKS;
+        groundNormalAverage = collectedAverage / MAX_CHECKS;
+    }
+
+    // void OnCollisionStay(Collision collision)
+    // {
+
+    //     Vector3 slopeNormalAverage = Vector3.zero;
+
+    //     float angle;
+    //     int validContacts = 0;
+    //     foreach (ContactPoint contact in collision.contacts)
+    //     {
+
+    //         Vector3 contactPos = contact.point;
+    //         if (WithinGroundRange(contactPos)) continue;
+
+    //         contactPos.y = transform.position.y;
+
+
+    //         if (Vector3.Distance(contactPos, transform.position) > col.radius - 0.03f) continue;
+
+    //         angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
+
+
+    //         if (angle > 85) continue;
+
+    //         validContacts++;
+    //         slopeNormalAverage += contact.normal;
+
+    //     }
+    //     slopeNormalAverage /= validContacts;
+    //     groundNormalAverage = slopeNormalAverage;
+
+    //     if (validContacts == 0)
+    //     {
+    //         slopeNormalAverage = Vector3.up;
+    //         groundNormalAverage = slopeNormalAverage;
+    //     }
+
+    //     // TODO: Remove this. this sucks.
+
+    // }
 
     /// <summary>
     /// Handles stepping up steps and small ledges.
@@ -666,9 +764,7 @@ public class PlayerMovement : MonoBehaviour
 
         // print("able to step");
 
-        Vector3 upAmount = (Vector3.up * (heightIncrement * iteration));
-
-        transform.position += upAmount;
+        transform.position += Vector3.up * (heightIncrement * iteration);
     }
 
     /// <summary>
@@ -679,7 +775,13 @@ public class PlayerMovement : MonoBehaviour
     /// <returns>The vector that will apply friction.</returns>
     Vector3 GetFrictionVector(float maxSpeed, float friction)
     {
-        if (rb.linearVelocity.magnitude <= maxSpeed)
+        // this wont work if we are on a slop
+        // TODO slope implementation.
+
+        Vector3 vel = rb.linearVelocity;
+        vel.y = 0;
+
+        if (vel.magnitude <= maxSpeed)
         {
             return Vector3.zero;
         }
@@ -690,7 +792,7 @@ public class PlayerMovement : MonoBehaviour
         if (currentVelSpeedNoY.magnitude > maxSpeed) friction *= currentVelSpeedNoY.magnitude / maxSpeed; // Increase the accel when overspeed.
 
         float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), counterDir); // Vector projection of Current velocity onto accelDir.
-        float accelVel = friction * Time.deltaTime; // Accelerated velocity in direction of movment
+        float accelVel = friction * Time.deltaTime; // Accelerated velocity in direction of movement
 
         // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
         if (projVel + accelVel > maxSpeed)
@@ -721,11 +823,13 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector3 accelForce = forceNeededForDesiredVelocity.normalized * acceleration; // turn the force needed into a acceleration.
-        float magn = accelForce.magnitude; // this makes no sense.
-        accelForce = accelForce.normalized; // because you did this.
-        accelForce *= magn; // already.
 
-        return accelForce; // Forcemode.Acceleration);
+        // Obsolete. WIll remove once I take another look.
+        float mag = accelForce.magnitude; // this makes no sense.
+        accelForce = accelForce.normalized; // because you did this.
+        accelForce *= mag; // already.
+
+        return accelForce;
 
     }
 
@@ -741,7 +845,7 @@ public class PlayerMovement : MonoBehaviour
         wishDir.Normalize();
 
         float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
-        float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movment
+        float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movement
 
         // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
         if (projVel + accelVel > maxSpeed)
@@ -762,34 +866,20 @@ public class PlayerMovement : MonoBehaviour
         wishDir.Normalize();
 
         float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
-        float boostVel = boostSpeed; // Accelerated velocity in direction of movment
+        float boostVel = boostSpeed; // Accelerated velocity in direction of movement
 
         // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
         if (projVel + boostVel > boostSpeed)
             boostVel = Mathf.Max(0f, boostSpeed - projVel);
 
-        return wishDir.normalized * boostVel; // ForceMode.VelocityChange);
+        return wishDir.normalized * boostVel;
     }
 
-    //TODO: remove this.
-    Vector3 VectorToGround()
-    {
-        Vector3 position = transform.position;
-        RaycastHit hit;
-        if (Physics.Raycast(position, Vector3.down, out hit, 1f))
-        {
-            return hit.point - position;
-        }
-        else
-        {
-            return Vector3.positiveInfinity;
-        }
-    }
 
     /// <summary>
     /// Crouch boost.
     /// </summary>
-    void CrouchBoost()
+    void TryCrouchBoost()
     {
         if (!grounded || !canSlideBoost || appliedSlideBoost) return;
 
@@ -805,7 +895,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Air boost.
     /// </summary>
-    void AirBoost()
+    void TryAirBoost()
     {
         if (grounded || !canAirBoost || appliedAirBoost) return;
 
