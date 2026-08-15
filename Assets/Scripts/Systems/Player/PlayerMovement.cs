@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerMovement : MonoBehaviour
 {
+    #region Disabling
     /// <summary>
     /// The player movement disable type.
     /// </summary>
@@ -20,214 +21,157 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// The current disable state of the player movement.
     /// </summary>
-    private DisabledType disabledState = DisabledType.None;
+    public DisabledType CurrentDisabledState { get; set; } = DisabledType.None;
+
+    #endregion
+
+
+
+    #region Non changing
 
     /// <summary>
     /// ALl the layers that the player can run and jump on.
     /// </summary>
     [SerializeField]
-    private LayerMask groundLayer = Physics.AllLayers;
-
-    //Ground
-    /// <summary>
-    /// The speed the player will move on the ground when sprinting. Stats set this.
-    /// </summary>
-    float runSpeed = 4f;
-
-    /// <summary>
-    /// The speed the player will move on the ground when they are not sprinting.
-    /// </summary>
-    float walkSpeed = 2f;
-
-    /// <summary>
-    /// How fast the player accelerate on the ground. Stats set this.
-    /// </summary>
-    float grAccel = 30f;
-
-    //Air
-    /// <summary>
-    /// The speed the player moves in the air.
-    /// </summary>
-    float airSpeed = 3f;
-
-    /// <summary>
-    /// How fast the player accelerate in the air.
-    /// </summary>
-    float airAccel = 20f;
-
-    //Jump
-    /// <summary>
-    /// The speed the player receives when they press jump whilst on the ground.
-    /// </summary>
-    float jumpUpSpeed = 9.2f;
-
-    /// <summary>
-    /// The degrees at which a floor is considered a wall. Floor angle compared to vector up.
-    /// </summary>
-    float wallFloorBarrier = 60f;
+    LayerMask m_groundLayer = Physics.AllLayers;
 
     /// <summary>
     /// Gravity scale for making the player feel heavier or lighter.
     /// </summary>
     [SerializeField]
-    float gravityScalar = 1f;
-
-    // Sliding
-    /// <summary>
-    /// The slide boost the player gets when the slide on the ground. Stats sets this.
-    /// </summary>
-    float slideBoostForce = 5f;
-
-    /// <summary>
-    /// The boost force when the player slide in the air. Stats set this.
-    /// </summary>
-    float airBoostForce = 5f;
-
-    /// <summary>
-    /// The friction from the ground surface. Nerfs the slide boost.
-    /// </summary>
-    private float groundFriction = 5f;
-
-    /// <summary>
-    /// The friction whilst in the air.
-    /// </summary>
-    private float airFriction = 1f;
-
-    /// <summary>
-    /// Is the player grounded.
-    /// </summary>
-    bool grounded;
-
-    /// <summary>
-    /// Is the player performing a jump.
-    /// </summary>
-    bool isJumping;
-
-    /// <summary>
-    /// Is the player on a steep slope.
-    /// </summary>
-    bool isOnSteepSlope;
-
-    /// <summary>
-    /// Is the player on a slight slope.
-    /// </summary>
-    bool isOnSlightSlope;
-
-    /// <summary>
-    /// Is the player currently crouched.
-    /// </summary>
-    bool isCrouched = false;
-
-    /// <summary>
-    /// Is the player currently sprinting.
-    /// </summary>
-    bool isSprinting = false;
-
-
-
-    /// <summary>
-    /// Can the player slide boost.
-    /// </summary>
-    bool canSlideBoost = true;
-
-    /// <summary>
-    /// Has the player already performed a slide boost.
-    /// </summary>
-    bool appliedSlideBoost = false;
-
-    /// <summary>
-    /// Can the player air slide boost.
-    /// </summary>
-    bool canAirBoost = true;
-
-    /// <summary>
-    /// Has the player already applied the air slide boost.
-    /// </summary>
-    bool appliedAirBoost = false;
-
-
-    /// <summary>
-    /// The normal up vector for a perfectly level ground.
-    /// </summary>
-    Vector3 groundNormalAverage = Vector3.up;
+    float m_gravityScalar = 1f;
 
     /// <summary>
     /// The attached capsule collider to adjust for crouching.
     /// </summary>
-    CapsuleCollider col;
+    CapsuleCollider m_col;
 
     /// <summary>
     /// The attached rigidbody.
     /// </summary>
-    Rigidbody rb;
-
+    Rigidbody m_rb;
 
     /// <summary>
     /// The camera target to move the camera to.
     /// </summary>
     [SerializeField]
-    Transform cameraTarget;
+    Transform m_cameraTarget;
 
     /// <summary>
     /// The current rotation of the player. (Rotating this and not the rigid body.)
     /// </summary>
     [SerializeField]
-    Transform orientation;
+    Transform m_orientation;
 
-    /// <summary>
-    /// The default mouse sensitivity.
-    /// </summary>
-    const float MOUSE_SENS_MULT = 0.01f;
+    const float k_slopeToSteepSlopeThreshold = 50;
 
-    /// <summary>
-    /// The default gamepad sensitivity.
-    /// </summary>
-    const float GAMEPAD_SENS_MULT = 10f;
+    const float k_floorToSlopeThreshold = 1;
 
-    #region Input
-
-    /// <summary>
-    /// Look input vector.
-    /// </summary>
-    Vector2 lookDelta = Vector2.zero;
-
-    /// <summary>
-    /// The current camera vertical look.
-    /// </summary>
-    float camXRot = 0f;
-
-    // Input
-    Vector3 dir = Vector3.zero;
-    bool wantToJump;
-    bool wantToCrouch;
-    bool wantToSprint;
-
-    // Movement Binds.
-    InputAction movementInput;
-    InputAction jumpInput;
-    InputAction crouchInput;
-    InputAction lookInput;
-    InputAction sprintInput;
+    const float k_minAccelRate = 0.01f;
 
     #endregion
 
 
+
+    #region Input related
+
+    //TODO: remove from imp. default input should be set correctly.
     /// <summary>
-    /// Debug to show the velocity on screen.
+    /// The default mouse sensitivity.
     /// </summary>
-    private bool showVel = false;
+    const float k_mouseSensitivityMult = 0.01f;
+
+    /// <summary>
+    /// The default gamepad sensitivity.
+    /// </summary>
+    const float k_gamepadSensitivityMult = 10f;
+
+    /// <summary>
+    /// Look input vector.
+    /// </summary>
+    Vector2 m_lookDelta = Vector2.zero;
+
+    /// <summary>
+    /// The current camera vertical look.
+    /// </summary>
+    float m_camXRot = 0f;
+
+    // Input
+    Vector3 m_inputWishDirWorld = Vector3.zero;
+    bool m_isJumpHeld;
+    bool m_isCrouchHeld;
+    bool m_isSprintHeld;
+
+    // Movement Binds.
+    InputAction m_movementInput;
+    InputAction m_jumpInput;
+    InputAction m_crouchInput;
+    InputAction m_lookInput;
+    InputAction m_sprintInput;
+
+
+    #endregion
+
+
+
+    #region States
+
+    /// <summary>
+    /// The normal up vector for a perfectly level ground.
+    /// </summary>
+    Vector3 m_groundNormalAverage = Vector3.up;
+
+
+    /// <summary>
+    /// Is the player grounded.
+    /// </summary>
+    public bool IsGrounded { get; private set; }
+
+
+    private enum SlopeState : byte
+    {
+        FlatGround,
+        SlightSlope,
+        SteepSlope,
+    }
+
+    SlopeState m_currentSlopeState = SlopeState.FlatGround;
+
+    /// <summary>
+    /// Is the player character currently crouched.
+    /// </summary>
+    bool m_isCrouched = false;
+
+    /// <summary>
+    /// Is the player character currently sprinting.
+    /// </summary>
+    bool m_isSprinting = false;
+
+
+    bool m_isJumping = false;
+
+    #endregion
+
+    [SerializeField]
+    float maxSpeed = 10;
+
+    [SerializeField]
+    float accel = 10;
+
+
+    #region Monobehaviours
 
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        col = GetComponent<CapsuleCollider>();
+        m_rb = GetComponent<Rigidbody>();
+        m_col = GetComponent<CapsuleCollider>();
 
-        movementInput = InputSystem.actions.FindAction("Move");
-        jumpInput = InputSystem.actions.FindAction("Jump");
-        crouchInput = InputSystem.actions.FindAction("Crouch");
-        lookInput = InputSystem.actions.FindAction("Look");
-        sprintInput = InputSystem.actions.FindAction("Sprint");
+        m_movementInput = InputSystem.actions.FindAction("Move");
+        m_jumpInput = InputSystem.actions.FindAction("Jump");
+        m_crouchInput = InputSystem.actions.FindAction("Crouch");
+        m_lookInput = InputSystem.actions.FindAction("Look");
+        m_sprintInput = InputSystem.actions.FindAction("Sprint");
 
         // TODO: Remove this. This should not be here and be moved to a dedicated script.
         Cursor.visible = false;
@@ -242,44 +186,46 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (disabledState == DisabledType.MovementOnly) { rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
-        if (disabledState == DisabledType.MovementOnly || disabledState == DisabledType.All) return;
+        if (CurrentDisabledState == DisabledType.MovementOnly) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
+        if (CurrentDisabledState == DisabledType.MovementOnly || CurrentDisabledState == DisabledType.All) return;
 
         // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
         // AirMove(dir, airSpeed, airAccel);
-        CheckForGround();
-        UpdateGroundNormalAverage();
+
+        IsGrounded = CheckIsGrounded();
+
+        m_groundNormalAverage = UpdateGroundNormalAverage();
+        UpdateSlopeState(m_groundNormalAverage);
+
+        ApplyGravity();
 
         ResetJumpWhenGrounded();
-        BoostAndSprinting();
 
-        Crouching();
-        SlopeAndNormalGravity();
+        Movement();
 
-        ResetAirBoostWhenGrounded();
-
-        HandleMovement();
-
-        RunStepChecksOnGround();
+        HandleStepping();
     }
 
     void OnGUI()
     {
-        // GUILayoutOption[] layout = { GUILayout.MinHeight(Screen.height / 10) };
-        if (!showVel) return;
-
-        GUILayout.Label($"<color=red><size={Screen.height / 20}>" + orientation.InverseTransformDirection(rb.linearVelocity).ToString());
-        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + rb.linearVelocity.magnitude.ToString("F2"));
+        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
     }
+
+    #endregion
+
+
+
+
+    #region Camera
 
     private void HandleCameraMovement()
     {
-        if (disabledState == DisabledType.MouseOnly || disabledState == DisabledType.All) { return; }
+        if (CurrentDisabledState == DisabledType.MouseOnly || CurrentDisabledState == DisabledType.All) { return; }
 
         bool useMouseLook = true;
         bool invertYLook = false;
-        float xSense = 7f * MOUSE_SENS_MULT;
-        float ySense = 7f * MOUSE_SENS_MULT;
+        float xSense = 7f * k_mouseSensitivityMult;
+        float ySense = 7f * k_mouseSensitivityMult;
 
         if (InputManager.Instance != null)
         {
@@ -290,15 +236,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 invertYLook = SettingsMenu.GetMouseInvertY();
 
-                xSense = SettingsMenu.GetMouseXSens() * MOUSE_SENS_MULT;
-                ySense = SettingsMenu.GetMouseYSens() * MOUSE_SENS_MULT;
+                xSense = SettingsMenu.GetMouseXSens() * k_mouseSensitivityMult;
+                ySense = SettingsMenu.GetMouseYSens() * k_mouseSensitivityMult;
             }
             else
             {
                 invertYLook = SettingsMenu.GetGamepadInvertY();
 
-                xSense = SettingsMenu.GetGamepadXSens() * GAMEPAD_SENS_MULT;
-                ySense = SettingsMenu.GetGamepadYSens() * GAMEPAD_SENS_MULT;
+                xSense = SettingsMenu.GetGamepadXSens() * k_gamepadSensitivityMult;
+                ySense = SettingsMenu.GetGamepadYSens() * k_gamepadSensitivityMult;
             }
         }
 
@@ -308,311 +254,100 @@ public class PlayerMovement : MonoBehaviour
 
 
         if (invertYLook)
-            camXRot += lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
+            m_camXRot += m_lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
         else
-            camXRot -= lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
+            m_camXRot -= m_lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
 
-        camXRot = Mathf.Clamp(camXRot, -80, 80);
+        m_camXRot = Mathf.Clamp(m_camXRot, -80, 80);
 
-        cameraTarget.localRotation = Quaternion.Euler(camXRot, 0, 0);
-        orientation.Rotate(0, lookDelta.x * ySense * (useMouseLook ? 1f : Time.deltaTime), 0);
+        m_cameraTarget.localRotation = Quaternion.Euler(m_camXRot, 0, 0);
+        m_orientation.Rotate(0, m_lookDelta.x * ySense * (useMouseLook ? 1f : Time.deltaTime), 0);
 
 
-        Vector3 camPos = cameraTarget.localPosition;
+        Vector3 camPos = m_cameraTarget.localPosition;
         camPos.y = GetHalfHeight() - 0.15f;
-        cameraTarget.localPosition = camPos;
+        m_cameraTarget.localPosition = camPos;
     }
 
-    private void HandleMovement()
+    #endregion
+
+
+    private void Movement()
     {
-        if (grounded && !isCrouched)
+        if (IsGrounded)
         {
-            Vector3 velocityToAdd = GroundedMovement(dir, isSprinting ? runSpeed : walkSpeed, grAccel);
-            velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
-            rb.AddForce(velocityToAdd, ForceMode.Acceleration);
-
-            // // counter slope sliding when not input-ing anything and dont have any vel, aka play is stopped so stop the player.
-            // if (isOnSlightSlope && rb.linearVelocity.magnitude < 0.2f && dir.magnitude <= 0.1f)
-            // {
-            //     rb.AddForce(-rb.linearVelocity, ForceMode.VelocityChange);
-            // }
-
-            // Counter slope grav.
-            if (isOnSlightSlope)
+            // Ground movement.
+            if (m_currentSlopeState == SlopeState.FlatGround)
             {
-                Vector3 gravProjected = Vector3.ProjectOnPlane(GetGravityVector(), groundNormalAverage);
-                gravProjected = -gravProjected;
-                rb.AddForce(gravProjected, ForceMode.Acceleration);
+                // Normal movement.
+                m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, maxSpeed), ForceMode.Acceleration);
             }
-
-            // jumping
-            if (wantToJump && !isJumping)
+            else if (m_currentSlopeState == SlopeState.SteepSlope)
             {
-                rb.AddForce(Vector3.up * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
-                isJumping = true;
-            }
-        }
-        else if (grounded && isCrouched)
-        {
-            if (rb.linearVelocity.magnitude > walkSpeed)
-            {
-                Vector3 velToAdd = AirMovement(dir, walkSpeed, grAccel);
-                rb.AddForce(velToAdd, ForceMode.VelocityChange);
-
-                Vector3 friction = GetFrictionVector(walkSpeed, groundFriction);
-                rb.AddForce(friction, ForceMode.VelocityChange);
+                // Counter gravity.
             }
             else
             {
-                Vector3 velocityToAdd = GroundedMovement(dir, walkSpeed, grAccel);
-                velocityToAdd = Vector3.ProjectOnPlane(velocityToAdd, groundNormalAverage); // so we can walk on slanted surfaces.
-                rb.AddForce(velocityToAdd, ForceMode.Acceleration);
-            }
-
-            // WHAT? duplicate jumping.
-            if (wantToJump && !isJumping)
-            {
-                // rb.AddForce(groundNormalAverage * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
-                rb.AddForce(Vector3.up * (jumpUpSpeed - Mathf.Max(0f, rb.linearVelocity.y)), ForceMode.Impulse);
-                isJumping = true;
+                // Slide along slope.
             }
         }
         else
         {
-            Vector3 velToAdd = AirMovement(dir, airSpeed, airAccel);
-            rb.AddForce(velToAdd, ForceMode.VelocityChange);
-
-            Vector3 friction = GetFrictionVector(runSpeed, airFriction);
-            rb.AddForce(friction, ForceMode.VelocityChange);
-            // if (isJumping) isJumping = false; // this is cursed.
+            // Air movement.
         }
     }
 
-    private void RunStepChecksOnGround()
+    private Vector3 GetImmediateChangeVel(Vector3 vel, Vector3 wish, float accelRate, float maxSpeed)
     {
-        if (IsGrounded())
+        wish.Normalize();
+
+        accelRate = Mathf.Max(k_minAccelRate, accelRate);
+
+        Vector3 neededChange = (wish * maxSpeed) - vel;
+
+        float calculatedAccel = maxSpeed / accelRate;
+
+        // Stops over speed.        
+        if (vel.magnitude > maxSpeed) calculatedAccel *= vel.magnitude / maxSpeed;
+
+        // reduces the overall needed accel to reach target speed.
+        if (neededChange.magnitude < calculatedAccel * 0.05f)
         {
-            // if (rb.SweepTest(transform.worldToLocalMatrix * dir.normalized, out RaycastHit hitInfo, 1f))
-            StepHandle(dir.normalized);
+            calculatedAccel *= neededChange.magnitude / (calculatedAccel * 0.05f);
         }
+
+
+        return neededChange.normalized * calculatedAccel;
     }
 
-    private void SlopeAndNormalGravity()
-    {
-        // Gravity.
-        if (isOnSteepSlope)
-        {
-            float gravOnSlope = Physics.gravity.magnitude * gravityScalar * 3f;
-
-
-            Vector3 gravAlongSlope = Vector3.ProjectOnPlane(Vector3.down * gravOnSlope, groundNormalAverage).normalized;
-
-
-
-            rb.AddForce(gravAlongSlope.normalized * gravOnSlope, ForceMode.Acceleration);
-
-            Debug.DrawLine(transform.position, transform.position + gravAlongSlope, Color.green, 10f);
-            Debug.DrawLine(transform.position, transform.position + Vector3.down, Color.red, 10f);
-        }
-        else if (isOnSlightSlope)
-        {
-
-        }
-        else
-        {
-            rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
-        }
-    }
-
-    private void ResetAirBoostWhenGrounded()
-    {
-        if (grounded)
-        {
-            appliedAirBoost = false;
-        }
-    }
-
-    private void Crouching()
-    {
-        if (wantToCrouch)
-        {
-            col.height = Mathf.Max(1.0f, col.height - Time.deltaTime * 7f);
-
-            isCrouched = true;
-        }
-        else
-        {
-            col.height = col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 20f);
-            isCrouched = false;
-            appliedSlideBoost = false;
-        }
-    }
-
-    private void BoostAndSprinting()
-    {
-        if (wantToSprint)
-        {
-            if (!isSprinting)
-            {
-                TryCrouchBoost();
-                TryAirBoost();
-            }
-            isSprinting = true;
-        }
-        else
-        {
-            isSprinting = false;
-        }
-    }
 
     private void ResetJumpWhenGrounded()
     {
-        if (grounded && !isOnSteepSlope)
+        if (IsGrounded && m_currentSlopeState != SlopeState.SteepSlope)
         {
-            isJumping = false;
+            m_isJumping = false;
         }
     }
 
-    /// <summary>
-    /// Set the local variables from the player stats.
-    /// </summary>
-    /// <param name="stats">The stats to read from.</param>
-    public void UpdateVariablesWithStats(PlayerStats stats)
+
+
+    private void ApplyGravity()
     {
-        if (stats == null)
-        {
-            Debug.LogError("No player stats! Using default values!");
-            stats = new PlayerStats();
-            // return;
-        }
-
-        walkSpeed = stats.WalkSpeed;
-        runSpeed = stats.GroundRunSpeedStat.GetCurrentValue();
-        airSpeed = stats.AirSpeed;
-
-        grAccel = stats.GroundRunSpeedStat.GetCurrentValue() * stats.GroundAccelerationPercentBase;
-        airAccel = stats.AirSpeed * stats.AirAccelerationPercentBase;
-
-        jumpUpSpeed = stats.JumpForce;
-        // slideBoostForce = stats.SlideBoostForce;
-        // airBoostForce = stats.AirBoostForce;
-
-        slideBoostForce = stats.GroundRunSpeedStat.GetCurrentValue() * stats.SlideBoostPercentageStat.GetCurrentValue();
-        airBoostForce = stats.AirSpeed * stats.AirBoostPercentageStat.GetCurrentValue();
-
-        groundFriction = stats.GroundFriction;
-        airFriction = stats.AirFriction;
+        m_rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
     }
 
-
-    /// <summary>
-    /// The the half height of the current player's height.
-    /// </summary>
-    /// <returns></returns>
-    private float GetHalfHeight()
+    private bool CheckIsGrounded()
     {
-        return Mathf.Max(col.height / 2f, col.radius);
+        return Physics.CheckSphere(transform.position + (Vector3.down * GetHalfHeight()), m_col.radius - (m_col.radius * 0.2f), m_groundLayer);
     }
 
-    /// <summary>
-    /// Updates the variables with the input states.
-    /// </summary>
-    private void PollInput()
-    {
-        Vector2 inputVector = movementInput.ReadValue<Vector2>();
-        Vector3 inputInWorld = new Vector3(inputVector.x, 0, inputVector.y);
-
-        dir = orientation.transform.TransformDirection(inputInWorld);
-
-        wantToJump = jumpInput.IsPressed();
-
-        wantToSprint = sprintInput.IsPressed();
-
-        wantToCrouch = crouchInput.IsPressed();
-
-        lookDelta = lookInput.ReadValue<Vector2>();
-    }
-
-
-    /// <summary>
-    /// Checks if the player is stood on solid ground, if it is sloped and updates the variables.
-    /// </summary>
-    private void CheckForGround()
-    {
-        Collider[] results = Physics.OverlapSphere(transform.position - Vector3.down * GetHalfHeight(), col.radius - 0.05f, groundLayer); // TODO ground mask?
-
-        bool didHit = Physics.Raycast(transform.position, -transform.up, out RaycastHit hitInfo, GetHalfHeight() + 0.1f, groundLayer);
-
-        if (results.Length > 0 || didHit)
-        {
-            if (didHit)
-            {
-                float angle = Vector3.Angle(hitInfo.normal, Vector3.up);
-                // print(angle);
-                grounded = true;
-                isOnSteepSlope = angle > wallFloorBarrier;
-                isOnSlightSlope = (angle > 1 && angle <= wallFloorBarrier);
-
-                return;
-            }
-            else
-            {
-                grounded = true;
-                isOnSteepSlope = false;
-                isOnSlightSlope = false;
-                return;
-            }
-        }
-
-        grounded = false;
-        isOnSteepSlope = false;
-        isOnSlightSlope = false;
-    }
-
-    // TODO remove?
-    /// <summary>
-    /// Is the target point close to the player's feet.
-    /// </summary>
-    /// <param name="point">The point to check.</param>
-    /// <returns>True if within ground range.</returns>
-    private bool WithinGroundRange(Vector3 point)
-    {
-        Vector3 feetPos = transform.position - Vector3.down * GetHalfHeight();
-
-        float radius = col.radius - 0.01f;
-
-        return Vector3.Distance(point, feetPos) < radius;
-
-    }
-
-    /// <summary>
-    /// Get the current gravity vector to use in this current state.
-    /// </summary>
-    /// <returns></returns>
-    Vector3 GetGravityVector()
-    {
-        // if (grounded && !isOnSteepSlope)
-        // {
-        //     Vector3 gravityVector = Physics.gravity - Vector3.ProjectOnPlane(Physics.gravity, groundNormalAverage);
-        //     return gravityVector * gravityScalar;
-        // }
-        // else
-        // {
-        return Physics.gravity * gravityScalar;
-        // }
-    }
-
-    private Vector3 GetWorldFeetPos()
-    {
-        return transform.position - (transform.up * GetHalfHeight());
-    }
-
-    private void UpdateGroundNormalAverage()
+    private Vector3 UpdateGroundNormalAverage()
     {
         const float RANGE = 0.2f;
         const int MAX_CHECKS = 9;
 
         Vector3 collectedAverage = Vector3.zero;
+        Vector3 middleSample = Vector3.zero;
 
         Vector3 checkPos = GetWorldFeetPos();
         Vector3 down = -transform.up;
@@ -624,25 +359,30 @@ public class PlayerMovement : MonoBehaviour
             // Check in the center of the player.
             if (i == 0)
             {
-                if (Physics.Raycast(checkPos, down, out hit, RANGE, groundLayer, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
                 {
-                    collectedAverage += hit.normal;
+                    middleSample = hit.normal;
+
+                    if (Vector3.Angle(middleSample, Vector3.up) > k_floorToSlopeThreshold)
+                    {
+                        return middleSample; // ! Returns out of function early.
+                    }
                 }
                 else
                 {
-                    collectedAverage += Vector3.up;
+                    middleSample = Vector3.up;
                 }
 
                 continue;
             }
 
             // Check in the 8 directions around the player.
-            checkPos += transform.forward * (col.radius - (col.radius * 0.2f));
+            checkPos += transform.forward * (m_col.radius - (m_col.radius * 0.2f));
 
             // Rotate the vector (in our case with a max of 9, remove the center, so 8. We check ever 45 deg.)
             checkPos = Quaternion.AngleAxis(360 / (MAX_CHECKS - 1), -down) * checkPos;
 
-            if (Physics.Raycast(checkPos, down, out hit, RANGE, groundLayer, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
             {
                 collectedAverage += hit.normal;
             }
@@ -652,50 +392,41 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // return collectedAverage /= MAX_CHECKS;
-        groundNormalAverage = collectedAverage / MAX_CHECKS;
+        return collectedAverage / (MAX_CHECKS - 1);
+        // m_groundNormalAverage = collectedAverage / MAX_CHECKS;
     }
 
-    // void OnCollisionStay(Collision collision)
-    // {
 
-    //     Vector3 slopeNormalAverage = Vector3.zero;
+    private void UpdateSlopeState(Vector3 groundNormalAvg)
+    {
+        float angle = Vector3.Angle(groundNormalAvg.normalized, Vector3.up);
 
-    //     float angle;
-    //     int validContacts = 0;
-    //     foreach (ContactPoint contact in collision.contacts)
-    //     {
+        if (angle > k_slopeToSteepSlopeThreshold)
+        {
+            m_currentSlopeState = SlopeState.SteepSlope;
+        }
+        else if (angle > k_floorToSlopeThreshold)
+        {
+            m_currentSlopeState = SlopeState.SlightSlope;
+        }
+        else
+        {
+            m_currentSlopeState = SlopeState.FlatGround;
+        }
+    }
 
-    //         Vector3 contactPos = contact.point;
-    //         if (WithinGroundRange(contactPos)) continue;
 
-    //         contactPos.y = transform.position.y;
+    #region Stepping
+    private void HandleStepping()
+    {
+        if (IsGrounded)
+        {
+            // if (rb.SweepTest(transform.worldToLocalMatrix * dir.normalized, out RaycastHit hitInfo, 1f))
+            StepHandle(m_inputWishDirWorld.normalized);
+        }
+    }
 
-
-    //         if (Vector3.Distance(contactPos, transform.position) > col.radius - 0.03f) continue;
-
-    //         angle = Vector3.Angle(slopeNormalAverage, Vector3.up);
-
-
-    //         if (angle > 85) continue;
-
-    //         validContacts++;
-    //         slopeNormalAverage += contact.normal;
-
-    //     }
-    //     slopeNormalAverage /= validContacts;
-    //     groundNormalAverage = slopeNormalAverage;
-
-    //     if (validContacts == 0)
-    //     {
-    //         slopeNormalAverage = Vector3.up;
-    //         groundNormalAverage = slopeNormalAverage;
-    //     }
-
-    //     // TODO: Remove this. this sucks.
-
-    // }
-
+    // TODO: Add slope support?
     /// <summary>
     /// Handles stepping up steps and small ledges.
     /// </summary>
@@ -710,7 +441,7 @@ public class PlayerMovement : MonoBehaviour
 
         float minStepAllowed = 0.1f;
 
-        float minStepWithRadius = col.radius + minStepAllowed;
+        float minStepWithRadius = m_col.radius + minStepAllowed;
 
         int rayCount = 5; // dont go below 2
 
@@ -723,7 +454,7 @@ public class PlayerMovement : MonoBehaviour
 
         for (int i = 0; i < rayCount; i++)
         {
-            bool rayRes = Physics.Raycast(pointAtFeet + (Vector3.up * (heightIncrement * i)), moveDirectionThisFrame.normalized, out RaycastHit hitInfo, minStepWithRadius, groundLayer, QueryTriggerInteraction.Ignore);
+            bool rayRes = Physics.Raycast(pointAtFeet + (Vector3.up * (heightIncrement * i)), moveDirectionThisFrame.normalized, out RaycastHit hitInfo, minStepWithRadius, m_groundLayer, QueryTriggerInteraction.Ignore);
             Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), (pointAtFeet + (Vector3.up * (heightIncrement * i))) + (moveDirectionThisFrame.normalized * minStepWithRadius), Color.blue, 10f);
 
             if (rayRes)
@@ -767,173 +498,102 @@ public class PlayerMovement : MonoBehaviour
         transform.position += Vector3.up * (heightIncrement * iteration);
     }
 
-    /// <summary>
-    /// Get the friction vector.
-    /// </summary>
-    /// <param name="maxSpeed">The max speed.</param>
-    /// <param name="friction">The friction to apply.</param>
-    /// <returns>The vector that will apply friction.</returns>
-    Vector3 GetFrictionVector(float maxSpeed, float friction)
-    {
-        // this wont work if we are on a slop
-        // TODO slope implementation.
+    #endregion
 
-        Vector3 vel = rb.linearVelocity;
-        vel.y = 0;
 
-        if (vel.magnitude <= maxSpeed)
-        {
-            return Vector3.zero;
-        }
 
-        Vector3 counterDir = (-rb.linearVelocity).normalized;
 
-        Vector3 currentVelSpeedNoY = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        if (currentVelSpeedNoY.magnitude > maxSpeed) friction *= currentVelSpeedNoY.magnitude / maxSpeed; // Increase the accel when overspeed.
-
-        float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), counterDir); // Vector projection of Current velocity onto accelDir.
-        float accelVel = friction * Time.deltaTime; // Accelerated velocity in direction of movement
-
-        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
-        if (projVel + accelVel > maxSpeed)
-            accelVel = Mathf.Max(0f, maxSpeed - projVel);
-
-        return counterDir * accelVel;
-    }
+    #region Utility
 
     /// <summary>
-    /// Get the vector to apply to the rigidbody for the movement.
-    /// </summary>
-    /// <param name="wishDir">The desired direction to move in.</param>
-    /// <param name="maxSpeed">The max speed.</param>
-    /// <param name="acceleration">The acceleration.</param>
-    /// <returns>The vector to apply this frame.</returns>
-    Vector3 GroundedMovement(Vector3 wishDir, float maxSpeed, float acceleration)
-    {
-        wishDir = wishDir.normalized;
-        Vector3 currentVelSpeedNoY = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        if (currentVelSpeedNoY.magnitude > maxSpeed) acceleration *= currentVelSpeedNoY.magnitude / maxSpeed; // Increase the accel when overspeed.
-
-        Vector3 forceNeededForDesiredVelocity = wishDir * maxSpeed - currentVelSpeedNoY;
-
-        if (forceNeededForDesiredVelocity.magnitude < 0.5f)
-        {
-            acceleration *= forceNeededForDesiredVelocity.magnitude / 0.5f; // slows down the accel? 
-            //I presume because we reach our target speed. We want to override the current vel since we are on the ground.
-        }
-
-        Vector3 accelForce = forceNeededForDesiredVelocity.normalized * acceleration; // turn the force needed into a acceleration.
-
-        // Obsolete. WIll remove once I take another look.
-        float mag = accelForce.magnitude; // this makes no sense.
-        accelForce = accelForce.normalized; // because you did this.
-        accelForce *= mag; // already.
-
-        return accelForce;
-
-    }
-
-    /// <summary>
-    /// Get the vector to apply to the rigidbody for the air movement.
-    /// </summary>
-    /// <param name="wishDir">The desired direction to move in.</param>
-    /// <param name="maxSpeed">The max speed.</param>
-    /// <param name="acceleration">The acceleration.</param>
-    /// <returns></returns>
-    Vector3 AirMovement(Vector3 wishDir, float maxSpeed, float acceleration)
-    {
-        wishDir.Normalize();
-
-        float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
-        float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movement
-
-        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
-        if (projVel + accelVel > maxSpeed)
-            accelVel = Mathf.Max(0f, maxSpeed - projVel);
-
-        return wishDir.normalized * accelVel; // ForceMode.VelocityChange);
-    }
-
-
-    /// <summary>
-    /// Get the boost force vector.
-    /// </summary>
-    /// <param name="wishDir">The wish direction for the boost.</param>
-    /// <param name="boostSpeed">The speed the boost will be.</param>
-    /// <returns>Vector to apply to the rigidbody.</returns>
-    Vector3 GetBoostVector(Vector3 wishDir, float boostSpeed)
-    {
-        wishDir.Normalize();
-
-        float projVel = Vector3.Dot(new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
-        float boostVel = boostSpeed; // Accelerated velocity in direction of movement
-
-        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
-        if (projVel + boostVel > boostSpeed)
-            boostVel = Mathf.Max(0f, boostSpeed - projVel);
-
-        return wishDir.normalized * boostVel;
-    }
-
-
-    /// <summary>
-    /// Crouch boost.
-    /// </summary>
-    void TryCrouchBoost()
-    {
-        if (!grounded || !canSlideBoost || appliedSlideBoost) return;
-
-        appliedSlideBoost = true;
-
-        Vector3 boostDir = dir;
-
-        rb.AddForce(GetBoostVector(boostDir, slideBoostForce), ForceMode.Impulse);
-
-        // if (canSlideBoost) StartCoroutine(HandleCrouchBoostCoolDown());
-    }
-
-    /// <summary>
-    /// Air boost.
-    /// </summary>
-    void TryAirBoost()
-    {
-        if (grounded || !canAirBoost || appliedAirBoost) return;
-
-        appliedAirBoost = true;
-
-        Vector3 boostDir = dir;
-        Vector3 vel = rb.linearVelocity;
-        vel.y = 0f;
-        float dotProduct = Vector3.Dot(vel, boostDir.normalized);
-
-
-        rb.AddForce(GetBoostVector(boostDir, airBoostForce), ForceMode.VelocityChange);
-    }
-
-    /// <summary>
-    /// Is the player currently on the ground.
+    /// The the half height of the current player's height.
     /// </summary>
     /// <returns></returns>
-    public bool IsGrounded()
+    private float GetHalfHeight()
     {
-        return grounded;
+        return Mathf.Max(m_col.height / 2f, m_col.radius);
+    }
+
+    private Vector3 GetWorldFeetPos()
+    {
+        return transform.position - (transform.up * GetHalfHeight());
     }
 
     /// <summary>
-    /// Set the current disabled state of the movement.
+    /// Get the current gravity vector to use in this current state.
     /// </summary>
-    /// <param name="disabledState">The desired disabled state.</param>
-    public void SetDisabledState(DisabledType disabledState = DisabledType.None)
+    /// <returns></returns>
+    Vector3 GetGravityVector()
     {
-        this.disabledState = disabledState;
+        return Physics.gravity * m_gravityScalar;
     }
 
+    #endregion
+
+
+
+
+    #region Input
+
     /// <summary>
-    /// Get the current disabled state of the player movement.
+    /// Updates the variables with the input states.
     /// </summary>
-    /// <returns>The current disable state.</returns>
-    public DisabledType GetDisabledState()
+    private void PollInput()
     {
-        return disabledState;
+        Vector2 inputVector = m_movementInput.ReadValue<Vector2>();
+        Vector3 inputInWorld = new Vector3(inputVector.x, 0, inputVector.y);
+
+        m_inputWishDirWorld = m_orientation.transform.TransformDirection(inputInWorld);
+
+        m_isJumpHeld = m_jumpInput.IsPressed();
+
+        m_isSprintHeld = m_sprintInput.IsPressed();
+
+        m_isCrouchHeld = m_crouchInput.IsPressed();
+
+        m_lookDelta = m_lookInput.ReadValue<Vector2>();
     }
+
+    #endregion
+
+
+
+
+    #region Stat setting
+
+    /// <summary>
+    /// Set the local variables from the player stats.
+    /// </summary>
+    /// <param name="stats">The stats to read from.</param>
+    public void UpdateVariablesWithStats(PlayerStats stats)
+    {
+        // if (stats == null)
+        // {
+        //     Debug.LogError("No player stats! Using default values!");
+        //     stats = new PlayerStats();
+        //     // return;
+        // }
+
+        // walkSpeed = stats.WalkSpeed;
+        // runSpeed = stats.GroundRunSpeedStat.GetCurrentValue();
+        // airSpeed = stats.AirSpeed;
+
+        // grAccel = stats.GroundRunSpeedStat.GetCurrentValue() * stats.GroundAccelerationPercentBase;
+        // airAccel = stats.AirSpeed * stats.AirAccelerationPercentBase;
+
+        // jumpUpSpeed = stats.JumpForce;
+        // // slideBoostForce = stats.SlideBoostForce;
+        // // airBoostForce = stats.AirBoostForce;
+
+        // slideBoostForce = stats.GroundRunSpeedStat.GetCurrentValue() * stats.SlideBoostPercentageStat.GetCurrentValue();
+        // airBoostForce = stats.AirSpeed * stats.AirBoostPercentageStat.GetCurrentValue();
+
+        // groundFriction = stats.GroundFriction;
+        // airFriction = stats.AirFriction;
+
+        Debug.LogWarning("Player stats have not been implemented onto the player!");
+    }
+
+    #endregion
+
 }
