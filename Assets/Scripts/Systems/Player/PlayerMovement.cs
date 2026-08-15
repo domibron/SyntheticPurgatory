@@ -63,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     Transform m_orientation;
 
-    const float k_slopeToSteepSlopeThreshold = 50;
+    const float k_slopeToSteepSlopeThreshold = 40;
 
     const float k_floorToSlopeThreshold = 1;
 
@@ -121,6 +121,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     Vector3 m_groundNormalAverage = Vector3.up;
 
+    float m_groundAngle = 0f;
 
     /// <summary>
     /// Is the player grounded.
@@ -194,8 +195,15 @@ public class PlayerMovement : MonoBehaviour
 
         IsGrounded = CheckIsGrounded();
 
-        m_groundNormalAverage = UpdateGroundNormalAverage();
-        UpdateSlopeState(m_groundNormalAverage);
+        Vector3 groundNormalSample = UpdateGroundNormalAverage();
+        if (IsGrounded && groundNormalSample != Vector3.zero)
+        {
+            m_groundNormalAverage = groundNormalSample;
+            UpdateSlopeState(m_groundNormalAverage);
+        }
+
+        m_groundAngle = Vector3.Angle(Vector3.up, m_groundNormalAverage);
+
 
         ApplyGravity();
 
@@ -282,9 +290,15 @@ public class PlayerMovement : MonoBehaviour
                 // Normal movement.
                 m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, maxSpeed), ForceMode.Acceleration);
             }
-            else if (m_currentSlopeState == SlopeState.SteepSlope)
+            else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
                 // Counter gravity.
+
+                m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
+
+                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, accel, maxSpeed);
+                m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
+
             }
             else
             {
@@ -294,6 +308,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // Air movement.
+
         }
     }
 
@@ -343,8 +358,10 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 UpdateGroundNormalAverage()
     {
-        const float RANGE = 0.2f;
+        const float RANGE = 0.3f;
         const int MAX_CHECKS = 9;
+
+        int currentCount = 0;
 
         Vector3 collectedAverage = Vector3.zero;
         Vector3 middleSample = Vector3.zero;
@@ -354,6 +371,21 @@ public class PlayerMovement : MonoBehaviour
 
         RaycastHit hit;
 
+        if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
+        {
+            middleSample = hit.normal;
+
+            return middleSample;
+
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+
+
+
+#pragma warning disable CS0162 // Unreachable code detected
         for (int i = 0; i < MAX_CHECKS; i++)
         {
             // Check in the center of the player.
@@ -368,10 +400,10 @@ public class PlayerMovement : MonoBehaviour
                         return middleSample; // ! Returns out of function early.
                     }
                 }
-                else
-                {
-                    middleSample = Vector3.up;
-                }
+                // else
+                // {
+                //     middleSample = Vector3.up;
+                // }
 
                 continue;
             }
@@ -385,14 +417,16 @@ public class PlayerMovement : MonoBehaviour
             if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
             {
                 collectedAverage += hit.normal;
+                currentCount++;
             }
-            else
-            {
-                collectedAverage += Vector3.up;
-            }
+            // else
+            // {
+            //     collectedAverage += Vector3.up;
+            // }
         }
+#pragma warning restore CS0162 // Unreachable code detected
 
-        return collectedAverage / (MAX_CHECKS - 1);
+        return collectedAverage / currentCount;
         // m_groundNormalAverage = collectedAverage / MAX_CHECKS;
     }
 
