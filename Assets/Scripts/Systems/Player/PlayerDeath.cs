@@ -29,7 +29,7 @@ public class PlayerDeath : MonoBehaviour
     /// </summary>
     public void OnPlayerDeath()
     {
-        transform.GetComponent<PlayerMovement>().SetDisabledState(PlayerMovement.DisabledType.All);
+        transform.GetComponent<PlayerMovement>().CurrentDisabledState = PlayerMovement.DisabledType.All;
         transform.GetComponent<PlayerCombat>().DisablePlayerCombat(true);
 
         if (RunManager.Instance)
