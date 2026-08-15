@@ -1,5 +1,5 @@
 # Synthetic Purgatory
-no peeking, jk.
+Source code for the project.
 
 [![Build project](https://github.com/domibron/SyntheticPurgatory/actions/workflows/main.yml/badge.svg)](https://github.com/domibron/SyntheticPurgatory/actions/workflows/main.yml)
 
