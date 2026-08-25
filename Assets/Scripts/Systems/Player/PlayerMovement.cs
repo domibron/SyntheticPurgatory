@@ -1,21 +1,49 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// [System.Flags]
+// public enum DaysOfWeek
+// {
+//     None = 0,
+//     Sunday = 1 << 0,
+//     Monday = 1 << 1,
+//     Tuesday = 1 << 2,
+//     Wednesday = 1 << 3,
+//     Thursday = 1 << 4,
+//     Friday = 1 << 5,
+//     Saturday = 1 << 6,
+
+//     Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday,
+//     Weekend = Saturday | Sunday,
+// }
+
 /// <summary>
 /// The player movement controller.
 /// </summary>
 public class PlayerMovement : MonoBehaviour
 {
+    // =============
+    //   VARIABLES
+    // =============
+
+
     #region Disabling
     /// <summary>
     /// The player movement disable type.
     /// </summary>
     public enum DisabledType : byte // Can use byte to reduce the size if we use a few values. (ideally used for structs)
     {
-        None,
-        MovementOnly,
-        MouseOnly,
-        All,
+        // Use byte to reduce the size of the enum since we only use a handful of values.
+        // Ideally use this for structs and data packing to optimise it for memory.
+
+        None = 0b_0000_0000, // 1 << 0 shift zero to the left.
+        MovementOnly = 0b_0000_0001, // 1 << 1 shift one to the left.
+        LookOnly = 0b_0000_0010, // 1 << 2 shift two to the left.
+
+        // Combine both bit values. 00101 | 01100 = 01101.
+        All = MovementOnly | LookOnly,
+
+        // You can also use ^ since its a logical or. 00101 ^ 01100 = 01001.
     }
 
     /// <summary>
@@ -121,8 +149,6 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     Vector3 m_groundNormalAverage = Vector3.up;
 
-    float m_groundAngle = 0f;
-
     /// <summary>
     /// Is the player grounded.
     /// </summary>
@@ -137,6 +163,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     SlopeState m_currentSlopeState = SlopeState.FlatGround;
+
+    // Was going to use a timer to reset the ground detection to prevent the player from 
+    // being stuck in a floating / sliding state.
+    // const float k_lastKnowDuration = 0.1f;
+
+    // float m_currentLastKnown = 0;
 
     /// <summary>
     /// Is the player character currently crouched.
@@ -153,12 +185,26 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-    [SerializeField]
-    float maxSpeed = 10;
+
+
+    #region IKD what to do with atm
+
 
     [SerializeField]
-    float accel = 10;
+    float m_maxSpeed = 10;
 
+    [SerializeField]
+    float m_accelRate = 0.1f;
+
+
+    #endregion
+
+
+
+
+    // =============
+    //   FUNCTIONS
+    // =============
 
     #region Monobehaviours
 
@@ -188,21 +234,16 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         if (CurrentDisabledState == DisabledType.MovementOnly) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
-        if (CurrentDisabledState == DisabledType.MovementOnly || CurrentDisabledState == DisabledType.All) return;
-
-        // Walk(dir, running ? runSpeed : groundSpeed, grAccel);
-        // AirMove(dir, airSpeed, airAccel);
+        if (CurrentDisabledState != DisabledType.None) return;
 
         IsGrounded = CheckIsGrounded();
 
-        Vector3 groundNormalSample = UpdateGroundNormalAverage();
+        Vector3 groundNormalSample = SampleGroundNormal();
         if (IsGrounded && groundNormalSample != Vector3.zero)
         {
             m_groundNormalAverage = groundNormalSample;
             UpdateSlopeState(m_groundNormalAverage);
         }
-
-        m_groundAngle = Vector3.Angle(Vector3.up, m_groundNormalAverage);
 
 
         ApplyGravity();
@@ -219,8 +260,8 @@ public class PlayerMovement : MonoBehaviour
         GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
     }
 
-    #endregion
 
+    #endregion
 
 
 
@@ -228,7 +269,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCameraMovement()
     {
-        if (CurrentDisabledState == DisabledType.MouseOnly || CurrentDisabledState == DisabledType.All) { return; }
+        if (CurrentDisabledState == DisabledType.LookOnly || CurrentDisabledState == DisabledType.All) { return; }
 
         bool useMouseLook = true;
         bool invertYLook = false;
@@ -280,6 +321,9 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
 
+
+    #region Movement
+
     private void Movement()
     {
         if (IsGrounded)
@@ -288,21 +332,22 @@ public class PlayerMovement : MonoBehaviour
             if (m_currentSlopeState == SlopeState.FlatGround)
             {
                 // Normal movement.
-                m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, maxSpeed), ForceMode.Acceleration);
+                m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, m_accelRate, m_maxSpeed), ForceMode.Acceleration);
             }
             else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
                 // Counter gravity.
-
                 m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
 
-                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, accel, maxSpeed);
+                // Movement on slight slope.
+                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, m_accelRate, m_maxSpeed);
                 m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
-
             }
             else
             {
                 // Slide along slope.
+                Vector3 gravVec = GetGravityVector();
+                m_rb.AddForce(Vector3.ProjectOnPlane(gravVec, m_groundNormalAverage).normalized * gravVec.magnitude, ForceMode.Acceleration);
             }
         }
         else
@@ -312,18 +357,27 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private Vector3 GetImmediateChangeVel(Vector3 vel, Vector3 wish, float accelRate, float maxSpeed)
+
+    /// <summary>
+    /// Get a vector velocity to apply from the desired parameters.
+    /// </summary>
+    /// <param name="currentVel">The current velocity of the player.</param>
+    /// <param name="wishDir">The wish direction for the player to go.</param>
+    /// <param name="accelRate">How fast to accelerate the player towards the new direction.</param>
+    /// <param name="maxSpeed">The maximum / target speed for the player to reach.</param>
+    /// <returns>The resulting velocity to apply onto the player.</returns>
+    private Vector3 GetImmediateChangeVel(Vector3 currentVel, Vector3 wishDir, float accelRate, float maxSpeed)
     {
-        wish.Normalize();
+        wishDir.Normalize();
 
         accelRate = Mathf.Max(k_minAccelRate, accelRate);
 
-        Vector3 neededChange = (wish * maxSpeed) - vel;
+        Vector3 neededChange = (wishDir * maxSpeed) - currentVel;
 
         float calculatedAccel = maxSpeed / accelRate;
 
-        // Stops over speed.        
-        if (vel.magnitude > maxSpeed) calculatedAccel *= vel.magnitude / maxSpeed;
+        // Stops over speed.
+        if (currentVel.magnitude > maxSpeed) calculatedAccel *= currentVel.magnitude / maxSpeed;
 
         // reduces the overall needed accel to reach target speed.
         if (neededChange.magnitude < calculatedAccel * 0.05f)
@@ -336,6 +390,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Reset's the jumping parameters to allow the player to jump again when touching valid ground.
+    /// </summary>
     private void ResetJumpWhenGrounded()
     {
         if (IsGrounded && m_currentSlopeState != SlopeState.SteepSlope)
@@ -345,89 +402,63 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    #endregion
 
+
+
+    #region Ground and Gravity
+
+
+    /// <summary>
+    /// Applies gravity to the rigidbody.
+    /// </summary>
     private void ApplyGravity()
     {
         m_rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
     }
 
+    /// <summary>
+    /// Does a sphere check below the player to see if they are standing on valid ground.
+    /// </summary>
+    /// <returns>True if there is ground below the player.</returns>
     private bool CheckIsGrounded()
     {
-        return Physics.CheckSphere(transform.position + (Vector3.down * GetHalfHeight()), m_col.radius - (m_col.radius * 0.2f), m_groundLayer);
+        float rad = GetNearMaxRadius();
+        return Physics.CheckSphere(GetWorldFeetPos() + (Vector3.down * rad / 2f), rad, m_groundLayer);
     }
 
-    private Vector3 UpdateGroundNormalAverage()
+    /// <summary>
+    /// Samples the surface below the player and returns the average of the surfaces combined normal.
+    /// </summary>
+    /// <returns>The average normal from all surfaces.</returns>
+    private Vector3 SampleGroundNormal()
     {
-        const float RANGE = 0.3f;
-        const int MAX_CHECKS = 9;
+        // ? Possible parameters to be moved.
+        const float k_range = 0.2f;
+        const int k_groundAverageSampleSize = 10;
 
-        int currentCount = 0;
+        // Storage for all hits from sampling the shere cast. Can contain null / invalid data.
+        RaycastHit[] hitsBuffer = new RaycastHit[k_groundAverageSampleSize];
 
-        Vector3 collectedAverage = Vector3.zero;
-        Vector3 middleSample = Vector3.zero;
 
-        Vector3 checkPos = GetWorldFeetPos();
-        Vector3 down = -transform.up;
+        // Amount of all valid hits in the buffer.
+        int count = Physics.SphereCastNonAlloc(GetWorldFeetPos() + (Vector3.up * (m_col.radius + 0.01f)), GetNearMaxRadius(), Vector3.down, hitsBuffer, k_range, m_groundLayer, QueryTriggerInteraction.Ignore);
 
-        RaycastHit hit;
-
-        if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
+        // Does the magic math for the average for the ground.
+        if (count > 0)
         {
-            middleSample = hit.normal;
+            Vector3 sample = Vector3.zero;
 
-            return middleSample;
-
-        }
-        else
-        {
-            return Vector3.zero;
-        }
-
-
-
-#pragma warning disable CS0162 // Unreachable code detected
-        for (int i = 0; i < MAX_CHECKS; i++)
-        {
-            // Check in the center of the player.
-            if (i == 0)
+            for (int i = 0; i < count; i++)
             {
-                if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
-                {
-                    middleSample = hit.normal;
-
-                    if (Vector3.Angle(middleSample, Vector3.up) > k_floorToSlopeThreshold)
-                    {
-                        return middleSample; // ! Returns out of function early.
-                    }
-                }
-                // else
-                // {
-                //     middleSample = Vector3.up;
-                // }
-
-                continue;
+                sample += hitsBuffer[i].normal;
             }
 
-            // Check in the 8 directions around the player.
-            checkPos += transform.forward * (m_col.radius - (m_col.radius * 0.2f));
-
-            // Rotate the vector (in our case with a max of 9, remove the center, so 8. We check ever 45 deg.)
-            checkPos = Quaternion.AngleAxis(360 / (MAX_CHECKS - 1), -down) * checkPos;
-
-            if (Physics.Raycast(checkPos, down, out hit, RANGE, m_groundLayer, QueryTriggerInteraction.Ignore))
-            {
-                collectedAverage += hit.normal;
-                currentCount++;
-            }
-            // else
-            // {
-            //     collectedAverage += Vector3.up;
-            // }
+            return sample / count;
         }
-#pragma warning restore CS0162 // Unreachable code detected
 
-        return collectedAverage / currentCount;
-        // m_groundNormalAverage = collectedAverage / MAX_CHECKS;
+        // Return a null value since there is no surface normals we can get.
+        return Vector3.zero;
     }
 
 
@@ -448,6 +479,10 @@ public class PlayerMovement : MonoBehaviour
             m_currentSlopeState = SlopeState.FlatGround;
         }
     }
+
+
+    #endregion
+
 
 
     #region Stepping
@@ -536,7 +571,6 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-
     #region Utility
 
     /// <summary>
@@ -545,7 +579,7 @@ public class PlayerMovement : MonoBehaviour
     /// <returns></returns>
     private float GetHalfHeight()
     {
-        return Mathf.Max(m_col.height / 2f, m_col.radius);
+        return Mathf.Max(m_col.height, m_col.radius) / 2f;
     }
 
     private Vector3 GetWorldFeetPos()
@@ -562,8 +596,12 @@ public class PlayerMovement : MonoBehaviour
         return Physics.gravity * m_gravityScalar;
     }
 
-    #endregion
+    float GetNearMaxRadius()
+    {
+        return m_col.radius - (m_col.radius * 0.2f);
+    }
 
+    #endregion
 
 
 
@@ -589,7 +627,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
-
 
 
 
@@ -629,5 +666,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
+
 
 }
