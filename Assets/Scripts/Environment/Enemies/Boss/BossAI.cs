@@ -62,8 +62,9 @@ public class BossAI : BaseEnemy
 
     private bool playerEnteredArena = false;
 
-    [SerializeField]
-    private float fallBackAfterTakenDamage = 0.3333333f;
+    // * removed this as it was not being used.
+    // [SerializeField]
+    // private float fallBackAfterTakenDamage = 0.3333333f;
 
     private Health health;
 

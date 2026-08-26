@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// The base stats for anything stat related.
 /// </summary>
+[Serializable]
 public class CoreStats : ICloneable
 {
     /// <summary>

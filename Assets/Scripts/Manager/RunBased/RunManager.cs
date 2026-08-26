@@ -167,7 +167,8 @@ public class RunManager : MonoBehaviour
     /// <summary>
     /// Stats for the run. For achievements and other things.
     /// </summary>
-    public StatsHolder statsHolder = new StatsHolder();
+    [NonSerialized] // have to mark serializeable stuff as none in unity. If its only used at runtime.
+    public StatsHolder statsHolder = new StatsHolder(); // * This may incur a bug.
 
 
     void Awake()
