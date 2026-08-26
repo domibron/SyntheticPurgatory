@@ -21,7 +21,7 @@ public class LevelGenerator : SequenceBase
 
     public int MinimumRegularRoomCount = 3;
 
-    private int regularRoomCount = 0;
+    // private int regularRoomCount = 0; // * removed this as it was not being used.
 
     [Min(1)]
     public int XSize = 10;

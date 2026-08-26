@@ -23,10 +23,12 @@ public class DebugConsole : MonoBehaviour
 
 	bool consoleOpen = false;
 
+	[NonSerialized]
 	public List<object> commands = new List<object>();
 
 	const int MAX_DEBUG_MESSAGES = 50;
 
+	[NonSerialized]
 	public Queue<GameObject> debugMessages = new Queue<GameObject>(MAX_DEBUG_MESSAGES + 1);
 
 	private bool onlyWatchForErrors = true;

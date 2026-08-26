@@ -13,11 +13,11 @@ public class NavLineTool : MonoBehaviour
     [SerializeField]
     LineRenderer lineRenderer;
 
-    /// <summary>
-    /// The max amount of connections allowed.
-    /// </summary>
-    [SerializeField]
-    private int maxConnections = 5;
+    // /// <summary>
+    // /// The max amount of connections allowed.
+    // /// </summary>
+    // [SerializeField]
+    // private int maxConnections = 5; // * removed this for now since its not being used.
 
     /// <summary>
     /// The max range of connection.
