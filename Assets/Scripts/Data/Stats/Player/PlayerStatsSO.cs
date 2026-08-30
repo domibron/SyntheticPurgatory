@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // TODO: Use a base class ideally but eh, screw it.
 // ? Do you mean for like health, move speed etc? because it does use a base class.
@@ -134,17 +135,17 @@ public class PlayerStatsSO : StatsCoreSO
     // Please make sure the variables that you want to access are not able to be modified directly.
     // Example below shows you one way to achieve this.
 
-    [SerializeField]
-    private PlayerStats stats;
+    [SerializeField, FormerlySerializedAs("stats")]
+    private PlayerStats pStats;
 
     public override object GetStats()
     {
-        return stats.Clone();
+        return pStats.Clone();
     }
 
     void OnValidate() // The work around to reset and set data correctly at unity validate.
     {
-        stats.RefreshStats();
-        stats.ResetAllChipStats(); // make sure there are no lingering data.
+        pStats.RefreshStats();
+        pStats.ResetAllChipStats(); // make sure there are no lingering data.
     }
 }
