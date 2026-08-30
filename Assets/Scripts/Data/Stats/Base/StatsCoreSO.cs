@@ -71,7 +71,10 @@ public class StatsCoreSO : ScriptableObject
     // * To create your own stat class, inherit this class, then create your own stat class and inherit the CoreStats class
     // * and have a serializedField private of your stat class here.
     // [SerializeField]
+    [NonSerialized]
     CoreStats stats = new CoreStats();
+
+    // ? Wouldnt a object scriptable object work better?
 
     /// <summary>
     /// Get a copy of the stat data.
@@ -89,6 +92,9 @@ public class StatsCoreSO : ScriptableObject
     // DO NOT PUT ANY DATA HERE AS IT WILL BE IGNORED. USE THE STAT CLASSES INSTEAD AS THAT IS HOW DATA IS PASSED THROUGH.
 
     // keep empty for now.
+
+    // ? Why the hell is this here? We should not use variables here since they will be ignored in the whole system?
+    // ? Is this pre architecture code?
 
     // Why do we want to prevent modification? That's the question we should be answering.
     // This is a scriptable object, any modifications allowed will cause the data to be permanent if executed in play mode in the engine.

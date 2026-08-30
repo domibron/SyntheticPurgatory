@@ -183,6 +183,12 @@ public class PlayerMovement : MonoBehaviour
 
     bool m_isJumping = false;
 
+
+    const float k_waitBeforeEnableJumpReset = 0.4f;
+
+    float m_currentWaitUntilJumpRestAllowed = 0f;
+
+
     #endregion
 
 
@@ -229,6 +235,13 @@ public class PlayerMovement : MonoBehaviour
     {
         PollInput();
         HandleCameraMovement();
+
+        if (m_currentWaitUntilJumpRestAllowed > 0)
+        {
+            m_currentWaitUntilJumpRestAllowed -= Time.deltaTime;
+        }
+
+
     }
 
     void FixedUpdate()
@@ -326,7 +339,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
-        if (IsGrounded)
+        // ? Isnt this just input handling?
+
+        if (IsGrounded && !m_isJumping)
         {
             // Ground movement.
             if (m_currentSlopeState == SlopeState.FlatGround)
@@ -354,6 +369,17 @@ public class PlayerMovement : MonoBehaviour
         {
             // Air movement.
 
+        }
+
+
+        // Jumping
+        if (m_isJumpHeld && CanPlayerJump())
+        {
+            m_rb.AddForce(GetJumpVector(m_rb.linearVelocity, 10, GetGravityVector()), ForceMode.VelocityChange);
+
+
+            m_isJumping = true;
+            m_currentWaitUntilJumpRestAllowed = k_waitBeforeEnableJumpReset;
         }
     }
 
@@ -390,14 +416,41 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    #endregion
+
+    #region Jumping
+
+    private Vector3 GetJumpVector(Vector3 currentVel, float jumpForce, Vector3 gravityVector)
+    {
+        // Player jumps one slightly over the ground, thus causing a "jump" but the player does not jump and is forced to wait the jump check cooldown.
+        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + jumpForce + (gravityVector.y * Time.fixedDeltaTime), 0);
+    }
+
+
     /// <summary>
     /// Reset's the jumping parameters to allow the player to jump again when touching valid ground.
     /// </summary>
     private void ResetJumpWhenGrounded()
     {
-        if (IsGrounded && m_currentSlopeState != SlopeState.SteepSlope)
+        if (IsGrounded && m_currentSlopeState != SlopeState.SteepSlope && m_currentWaitUntilJumpRestAllowed <= 0)
         {
             m_isJumping = false;
+        }
+        else if (m_rb.linearVelocity.y < 0 && m_currentWaitUntilJumpRestAllowed <= 0)
+        {
+            m_isJumping = false;
+        }
+    }
+
+    private bool CanPlayerJump()
+    {
+        if (IsGrounded && !m_isJumping && m_currentSlopeState != SlopeState.SteepSlope)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
