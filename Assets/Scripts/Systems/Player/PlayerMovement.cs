@@ -126,16 +126,16 @@ public class PlayerMovement : MonoBehaviour
 
     // Input
     Vector3 m_inputWishDirWorld = Vector3.zero;
-    bool m_isJumpHeld;
-    bool m_isCrouchHeld;
-    bool m_isSprintHeld;
+    bool m_isJumpKeyDown;
+    bool m_isCrouchKeyDown;
+    bool m_isSprintKeyDown;
 
     // Movement Binds.
-    InputAction m_movementInput;
-    InputAction m_jumpInput;
-    InputAction m_crouchInput;
-    InputAction m_lookInput;
-    InputAction m_sprintInput;
+    InputAction m_movementInputAction;
+    InputAction m_jumpInputAction;
+    InputAction m_crouchInputAction;
+    InputAction m_lookInputAction;
+    InputAction m_sprintInputAction;
 
 
     #endregion
@@ -197,11 +197,17 @@ public class PlayerMovement : MonoBehaviour
 
 
     [SerializeField]
-    float m_maxSpeed = 10;
+    float m_maxSprintSpeed = 10;
+
+    [SerializeField]
+    float m_maxWalkSpeed = 5;
 
     [SerializeField]
     float m_accelRate = 0.1f;
 
+
+    [SerializeField]
+    float m_airAccelRate = 0.5f;
 
     #endregion
 
@@ -220,11 +226,11 @@ public class PlayerMovement : MonoBehaviour
         m_rb = GetComponent<Rigidbody>();
         m_col = GetComponent<CapsuleCollider>();
 
-        m_movementInput = InputSystem.actions.FindAction("Move");
-        m_jumpInput = InputSystem.actions.FindAction("Jump");
-        m_crouchInput = InputSystem.actions.FindAction("Crouch");
-        m_lookInput = InputSystem.actions.FindAction("Look");
-        m_sprintInput = InputSystem.actions.FindAction("Sprint");
+        m_movementInputAction = InputSystem.actions.FindAction("Move");
+        m_jumpInputAction = InputSystem.actions.FindAction("Jump");
+        m_crouchInputAction = InputSystem.actions.FindAction("Crouch");
+        m_lookInputAction = InputSystem.actions.FindAction("Look");
+        m_sprintInputAction = InputSystem.actions.FindAction("Sprint");
 
         // TODO: Remove this. This should not be here and be moved to a dedicated script.
         Cursor.visible = false;
@@ -271,6 +277,14 @@ public class PlayerMovement : MonoBehaviour
     void OnGUI()
     {
         GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
+    }
+
+    void OnDrawGizmos()
+    {
+        var col = GetComponent<CapsuleCollider>();
+        var halfHeight = new Vector3(0, Mathf.Max(col.height, col.radius) / 2f, 0);
+
+        Gizmos.DrawWireSphere((transform.position - halfHeight) + ((Vector3.up * col.radius) + (Vector3.down * 0.1f)), col.radius);
     }
 
 
@@ -341,13 +355,26 @@ public class PlayerMovement : MonoBehaviour
     {
         // ? Isnt this just input handling?
 
+        float targetSpeed = m_maxWalkSpeed;
+
+        if (m_isSprintKeyDown)
+        {
+            targetSpeed = m_maxSprintSpeed;
+        }
+
+
+
         if (IsGrounded && !m_isJumping)
         {
+
+
+
+
             // Ground movement.
             if (m_currentSlopeState == SlopeState.FlatGround)
             {
                 // Normal movement.
-                m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, m_accelRate, m_maxSpeed), ForceMode.Acceleration);
+                m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, m_accelRate, targetSpeed), ForceMode.Acceleration);
             }
             else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
@@ -355,7 +382,7 @@ public class PlayerMovement : MonoBehaviour
                 m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
 
                 // Movement on slight slope.
-                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, m_accelRate, m_maxSpeed);
+                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, m_accelRate, targetSpeed);
                 m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
             }
             else
@@ -369,13 +396,15 @@ public class PlayerMovement : MonoBehaviour
         {
             // Air movement.
 
+            // TODO: should be last speed?
+            m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, m_airAccelRate, targetSpeed), ForceMode.Acceleration);
         }
 
 
         // Jumping
-        if (m_isJumpHeld && CanPlayerJump())
+        if (m_isJumpKeyDown && CanPlayerJump())
         {
-            m_rb.AddForce(GetJumpVector(m_rb.linearVelocity, 10, GetGravityVector()), ForceMode.VelocityChange);
+            m_rb.AddForce(GetJumpVector(m_rb.linearVelocity, 3, GetGravityVector()), ForceMode.VelocityChange);
 
 
             m_isJumping = true;
@@ -414,6 +443,7 @@ public class PlayerMovement : MonoBehaviour
 
         return neededChange.normalized * calculatedAccel;
     }
+
 
 
     #endregion
@@ -477,7 +507,7 @@ public class PlayerMovement : MonoBehaviour
     private bool CheckIsGrounded()
     {
         float rad = GetNearMaxRadius();
-        return Physics.CheckSphere(GetWorldFeetPos() + (Vector3.down * rad / 2f), rad, m_groundLayer);
+        return Physics.CheckSphere(GetWorldFeetPos() + (Vector3.up * rad) + (Vector3.down * 0.1f), rad, m_groundLayer);
     }
 
     /// <summary>
@@ -665,18 +695,18 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void PollInput()
     {
-        Vector2 inputVector = m_movementInput.ReadValue<Vector2>();
+        Vector2 inputVector = m_movementInputAction.ReadValue<Vector2>();
         Vector3 inputInWorld = new Vector3(inputVector.x, 0, inputVector.y);
 
         m_inputWishDirWorld = m_orientation.transform.TransformDirection(inputInWorld);
 
-        m_isJumpHeld = m_jumpInput.IsPressed();
+        m_isJumpKeyDown = m_jumpInputAction.IsPressed();
 
-        m_isSprintHeld = m_sprintInput.IsPressed();
+        m_isSprintKeyDown = m_sprintInputAction.IsPressed();
 
-        m_isCrouchHeld = m_crouchInput.IsPressed();
+        m_isCrouchKeyDown = m_crouchInputAction.IsPressed();
 
-        m_lookDelta = m_lookInput.ReadValue<Vector2>();
+        m_lookDelta = m_lookInputAction.ReadValue<Vector2>();
     }
 
     #endregion
