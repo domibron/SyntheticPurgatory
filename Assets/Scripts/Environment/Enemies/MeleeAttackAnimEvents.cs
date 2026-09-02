@@ -4,7 +4,7 @@ using UnityEngine;
 public class MeleeAttackAnimEvents : MonoBehaviour
 {
     [SerializeField]
-    private MeleeEnemyAI enemyAI;
+    private SawnEnemyAI enemyAI;
 
     public void AttackEvent(int endOfAttacks)
     {

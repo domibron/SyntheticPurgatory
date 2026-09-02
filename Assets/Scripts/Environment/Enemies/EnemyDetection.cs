@@ -14,7 +14,7 @@ public class EnemyDetection : MonoBehaviour
     /// Offset from the pivot point to start the raycast from
     /// </summary>
     [SerializeField]
-    private Vector3 viewPointOffset;
+    private GameObject viewPointLocator;
     /// <summary>
     /// Object to search for and become alerted when seen
     /// </summary>
@@ -81,6 +81,12 @@ public class EnemyDetection : MonoBehaviour
         GetComponent<Health>().OnHealthChanged += AlertFromDamage;
 
         targetObject = GameObject.FindWithTag("Player");
+
+        if (viewPointLocator == null)
+        {
+            Debug.LogWarning(transform.name + " has no view point locator assigned, script has been disabled");
+            this.enabled = false;
+        }
     }
 
     private void FixedUpdate()
@@ -91,7 +97,10 @@ public class EnemyDetection : MonoBehaviour
         bool isDetecting = false;
 
         RaycastHit hit; // Get any objects between enemy and target, if not get player (provided they are within reach)
-        Physics.Raycast(transform.position + viewPointOffset, ((targetObject.transform.position + Vector3.up / 2) - (transform.position + viewPointOffset)).normalized, out hit, detectionRange, obstacles);
+        Physics.Raycast(viewPointLocator.transform.position, 
+            ((targetObject.transform.position + Vector3.up / 2) - (viewPointLocator.transform.position)).normalized,
+            out hit, detectionRange, obstacles);
+
         if (hit.rigidbody != null) // Make sure something was hit before continuing
         {
             if (hit.rigidbody.CompareTag("Player")) // If object found is player
@@ -119,6 +128,7 @@ public class EnemyDetection : MonoBehaviour
 
         if (currentDetection >= detectionTimer) // If player has been out of sight for long enough
         {
+
             BecomeAlert(true, MaxDetectionChain, 0); // Start activation sequence
         }
     }
@@ -174,7 +184,7 @@ public class EnemyDetection : MonoBehaviour
         LayerMask obstacles = LayerMask.GetMask("Default", "Ground"); // LayerMask for level surfaces, used to check that the enemy candidate is visible
 
         RaycastHit[] foundEnemies; // Get all enemies within a spherical range
-        foundEnemies = Physics.SphereCastAll(transform.position + viewPointOffset, alertOthersRange, Vector3.up, 1, enemyLayer);
+        foundEnemies = Physics.SphereCastAll(viewPointLocator.transform.position, alertOthersRange, Vector3.up, 1, enemyLayer);
         foreach (RaycastHit enemy in foundEnemies) // Check each found enemy (or object in enemy layer)
         {
             EnemyDetection enemyDetectScript;
@@ -184,7 +194,8 @@ public class EnemyDetection : MonoBehaviour
             }
 
             RaycastHit hit; // Check for objects between this enemy and the other target enemy
-            Physics.Linecast(transform.position + viewPointOffset, enemy.transform.position + enemyDetectScript.viewPointOffset, out hit, obstacles);
+            Physics.Linecast(viewPointLocator.transform.position, 
+                enemyDetectScript.viewPointLocator.transform.position, out hit, obstacles);
             if (hit.collider == null)
             {
                 // Start activation sequence on other enemy
