@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -189,6 +190,9 @@ public class PlayerMovement : MonoBehaviour
     float m_currentWaitUntilJumpRestAllowed = 0f;
 
 
+    float m_velBuildup = 0f;
+
+
     #endregion
 
 
@@ -203,8 +207,10 @@ public class PlayerMovement : MonoBehaviour
     float m_maxWalkSpeed = 5;
 
     [SerializeField]
-    float m_accelRate = 0.1f;
+    float m_walkAccelRate = 0.1f;
 
+    [SerializeField]
+    float m_sprintAccelRate = 0.2f;
 
     [SerializeField]
     float m_airAccelRate = 0.5f;
@@ -356,10 +362,12 @@ public class PlayerMovement : MonoBehaviour
         // ? Isnt this just input handling?
 
         float targetSpeed = m_maxWalkSpeed;
+        float accel = m_walkAccelRate;
 
         if (m_isSprintKeyDown)
         {
             targetSpeed = m_maxSprintSpeed;
+            accel = m_sprintAccelRate;
         }
 
 
@@ -367,14 +375,58 @@ public class PlayerMovement : MonoBehaviour
         if (IsGrounded && !m_isJumping)
         {
 
-
-
-
             // Ground movement.
             if (m_currentSlopeState == SlopeState.FlatGround)
             {
                 // Normal movement.
-                m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, m_accelRate, targetSpeed), ForceMode.Acceleration);
+                //m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, targetSpeed), ForceMode.Acceleration);
+
+                const float k_epsilon = 0.07f;
+
+                // Does the player wish to move.
+                if (m_inputWishDirWorld.magnitude > 0)
+                {
+                    // Higher values makes this reach the target faster.
+                    const float k_step = 1 / 0.1f;
+                    const float k_rampUpSpeed = 1 / 0.3f;
+
+                    float neededChange = targetSpeed - m_rb.linearVelocity.magnitude;
+
+                    // is the needed change at or under epsilon.
+                    if (neededChange < Mathf.Abs(k_epsilon))
+                    {
+                        m_rb.linearVelocity = m_inputWishDirWorld.normalized * targetSpeed;
+
+                        m_velBuildup -= k_rampUpSpeed * Time.deltaTime;
+
+                        m_velBuildup = Mathf.Clamp01(m_velBuildup);
+                    }
+                    else
+                    {
+                        m_velBuildup += k_rampUpSpeed * Time.deltaTime;
+
+                        m_velBuildup = Mathf.Clamp01(m_velBuildup);
+
+                        // Are we under speed.
+                        m_rb.linearVelocity = m_inputWishDirWorld.normalized * (m_rb.linearVelocity.magnitude + (neededChange * k_step * m_velBuildup * Time.deltaTime));
+                    }
+                }
+                else
+                {
+                    // Higher values makes this reach the target faster.
+                    const float k_step = 15f;
+
+                    if (m_rb.linearVelocity.magnitude < k_epsilon)
+                    {
+                        m_rb.linearVelocity *= 0;
+                    }
+                    else
+                    {
+                        // Are we under speed.
+                        m_rb.linearVelocity = m_rb.linearVelocity.normalized * (m_rb.linearVelocity.magnitude - (m_rb.linearVelocity.magnitude * k_step * Time.fixedDeltaTime));
+                    }
+                }
+
             }
             else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
@@ -382,7 +434,7 @@ public class PlayerMovement : MonoBehaviour
                 m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
 
                 // Movement on slight slope.
-                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, m_accelRate, targetSpeed);
+                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, accel, targetSpeed);
                 m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
             }
             else
@@ -397,7 +449,7 @@ public class PlayerMovement : MonoBehaviour
             // Air movement.
 
             // TODO: should be last speed?
-            m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, m_airAccelRate, targetSpeed), ForceMode.Acceleration);
+            m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, targetSpeed), ForceMode.Acceleration);
         }
 
 
@@ -609,11 +661,11 @@ public class PlayerMovement : MonoBehaviour
             bool rayRes = Physics.Raycast(pointAtFeet + (Vector3.up * (heightIncrement * i)), moveDirectionThisFrame.normalized, out RaycastHit hitInfo, minStepWithRadius, m_groundLayer, QueryTriggerInteraction.Ignore);
             Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), (pointAtFeet + (Vector3.up * (heightIncrement * i))) + (moveDirectionThisFrame.normalized * minStepWithRadius), Color.blue, 10f);
 
-            if (rayRes)
-            {
-                // print(hitInfo.transform.gameObject.name);
-                Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), hitInfo.point, Color.red, 10f);
-            }
+            // if (rayRes)
+            // {
+            //     // print(hitInfo.transform.gameObject.name);
+            //     Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), hitInfo.point, Color.red, 10f);
+            // }
 
             if (i == 0 && !rayRes)
             {
