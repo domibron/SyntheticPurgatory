@@ -404,6 +404,7 @@ GameObject:
   - component: {fileID: 3483341861124255174}
   - component: {fileID: 4380066710985356648}
   - component: {fileID: 3340956518490289641}
+  - component: {fileID: 7579954213375500195}
   m_Layer: 3
   m_Name: P_Player
   m_TagString: Player
@@ -496,8 +497,11 @@ MonoBehaviour:
   m_gravityScalar: 1
   m_cameraTarget: {fileID: 7882557659218615182}
   m_orientation: {fileID: 7927393379924898325}
-  maxSpeed: 10
-  accel: 10
+  m_maxSprintSpeed: 10
+  m_maxWalkSpeed: 5
+  m_walkAccelRate: 0.1
+  m_sprintAccelRate: 0.2
+  m_airAccelRate: 0.5
 --- !u!114 &1366173621609098140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -687,6 +691,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69b8003910fcf9745980a5c55b92018b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7579954213375500195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138991948573154078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9da4626020102d49ae67842f855651f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFovController
+  m_standardFov: 60
+  m_allCameras:
+  - {fileID: 9087766604384551400}
+  - {fileID: 2995686890391899380}
+  - {fileID: 2696208259358037973}
 --- !u!1 &1274454125277432389
 GameObject:
   m_ObjectHideFlags: 0
