@@ -1,4 +1,3 @@
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -190,8 +189,10 @@ public class PlayerMovement : MonoBehaviour
     float m_currentWaitUntilJumpRestAllowed = 0f;
 
 
-    float m_velBuildup = 0f;
+    // new imp
 
+    Vector3 m_linearVel;
+    Vector3 m_verticalVel;
 
     #endregion
 
@@ -270,19 +271,22 @@ public class PlayerMovement : MonoBehaviour
             UpdateSlopeState(m_groundNormalAverage);
         }
 
-
-        ApplyGravity();
-
         ResetJumpWhenGrounded();
+
+        UpdateGravityVel();
 
         Movement();
 
         HandleStepping();
+
+        m_rb.linearVelocity = m_linearVel + m_verticalVel;
     }
 
     void OnGUI()
     {
         GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
+        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_linearVel.ToString("F2"));
+        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_verticalVel.ToString("F2"));
     }
 
     void OnDrawGizmos()
@@ -361,16 +365,26 @@ public class PlayerMovement : MonoBehaviour
     {
         // ? Isnt this just input handling?
 
-        float targetSpeed = m_maxWalkSpeed;
-        float accel = m_walkAccelRate;
+        float accel = 1 / m_walkAccelRate; // mps^2
+        float deAccel = accel; // mps^2
 
         if (m_isSprintKeyDown)
         {
-            targetSpeed = m_maxSprintSpeed;
-            accel = m_sprintAccelRate;
+            m_isSprinting = true;
+        }
+        else
+        {
+            m_isSprinting = false;
         }
 
+        float targetSpeed = m_maxWalkSpeed;
 
+        if (m_isSprinting)
+        {
+            targetSpeed = m_maxSprintSpeed;
+            accel = 1 / m_sprintAccelRate;
+            deAccel = accel;
+        }
 
         if (IsGrounded && !m_isJumping)
         {
@@ -378,91 +392,68 @@ public class PlayerMovement : MonoBehaviour
             // Ground movement.
             if (m_currentSlopeState == SlopeState.FlatGround)
             {
-                // Normal movement.
-                //m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, targetSpeed), ForceMode.Acceleration);
-
-                const float k_epsilon = 0.07f;
-
-                // Does the player wish to move.
                 if (m_inputWishDirWorld.magnitude > 0)
                 {
-                    // Higher values makes this reach the target faster.
-                    const float k_step = 1 / 0.1f;
-                    const float k_rampUpSpeed = 1 / 0.3f;
-
-                    float neededChange = targetSpeed - m_rb.linearVelocity.magnitude;
-
-                    // is the needed change at or under epsilon.
-                    if (neededChange < Mathf.Abs(k_epsilon))
+                    // overspeed from target speed.
+                    if (m_linearVel.magnitude > targetSpeed)
                     {
-                        m_rb.linearVelocity = m_inputWishDirWorld.normalized * targetSpeed;
-
-                        m_velBuildup -= k_rampUpSpeed * Time.deltaTime;
-
-                        m_velBuildup = Mathf.Clamp01(m_velBuildup);
+                        m_linearVel += -m_linearVel * deAccel * Time.fixedDeltaTime;
                     }
-                    else
+                    else // normal accel towards target speed.
                     {
-                        m_velBuildup += k_rampUpSpeed * Time.deltaTime;
-
-                        m_velBuildup = Mathf.Clamp01(m_velBuildup);
-
-                        // Are we under speed.
-                        m_rb.linearVelocity = m_inputWishDirWorld.normalized * (m_rb.linearVelocity.magnitude + (neededChange * k_step * m_velBuildup * Time.deltaTime));
+                        m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * accel * Time.fixedDeltaTime;
                     }
                 }
                 else
                 {
-                    // Higher values makes this reach the target faster.
-                    const float k_step = 15f;
+                    Vector3 changeNeeded = -m_linearVel * deAccel * Time.fixedDeltaTime;
 
-                    if (m_rb.linearVelocity.magnitude < k_epsilon)
+                    if (m_linearVel.magnitude < changeNeeded.magnitude)
                     {
-                        m_rb.linearVelocity *= 0;
+                        changeNeeded = -m_linearVel;
                     }
-                    else
-                    {
-                        // Are we under speed.
-                        m_rb.linearVelocity = m_rb.linearVelocity.normalized * (m_rb.linearVelocity.magnitude - (m_rb.linearVelocity.magnitude * k_step * Time.fixedDeltaTime));
-                    }
+
+                    m_linearVel += changeNeeded;
                 }
-
             }
             else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
-                // Counter gravity.
-                m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
+                // // Counter gravity.
+                // m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
 
-                // Movement on slight slope.
-                Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, accel, targetSpeed);
-                m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
+                // // Movement on slight slope.
+                // Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, accel, targetSpeed);
+                // m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
             }
             else
             {
-                // Slide along slope.
-                Vector3 gravVec = GetGravityVector();
-                m_rb.AddForce(Vector3.ProjectOnPlane(gravVec, m_groundNormalAverage).normalized * gravVec.magnitude, ForceMode.Acceleration);
+                // // Slide along slope.
+                // Vector3 gravVec = GetGravityVector();
+                // m_rb.AddForce(Vector3.ProjectOnPlane(gravVec, m_groundNormalAverage).normalized * gravVec.magnitude, ForceMode.Acceleration);
             }
         }
         else
         {
-            // Air movement.
+            // // Air movement.
 
-            // TODO: should be last speed?
-            m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, targetSpeed), ForceMode.Acceleration);
+            // // TODO: should be last speed?
+            // m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, targetSpeed), ForceMode.Acceleration);
         }
 
 
         // Jumping
         if (m_isJumpKeyDown && CanPlayerJump())
         {
-            m_rb.AddForce(GetJumpVector(m_rb.linearVelocity, 3, GetGravityVector()), ForceMode.VelocityChange);
+            m_verticalVel += GetJumpVector(m_verticalVel, 5, GetGravityVector());
 
 
             m_isJumping = true;
             m_currentWaitUntilJumpRestAllowed = k_waitBeforeEnableJumpReset;
         }
     }
+
+
+
 
 
     /// <summary>
@@ -504,8 +495,9 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 GetJumpVector(Vector3 currentVel, float jumpForce, Vector3 gravityVector)
     {
+        // Using grav.mag because grav.y results in -x and dont want to use Mathf.Abs(grav.y) as its not important to single out one grav dir yet.
         // Player jumps one slightly over the ground, thus causing a "jump" but the player does not jump and is forced to wait the jump check cooldown.
-        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + jumpForce + (gravityVector.y * Time.fixedDeltaTime), 0);
+        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + (m_rb.mass * Mathf.Sqrt(2f * gravityVector.magnitude * jumpForce)) + (gravityVector.y * Time.fixedDeltaTime), 0);
     }
 
 
@@ -543,13 +535,15 @@ public class PlayerMovement : MonoBehaviour
 
     #region Ground and Gravity
 
-
     /// <summary>
-    /// Applies gravity to the rigidbody.
+    /// Updates the gravity velocity this physics frame.
     /// </summary>
-    private void ApplyGravity()
+    private void UpdateGravityVel()
     {
-        m_rb.AddForce(GetGravityVector(), ForceMode.Acceleration);
+        if (IsGrounded && m_verticalVel.y < 1)
+            m_verticalVel = Vector3.zero;
+        else
+            m_verticalVel += GetGravityVector() * Time.fixedDeltaTime;
     }
 
     /// <summary>
@@ -801,6 +795,5 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
-
 
 }
