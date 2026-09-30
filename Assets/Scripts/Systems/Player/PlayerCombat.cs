@@ -538,23 +538,6 @@ public class PlayerCombat : MonoBehaviour
         m_currentProjectileCoolDown = Mathf.Lerp(m_standardSecondsPerShot, m_chargedSecondsPerShot, EasingFunctions.EaseOutQuint(m_currentGunChargeBar / 2));
 
 
-        // Vector3 target = m_mainCamera.position + (m_mainCamera.forward * 999f);
-
-        // if (Physics.Raycast(m_mainCamera.position, m_mainCamera.forward, out RaycastHit hit, 999, m_projectileHittableLayers, QueryTriggerInteraction.Collide))
-        // {
-        //     IDamageable damageable = hit.transform.GetComponent<IDamageable>();
-
-        //     damageable?.TakeDamage(m_projectileDamage, transform.position);
-
-        //     hit.transform.GetComponent<IShootable>()?.HitObject();
-
-        //     target = hit.point;
-        // }
-
-        // GameObject dummyProjectile = Instantiate(m_projectilePrefab, m_projectileSpawnLocation.position, Quaternion.identity);
-
-        // dummyProjectile.GetComponent<Rigidbody>().AddForce((target - dummyProjectile.transform.position).normalized * 9999f);
-
         GameObject projectile = Instantiate(m_projectilePrefab, m_mainCamera.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = m_projectileDamage;
 
@@ -564,23 +547,6 @@ public class PlayerCombat : MonoBehaviour
         projectile.GetComponentInChildren<VisualFollowTarget>().SetVisualTargetLocation(m_projectileSpawnLocation.position, m_mainCamera.forward * m_projectileSpeed);
 
 
-
-        // // Projectile code
-        // GameObject projectile = Instantiate(m_projectilePrefab, m_projectileSpawnLocation.position, Quaternion.identity);
-        // projectile.GetComponent<ProjectileScript>().ProjectileDamage = m_projectileDamage;
-
-        // Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
-
-        // if (Physics.Raycast(m_mainCamera.position, m_mainCamera.forward, out RaycastHit hit, 999))
-        // {
-        //     // we hit, so we fire towards target. we add a little offset to allow the projectile to not be aids. but this whole thing sucks.
-        //     Vector3 dirNeeded = ((hit.point + (m_mainCamera.forward * 3f)) - projectile.transform.position).normalized;
-        //     projectileRB.AddForce(dirNeeded * m_projectileSpeed, ForceMode.VelocityChange);
-        // }
-        // else
-        // {
-        //     projectileRB.AddForce(m_mainCamera.forward * m_projectileSpeed, ForceMode.VelocityChange);
-        // }
 
     }
     #endregion
