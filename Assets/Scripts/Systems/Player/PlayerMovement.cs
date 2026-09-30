@@ -189,7 +189,7 @@ public class PlayerMovement : MonoBehaviour
     float m_currentWaitUntilJumpRestAllowed = 0f;
 
 
-    // new imp
+    // Vels
 
     Vector3 m_linearVel;
     Vector3 m_verticalVel;
@@ -368,22 +368,26 @@ public class PlayerMovement : MonoBehaviour
         float accel = 1 / m_walkAccelRate; // mps^2
         float deAccel = accel; // mps^2
 
-        if (m_isSprintKeyDown)
+        float targetSpeed = m_maxWalkSpeed;
+        float lastAirTarget = m_maxWalkSpeed;
+
+
+        if (m_isSprintKeyDown && IsGrounded)
         {
             m_isSprinting = true;
-        }
-        else
-        {
-            m_isSprinting = false;
-        }
 
-        float targetSpeed = m_maxWalkSpeed;
-
-        if (m_isSprinting)
-        {
             targetSpeed = m_maxSprintSpeed;
             accel = 1 / m_sprintAccelRate;
             deAccel = accel;
+        }
+        else
+        {
+            if (m_isSprinting && !IsGrounded)
+            {
+                lastAirTarget = m_maxSprintSpeed;
+            }
+
+            m_isSprinting = false;
         }
 
 
@@ -401,7 +405,7 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     // Normal accel towards target speed.
-                    m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * accel * Time.fixedDeltaTime;
+                    m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel) * Time.fixedDeltaTime;
                 }
 
             }
@@ -423,7 +427,7 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     // Normal accel towards target speed.
-                    Vector3 normalChange = ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * accel * Time.fixedDeltaTime;
+                    Vector3 normalChange = ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel) * Time.fixedDeltaTime;
 
                     normalChange = Vector3.ProjectOnPlane(normalChange, m_groundNormalAverage);
 
@@ -436,18 +440,30 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 // Steep slope movement.
+                Vector3 slope = Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage).normalized * GetGravityVector().magnitude * Time.fixedDeltaTime;
+                Vector3 decayVel = (slope.normalized - m_linearVel.normalized) * GetGravityVector().magnitude * Time.fixedDeltaTime;
 
-                // // Slide along slope.
-                // Vector3 gravVec = GetGravityVector();
-                // m_rb.AddForce(Vector3.ProjectOnPlane(gravVec, m_groundNormalAverage).normalized * gravVec.magnitude, ForceMode.Acceleration);
+                m_linearVel += slope + decayVel;
+
+                m_verticalVel.y = -1;
             }
         }
         else
         {
-            // // Air movement.
+            // Air movement
+            accel = 1 / m_airAccelRate;
+            deAccel = m_airAccelRate;
 
-            // // TODO: should be last speed?
-            // m_rb.AddForce(GetImmediateChangeVel(Utils.GetLevelVectorY(m_rb.linearVelocity), m_inputWishDirWorld, accel, targetSpeed), ForceMode.Acceleration);
+            if (m_linearVel.magnitude > lastAirTarget)
+            {
+                // Overspeed from target speed.
+                m_linearVel += -m_linearVel * deAccel * Time.fixedDeltaTime;
+            }
+            else
+            {
+                // Normal accel towards target speed.
+                m_linearVel += ((m_inputWishDirWorld.normalized * lastAirTarget) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel) * Time.fixedDeltaTime;
+            }
         }
 
 
