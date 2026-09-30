@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -191,14 +192,20 @@ public class PlayerMovement : MonoBehaviour
 
     // Vels
 
-    Vector3 m_linearVel;
-    Vector3 m_verticalVel;
+    Vector3 m_linearVel = Vector3.zero;
+    Vector3 m_verticalVel = Vector3.zero;
+
+    float m_defaultRadius = 0f;
+    float m_defaultHeight = 0f;
+
+    [SerializeField]
+    float m_crouchedHeight = 0.6f;
 
     #endregion
 
 
 
-    #region IKD what to do with atm
+    #region Movement Related
 
 
     [SerializeField]
@@ -239,9 +246,15 @@ public class PlayerMovement : MonoBehaviour
         m_lookInputAction = InputSystem.actions.FindAction("Look");
         m_sprintInputAction = InputSystem.actions.FindAction("Sprint");
 
+        m_defaultRadius = m_col.radius;
+        m_defaultHeight = m_col.height;
+
+
+
         // TODO: Remove this. This should not be here and be moved to a dedicated script.
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
     }
 
     void Update()
@@ -275,12 +288,16 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateGravityVel();
 
+        HandleCrouching();
+
         Movement();
 
         HandleStepping();
 
         m_rb.linearVelocity = m_linearVel + m_verticalVel;
     }
+
+
 
     void OnGUI()
     {
@@ -513,7 +530,33 @@ public class PlayerMovement : MonoBehaviour
         return neededChange.normalized * calculatedAccel;
     }
 
+    private void HandleCrouching()
+    {
+        if (m_isCrouchKeyDown && !m_isCrouched)
+        {
+            m_isCrouched = true;
 
+            Vector3 newPos = transform.position + (Vector3.up * (m_crouchedHeight - m_defaultHeight) * 0.5f);
+
+            SetHeight(m_crouchedHeight);
+
+            transform.position = newPos;
+        }
+        else if (!m_isCrouchKeyDown && m_isCrouched)
+        {
+            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * 0.05f), m_defaultRadius, Vector3.up, out RaycastHit info, (m_defaultHeight - (m_defaultRadius * 2f)), m_groundLayer, QueryTriggerInteraction.Ignore))
+            {
+                m_isCrouched = false;
+
+                Vector3 newPos = transform.position + (Vector3.up * (m_defaultHeight - m_crouchedHeight) * 0.5f);
+
+                SetHeight();
+
+                transform.position = newPos;
+
+            }
+        }
+    }
 
     #endregion
 
@@ -578,7 +621,10 @@ public class PlayerMovement : MonoBehaviour
     /// <returns>True if there is ground below the player.</returns>
     private bool CheckIsGrounded()
     {
-        float rad = GetNearMaxRadius();
+        float rad = GetNearMaxRadius(); // TODO: fix - ground check is sitting heigher than collider.
+
+        Debug.DrawLine(GetWorldFeetPos(), GetWorldFeetPos() + Vector3.forward, Color.brown);
+
         return Physics.CheckSphere(GetWorldFeetPos() + (Vector3.up * rad) + (Vector3.down * 0.1f), rad, m_groundLayer);
     }
 
@@ -734,7 +780,26 @@ public class PlayerMovement : MonoBehaviour
     /// <returns></returns>
     private float GetHalfHeight()
     {
-        return Mathf.Max(m_col.height, m_col.radius) / 2f;
+        if (m_col.radius >= m_col.height / 2f)
+        {
+            return m_col.radius;
+        }
+        else
+        {
+            return m_col.height / 2f;
+        }
+    }
+
+    private float GetFullHeight()
+    {
+        if (m_col.radius * 2f >= m_col.height)
+        {
+            return m_col.radius * 2f;
+        }
+        else
+        {
+            return m_col.height;
+        }
     }
 
     private Vector3 GetWorldFeetPos()
@@ -754,6 +819,25 @@ public class PlayerMovement : MonoBehaviour
     float GetNearMaxRadius()
     {
         return m_col.radius - (m_col.radius * 0.2f);
+    }
+
+    void SetHeight(float height = -1f)
+    {
+        if (height <= 0)
+        {
+            m_col.height = m_defaultHeight;
+            m_col.radius = m_defaultRadius;
+        }
+        else if (height >= m_defaultRadius)
+        {
+            m_col.height = height;
+            m_col.radius = m_defaultRadius;
+        }
+        else
+        {
+            m_col.height = height;
+            m_col.radius = height;
+        }
     }
 
     #endregion
