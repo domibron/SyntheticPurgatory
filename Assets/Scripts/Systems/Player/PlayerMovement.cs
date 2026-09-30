@@ -386,47 +386,57 @@ public class PlayerMovement : MonoBehaviour
             deAccel = accel;
         }
 
+
         if (IsGrounded && !m_isJumping)
         {
-
             // Ground movement.
             if (m_currentSlopeState == SlopeState.FlatGround)
             {
-                if (m_inputWishDirWorld.magnitude > 0)
+                // Level ground movement.
+                if (m_linearVel.magnitude > targetSpeed)
                 {
-                    // overspeed from target speed.
-                    if (m_linearVel.magnitude > targetSpeed)
-                    {
-                        m_linearVel += -m_linearVel * deAccel * Time.fixedDeltaTime;
-                    }
-                    else // normal accel towards target speed.
-                    {
-                        m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * accel * Time.fixedDeltaTime;
-                    }
+                    // Overspeed from target speed.
+                    m_linearVel += -m_linearVel * deAccel * Time.fixedDeltaTime;
                 }
                 else
                 {
-                    Vector3 changeNeeded = -m_linearVel * deAccel * Time.fixedDeltaTime;
-
-                    if (m_linearVel.magnitude < changeNeeded.magnitude)
-                    {
-                        changeNeeded = -m_linearVel;
-                    }
-
-                    m_linearVel += changeNeeded;
+                    // Normal accel towards target speed.
+                    m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * accel * Time.fixedDeltaTime;
                 }
+
             }
             else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
-                // // Counter gravity.
-                // m_rb.AddForce(-Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage), ForceMode.Acceleration);
+                // Slight slope movement.
+                if (m_linearVel.magnitude > targetSpeed)
+                {
+                    // Overspeed from target speed.
+                    Vector3 normalChange = -m_linearVel * deAccel * Time.fixedDeltaTime;
 
-                // // Movement on slight slope.
-                // Vector3 normalMovement = GetImmediateChangeVel(m_rb.linearVelocity, m_inputWishDirWorld, accel, targetSpeed);
-                // m_rb.AddForce(Vector3.ProjectOnPlane(normalMovement, m_groundNormalAverage).normalized * normalMovement.magnitude, ForceMode.Acceleration);
+                    normalChange = Vector3.ProjectOnPlane(normalChange, m_groundNormalAverage);
+
+                    if (m_verticalVel.y < 0)
+                        normalChange += new Vector3(0, -m_verticalVel.y, 0);
+
+                    m_linearVel += normalChange;
+                }
+                else
+                {
+                    // Normal accel towards target speed.
+                    Vector3 normalChange = ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * accel * Time.fixedDeltaTime;
+
+                    normalChange = Vector3.ProjectOnPlane(normalChange, m_groundNormalAverage);
+
+                    if (m_verticalVel.y < 0)
+                        normalChange += new Vector3(0, -m_verticalVel.y, 0);
+
+                    m_linearVel += normalChange;
+                }
             }
             else
             {
+                // Steep slope movement.
+
                 // // Slide along slope.
                 // Vector3 gravVec = GetGravityVector();
                 // m_rb.AddForce(Vector3.ProjectOnPlane(gravVec, m_groundNormalAverage).normalized * gravVec.magnitude, ForceMode.Acceleration);
