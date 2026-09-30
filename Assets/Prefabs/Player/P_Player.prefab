@@ -494,11 +494,11 @@ MonoBehaviour:
   m_groundLayer:
     serializedVersion: 2
     m_Bits: 16465
-  m_gravityScalar: 1
+  m_gravityScalar: 2
   m_cameraTarget: {fileID: 7882557659218615182}
   m_orientation: {fileID: 7927393379924898325}
-  m_maxSprintSpeed: 10
-  m_maxWalkSpeed: 5
+  m_maxSprintSpeed: 7
+  m_maxWalkSpeed: 3
   m_walkAccelRate: 0.1
   m_sprintAccelRate: 0.2
   m_airAccelRate: 0.5
@@ -514,20 +514,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 257631cf6ddffea47bee25e8cc6618ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunAlignmentLayers:
+  m_gunAlignmentLayers:
     serializedVersion: 2
     m_Bits: 16985
-  projectilePrefab: {fileID: 1360570209722618760, guid: 682636e8d1e210b40b10fa75d2485344, type: 3}
-  projectileSpawnLocation: {fileID: 2359744327360319551}
-  projectileSpeed: 30
-  meleeBounds: {x: 1.5, y: 1.5, z: 1.3}
-  meleeOffset: {x: 0, y: -0.2, z: 1}
-  bashBounds: {x: 1.5, y: 1.6, z: 1.3}
-  bashOffset: {x: 0, y: -0.2, z: 1}
-  gunSpinBit: {fileID: 4587322443021510247}
-  spinRate: 5
-  showMeleeBox: 0
-  showBashBox: 0
+  m_projectilePrefab: {fileID: 1360570209722618760, guid: 682636e8d1e210b40b10fa75d2485344, type: 3}
+  m_projectileSpawnLocation: {fileID: 2359744327360319551}
+  m_projectileSpeed: 30
+  m_meleeBounds: {x: 1.5, y: 1.5, z: 1.3}
+  m_meleeOffset: {x: 0, y: -0.2, z: 1}
+  m_bashBounds: {x: 1.5, y: 1.6, z: 1.3}
+  m_bashOffset: {x: 0, y: -0.2, z: 1}
+  m_gunSpinBit: {fileID: 4587322443021510247}
+  m_spinRate: 5
+  m_showMeleeBox: 0
+  m_showBashBox: 0
 --- !u!114 &7812274978082621966
 MonoBehaviour:
   m_ObjectHideFlags: 0
