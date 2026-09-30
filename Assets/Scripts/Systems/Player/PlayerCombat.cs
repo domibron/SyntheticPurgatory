@@ -10,82 +10,85 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// Disable the player combat and freezing it.
     /// </summary>
-    private bool isDisabled = false;
+    private bool m_isDisabled = false;
 
     /// <summary>
     /// Layers the alignment raycast can hit to make the gun fire at the target location.
     /// </summary>
-    [SerializeField]
-    LayerMask gunAlignmentLayers;
+    [SerializeField, FormerlySerializedAs("gunAlignmentLayers")]
+    LayerMask m_gunAlignmentLayers;
 
     /// <summary>
     /// The player gun projectile prefab that is fired from the cannon.
     /// </summary>
-    [SerializeField]
-    GameObject projectilePrefab;
+    [SerializeField, FormerlySerializedAs("m_projectilePrefab")]
+    GameObject m_projectilePrefab;
 
     /// <summary>
     /// The spawn point for the player's cannon projectile.
     /// </summary>
-    [SerializeField]
-    Transform projectileSpawnLocation;
+    [SerializeField, FormerlySerializedAs("projectileSpawnLocation")]
+    Transform m_projectileSpawnLocation;
 
     /// <summary>
     /// The speed for the player's cannon projectile to fire at.
     /// </summary>
+    [SerializeField, FormerlySerializedAs("projectileSpeed")]
+    float m_projectileSpeed = 10f;
+
     [SerializeField]
-    float projectileSpeed = 10f;
+    LayerMask m_projectileHittableLayers = Physics.AllLayers;
 
     /// <summary>
     /// How much damage the projectile will do. Stats set this.
     /// </summary>
-    float projectileDamage = 12f;
+    float m_projectileDamage = 12f;
 
 
     /// <summary>
     /// The melee box size.
     /// </summary>
-    [SerializeField]
-    Vector3 meleeBounds = Vector3.one;
+    [SerializeField, FormerlySerializedAs("meleeBounds")]
+    Vector3 m_meleeBounds = Vector3.one;
 
     /// <summary>
     /// The melee offset from the camera's position
     /// </summary>
-    [SerializeField]
-    Vector3 meleeOffset = Vector3.forward;
+    [SerializeField, FormerlySerializedAs("meleeOffset")]
+    Vector3 m_meleeOffset = Vector3.forward;
 
     /// <summary>
     /// The melee attack interval. Stats set this.
     /// </summary>
-    float meleeAttackDelay = 0.5f;
+    float m_meleeAttackDelay = 0.5f;
 
     /// <summary>
     /// The damage the melee will do per hit. Stats set this.
     /// </summary>
-    float meleeDamage = 10f;
+    float m_meleeDamage = 10f;
 
     /// <summary>
     /// The kick check bounding box size.
     /// </summary>
-    [SerializeField, FormerlySerializedAs("kickBounds")]
-    Vector3 bashBounds = Vector3.one;
+    [SerializeField, FormerlySerializedAs("bashBounds")]
+    Vector3 m_bashBounds = Vector3.one;
 
     /// <summary>
     /// The offset for the kick bounding box.
     /// </summary>
-    [SerializeField, FormerlySerializedAs("kickOffset")]
-    Vector3 bashOffset = Vector3.forward;
+    [SerializeField, FormerlySerializedAs("bashOffset")]
+    Vector3 m_bashOffset = Vector3.forward;
 
     // [SerializeField]
     /// <summary>
     /// The force to apply to objects when they have been kicked. Stats set this.
     /// </summary>
-    float bashForce = 10f;
+    float m_bashForce = 10f;
 
     /// <summary>
     /// The bash attack interval. Stats set this.
     /// </summary>
-    float bashAttackDelay = 0.5f;
+    float m_bashAttackDelay = 0.5f;
 
 
 
@@ -93,92 +96,92 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// The current cannon fire cool down before next firing.
     /// </summary>
-    float currentProjectileCoolDown = 0f;
+    float m_currentProjectileCoolDown = 0f;
 
     /// <summary>
     /// The current wait before the next melee can begin.
     /// </summary>
-    float currentMeleeCoolDown = 0f;
+    float m_currentMeleeCoolDown = 0f;
 
     /// <summary>
     /// The current wait before the next kick can begin.
     /// </summary>
-    float currentKickCoolDown = 0f;
+    float m_currentKickCoolDown = 0f;
 
 
     /// <summary>
     /// Is the cannon allowed to recharge.
     /// </summary>
-    bool canStartRecharge = false;
+    bool m_canStartRecharge = false;
 
 
     /// <summary>
     /// The current charge of the cannon.
     /// </summary>
-    float currentGunChargeBar = 1f;
+    float m_currentGunChargeBar = 1f;
 
     /// <summary>
     /// How fast the cannon recharges. Charge per second. Stats sets this.
     /// </summary>
-    float rechargeRate = 0.3f;
+    float m_rechargeRate = 0.3f;
 
     /// <summary>
     /// The current charge amount of the melee.
     /// </summary>
-    float currentMeleeChargeBar = 1f;
+    float m_currentMeleeChargeBar = 1f;
 
     /// <summary>
     /// The current charge amount of the bash.
     /// </summary>
-    float currentBashChargeBar = 1f;
+    float m_currentBashChargeBar = 1f;
 
 
     /// <summary>
     /// How many shots before needing to recharge fully. Stats sets this.
     /// </summary>
-    int shotsPerFullCharge = 12;
+    int m_shotsPerFullCharge = 12;
 
     /// <summary>
     /// How much to reduce the charge for the cannon per shot.
     /// </summary>
-    float chargeDegradePerShot { get => 1f / shotsPerFullCharge; } // 8 shots before standard.
+    float m_chargeDegradePerShot { get => 1f / m_shotsPerFullCharge; } // 8 shots before standard.
 
 
 
     /// <summary>
     /// How fast to fire when low on charge. Stats sets this.
     /// </summary>
-    float standardSecondsPerShot = 0.4f;
+    float m_standardSecondsPerShot = 0.4f;
 
     /// <summary>
     /// How fast the cannon fires when fully charged. Stats sets this.
     /// </summary>
-    float chargedSecondsPerShot = 0.1f;
+    float m_chargedSecondsPerShot = 0.1f;
 
     /// <summary>
     /// The delay after a shot before the cannon can start recharging. Stats sets this.
     /// </summary>
-    float delayAfterFireBeforeRecharging = 0.4f;
+    float m_delayAfterFireBeforeRecharging = 0.4f;
 
     /// <summary>
     /// The current wait time before the cannon can being recharging.
     /// </summary>
-    float rechargeDelay = 0f;
+    float m_rechargeDelay = 0f;
 
     /// <summary>
     /// How long to disable the cannon before the player can fire again after full depletion. Stats sets this.
     /// </summary>
-    float overheatForceCoolDown = 2.25f;
+    float m_overheatForceCoolDown = 2.25f;
 
     /// <summary>
     /// The current overheat cool down for the cannon.
     /// </summary>
-    float currentOverheatCoolDown = 0f;
+    float m_currentOverheatCoolDown = 0f;
 
     /// <summary>
     /// Has the cannon overheated requiring a forced cool down.
     /// </summary>
-    bool isCannonOverheated = false;
+    bool m_isCannonOverheated = false;
 
 
 
@@ -186,59 +189,59 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// The cannon end to rotate when firing.
     /// </summary>
-    [SerializeField]
-    private Transform gunSpinBit;
+    [SerializeField, FormerlySerializedAs("gunSpinBit")]
+    private Transform m_gunSpinBit;
 
     /// <summary>
     /// The velocity of the rotating cannon.
     /// </summary>
-    private float velocity = 0f;
+    private float m_velocity = 0f;
 
     /// <summary>
     /// How fast the spin the end of the cannon.
     /// </summary>
-    [SerializeField]
-    private float spinRate = 20f;
+    [SerializeField, FormerlySerializedAs("spinRate")]
+    private float m_spinRate = 20f;
 
 
 
     /// <summary>
     /// The main camera to base aiming off of.
     /// </summary>
-    Transform mainCamera;
+    Transform m_mainCamera;
 
 
 
     /// <summary>
     /// Is the fire key being held.
     /// </summary>
-    bool wantToFireRanged = false;
+    bool m_wantToFireRanged = false;
 
     /// <summary>
     /// Is the melee key being held.
     /// </summary>
-    bool wantToMelee = false;
+    bool m_wantToMelee = false;
 
     /// <summary>
     /// Is the kick key being held.
     /// </summary>
-    bool wantToBash = false;
+    bool m_wantToBash = false;
 
 
     /// <summary>
     /// The fire cannon key to bind to.
     /// </summary>
-    InputAction rangedWeaponInput;
+    InputAction m_rangedWeaponInput;
 
     /// <summary>
     /// The melee key to bind to.
     /// </summary>
-    InputAction meleeWeaponInput;
+    InputAction m_meleeWeaponInput;
 
     /// <summary>
     /// The bash key to bind to.
     /// </summary>
-    InputAction bashInput;
+    InputAction m_bashInput;
 
 
 
@@ -247,19 +250,19 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// Debug to show the melee attack box.
     /// </summary>
-    [SerializeField]
-    bool showMeleeBox = false;
+    [SerializeField, FormerlySerializedAs("showMeleeBox")]
+    bool m_showMeleeBox = false;
 
     /// <summary>
     /// Debug to show the bash attack box.
     /// </summary>
-    [SerializeField]
-    bool showBashBox = false;
+    [SerializeField, FormerlySerializedAs("showBashBox")]
+    bool m_showBashBox = false;
 
     /// <summary>
     /// The weapon animator to control.
     /// </summary>
-    Animator animator;
+    Animator m_animator;
 
 
 
@@ -269,112 +272,112 @@ public class PlayerCombat : MonoBehaviour
     {
         // currentAmmoCount = projectileMagSize;
 
-        rangedWeaponInput = InputSystem.actions.FindAction("Attack");
-        meleeWeaponInput = InputSystem.actions.FindAction("Melee");
-        bashInput = InputSystem.actions.FindAction("Interact");
+        m_rangedWeaponInput = InputSystem.actions.FindAction("Attack");
+        m_meleeWeaponInput = InputSystem.actions.FindAction("Melee");
+        m_bashInput = InputSystem.actions.FindAction("Interact");
 
 
-        animator = GetComponent<Animator>();
+        m_animator = GetComponent<Animator>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        mainCamera = Camera.main.transform;
+        m_mainCamera = Camera.main.transform;
         // playerMovement = GetComponent<PlayerMovement>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isDisabled) return;
+        // Code disabiler.
+        if (m_isDisabled) return;
 
-        if (currentKickCoolDown > 0) currentKickCoolDown -= Time.deltaTime;
-        if (currentMeleeCoolDown > 0) currentMeleeCoolDown -= Time.deltaTime;
-        if (currentProjectileCoolDown > 0) currentProjectileCoolDown -= Time.deltaTime;
-        if (currentOverheatCoolDown > 0) currentOverheatCoolDown -= Time.deltaTime;
 
-        // did this so it can recharge the weapon before a shot can be fired. otherwise you only shoot one if this is a else if.
-        if (currentOverheatCoolDown <= 0 && isCannonOverheated)
+
+        if (m_currentKickCoolDown > 0) m_currentKickCoolDown -= Time.deltaTime;
+        if (m_currentMeleeCoolDown > 0) m_currentMeleeCoolDown -= Time.deltaTime;
+        if (m_currentProjectileCoolDown > 0) m_currentProjectileCoolDown -= Time.deltaTime;
+        if (m_currentOverheatCoolDown > 0) m_currentOverheatCoolDown -= Time.deltaTime;
+
+        // Reset weapon charge after cooling off.
+        if (m_currentOverheatCoolDown <= 0 && m_isCannonOverheated)
         {
-            currentGunChargeBar = 1f;
-            isCannonOverheated = false;
+            m_currentGunChargeBar = 1f;
+            m_isCannonOverheated = false;
         }
+
 
 
         PollInput();
 
 
+        // Cannon firing.
         WeaponCharging();
+        FireWeaponOnDemand();
+
+        // Weapon spinning.
+        m_velocity = Mathf.Clamp01(m_velocity);
+        // TODO: fix later
+        m_gunSpinBit.Rotate(Vector3.forward * m_velocity * m_spinRate); // * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar)));
 
 
-
-
-        if (wantToFireRanged && currentOverheatCoolDown <= 0)
+        if (m_wantToMelee && m_currentMeleeCoolDown <= 0)
         {
-            rechargeDelay = delayAfterFireBeforeRecharging;
+            MeleeAttack();
+        }
 
-            velocity = 1;
+        if (m_wantToBash && m_currentKickCoolDown <= 0)
+        {
+            BashAttack();
+        }
+    }
 
-            if (currentProjectileCoolDown <= 0)
+    private void FireWeaponOnDemand()
+    {
+        if (m_wantToFireRanged && m_currentOverheatCoolDown <= 0)
+        {
+            m_rechargeDelay = m_delayAfterFireBeforeRecharging;
+
+            m_velocity = 1;
+
+            if (m_currentProjectileCoolDown <= 0)
             {
                 FireProjectile();
             }
         }
         else
         {
-            velocity -= Time.deltaTime * 10f * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar));
+            m_velocity -= Time.deltaTime * 10f * Mathf.Lerp(m_standardSecondsPerShot, m_chargedSecondsPerShot, EasingFunctions.EaseOutQuint(m_currentGunChargeBar));
         }
-
-        velocity = Mathf.Clamp01(velocity);
-        // TODO: fix later
-        gunSpinBit.Rotate(Vector3.forward * velocity * spinRate); // * Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentChargeBar)));
-
-
-        if (wantToMelee && currentMeleeCoolDown <= 0)
-        {
-            MeleeAttack();
-        }
-
-        if (wantToBash && currentKickCoolDown <= 0)
-        {
-            BashAttack();
-        }
-
-        // if (currentChargeBar <= 0 && !isRecharging)
-        // {
-        //     // Reload();
-        //     // ShowRechargeBar();
-        // }
-
     }
 
     void OnDrawGizmos()
     {
-        if (showMeleeBox && Camera.main != null)
+        if (m_showMeleeBox && Camera.main != null)
         {
             // Gizmos.matrix = Matrix4x4.identity; // reset the matrix.
             Transform cam = Camera.main.transform;
-            Vector3 offsetPos = cam.position + (cam.forward * meleeOffset.z) + (cam.right * meleeOffset.x) + (cam.up * meleeOffset.y);
+            Vector3 offsetPos = cam.position + (cam.forward * m_meleeOffset.z) + (cam.right * m_meleeOffset.x) + (cam.up * m_meleeOffset.y);
 
 
             Gizmos.matrix = Matrix4x4.TRS(offsetPos,
                 Quaternion.LookRotation(cam.forward, cam.up),
                 cam.localScale);
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(Vector3.zero, meleeBounds);
+            Gizmos.DrawWireCube(Vector3.zero, m_meleeBounds);
         }
 
-        if (showBashBox && Camera.main != null)
+        if (m_showBashBox && Camera.main != null)
         {
             Transform cam = Camera.main.transform;
-            Vector3 offsetPos = cam.position + (cam.forward * bashOffset.z) + (cam.right * bashOffset.x) + (cam.up * bashOffset.y);
+            Vector3 offsetPos = cam.position + (cam.forward * m_bashOffset.z) + (cam.right * m_bashOffset.x) + (cam.up * m_bashOffset.y);
 
             Gizmos.matrix = Matrix4x4.TRS(offsetPos,
                 Quaternion.LookRotation(cam.forward, cam.up),
                 cam.localScale);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(Vector3.zero, bashBounds);
+            Gizmos.DrawWireCube(Vector3.zero, m_bashBounds);
         }
     }
 
@@ -396,23 +399,23 @@ public class PlayerCombat : MonoBehaviour
             // return;
         }
 
-        projectileDamage = stats.ProjectileDamageStat.GetCurrentValue();
-        rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
-        shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.GetCurrentValue();
-        standardSecondsPerShot = stats.StandardSecondsPerShot;
-        chargedSecondsPerShot = stats.ChargedSecondsPerShot;
-        delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
-        overheatForceCoolDown = stats.OverheatForceCoolDownStat.GetCurrentValue();
+        m_projectileDamage = stats.ProjectileDamageStat.GetCurrentValue();
+        m_rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
+        m_shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.GetCurrentValue();
+        m_standardSecondsPerShot = stats.StandardSecondsPerShot;
+        m_chargedSecondsPerShot = stats.ChargedSecondsPerShot;
+        m_delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
+        m_overheatForceCoolDown = stats.OverheatForceCoolDownStat.GetCurrentValue();
         // projectileFireRate = stats.ProjectileFireRate;
         // projectileMagSize = stats.ProjectileMagSize;
 
-        meleeAttackDelay = stats.MeleeAttackDelayStat.GetCurrentValue();
-        meleeDamage = stats.MeleeDamageStat.GetCurrentValue();
-        meleeBounds.z = stats.MeleeReachStat.GetCurrentValue();
+        m_meleeAttackDelay = stats.MeleeAttackDelayStat.GetCurrentValue();
+        m_meleeDamage = stats.MeleeDamageStat.GetCurrentValue();
+        m_meleeBounds.z = stats.MeleeReachStat.GetCurrentValue();
 
 
-        bashForce = stats.BashForceStat.GetCurrentValue();
-        bashAttackDelay = stats.BashAttackDelayStat.GetCurrentValue();
+        m_bashForce = stats.BashForceStat.GetCurrentValue();
+        m_bashAttackDelay = stats.BashAttackDelayStat.GetCurrentValue();
         // reloadTime = stats.ReloadTime;
         // rechargeRate = stats.ReloadTime;
 
@@ -424,9 +427,9 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     void PollInput()
     {
-        wantToFireRanged = rangedWeaponInput.IsPressed();
-        wantToMelee = meleeWeaponInput.IsPressed();
-        wantToBash = bashInput.IsPressed();
+        m_wantToFireRanged = m_rangedWeaponInput.IsPressed();
+        m_wantToMelee = m_meleeWeaponInput.IsPressed();
+        m_wantToBash = m_bashInput.IsPressed();
     }
 
     /// <summary>
@@ -434,27 +437,27 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     private void WeaponCharging()
     {
-        currentMeleeChargeBar = currentMeleeCoolDown / (meleeAttackDelay - 0.05f);
-        currentBashChargeBar = currentKickCoolDown / (bashAttackDelay - 0.05f);
-        if (currentOverheatCoolDown > 0) return;
+        m_currentMeleeChargeBar = m_currentMeleeCoolDown / (m_meleeAttackDelay - 0.05f);
+        m_currentBashChargeBar = m_currentKickCoolDown / (m_bashAttackDelay - 0.05f);
+        if (m_currentOverheatCoolDown > 0) return;
 
 
-        if (rechargeDelay <= 0)
+        if (m_rechargeDelay <= 0)
         {
-            canStartRecharge = true;
+            m_canStartRecharge = true;
         }
-        else if (rechargeDelay > 0)
+        else if (m_rechargeDelay > 0)
         {
-            rechargeDelay -= Time.deltaTime;
-            canStartRecharge = false;
-        }
-
-        if (canStartRecharge)
-        {
-            currentGunChargeBar += Time.deltaTime * rechargeRate;
+            m_rechargeDelay -= Time.deltaTime;
+            m_canStartRecharge = false;
         }
 
-        currentGunChargeBar = Mathf.Clamp01(currentGunChargeBar);
+        if (m_canStartRecharge)
+        {
+            m_currentGunChargeBar += Time.deltaTime * m_rechargeRate;
+        }
+
+        m_currentGunChargeBar = Mathf.Clamp01(m_currentGunChargeBar);
     }
 
 
@@ -465,23 +468,23 @@ public class PlayerCombat : MonoBehaviour
     private void BashAttack()
     {
         // does knock back
-        animator.SetTrigger("Bash");
+        m_animator.SetTrigger("Bash");
 
         // if (currentKickCoolDown > 0) return; // Dunno if i want to do timer check here or update?
-        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * bashOffset.z) + (mainCamera.right * bashOffset.x) + (mainCamera.up * bashOffset.y), bashBounds / 2f, transform.rotation);
+        Collider[] hits = Physics.OverlapBox(m_mainCamera.position + (m_mainCamera.forward * m_bashOffset.z) + (m_mainCamera.right * m_bashOffset.x) + (m_mainCamera.up * m_bashOffset.y), m_bashBounds / 2f, transform.rotation);
 
         if (hits.Length > 0)
         {
             foreach (Collider c in hits)
             {
                 Vector3 kickDir = c.transform.position - transform.position;
-                c.GetComponent<IKickable>()?.KickObject(kickDir * bashForce, ForceMode.VelocityChange);
+                c.GetComponent<IKickable>()?.KickObject(kickDir * m_bashForce, ForceMode.VelocityChange);
             }
         }
 
         //Debug.Log("Kick!");
 
-        currentKickCoolDown = bashAttackDelay;
+        m_currentKickCoolDown = m_bashAttackDelay;
 
     }
 
@@ -493,9 +496,9 @@ public class PlayerCombat : MonoBehaviour
     {
         // does damage
 
-        animator.SetTrigger("Melee");
+        m_animator.SetTrigger("Melee");
 
-        Collider[] hits = Physics.OverlapBox(mainCamera.position + (mainCamera.forward * meleeOffset.z) + (mainCamera.right * meleeOffset.x) + (mainCamera.up * meleeOffset.y), meleeBounds / 2f, transform.rotation);
+        Collider[] hits = Physics.OverlapBox(m_mainCamera.position + (m_mainCamera.forward * m_meleeOffset.z) + (m_mainCamera.right * m_meleeOffset.x) + (m_mainCamera.up * m_meleeOffset.y), m_meleeBounds / 2f, transform.rotation);
 
         if (hits.Length > 0)
         {
@@ -507,14 +510,14 @@ public class PlayerCombat : MonoBehaviour
                 c.GetComponent<IMeleeAble>()?.MeleeObject();
 
 
-                c.transform.GetComponent<IDamageable>()?.TakeDamage(meleeDamage, mainCamera.position + mainCamera.forward); // deal damage.
+                c.transform.GetComponent<IDamageable>()?.TakeDamage(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward); // deal damage.
 
             }
         }
 
         Debug.Log("Melee!");
 
-        currentMeleeCoolDown = meleeAttackDelay;
+        m_currentMeleeCoolDown = m_meleeAttackDelay;
     }
 
 
@@ -523,36 +526,61 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     private void FireProjectile()
     {
-        if (currentGunChargeBar < chargeDegradePerShot)
+        // Cooldown code / overheat code.
+        if (m_currentGunChargeBar < m_chargeDegradePerShot)
         {
-            currentOverheatCoolDown = overheatForceCoolDown;
-            isCannonOverheated = true;
+            m_currentOverheatCoolDown = m_overheatForceCoolDown;
+            m_isCannonOverheated = true;
         }
 
-        currentGunChargeBar -= chargeDegradePerShot;
+        m_currentGunChargeBar -= m_chargeDegradePerShot;
         // currentProjectileCooldown = projectileFireRate;
-        currentProjectileCoolDown = Mathf.Lerp(standardSecondsPerShot, chargedSecondsPerShot, EasingFunctions.EaseOutQuint(currentGunChargeBar / 2));
+        m_currentProjectileCoolDown = Mathf.Lerp(m_standardSecondsPerShot, m_chargedSecondsPerShot, EasingFunctions.EaseOutQuint(m_currentGunChargeBar / 2));
 
-        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnLocation.position, Quaternion.identity);
-        projectile.GetComponent<ProjectileScript>().ProjectileDamage = projectileDamage;
+
+        // Vector3 target = m_mainCamera.position + (m_mainCamera.forward * 999f);
+
+        // if (Physics.Raycast(m_mainCamera.position, m_mainCamera.forward, out RaycastHit hit, 999, m_projectileHittableLayers, QueryTriggerInteraction.Collide))
+        // {
+        //     IDamageable damageable = hit.transform.GetComponent<IDamageable>();
+
+        //     damageable?.TakeDamage(m_projectileDamage, transform.position);
+
+        //     hit.transform.GetComponent<IShootable>()?.HitObject();
+
+        //     target = hit.point;
+        // }
+
+        // GameObject dummyProjectile = Instantiate(m_projectilePrefab, m_projectileSpawnLocation.position, Quaternion.identity);
+
+        // dummyProjectile.GetComponent<Rigidbody>().AddForce((target - dummyProjectile.transform.position).normalized * 9999f);
+
+        GameObject projectile = Instantiate(m_projectilePrefab, m_mainCamera.position, Quaternion.identity);
+        projectile.GetComponent<ProjectileScript>().ProjectileDamage = m_projectileDamage;
 
         Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
+        projectileRB.AddForce(m_mainCamera.forward * m_projectileSpeed, ForceMode.VelocityChange);
 
-        if (Physics.Raycast(mainCamera.position, mainCamera.forward, out RaycastHit hit, 999))
-        {
-            // we hit, so we fire towards target. we add a little offset to allow the projectile to not be aids. but this whole thing sucks.
-            Vector3 dirNeeded = ((hit.point + (mainCamera.forward * 3f)) - projectile.transform.position).normalized;
-            projectileRB.AddForce(dirNeeded * projectileSpeed, ForceMode.VelocityChange);
-        }
-        else
-        {
-            projectileRB.AddForce(mainCamera.forward * projectileSpeed, ForceMode.VelocityChange);
-        }
+        projectile.GetComponentInChildren<VisualFollowTarget>().SetVisualTargetLocation(m_projectileSpawnLocation.position, m_mainCamera.forward * m_projectileSpeed);
 
 
-        // projectile.GetComp<>().SetDamage();
 
-        // Debug.Log("Fired ranged weapon");
+        // // Projectile code
+        // GameObject projectile = Instantiate(m_projectilePrefab, m_projectileSpawnLocation.position, Quaternion.identity);
+        // projectile.GetComponent<ProjectileScript>().ProjectileDamage = m_projectileDamage;
+
+        // Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
+
+        // if (Physics.Raycast(m_mainCamera.position, m_mainCamera.forward, out RaycastHit hit, 999))
+        // {
+        //     // we hit, so we fire towards target. we add a little offset to allow the projectile to not be aids. but this whole thing sucks.
+        //     Vector3 dirNeeded = ((hit.point + (m_mainCamera.forward * 3f)) - projectile.transform.position).normalized;
+        //     projectileRB.AddForce(dirNeeded * m_projectileSpeed, ForceMode.VelocityChange);
+        // }
+        // else
+        // {
+        //     projectileRB.AddForce(m_mainCamera.forward * m_projectileSpeed, ForceMode.VelocityChange);
+        // }
 
     }
     #endregion
@@ -565,7 +593,7 @@ public class PlayerCombat : MonoBehaviour
     /// <returns></returns>
     public float GetOverheatCoolDownNormalized()
     {
-        return currentOverheatCoolDown / overheatForceCoolDown;
+        return m_currentOverheatCoolDown / m_overheatForceCoolDown;
     }
 
     /// <summary>
@@ -574,7 +602,7 @@ public class PlayerCombat : MonoBehaviour
     /// <returns></returns>
     public float GetCannonChargeAmount()
     {
-        return currentGunChargeBar;
+        return m_currentGunChargeBar;
     }
 
     /// <summary>
@@ -583,7 +611,7 @@ public class PlayerCombat : MonoBehaviour
     /// <returns></returns>
     public float GetMeleeChargeAmount()
     {
-        return currentMeleeChargeBar;
+        return m_currentMeleeChargeBar;
     }
 
 
@@ -593,7 +621,7 @@ public class PlayerCombat : MonoBehaviour
     /// <returns></returns>
     public float GetBashChargeAmount()
     {
-        return currentBashChargeBar;
+        return m_currentBashChargeBar;
     }
 
 
@@ -603,7 +631,7 @@ public class PlayerCombat : MonoBehaviour
     /// <returns></returns>
     public bool IsCombatDisabled()
     {
-        return isDisabled;
+        return m_isDisabled;
     }
 
     #endregion
@@ -617,7 +645,7 @@ public class PlayerCombat : MonoBehaviour
     /// <param name="state">True to disable the combat of the player.</param>
     public void DisablePlayerCombat(bool state = false)
     {
-        isDisabled = state;
+        m_isDisabled = state;
     }
 
     #endregion
