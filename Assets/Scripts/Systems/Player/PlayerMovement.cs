@@ -92,6 +92,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     Transform m_orientation;
 
+    PlayerFovController playerFovController;
+
     const float k_slopeToSteepSlopeThreshold = 40;
 
     const float k_floorToSlopeThreshold = 1;
@@ -239,6 +241,7 @@ public class PlayerMovement : MonoBehaviour
     {
         m_rb = GetComponent<Rigidbody>();
         m_col = GetComponent<CapsuleCollider>();
+        playerFovController = GetComponent<PlayerFovController>();
 
         m_movementInputAction = InputSystem.actions.FindAction("Move");
         m_jumpInputAction = InputSystem.actions.FindAction("Jump");
@@ -530,10 +533,15 @@ public class PlayerMovement : MonoBehaviour
         return neededChange.normalized * calculatedAccel;
     }
 
+
+    /// <summary>
+    /// Handles crouching and uncrouching the player character when the player demands for it.
+    /// </summary>
     private void HandleCrouching()
     {
         if (m_isCrouchKeyDown && !m_isCrouched)
         {
+            // Crouching.
             m_isCrouched = true;
 
             Vector3 newPos = transform.position + (Vector3.up * (m_crouchedHeight - m_defaultHeight) * 0.5f);
@@ -544,7 +552,8 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (!m_isCrouchKeyDown && m_isCrouched)
         {
-            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * 0.05f), m_defaultRadius, Vector3.up, out RaycastHit info, (m_defaultHeight - (m_defaultRadius * 2f)), m_groundLayer, QueryTriggerInteraction.Ignore))
+            // Uncrouching. Aditional check to see if the player will fit.
+            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * 0.05f), m_defaultRadius, Vector3.up, out RaycastHit info, m_defaultHeight - (m_defaultRadius * 2f), m_groundLayer, QueryTriggerInteraction.Ignore))
             {
                 m_isCrouched = false;
 
