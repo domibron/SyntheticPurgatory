@@ -29,34 +29,6 @@ public class PlayerMovement : MonoBehaviour
     // =============
 
 
-    #region Disabling
-    /// <summary>
-    /// The player movement disable type.
-    /// </summary>
-    public enum DisabledType : byte // Can use byte to reduce the size if we use a few values. (ideally used for structs)
-    {
-        // Use byte to reduce the size of the enum since we only use a handful of values.
-        // Ideally use this for structs and data packing to optimise it for memory.
-
-        None = 0b_0000_0000, // 1 << 0 shift zero to the left.
-        MovementOnly = 0b_0000_0001, // 1 << 1 shift one to the left.
-        LookOnly = 0b_0000_0010, // 1 << 2 shift two to the left.
-
-        // Combine both bit values. 00101 | 01100 = 01101.
-        All = MovementOnly | LookOnly,
-
-        // You can also use ^ since its a logical or. 00101 ^ 01100 = 01001.
-    }
-
-    /// <summary>
-    /// The current disable state of the player movement.
-    /// </summary>
-    public DisabledType CurrentDisabledState { get; set; } = DisabledType.None;
-
-    #endregion
-
-
-
     #region Non changing
 
     /// <summary>
@@ -100,6 +72,9 @@ public class PlayerMovement : MonoBehaviour
     Transform m_orientation;
 
     PlayerFovController playerFovController;
+
+    PlayerDisabling playerDisabling;
+
 
     const float k_slopeToSteepSlopeThreshold = 40;
 
@@ -257,6 +232,8 @@ public class PlayerMovement : MonoBehaviour
         m_rb = GetComponent<Rigidbody>();
         m_col = GetComponent<CapsuleCollider>();
         playerFovController = GetComponent<PlayerFovController>();
+        playerDisabling = GetComponent<PlayerDisabling>();
+
 
         m_cameraPosWorld = m_moveableCamera.position;
 
@@ -294,8 +271,8 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (CurrentDisabledState == DisabledType.MovementOnly) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
-        if (CurrentDisabledState != DisabledType.None) return;
+        if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement)) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
+        if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement) || playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look)) return;
 
         IsGrounded = CheckIsGrounded();
 
@@ -357,7 +334,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCameraMovement()
     {
-        if (CurrentDisabledState == DisabledType.LookOnly || CurrentDisabledState == DisabledType.All) { return; }
+        if (playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.Look || playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.All) { return; }
 
         bool useMouseLook = true;
         bool invertYLook = false;

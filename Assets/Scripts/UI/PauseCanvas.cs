@@ -8,8 +8,10 @@ public class PauseCanvas : MonoBehaviour
 {
     private GameObject playerObject;
 
-    private PlayerMovement playerMovement;
-    private PlayerCombat playerCombat;
+    // private PlayerMovement playerMovement;
+    // private PlayerCombat playerCombat;
+
+    private PlayerDisabling playerDisabling;
 
     /// <summary>
     /// Object on the canvas that contains all the pause canvas GUI
@@ -36,8 +38,7 @@ public class PauseCanvas : MonoBehaviour
     InputAction pauseInput;
     bool settingsCloseBuffer = false;
 
-    private PlayerMovement.DisabledType unpausedPlayerMoveState;
-    private bool unpausedPlayerCombatState;
+    private PlayerDisabling.DisabledType unpausedPlayerState;
     private bool unpausedCameraState;
 
 
@@ -76,8 +77,9 @@ public class PauseCanvas : MonoBehaviour
         pauseInput.started += AlternateState;
 
         playerObject = PlayerRefFetcher.Instance.GetPlayerRef();
-        playerMovement = playerObject.GetComponent<PlayerMovement>();
-        playerCombat = playerObject.GetComponent<PlayerCombat>();
+        // playerMovement = playerObject.GetComponent<PlayerMovement>();
+        // playerCombat = playerObject.GetComponent<PlayerCombat>();
+        playerDisabling = playerObject.GetComponent<PlayerDisabling>();
 
         ResumeGame(); // closes the pause menu so the player can play the game.
     }
@@ -144,11 +146,9 @@ public class PauseCanvas : MonoBehaviour
 
     public void OpenPauseMenu()
     {
-        unpausedPlayerMoveState = playerMovement.CurrentDisabledState;
-        unpausedPlayerCombatState = playerCombat.IsCombatDisabled();
+        unpausedPlayerState = playerDisabling.CurrentDisabledState;
 
-        playerMovement.CurrentDisabledState = PlayerMovement.DisabledType.All;
-        playerCombat.DisablePlayerCombat(true);
+        playerDisabling.CurrentDisabledState = PlayerDisabling.DisabledType.All;
 
         Cursor.lockState = CursorLockMode.None;
 
@@ -176,8 +176,7 @@ public class PauseCanvas : MonoBehaviour
 
     public void ResumeGame()
     {
-        playerMovement.CurrentDisabledState = unpausedPlayerMoveState;
-        playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
+        playerDisabling.CurrentDisabledState = unpausedPlayerState;
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -205,8 +204,7 @@ public class PauseCanvas : MonoBehaviour
     public void ReturnToMainMenu()
     {
         //? Isn't the player destroyed? So this is pointless?
-        playerMovement.CurrentDisabledState = unpausedPlayerMoveState;
-        playerCombat.DisablePlayerCombat(unpausedPlayerCombatState);
+        playerDisabling.CurrentDisabledState = unpausedPlayerState;
 
         Time.timeScale = 1;
 

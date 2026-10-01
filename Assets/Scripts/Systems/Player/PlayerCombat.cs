@@ -7,10 +7,8 @@ using UnityEngine.Serialization;
 /// </summary>
 public class PlayerCombat : MonoBehaviour
 {
-    /// <summary>
-    /// Disable the player combat and freezing it.
-    /// </summary>
-    private bool m_isDisabled = false;
+
+    private PlayerDisabling playerDisabling;
 
     /// <summary>
     /// The player gun projectile prefab that is fired from the cannon.
@@ -267,7 +265,7 @@ public class PlayerCombat : MonoBehaviour
         m_meleeWeaponInput = InputSystem.actions.FindAction("Melee");
         m_bashInput = InputSystem.actions.FindAction("Interact");
 
-
+        playerDisabling = GetComponent<PlayerDisabling>();
         m_animator = GetComponent<Animator>();
     }
 
@@ -282,9 +280,7 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {
         // Code disabiler.
-        if (m_isDisabled) return;
-
-
+        if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Combat)) return;
 
         if (m_currentKickCoolDown > 0) m_currentKickCoolDown -= Time.deltaTime;
         if (m_currentMeleeCoolDown > 0) m_currentMeleeCoolDown -= Time.deltaTime;
@@ -578,30 +574,6 @@ public class PlayerCombat : MonoBehaviour
     public float GetBashChargeAmount()
     {
         return m_currentBashChargeBar;
-    }
-
-
-    /// <summary>
-    /// Is the combat disabled.
-    /// </summary>
-    /// <returns></returns>
-    public bool IsCombatDisabled()
-    {
-        return m_isDisabled;
-    }
-
-    #endregion
-
-
-
-    #region Setters
-    /// <summary>
-    /// Set if the combat is disabled. Blocks all combat and cool downs essentially disabling this script.
-    /// </summary>
-    /// <param name="state">True to disable the combat of the player.</param>
-    public void DisablePlayerCombat(bool state = false)
-    {
-        m_isDisabled = state;
     }
 
     #endregion
