@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 // [System.Flags]
 // public enum DaysOfWeek
@@ -81,7 +82,13 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody m_rb;
 
     /// <summary>
-    /// The camera target to move the camera to.
+    /// The moveable camera stack.
+    /// </summary>
+    [SerializeField, FormerlySerializedAs("m_cameraTarget")]
+    Transform m_moveableCamera;
+
+    /// <summary>
+    /// The target for the camera to socket into.
     /// </summary>
     [SerializeField]
     Transform m_cameraTarget;
@@ -203,6 +210,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float m_crouchedHeight = 0.6f;
 
+    Vector3 m_lastSpeed = Vector3.zero;
+
+    float m_fovAccelLerp = 0f;
+    float m_fovMaxSpeedLerp = 0f;
+
+    Vector3 m_cameraPosWorld = Vector3.zero;
+    Vector3 m_cameraAdditonalOffset = Vector3.zero;
+
     #endregion
 
 
@@ -243,6 +258,8 @@ public class PlayerMovement : MonoBehaviour
         m_col = GetComponent<CapsuleCollider>();
         playerFovController = GetComponent<PlayerFovController>();
 
+        m_cameraPosWorld = m_moveableCamera.position;
+
         m_movementInputAction = InputSystem.actions.FindAction("Move");
         m_jumpInputAction = InputSystem.actions.FindAction("Jump");
         m_crouchInputAction = InputSystem.actions.FindAction("Crouch");
@@ -270,7 +287,9 @@ public class PlayerMovement : MonoBehaviour
             m_currentWaitUntilJumpRestAllowed -= Time.deltaTime;
         }
 
+        m_cameraPosWorld = Vector3.Lerp(m_cameraPosWorld, m_cameraTarget.position, 15f * Time.deltaTime);
 
+        m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
     }
 
     void FixedUpdate()
@@ -297,7 +316,19 @@ public class PlayerMovement : MonoBehaviour
 
         HandleStepping();
 
+
+        // FOV
         m_rb.linearVelocity = m_linearVel + m_verticalVel;
+
+        float diff = m_rb.linearVelocity.magnitude - m_lastSpeed.magnitude;
+
+        m_lastSpeed = m_rb.linearVelocity;
+
+        m_fovAccelLerp = Mathf.Lerp(m_fovAccelLerp, diff, 5f * Time.fixedDeltaTime);
+
+        m_fovMaxSpeedLerp = Mathf.Lerp(m_fovMaxSpeedLerp, m_rb.linearVelocity.magnitude / m_maxSprintSpeed, 5f * Time.fixedDeltaTime);
+
+        playerFovController.SetExtraFov(Mathf.Lerp(-5, 5, 0.5f + m_fovAccelLerp / (1f / m_sprintAccelRate)) + Mathf.Lerp(0f, 5f, m_fovMaxSpeedLerp));
     }
 
 
@@ -366,13 +397,13 @@ public class PlayerMovement : MonoBehaviour
 
         m_camXRot = Mathf.Clamp(m_camXRot, -80, 80);
 
-        m_cameraTarget.localRotation = Quaternion.Euler(m_camXRot, 0, 0);
+        m_moveableCamera.localRotation = Quaternion.Euler(m_camXRot, 0, 0);
         m_orientation.Rotate(0, m_lookDelta.x * ySense * (useMouseLook ? 1f : Time.deltaTime), 0);
 
 
-        Vector3 camPos = m_cameraTarget.localPosition;
+        Vector3 camPos = m_moveableCamera.localPosition;
         camPos.y = GetHalfHeight() - 0.15f;
-        m_cameraTarget.localPosition = camPos;
+        m_moveableCamera.localPosition = camPos;
     }
 
     #endregion
