@@ -264,7 +264,7 @@ public class PlayerMovement : MonoBehaviour
             m_currentWaitUntilJumpRestAllowed -= Time.deltaTime;
         }
 
-        m_cameraPosWorld = Vector3.Lerp(m_cameraPosWorld, m_cameraTarget.position, 15f * Time.deltaTime);
+        m_cameraPosWorld = Vector3.Lerp(m_cameraPosWorld, m_cameraTarget.position, 30f * Time.deltaTime);
 
         m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
     }
