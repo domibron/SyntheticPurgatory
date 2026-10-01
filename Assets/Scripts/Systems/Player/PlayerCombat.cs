@@ -13,12 +13,6 @@ public class PlayerCombat : MonoBehaviour
     private bool m_isDisabled = false;
 
     /// <summary>
-    /// Layers the alignment raycast can hit to make the gun fire at the target location.
-    /// </summary>
-    [SerializeField, FormerlySerializedAs("gunAlignmentLayers")]
-    LayerMask m_gunAlignmentLayers;
-
-    /// <summary>
     /// The player gun projectile prefab that is fired from the cannon.
     /// </summary>
     [SerializeField, FormerlySerializedAs("m_projectilePrefab")]
@@ -35,9 +29,6 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     [SerializeField, FormerlySerializedAs("projectileSpeed")]
     float m_projectileSpeed = 10f;
-
-    [SerializeField]
-    LayerMask m_projectileHittableLayers = Physics.AllLayers;
 
     /// <summary>
     /// How much damage the projectile will do. Stats set this.
@@ -538,6 +529,7 @@ public class PlayerCombat : MonoBehaviour
         m_currentProjectileCoolDown = Mathf.Lerp(m_standardSecondsPerShot, m_chargedSecondsPerShot, EasingFunctions.EaseOutQuint(m_currentGunChargeBar / 2));
 
 
+        // Projectile firing.
         GameObject projectile = Instantiate(m_projectilePrefab, m_mainCamera.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = m_projectileDamage;
 
@@ -545,8 +537,6 @@ public class PlayerCombat : MonoBehaviour
         projectileRB.AddForce(m_mainCamera.forward * m_projectileSpeed, ForceMode.VelocityChange);
 
         projectile.GetComponentInChildren<VisualFollowTarget>().SetVisualTargetLocation(m_projectileSpawnLocation.position, m_mainCamera.forward * m_projectileSpeed);
-
-
 
     }
     #endregion
