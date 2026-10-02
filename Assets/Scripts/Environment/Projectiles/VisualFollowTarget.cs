@@ -47,6 +47,6 @@ public class VisualFollowTarget : MonoBehaviour
         startPoint = world;
         m_convergentPoint = m_target.position + (m_targetsVel * m_timeUntilConverging);
 
-        print(m_convergentPoint + " " + startPoint);
+        // print(m_convergentPoint + " " + startPoint);
     }
 }

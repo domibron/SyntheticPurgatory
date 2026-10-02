@@ -19,8 +19,10 @@ using UnityEngine.Serialization;
 //     Weekend = Saturday | Sunday,
 // }
 
+// TODO: seperate the camera controller from the movement.
+
 /// <summary>
-/// The player movement controller.
+/// The player movement and camerea controller.
 /// </summary>
 public class PlayerMovement : MonoBehaviour
 {
@@ -90,12 +92,12 @@ public class PlayerMovement : MonoBehaviour
 
     //TODO: remove from imp. default input should be set correctly.
     /// <summary>
-    /// The default mouse sensitivity.
+    /// The multiplier to sensitivity to decrease the base sensitivity. 
     /// </summary>
     const float k_mouseSensitivityMult = 0.01f;
 
     /// <summary>
-    /// The default gamepad sensitivity.
+    /// The multiplier to sensitivity to incease the base sensitivity. 
     /// </summary>
     const float k_gamepadSensitivityMult = 10f;
 
@@ -193,6 +195,12 @@ public class PlayerMovement : MonoBehaviour
     Vector3 m_cameraPosWorld = Vector3.zero;
     Vector3 m_cameraAdditonalOffset = Vector3.zero;
 
+    // TODO: implement cmaera punting. Add ontop of existing rotation.
+    Vector3 m_cameraRot = Vector3.zero;
+
+    Vector3 m_cameraPunt = Vector3.zero;
+    Vector3 m_cameraPuntForce = Vector3.zero;
+
     #endregion
 
 
@@ -236,6 +244,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         m_cameraPosWorld = m_moveableCamera.position;
+        m_cameraRot = m_moveableCamera.rotation.eulerAngles;
 
         m_movementInputAction = InputSystem.actions.FindAction("Move");
         m_jumpInputAction = InputSystem.actions.FindAction("Jump");
@@ -259,14 +268,27 @@ public class PlayerMovement : MonoBehaviour
         PollInput();
         HandleCameraMovement();
 
+        // Jump resetting.
         if (m_currentWaitUntilJumpRestAllowed > 0)
         {
             m_currentWaitUntilJumpRestAllowed -= Time.deltaTime;
         }
 
+
+        // Camera movement.
         m_cameraPosWorld = Vector3.Lerp(m_cameraPosWorld, m_cameraTarget.position, 30f * Time.deltaTime);
 
         m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
+
+
+        // m_cameraPuntForce += vector of choosing. // * this is a note.
+
+        // Camera rotation.
+        m_cameraPunt = Vector3.Slerp(m_cameraPunt, m_cameraPuntForce, 40f * Time.deltaTime);
+
+        m_cameraPuntForce = Vector3.Slerp(m_cameraPuntForce, Vector3.zero, 10f * Time.deltaTime);
+
+        m_moveableCamera.localRotation = Quaternion.Euler(m_cameraRot + m_cameraPunt);
     }
 
     void FixedUpdate()
@@ -336,6 +358,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.Look || playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.All) { return; }
 
+
+        // Sensitibity choice.
         bool useMouseLook = true;
         bool invertYLook = false;
         float xSense = 7f * k_mouseSensitivityMult;
@@ -364,9 +388,7 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-        // print(ySense + " " + xSense);
-
-
+        // Camera rotation.
         if (invertYLook)
             m_camXRot += m_lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
         else
@@ -374,10 +396,12 @@ public class PlayerMovement : MonoBehaviour
 
         m_camXRot = Mathf.Clamp(m_camXRot, -80, 80);
 
-        m_moveableCamera.localRotation = Quaternion.Euler(m_camXRot, 0, 0);
+        // m_moveableCamera.localRotation = Quaternion.Euler(m_camXRot, 0, 0);
+        m_cameraRot.x = m_camXRot;
         m_orientation.Rotate(0, m_lookDelta.x * ySense * (useMouseLook ? 1f : Time.deltaTime), 0);
 
 
+        // Camera height.
         Vector3 camPos = m_moveableCamera.localPosition;
         camPos.y = GetHalfHeight() - 0.15f;
         m_moveableCamera.localPosition = camPos;
@@ -638,9 +662,9 @@ public class PlayerMovement : MonoBehaviour
     /// <returns>True if there is ground below the player.</returns>
     private bool CheckIsGrounded()
     {
-        float rad = GetNearMaxRadius(); // TODO: fix - ground check is sitting heigher than collider.
+        float rad = GetNearMaxRadius();
 
-        Debug.DrawLine(GetWorldFeetPos(), GetWorldFeetPos() + Vector3.forward, Color.brown);
+        // Debug.DrawLine(GetWorldFeetPos(), GetWorldFeetPos() + Vector3.forward, Color.brown);
 
         return Physics.CheckSphere(GetWorldFeetPos() + (Vector3.up * rad) + (Vector3.down * 0.1f), rad, m_groundLayer);
     }
