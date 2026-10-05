@@ -195,8 +195,9 @@ public class PlayerMovement : MonoBehaviour
     Vector3 m_cameraPosWorld = Vector3.zero;
     Vector3 m_cameraAdditonalOffset = Vector3.zero;
 
-    // TODO: implement cmaera punting. Add ontop of existing rotation.
     Vector3 m_cameraRot = Vector3.zero;
+
+    Vector3 m_cameraMovementRot = Vector3.zero;
 
     Vector3 m_cameraPunt = Vector3.zero;
     Vector3 m_cameraPuntForce = Vector3.zero;
@@ -237,20 +238,30 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
+        // ===================
+        //   Get Components.
+        // ===================
         m_rb = GetComponent<Rigidbody>();
         m_col = GetComponent<CapsuleCollider>();
         playerFovController = GetComponent<PlayerFovController>();
         playerDisabling = GetComponent<PlayerDisabling>();
 
 
-        m_cameraPosWorld = m_moveableCamera.position;
-        m_cameraRot = m_moveableCamera.rotation.eulerAngles;
-
+        // ==================
+        //   Input Binding.
+        // ==================
         m_movementInputAction = InputSystem.actions.FindAction("Move");
         m_jumpInputAction = InputSystem.actions.FindAction("Jump");
         m_crouchInputAction = InputSystem.actions.FindAction("Crouch");
         m_lookInputAction = InputSystem.actions.FindAction("Look");
         m_sprintInputAction = InputSystem.actions.FindAction("Sprint");
+
+
+        // =======================
+        //   Get Default Values.
+        // =======================
+        m_cameraPosWorld = m_moveableCamera.position;
+        m_cameraRot = m_moveableCamera.rotation.eulerAngles;
 
         m_defaultRadius = m_col.radius;
         m_defaultHeight = m_col.height;
@@ -275,20 +286,31 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
+        // ====================
+        //   Camera Movement.
+        // ====================
         // Camera movement.
         m_cameraPosWorld = Vector3.Lerp(m_cameraPosWorld, m_cameraTarget.position, 30f * Time.deltaTime);
 
         m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
 
 
+        // ====================
+        //   Camera Rotation.
+        // ====================
+        // Camera punting.
         // m_cameraPuntForce += vector of choosing. // * this is a note.
-
-        // Camera rotation.
         m_cameraPunt = Vector3.Slerp(m_cameraPunt, m_cameraPuntForce, 40f * Time.deltaTime);
 
         m_cameraPuntForce = Vector3.Slerp(m_cameraPuntForce, Vector3.zero, 10f * Time.deltaTime);
 
-        m_moveableCamera.localRotation = Quaternion.Euler(m_cameraRot + m_cameraPunt);
+        // Camera rotation based of velocity.
+        const float k_bankAngleMax = 1f;
+        m_cameraMovementRot = new Vector3(Vector3.Dot(-m_orientation.forward.normalized, m_rb.linearVelocity), 0,
+            Vector3.Dot(-m_orientation.right.normalized, m_rb.linearVelocity)) / m_maxSprintSpeed * k_bankAngleMax;
+
+        // Apply all rotations together.
+        m_moveableCamera.localRotation = Quaternion.Euler(m_cameraRot + m_cameraPunt + m_cameraMovementRot);
     }
 
     void FixedUpdate()
@@ -356,7 +378,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCameraMovement()
     {
-        if (playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.Look || playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.All) { return; }
+        if (playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.Look || playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.All)
+        {
+            return;
+        }
 
 
         // Sensitibity choice.
@@ -457,7 +482,8 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     // Normal accel towards target speed.
-                    m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel) * Time.fixedDeltaTime;
+                    m_linearVel += ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel)
+                        * Time.fixedDeltaTime;
                 }
 
             }
@@ -479,7 +505,8 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     // Normal accel towards target speed.
-                    Vector3 normalChange = ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel) * Time.fixedDeltaTime;
+                    Vector3 normalChange = ((m_inputWishDirWorld.normalized * targetSpeed) - m_linearVel) * (m_inputWishDirWorld.magnitude < 0.1f ? deAccel : accel)
+                        * Time.fixedDeltaTime;
 
                     normalChange = Vector3.ProjectOnPlane(normalChange, m_groundNormalAverage);
 
@@ -585,7 +612,8 @@ public class PlayerMovement : MonoBehaviour
         else if (!m_isCrouchKeyDown && m_isCrouched)
         {
             // Uncrouching. Aditional check to see if the player will fit.
-            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * 0.05f), m_defaultRadius, Vector3.up, out RaycastHit info, m_defaultHeight - (m_defaultRadius * 2f), m_groundLayer, QueryTriggerInteraction.Ignore))
+            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * 0.05f), m_defaultRadius, Vector3.up, out RaycastHit info,
+                m_defaultHeight - (m_defaultRadius * 2f), m_groundLayer, QueryTriggerInteraction.Ignore))
             {
                 m_isCrouched = false;
 
@@ -607,7 +635,8 @@ public class PlayerMovement : MonoBehaviour
     {
         // Using grav.mag because grav.y results in -x and dont want to use Mathf.Abs(grav.y) as its not important to single out one grav dir yet.
         // Player jumps one slightly over the ground, thus causing a "jump" but the player does not jump and is forced to wait the jump check cooldown.
-        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + (m_rb.mass * Mathf.Sqrt(2f * gravityVector.magnitude * jumpForce)) + (gravityVector.y * Time.fixedDeltaTime), 0);
+        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + (m_rb.mass * Mathf.Sqrt(2f * gravityVector.magnitude * jumpForce))
+            + (gravityVector.y * Time.fixedDeltaTime), 0);
     }
 
 
@@ -684,7 +713,8 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Amount of all valid hits in the buffer.
-        int count = Physics.SphereCastNonAlloc(GetWorldFeetPos() + (Vector3.up * (m_col.radius + 0.01f)), GetNearMaxRadius(), Vector3.down, hitsBuffer, k_range, m_groundLayer, QueryTriggerInteraction.Ignore);
+        int count = Physics.SphereCastNonAlloc(GetWorldFeetPos() + (Vector3.up * (m_col.radius + 0.01f)), GetNearMaxRadius(), Vector3.down, hitsBuffer,
+            k_range, m_groundLayer, QueryTriggerInteraction.Ignore);
 
         // Does the magic math for the average for the ground.
         if (count > 0)
@@ -765,8 +795,10 @@ public class PlayerMovement : MonoBehaviour
 
         for (int i = 0; i < rayCount; i++)
         {
-            bool rayRes = Physics.Raycast(pointAtFeet + (Vector3.up * (heightIncrement * i)), moveDirectionThisFrame.normalized, out RaycastHit hitInfo, minStepWithRadius, m_groundLayer, QueryTriggerInteraction.Ignore);
-            Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), (pointAtFeet + (Vector3.up * (heightIncrement * i))) + (moveDirectionThisFrame.normalized * minStepWithRadius), Color.blue, 10f);
+            bool rayRes = Physics.Raycast(pointAtFeet + (Vector3.up * (heightIncrement * i)), moveDirectionThisFrame.normalized, out RaycastHit hitInfo,
+                minStepWithRadius, m_groundLayer, QueryTriggerInteraction.Ignore);
+            Debug.DrawLine(pointAtFeet + (Vector3.up * (heightIncrement * i)), (pointAtFeet + (Vector3.up * (heightIncrement * i)))
+                + (moveDirectionThisFrame.normalized * minStepWithRadius), Color.blue, 10f);
 
             // if (rayRes)
             // {
