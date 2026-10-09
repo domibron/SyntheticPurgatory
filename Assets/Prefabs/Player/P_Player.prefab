@@ -405,6 +405,7 @@ GameObject:
   - component: {fileID: 4380066710985356648}
   - component: {fileID: 3340956518490289641}
   - component: {fileID: 7579954213375500195}
+  - component: {fileID: 1789131293902177158}
   m_Layer: 3
   m_Name: P_Player
   m_TagString: Player
@@ -540,6 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  toxicImmunity: 0
 --- !u!114 &5509226561940670868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -707,6 +709,19 @@ MonoBehaviour:
   - {fileID: 9087766604384551400}
   - {fileID: 2995686890391899380}
   - {fileID: 2696208259358037973}
+--- !u!114 &1789131293902177158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138991948573154078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab61c4566e46eaa43bb9600a8fa7527e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDisabling
+  <CurrentDisabledState>k__BackingField: 0
 --- !u!1 &1274454125277432389
 GameObject:
   m_ObjectHideFlags: 0
