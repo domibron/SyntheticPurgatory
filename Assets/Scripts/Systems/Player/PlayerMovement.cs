@@ -141,6 +141,11 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     public bool IsGrounded { get; private set; }
 
+    private bool m_lateGrounded = false;
+
+    private float m_currentWaitTilLateGroundedRefresh = 0f;
+
+    private const float k_lateGroundedRefreshDelay = 0.1f;
 
     private enum SlopeState : byte
     {
@@ -189,8 +194,12 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 m_lastSpeed = Vector3.zero;
 
+
+    // Camera
+
     float m_fovAccelLerp = 0f;
     float m_fovMaxSpeedLerp = 0f;
+    float m_vertFovSmoohing = 0f;
 
     Vector3 m_cameraPosWorld = Vector3.zero;
     Vector3 m_cameraAdditonalOffset = Vector3.zero;
@@ -276,14 +285,48 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // ===============================
+        //   Input Polling and Updating.
+        // ===============================
         PollInput();
+
+
+
+        // ======================
+        //   Camera Movement.
+        // ======================
         HandleCameraMovement();
 
-        // Jump resetting.
+
+
+        // =====================
+        //   Jump reset timer.
+        // =====================
         if (m_currentWaitUntilJumpRestAllowed > 0)
         {
             m_currentWaitUntilJumpRestAllowed -= Time.deltaTime;
         }
+
+
+
+        // ===========================
+        //   Late Grounded Updating.
+        // ===========================
+        if (m_lateGrounded == IsGrounded) m_currentWaitTilLateGroundedRefresh = k_lateGroundedRefreshDelay;
+
+        if (m_currentWaitTilLateGroundedRefresh > 0) m_currentWaitTilLateGroundedRefresh -= Time.deltaTime;
+        else
+        {
+            m_lateGrounded = IsGrounded;
+        }
+
+
+
+        // =====================
+        //   Apply Velocities.
+        // =====================
+        m_rb.linearVelocity = m_linearVel + m_verticalVel;
+
 
 
         // ====================
@@ -295,31 +338,77 @@ public class PlayerMovement : MonoBehaviour
         m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
 
 
+
         // ====================
         //   Camera Rotation.
         // ====================
         // Camera punting.
-        // m_cameraPuntForce += vector of choosing. // * this is a note.
-        m_cameraPunt = Vector3.Slerp(m_cameraPunt, m_cameraPuntForce, 40f * Time.deltaTime);
-
-        m_cameraPuntForce = Vector3.Slerp(m_cameraPuntForce, Vector3.zero, 10f * Time.deltaTime);
+        m_cameraPunt = Vector3.Lerp(m_cameraPunt, m_cameraPuntForce, 40f * Time.deltaTime); // Move camera towards punt.
+        m_cameraPuntForce = Vector3.Lerp(m_cameraPuntForce, Vector3.zero, 10f * Time.deltaTime); // Slowly reset punt.
 
         // Camera rotation based of velocity.
         const float k_bankAngleMax = 1f;
-        m_cameraMovementRot = new Vector3(Vector3.Dot(-m_orientation.forward.normalized, m_rb.linearVelocity), 0,
+
+        // Camera vert fov smoothing.
+        m_vertFovSmoohing = Mathf.Lerp(m_vertFovSmoohing, Vector3.Dot(m_orientation.up.normalized, m_rb.linearVelocity), 5 * Time.deltaTime);
+
+        // Combine all movement fov effects.
+        m_cameraMovementRot = new Vector3(Vector3.Dot(-m_orientation.forward.normalized, m_rb.linearVelocity) + m_vertFovSmoohing, 0,
             Vector3.Dot(-m_orientation.right.normalized, m_rb.linearVelocity)) / m_maxSprintSpeed * k_bankAngleMax;
 
         // Apply all rotations together.
         m_moveableCamera.localRotation = Quaternion.Euler(m_cameraRot + m_cameraPunt + m_cameraMovementRot);
+
+
+
+        // ===============
+        //   Camera FOV.
+        // ===============
+        // Get the diff.
+        float diff = m_linearVel.magnitude - m_lastSpeed.magnitude;
+        m_lastSpeed = m_linearVel;
+
+        // Fov based on the acceleration.
+        m_fovAccelLerp = Mathf.Lerp(m_fovAccelLerp, diff, 5f * Time.fixedDeltaTime);
+
+        // Fov change based off of current linear velocity.
+        m_fovMaxSpeedLerp = Mathf.Lerp(m_fovMaxSpeedLerp, m_linearVel.magnitude / m_maxSprintSpeed, 5f * Time.fixedDeltaTime);
+
+        // Set the target FOV.
+        playerFovController.SetExtraFov(Mathf.Lerp(-5, 5, 0.5f + m_fovAccelLerp / (1f / m_sprintAccelRate)) + Mathf.Lerp(0f, 5f, m_fovMaxSpeedLerp));
     }
 
     void FixedUpdate()
     {
+        // =====================
+        //   Player Disabling.
+        // =====================
         if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement)) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
         if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement) || playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look)) return;
 
+
+
+        // ========================
+        //   Landing Camera Punt.
+        // ========================
+        if (!m_lateGrounded && CheckIsGrounded() && m_verticalVel.y < 1f && m_currentSlopeState != SlopeState.SteepSlope)
+        {
+            m_lateGrounded = CheckIsGrounded(); // ! Terrible decision to update lategrounded like this.
+            PuntCameraDown(4f);
+        }
+
+
+
+        // ======================
+        //   IsGrounded Update.
+        // ======================
         IsGrounded = CheckIsGrounded();
 
+
+
+        // =================
+        //   Slope Update.
+        // =================
         Vector3 groundNormalSample = SampleGroundNormal();
         if (IsGrounded && groundNormalSample != Vector3.zero)
         {
@@ -327,38 +416,77 @@ public class PlayerMovement : MonoBehaviour
             UpdateSlopeState(m_groundNormalAverage);
         }
 
+
+
+        // =============================
+        //   Reset Jump When Possible.
+        // =============================
         ResetJumpWhenGrounded();
 
+
+
+        // ================
+        //   Add Gravity.
+        // ================
         UpdateGravityVel();
 
+
+
+        // =====================================
+        //   Player Crouching and Uncrouching.
+        // =====================================
         HandleCrouching();
 
+
+
+        // =============
+        //   Movement.
+        // =============
         Movement();
 
+
+
+        // =================
+        //   Edge Step Up.
+        // =================
         HandleStepping();
-
-
-        // FOV
-        m_rb.linearVelocity = m_linearVel + m_verticalVel;
-
-        float diff = m_rb.linearVelocity.magnitude - m_lastSpeed.magnitude;
-
-        m_lastSpeed = m_rb.linearVelocity;
-
-        m_fovAccelLerp = Mathf.Lerp(m_fovAccelLerp, diff, 5f * Time.fixedDeltaTime);
-
-        m_fovMaxSpeedLerp = Mathf.Lerp(m_fovMaxSpeedLerp, m_rb.linearVelocity.magnitude / m_maxSprintSpeed, 5f * Time.fixedDeltaTime);
-
-        playerFovController.SetExtraFov(Mathf.Lerp(-5, 5, 0.5f + m_fovAccelLerp / (1f / m_sprintAccelRate)) + Mathf.Lerp(0f, 5f, m_fovMaxSpeedLerp));
     }
 
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // Force is collision.impulse / Time.fixedDeltaTime.
+        // Impuse is collision.impulse.
+
+        // Above head hitting.
+        if (m_verticalVel.y > 0 && (m_verticalVel.y + collision.impulse.y) < m_verticalVel.y)
+        {
+            PuntCameraDown(m_verticalVel.y / 2f);
+
+            m_verticalVel.y = m_verticalVel.y + collision.impulse.y;
+        }
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        // Above head hitting.
+        if (m_verticalVel.y > 0 && (m_verticalVel.y + collision.impulse.y) < m_verticalVel.y)
+        {
+            PuntCameraDown(m_verticalVel.y / 2f);
+
+            m_verticalVel.y = m_verticalVel.y + collision.impulse.y;
+        }
+    }
 
 
     void OnGUI()
     {
-        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
-        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_linearVel.ToString("F2"));
-        GUILayout.Label($"<color=blue><size={Screen.height / 20}>" + m_verticalVel.ToString("F2"));
+        const float k_textSize = 30f;
+        GUILayout.Label($"<color=blue><size={Screen.height / k_textSize}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
+        GUILayout.Label($"<color=blue><size={Screen.height / k_textSize}>" + "m_linearVel " + m_linearVel.ToString("F2"));
+        GUILayout.Label($"<color=blue><size={Screen.height / k_textSize}>" + "m_verticalVel " + m_verticalVel.ToString("F2"));
+        GUILayout.Label($"<color=red><size={Screen.height / k_textSize}>" + "m_cameraPuntForce " + m_cameraPuntForce.ToString("F2"));
+        GUILayout.Label($"<color=red><size={Screen.height / k_textSize}>" + "m_cameraPunt " + m_cameraPunt.ToString("F2"));
     }
 
     void OnDrawGizmos()
@@ -427,9 +555,44 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Camera height.
-        Vector3 camPos = m_moveableCamera.localPosition;
-        camPos.y = GetHalfHeight() - 0.15f;
-        m_moveableCamera.localPosition = camPos;
+        Vector3 camPos = m_cameraTarget.localPosition;
+        camPos.y = GetHalfHeight() - (GetHalfHeight() * 0.25f);
+        m_cameraTarget.localPosition = camPos;
+    }
+
+    public void PuntCamera(Vector3 dirAndForce)
+    {
+        m_cameraPuntForce += dirAndForce;
+    }
+
+    public void PuntCameraDown(float force)
+    {
+        PuntCamera(Vector3.right * force);
+    }
+
+    public void PuntCameraUp(float force)
+    {
+        PuntCamera(Vector3.left * force);
+    }
+
+    public void PuntCameraLeft(float force)
+    {
+        PuntCamera(Vector3.down * force);
+    }
+
+    public void PuntCameraRight(float force)
+    {
+        PuntCamera(Vector3.up * force);
+    }
+
+    public void PuntCameraRollClockWise(float force)
+    {
+        PuntCamera(Vector3.back * force);
+    }
+
+    public void PuntCameraRollCounterClockWise(float force)
+    {
+        PuntCamera(Vector3.forward * force);
     }
 
     #endregion
@@ -554,6 +717,8 @@ public class PlayerMovement : MonoBehaviour
 
             m_isJumping = true;
             m_currentWaitUntilJumpRestAllowed = k_waitBeforeEnableJumpReset;
+
+            PuntCameraUp(4f);
         }
     }
 
