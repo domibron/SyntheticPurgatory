@@ -37,23 +37,87 @@ public class ProjectileScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Physics.SphereCast(transform.position, sphereCollider.radius, rb.linearVelocity.normalized, out RaycastHit hit,
+        if (hasHit) return;
+
+
+        if (Physics.SphereCast(transform.position - (rb.linearVelocity.normalized * Time.fixedDeltaTime), sphereCollider.radius, rb.linearVelocity.normalized, out RaycastHit hit,
             rb.linearVelocity.magnitude * Time.fixedDeltaTime, sphereCollider.includeLayers, QueryTriggerInteraction.Collide))
         {
-            print("fuck");
+
+
+            if (SourceForProjectile)
+                hit.transform.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
+
+            IDamageable damageable = hit.transform.GetComponent<IDamageable>();
+
+            if (hit.collider.isTrigger)
+            {
+                if (damageable != null) // Damage object if it has the enemy damage area script attached
+                {
+                    hasHit = true;
+
+                    hit.transform.GetComponent<IShootable>()?.HitObject();
+                    damageable.TakeDamage(-ProjectileDamage, transform.position);
+
+                    SetUpDecal(hit);
+
+                    // print("trigger");
+
+
+                    Destroy(gameObject);
+
+                    return;
+                }
+                else
+                {
+                    hit.transform.GetComponent<IShootable>()?.HitObject(); // just in case the trigger has this.
+                    return; // cannot hit triggers
+                }
+            }
+            else
+            {
+                if (damageable != null)
+                {
+                    hasHit = true;
+
+                    hit.transform.GetComponent<IShootable>()?.HitObject();
+                    damageable.TakeDamage(-ProjectileDamage, transform.position);
+                    SetUpDecal(hit);
+
+                    // print("Special");
+
+                    Destroy(gameObject);
+                    return;
+
+                }
+            }
+
+            hit.transform.GetComponent<IShootable>()?.HitObject();
+
+            // print("normal");
+
+            SetUpDecal(hit);
+
+            Destroy(gameObject);
         }
     }
 
-    private void OnTriggerEnter(Collider collider)
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // ProjectileLogic(other);
+    }
+
+    private void ProjectileLogic(Collider other)
     {
         if (hasHit) return;
 
         if (SourceForProjectile)
-            collider.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
+            other.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
 
-        IDamageable damageable = collider.gameObject.GetComponent<IDamageable>();
+        IDamageable damageable = other.gameObject.GetComponent<IDamageable>();
 
-        if (collider.isTrigger)
+        if (other.isTrigger)
         {
             if (damageable != null) // Damage object if it has the enemy damage area script attached
             {
@@ -61,7 +125,7 @@ public class ProjectileScript : MonoBehaviour
 
                 damageable.TakeDamage(-ProjectileDamage, transform.position);
 
-                SetUpDecal(collider);
+                SetUpDecal(other);
 
                 Destroy(gameObject);
 
@@ -69,7 +133,7 @@ public class ProjectileScript : MonoBehaviour
             }
             else
             {
-                collider.gameObject.GetComponent<IShootable>()?.HitObject(); // just in case the trigger has this.
+                other.gameObject.GetComponent<IShootable>()?.HitObject(); // just in case the trigger has this.
                 return; // cannot hit triggers
             }
         }
@@ -82,11 +146,31 @@ public class ProjectileScript : MonoBehaviour
             }
         }
 
-        collider.gameObject.GetComponent<IShootable>()?.HitObject();
+        other.gameObject.GetComponent<IShootable>()?.HitObject();
 
-        SetUpDecal(collider);
+        SetUpDecal(other);
 
         Destroy(gameObject);
+    }
+
+    private void SetUpDecal(RaycastHit hit)
+    {
+        if (!decalObject) return;
+
+
+        // decalObject.transform.position = hit.point + (hit.normal.normalized * 0.5f);
+        // decalObject.transform.LookAt(transform.position + -hit.normal.normalized);
+        decalObject.transform.position = hit.point + (-rb.linearVelocity.normalized * 0.5f);
+        decalObject.transform.LookAt(transform.position + rb.linearVelocity.normalized);
+        // decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles);
+
+        decalObject.transform.parent = null;
+
+        decalObject.SetActive(true);
+
+        Destroy(decalObject, 10f);
+
+
     }
 
     private void SetUpDecal(Collider collider)
