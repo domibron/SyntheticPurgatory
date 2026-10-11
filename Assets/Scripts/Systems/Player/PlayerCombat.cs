@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 public class PlayerCombat : MonoBehaviour
 {
 
-    private PlayerDisabling playerDisabling;
+    private PlayerDisabling m_playerDisabling;
 
     /// <summary>
     /// The player gun projectile prefab that is fired from the cannon.
@@ -253,6 +253,8 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     Animator m_animator;
 
+    WeaponMovement m_weaponMovement;
+
 
 
     #region Mono Behaviour
@@ -265,8 +267,9 @@ public class PlayerCombat : MonoBehaviour
         m_meleeWeaponInput = InputSystem.actions.FindAction("Melee");
         m_bashInput = InputSystem.actions.FindAction("Interact");
 
-        playerDisabling = GetComponent<PlayerDisabling>();
+        m_playerDisabling = GetComponent<PlayerDisabling>();
         m_animator = GetComponent<Animator>();
+        m_weaponMovement = GetComponentInChildren<WeaponMovement>(); // Only one on children so it should be fine.
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -276,11 +279,13 @@ public class PlayerCombat : MonoBehaviour
         // playerMovement = GetComponent<PlayerMovement>();
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
         // Code disabiler.
-        if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Combat)) return;
+        if (m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Combat)) return;
 
         if (m_currentKickCoolDown > 0) m_currentKickCoolDown -= Time.deltaTime;
         if (m_currentMeleeCoolDown > 0) m_currentMeleeCoolDown -= Time.deltaTime;
@@ -513,6 +518,8 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     private void FireProjectile()
     {
+        m_weaponMovement.PushBack(0.01f);
+
         // Cooldown code / overheat code.
         if (m_currentGunChargeBar < m_chargeDegradePerShot)
         {

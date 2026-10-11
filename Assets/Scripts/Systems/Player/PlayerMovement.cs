@@ -56,13 +56,14 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody m_rb;
 
     /// <summary>
-    /// The moveable camera stack.
+    /// The moveable camera object that is moved seperately from the player.
+    /// <br></br>The camera is still a child of the player.
     /// </summary>
     [SerializeField, FormerlySerializedAs("m_cameraTarget")]
     Transform m_moveableCamera;
 
     /// <summary>
-    /// The target for the camera to socket into.
+    /// The target socket for the camera to socket into.
     /// </summary>
     [SerializeField]
     Transform m_cameraTarget;
@@ -73,15 +74,37 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     Transform m_orientation;
 
-    PlayerFovController playerFovController;
+    /// <summary>
+    /// Camera FOV changing system.
+    /// </summary>
+    PlayerFovController m_playerFovController;
 
-    PlayerDisabling playerDisabling;
+    /// <summary>
+    /// Player disabling system.
+    /// </summary>
+    PlayerDisabling m_playerDisabling;
 
 
+    /// <summary>
+    /// Weapon movement for subtle weapon movement effects.
+    /// </summary>
+    WeaponMovement m_weaponMovement;
+
+    /// <summary>
+    /// The angle threashold before the surface is considered steep.
+    /// </summary>
     const float k_slopeToSteepSlopeThreshold = 40;
 
+    /// <summary>
+    /// The angle threshold before the surgace is considered a slight slope.
+    /// </summary>
     const float k_floorToSlopeThreshold = 1;
 
+    // TODO: remove.
+    /// <summary>
+    /// Minimum acceleration rate allowed.
+    /// </summary>
+    [Obsolete("Used for old movement implementation and is scheduled for removal.")]
     const float k_minAccelRate = 0.01f;
 
     #endregion
@@ -141,16 +164,39 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     public bool IsGrounded { get; private set; }
 
+    /// <summary>
+    /// Delayed version of the <see cref="IsGrounded"/> variable to remove any one frame changes.
+    /// </summary>
     private bool m_lateGrounded = false;
 
+    /// <summary>
+    /// The current time left until the <see cref="m_lateGrounded"/> can be updated.
+    /// </summary>
     private float m_currentWaitTilLateGroundedRefresh = 0f;
 
+    /// <summary>
+    /// The delay for when the <see cref="m_lateGrounded"/> can be updated.
+    /// </summary>
     private const float k_lateGroundedRefreshDelay = 0.1f;
 
+    /// <summary>
+    /// Ground slope states.
+    /// </summary>
     private enum SlopeState : byte
     {
+        /// <summary>
+        /// The ground is level.
+        /// </summary>
         FlatGround,
+
+        /// <summary>
+        /// The ground has a slight slope but the player can still walk on it.
+        /// </summary>
         SlightSlope,
+
+        /// <summary>
+        /// The ground is too steep for the player to walk on.
+        /// </summary>
         SteepSlope,
     }
 
@@ -172,12 +218,19 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     bool m_isSprinting = false;
 
-
+    /// <summary>
+    /// Is the player performing a jump.
+    /// </summary>
     bool m_isJumping = false;
 
-
+    /// <summary>
+    /// Delay before resetting the ability to jump.
+    /// </summary>
     const float k_waitBeforeEnableJumpReset = 0.4f;
 
+    /// <summary>
+    /// The current time left until the player is allowed to jump again.
+    /// </summary>
     float m_currentWaitUntilJumpRestAllowed = 0f;
 
 
@@ -208,6 +261,9 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 m_cameraMovementRot = Vector3.zero;
 
+    float m_movementTimeForBobbing = 0f;
+    float m_linearVelMagLerp = 0f;
+
     Vector3 m_cameraPunt = Vector3.zero;
     Vector3 m_cameraPuntForce = Vector3.zero;
 
@@ -233,6 +289,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float m_airAccelRate = 0.5f;
 
+    [SerializeField]
+    float m_jumpHeight = 2f;
+
     #endregion
 
 
@@ -252,8 +311,9 @@ public class PlayerMovement : MonoBehaviour
         // ===================
         m_rb = GetComponent<Rigidbody>();
         m_col = GetComponent<CapsuleCollider>();
-        playerFovController = GetComponent<PlayerFovController>();
-        playerDisabling = GetComponent<PlayerDisabling>();
+        m_playerFovController = GetComponent<PlayerFovController>();
+        m_playerDisabling = GetComponent<PlayerDisabling>();
+        m_weaponMovement = GetComponentInChildren<WeaponMovement>(); // Only one on children so it should be fine.
 
 
         // ==================
@@ -297,7 +357,7 @@ public class PlayerMovement : MonoBehaviour
         // ======================
         HandleCameraMovement();
 
-
+        if (m_rb.isKinematic) return;
 
         // =====================
         //   Jump reset timer.
@@ -312,8 +372,11 @@ public class PlayerMovement : MonoBehaviour
         // ===========================
         //   Late Grounded Updating.
         // ===========================
+        // * NOTE: I also update late grounded when hitting the floor with camera punt in fixed update.
+        // Reset timer when in sync.
         if (m_lateGrounded == IsGrounded) m_currentWaitTilLateGroundedRefresh = k_lateGroundedRefreshDelay;
 
+        // Tick down and update late grounded after delay.
         if (m_currentWaitTilLateGroundedRefresh > 0) m_currentWaitTilLateGroundedRefresh -= Time.deltaTime;
         else
         {
@@ -332,9 +395,28 @@ public class PlayerMovement : MonoBehaviour
         // ====================
         //   Camera Movement.
         // ====================
-        // Camera movement.
+        // Camera target positon in world with smoothing.
         m_cameraPosWorld = Vector3.Lerp(m_cameraPosWorld, m_cameraTarget.position, 30f * Time.deltaTime);
 
+
+        // Head bobbing.
+        // Smooth out velocity for bobing.
+        m_linearVelMagLerp = Mathf.Lerp(m_linearVelMagLerp, m_linearVel.magnitude, 10f * Time.deltaTime);
+
+        // Head bob time.
+        if (m_linearVel.magnitude > 0) m_movementTimeForBobbing += Time.deltaTime * m_linearVelMagLerp * 1.75f;
+        else m_movementTimeForBobbing = 0;
+
+        // Calculate the needed offset for head bobbing.
+        float sideOffset = Mathf.Sin(m_movementTimeForBobbing);
+        float heightOffset = Mathf.Cos(sideOffset * (Mathf.PI / 2f)) - 1f;
+
+        // Apply head bobbing to the camera offset.
+        m_cameraAdditonalOffset = m_moveableCamera.transform.right * sideOffset * GetHalfHeight() * 0.1f;
+        m_cameraAdditonalOffset += m_moveableCamera.transform.up * heightOffset * GetHalfHeight() * 0.1f;
+
+
+        // Apply all camera movements and offsets.
         m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
 
 
@@ -350,7 +432,7 @@ public class PlayerMovement : MonoBehaviour
         const float k_bankAngleMax = 1f;
 
         // Camera vert fov smoothing.
-        m_vertFovSmoohing = Mathf.Lerp(m_vertFovSmoohing, Vector3.Dot(m_orientation.up.normalized, m_rb.linearVelocity), 5 * Time.deltaTime);
+        m_vertFovSmoohing = Mathf.Lerp(m_vertFovSmoohing, Vector3.Dot(m_orientation.up.normalized, m_rb.linearVelocity) * (m_lateGrounded ? 0f : 1f), 5 * Time.deltaTime);
 
         // Combine all movement fov effects.
         m_cameraMovementRot = new Vector3(Vector3.Dot(-m_orientation.forward.normalized, m_rb.linearVelocity) + m_vertFovSmoohing, 0,
@@ -375,7 +457,7 @@ public class PlayerMovement : MonoBehaviour
         m_fovMaxSpeedLerp = Mathf.Lerp(m_fovMaxSpeedLerp, m_linearVel.magnitude / m_maxSprintSpeed, 5f * Time.fixedDeltaTime);
 
         // Set the target FOV.
-        playerFovController.SetExtraFov(Mathf.Lerp(-5, 5, 0.5f + m_fovAccelLerp / (1f / m_sprintAccelRate)) + Mathf.Lerp(0f, 5f, m_fovMaxSpeedLerp));
+        m_playerFovController.SetExtraFov(Mathf.Lerp(-5, 5, 0.5f + m_fovAccelLerp / (1f / m_sprintAccelRate)) + Mathf.Lerp(0f, 5f, m_fovMaxSpeedLerp));
     }
 
     void FixedUpdate()
@@ -383,14 +465,14 @@ public class PlayerMovement : MonoBehaviour
         // =====================
         //   Player Disabling.
         // =====================
-        if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement)) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
-        if (playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement) || playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look)) return;
-
+        if (m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement) || m_rb.isKinematic) { m_rb.linearVelocity = Vector3.zero; } // This seems like it can be abused.
+        if (m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement) || m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look) || m_rb.isKinematic) return;
 
 
         // ========================
         //   Landing Camera Punt.
         // ========================
+        // TODO: fix issue where camera punts down when going down slopes fast.
         if (!m_lateGrounded && CheckIsGrounded() && m_verticalVel.y < 1f && m_currentSlopeState != SlopeState.SteepSlope)
         {
             m_lateGrounded = CheckIsGrounded(); // ! Terrible decision to update lategrounded like this.
@@ -506,7 +588,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCameraMovement()
     {
-        if (playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.Look || playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.All)
+        if (m_playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.Look || m_playerDisabling.CurrentDisabledState == PlayerDisabling.DisabledType.All)
         {
             return;
         }
@@ -542,11 +624,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Camera rotation.
-        if (invertYLook)
-            m_camXRot += m_lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
-        else
-            m_camXRot -= m_lookDelta.y * xSense * (useMouseLook ? 1f : Time.deltaTime);
-
+        m_camXRot += m_lookDelta.y * (invertYLook ? xSense : -xSense) * (useMouseLook ? 1f : Time.deltaTime);
         m_camXRot = Mathf.Clamp(m_camXRot, -80, 80);
 
         // m_moveableCamera.localRotation = Quaternion.Euler(m_camXRot, 0, 0);
@@ -560,6 +638,11 @@ public class PlayerMovement : MonoBehaviour
         m_cameraTarget.localPosition = camPos;
     }
 
+    /// <summary>
+    /// Rotates the camera to the target rotational direction.
+    /// <br></br>
+    /// </summary>
+    /// <param name="dirAndForce">The rotation direction and force.</param>
     public void PuntCamera(Vector3 dirAndForce)
     {
         m_cameraPuntForce += dirAndForce;
@@ -603,8 +686,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
-        // ? Isnt this just input handling?
-
+        // ==============================
+        //   Frame Changeable Varibles.
+        // ==============================
         float accel = 1 / m_walkAccelRate; // mps^2
         float deAccel = accel; // mps^2
 
@@ -612,6 +696,11 @@ public class PlayerMovement : MonoBehaviour
         float lastAirTarget = m_maxWalkSpeed;
 
 
+
+        // =====================
+        //   Sprinting Checks.
+        // =====================
+        // ? Isnt this just input handling?
         if (m_isSprintKeyDown && IsGrounded)
         {
             m_isSprinting = true;
@@ -631,9 +720,15 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
+
+        // ===============
+        //   Velocities.
+        // ===============
         if (IsGrounded && !m_isJumping)
         {
-            // Ground movement.
+            // ======================
+            //   Grounded Movement.
+            // ======================
             if (m_currentSlopeState == SlopeState.FlatGround)
             {
                 // Level ground movement.
@@ -652,7 +747,9 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (m_currentSlopeState == SlopeState.SlightSlope)
             {
-                // Slight slope movement.
+                // ==========================
+                //   Slight Slope Movement.
+                // ==========================
                 if (m_linearVel.magnitude > targetSpeed)
                 {
                     // Overspeed from target speed.
@@ -681,7 +778,9 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                // Steep slope movement.
+                // =========================
+                //   Steep Slope Movement.
+                // =========================
                 Vector3 slope = Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage).normalized * GetGravityVector().magnitude * Time.fixedDeltaTime;
                 Vector3 decayVel = (slope.normalized - m_linearVel.normalized) * GetGravityVector().magnitude * Time.fixedDeltaTime;
 
@@ -692,7 +791,9 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            // Air movement
+            // =================
+            //   Air Movement.
+            // =================
             accel = 1 / m_airAccelRate;
             deAccel = m_airAccelRate;
 
@@ -709,11 +810,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-        // Jumping
+        // ============
+        //   Jumping.
+        // ============
         if (m_isJumpKeyDown && CanPlayerJump())
         {
-            m_verticalVel += GetJumpVector(m_verticalVel, 5, GetGravityVector());
-
+            m_verticalVel += GetJumpVector(m_verticalVel, m_jumpHeight, GetGravityVector());
 
             m_isJumping = true;
             m_currentWaitUntilJumpRestAllowed = k_waitBeforeEnableJumpReset;
@@ -724,7 +826,7 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-
+    // TODO: remove this imp.
 
     /// <summary>
     /// Get a vector velocity to apply from the desired parameters.
@@ -734,6 +836,7 @@ public class PlayerMovement : MonoBehaviour
     /// <param name="accelRate">How fast to accelerate the player towards the new direction.</param>
     /// <param name="maxSpeed">The maximum / target speed for the player to reach.</param>
     /// <returns>The resulting velocity to apply onto the player.</returns>
+    [Obsolete("Old movement implementation, please look at the new movement system used.")]
     private Vector3 GetImmediateChangeVel(Vector3 currentVel, Vector3 wishDir, float accelRate, float maxSpeed)
     {
         wishDir.Normalize();
@@ -796,11 +899,18 @@ public class PlayerMovement : MonoBehaviour
 
     #region Jumping
 
-    private Vector3 GetJumpVector(Vector3 currentVel, float jumpForce, Vector3 gravityVector)
+    /// <summary>
+    /// Get the jump vector based on the parameters.
+    /// </summary>
+    /// <param name="currentVel">The current velocity (specifically vertical velocity).</param>
+    /// <param name="jumpHeight">The desired height for the player to jump to.</param>
+    /// <param name="gravityVector">The gravity force being appied to the player.</param>
+    /// <returns>The velocity to apply to the player to get the desired jump.</returns>
+    private Vector3 GetJumpVector(Vector3 currentVel, float jumpHeight, Vector3 gravityVector)
     {
         // Using grav.mag because grav.y results in -x and dont want to use Mathf.Abs(grav.y) as its not important to single out one grav dir yet.
         // Player jumps one slightly over the ground, thus causing a "jump" but the player does not jump and is forced to wait the jump check cooldown.
-        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + (m_rb.mass * Mathf.Sqrt(2f * gravityVector.magnitude * jumpForce))
+        return new Vector3(0, -Mathf.Min(currentVel.y, 0) + (m_rb.mass * Mathf.Sqrt(2f * gravityVector.magnitude * jumpHeight))
             + (gravityVector.y * Time.fixedDeltaTime), 0);
     }
 
@@ -820,6 +930,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Check to see if the player is able to jump.
+    /// </summary>
+    /// <returns>True if the play can jump this frame.</returns>
     private bool CanPlayerJump()
     {
         if (IsGrounded && !m_isJumping && m_currentSlopeState != SlopeState.SteepSlope)
@@ -899,6 +1013,10 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Updates the stored slope state with the normal average of the current surface.
+    /// </summary>
+    /// <param name="groundNormalAvg">The surface's normal.</param>
     private void UpdateSlopeState(Vector3 groundNormalAvg)
     {
         float angle = Vector3.Angle(groundNormalAvg.normalized, Vector3.up);
@@ -923,6 +1041,9 @@ public class PlayerMovement : MonoBehaviour
 
 
     #region Stepping
+    /// <summary>
+    /// Runs the stepping logic when nessary.
+    /// </summary>
     private void HandleStepping()
     {
         if (IsGrounded)
@@ -941,6 +1062,7 @@ public class PlayerMovement : MonoBehaviour
     {
         moveDirectionThisFrame.y = 0;
 
+        // Could be simplified with new function.
         Vector3 pointAtFeet = transform.position + (Vector3.up * 0.05f) + (Vector3.down * GetHalfHeight());
 
         float stepHeight = 0.5f;
@@ -974,6 +1096,7 @@ public class PlayerMovement : MonoBehaviour
             if (i == 0 && !rayRes)
             {
                 // print("cannot step on air");
+                // Stepping into the air.
                 break; // we dont need to step.
             }
             else if (i == 0 && rayRes)
@@ -981,6 +1104,7 @@ public class PlayerMovement : MonoBehaviour
                 if (Vector3.Angle(hitInfo.normal, Vector3.up) < 80f || Vector3.Angle(hitInfo.normal, Vector3.up) > 100f)
                 {
                     // print("failed angle check");
+                    // Angle check failed.
                     break;
                 }
             }
@@ -989,6 +1113,7 @@ public class PlayerMovement : MonoBehaviour
             if (!rayRes)
             {
                 // print("can step");
+                // Possible to step.
                 canStep = true;
                 iteration = i;
                 break;
@@ -998,10 +1123,12 @@ public class PlayerMovement : MonoBehaviour
         if (!canStep)
         {
             // print("Cannot step up a wall");
+            // Cannot step, max step height reached.
             return;
         }
 
         // print("able to step");
+        // Able to step up.
 
         transform.position += Vector3.up * (heightIncrement * iteration);
     }
@@ -1028,6 +1155,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the full height of the player.
+    /// </summary>
+    /// <returns>The height of the player.</returns>
     private float GetFullHeight()
     {
         if (m_col.radius * 2f >= m_col.height)
@@ -1040,6 +1171,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the position of the bottom of the capsule in worldspace.
+    /// </summary>
+    /// <returns>The feet position in the world.</returns>
     private Vector3 GetWorldFeetPos()
     {
         return transform.position - (transform.up * GetHalfHeight());
@@ -1054,11 +1189,19 @@ public class PlayerMovement : MonoBehaviour
         return Physics.gravity * m_gravityScalar;
     }
 
+    /// <summary>
+    /// Get the near maximum of the radius (removes 20% of the radius))
+    /// </summary>
+    /// <returns>80% of the radius. (rad of 1, will return 0.8)</returns>
     float GetNearMaxRadius()
     {
-        return m_col.radius - (m_col.radius * 0.2f);
+        return m_col.radius * 0.8f;
     }
 
+    /// <summary>
+    /// Sets the height of the player. Leave blank to reset.
+    /// </summary>
+    /// <param name="height">The desired height.</param>
     void SetHeight(float height = -1f)
     {
         if (height <= 0)
