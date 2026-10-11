@@ -21,11 +21,35 @@ public class ProjectileScript : MonoBehaviour
     /// </summary>
     public Transform SourceForProjectile;
 
+    [SerializeField]
+    private GameObject decalObject;
+
+    Rigidbody rb;
+
+    SphereCollider sphereCollider;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        sphereCollider = GetComponent<SphereCollider>();
+        decalObject?.SetActive(false);
+    }
+
+    void FixedUpdate()
+    {
+        if (Physics.SphereCast(transform.position, sphereCollider.radius, rb.linearVelocity.normalized, out RaycastHit hit,
+            rb.linearVelocity.magnitude * Time.fixedDeltaTime, sphereCollider.includeLayers, QueryTriggerInteraction.Collide))
+        {
+            print("fuck");
+        }
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if (hasHit) return;
 
-        collider.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
+        if (SourceForProjectile)
+            collider.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
 
         IDamageable damageable = collider.gameObject.GetComponent<IDamageable>();
 
@@ -36,6 +60,8 @@ public class ProjectileScript : MonoBehaviour
                 hasHit = true;
 
                 damageable.TakeDamage(-ProjectileDamage, transform.position);
+
+                SetUpDecal(collider);
 
                 Destroy(gameObject);
 
@@ -54,13 +80,46 @@ public class ProjectileScript : MonoBehaviour
                 damageable.TakeDamage(-ProjectileDamage, transform.position);
                 hasHit = true;
             }
-
         }
 
         collider.gameObject.GetComponent<IShootable>()?.HitObject();
 
-        Destroy(gameObject);
+        SetUpDecal(collider);
 
+        Destroy(gameObject);
+    }
+
+    private void SetUpDecal(Collider collider)
+    {
+        if (decalObject)
+        {
+            decalObject.transform.parent = collider.transform;
+
+
+            Vector3 targetLocation = Vector3.zero;
+
+            if (Physics.Raycast(transform.position - rb.linearVelocity * 0.1f, rb.linearVelocity.normalized, out RaycastHit hit, rb.linearVelocity.magnitude * 0.2f, rb.includeLayers, QueryTriggerInteraction.Collide))
+            {
+                targetLocation = hit.point;
+
+                decalObject.transform.position = targetLocation;
+                decalObject.transform.LookAt(hit.normal);
+                decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles + new Vector3(-90, 0, 0));
+            }
+            else
+            {
+                targetLocation = transform.position;
+
+                decalObject.transform.position = targetLocation;
+                decalObject.transform.LookAt(targetLocation - transform.position);
+                decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles + new Vector3(-90, 0, 0));
+            }
+
+            decalObject.SetActive(true);
+
+            // TODO: replace with better self destruct script.
+            Destroy(decalObject, 10f);
+        }
     }
 
 }

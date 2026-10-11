@@ -12,7 +12,7 @@ public class NoClipPlayerController : MonoBehaviour
     /// <summary>
     /// Local store of the input vector.
     /// </summary>
-    private Vector2 inputVector;
+    private Vector3 inputVector;
 
     /// <summary>
     /// Is the player pressing sprint key.
@@ -24,25 +24,66 @@ public class NoClipPlayerController : MonoBehaviour
     /// </summary>
     private Vector3 currentMovement;
 
+    private Rigidbody rb;
+    private Transform camera;
+
+    InputAction move;
+    InputAction jump;
+    InputAction crouch;
+    InputAction sprint;
+
+    // doesnt work with synth perg.
     // This if from the input system
-    public void OnMove(InputValue value)
+    // public void OnMove(InputValue value)
+    // {
+    //     inputVector.x = value.Get<Vector2>().x;
+    //     inputVector.z = value.Get<Vector2>().y;
+    // }
+
+
+    // public void OnJump(InputValue value)
+    // {
+    //     if (value.Get<bool>())
+    //         inputVector.y = 1f;
+    // }
+
+    // public void OnCrouch(InputValue value)
+    // {
+    //     if (value.Get<bool>())
+    //         inputVector.y = -1f;
+    // }
+
+    // // This if from the input system
+    // public void OnSprint(InputValue value)
+    // {
+    //     isSprinting = value.isPressed;
+    // }
+
+    void Awake()
     {
-        inputVector = value.Get<Vector2>();
+        move = InputSystem.actions.FindAction("Move");
+        jump = InputSystem.actions.FindAction("Jump");
+        crouch = InputSystem.actions.FindAction("Crouch");
+        sprint = InputSystem.actions.FindAction("Sprint");
     }
 
-    // This if from the input system
-    public void OnSprint(InputValue value)
+    void Start()
     {
-        isSprinting = value.isPressed;
+        camera = Camera.main.transform;
+
+        rb = transform.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        /// convert the input to x y to x z.
-        Vector3 InputDirection = new Vector3(inputVector.x, 0f, inputVector.y);
+        inputVector = move.ReadValue<Vector2>();
+        inputVector.z = (jump.IsPressed() ? 1 : 0) + (crouch.IsPressed() ? -1 : 0);
+        isSprinting = sprint.IsPressed();
+
+        Vector3 InputDirection = new Vector3(inputVector.x, inputVector.z, inputVector.y);
         // turn the input vector from a local movement vector into a world space vector.
-        Vector3 WorldDirection = transform.TransformDirection(InputDirection);
+        Vector3 WorldDirection = (camera ?? transform).TransformDirection(InputDirection);
         WorldDirection.Normalize();
 
         // hard set values for now.
@@ -54,10 +95,12 @@ public class NoClipPlayerController : MonoBehaviour
         }
 
         // we set the local vel with the input.
-        currentMovement.x = WorldDirection.x * speed;
-        currentMovement.z = WorldDirection.z * speed;
+        currentMovement = WorldDirection * speed;
 
         // we move the player.
-        transform.Translate(currentMovement * Time.deltaTime);
+        if (rb)
+            rb.MovePosition(transform.position + currentMovement * Time.deltaTime);
+        else
+            transform.Translate(currentMovement * Time.deltaTime);
     }
 }

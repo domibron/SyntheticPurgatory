@@ -187,26 +187,26 @@ public class DebugConsole : MonoBehaviour
 		switch (result)
 		{
 			case CommandResult.Failed:
-				prefix = "<color=red>";
+				prefix = "<b><color=red>[COMMAND FAILED] ";
 				break;
 			case CommandResult.MissingArgs:
-				prefix = "<color=yellow>";
+				prefix = "<b><color=yellow>[COMMAND IS MISSING ARGUMENTS] ";
 				break;
 			case CommandResult.CommandCausedAnException:
-				prefix = "<color=red>";
+				prefix = "<b><color=red>[COMMAND CAUSED AN ERROR] ";
 				break;
 			case CommandResult.Success:
-				prefix = "<color=green>";
+				prefix = "<b><color=green>[COMMAND SUCCEEDED] ";
 				break;
 			case CommandResult.UnkownCommand:
-				prefix = "<color=red>";
+				prefix = "<b><color=red>[UNKOWN COMMAND] ";
 				break;
 			case CommandResult.CommandParseFailed:
-				prefix = "<color=red>";
+				prefix = "<b><color=red>[COMMAND PARSE FAILED] ";
 				break;
 		}
 
-		TextToConsole(prefix + result.ToString());
+		TextToConsole(prefix); // + result.ToString());
 
 		inputField.text = "";
 
@@ -237,22 +237,46 @@ public class DebugConsole : MonoBehaviour
 
 			if (commands[i] as Command != null)
 			{
-				(commands[i] as Command).Invoke();
-				return CommandResult.Success;
+				try
+				{
+					(commands[i] as Command).Invoke();
+					return CommandResult.Success;
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(e.Message);
+					return CommandResult.CommandCausedAnException;
+				}
 			}
 
 			if (args.Length <= 0 || args[0] == null) return CommandResult.MissingArgs;
 
 			else if (commands[i] as Command<string> != null)
 			{
-				(commands[i] as Command<string>).Invoke(args[0]);
-				return CommandResult.Success;
+				try
+				{
+					(commands[i] as Command<string>).Invoke(args[0]);
+					return CommandResult.Success;
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(e.Message);
+					return CommandResult.CommandCausedAnException;
+				}
 			}
 
 			else if (commands[i] as Command<string[]> != null)
 			{
-				(commands[i] as Command<string[]>).Invoke(args);
-				return CommandResult.Success;
+				try
+				{
+					(commands[i] as Command<string[]>).Invoke(args);
+					return CommandResult.Success;
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(e.Message);
+					return CommandResult.CommandCausedAnException;
+				}
 			}
 
 			else if (commands[i] as Command<string, string> != null)
@@ -264,7 +288,7 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
@@ -278,15 +302,23 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
 
 			else if (commands[i] as Command<float> != null)
 			{
-				(commands[i] as Command<float>).Invoke(float.Parse(args[0]));
-				return CommandResult.Success;
+				try
+				{
+					(commands[i] as Command<float>).Invoke(float.Parse(args[0]));
+					return CommandResult.Success;
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(e.Message);
+					return CommandResult.CommandCausedAnException;
+				}
 			}
 
 			else if (commands[i] as Command<float, float> != null)
@@ -298,7 +330,7 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
@@ -312,15 +344,23 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
 
 			else if (commands[i] as Command<bool> != null)
 			{
-				(commands[i] as Command<bool>).Invoke(bool.Parse(args[0]));
-				return CommandResult.Success;
+				try
+				{
+					(commands[i] as Command<bool>).Invoke(bool.Parse(args[0]));
+					return CommandResult.Success;
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(e.Message);
+					return CommandResult.CommandCausedAnException;
+				}
 			}
 
 			else if (commands[i] as Command<bool, bool> != null)
@@ -332,7 +372,7 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
@@ -346,7 +386,7 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
@@ -360,7 +400,7 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
@@ -374,7 +414,7 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
@@ -388,14 +428,14 @@ public class DebugConsole : MonoBehaviour
 				}
 				catch (Exception e)
 				{
-					print(e.Message);
+					Debug.LogError(e.Message);
 					return CommandResult.CommandCausedAnException;
 				}
 			}
 
 		}
 
-		return CommandResult.CommandParseFailed;
+		return CommandResult.UnkownCommand;
 	}
 
 	public void DestroyUnityObject(UnityEngine.Object objectToDestroy)

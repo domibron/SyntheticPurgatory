@@ -9,31 +9,29 @@ public class BaseCommands
 {
     private DebugConsole console;
 
-    public static Command test;
-    public static Command help;
-    public static Command reloadLevel;
-    public static Command<string[]> testMessage;
-    public static Command<int> loadLevel;
-    public static Command<float, float, float> tp;
-    public static Command destroyObjectCommand;
-    public static Command<float> setSprintSpeed;
+    // could throw all the conmmands in the list creations as short hand.
 
-    public static Command<float> damagePlayer;
-    public static Command<float> healPlayer;
-    public static Command noClip;
-    public static Command unlockAllAbilities;
+    public Command test;
+    public Command help;
+    public Command reloadLevel;
+    public Command<string[]> testMessage;
+    public Command<int> loadLevel;
+    public Command<float, float, float> tp;
+    public Command destroyObjectCommand;
+    public Command<float> setSprintSpeed;
 
-    public static Command removeDialog;
-    public static Command removeHud;
+    public Command<float> damagePlayer;
+    public Command<float> healPlayer;
+    public Command noClip;
 
-    public static Command<float> setAttackDamage;
+    public Command<float> setAttackDamage;
 
-    public static Command toggleDoors;
-    public static Command<int> giveScrap;
-    public static Command<int, int> giveUpgradeCard;
+    public Command toggleDoors;
+    public Command<int> giveScrap;
+    public Command<int, int> giveUpgradeCard;
 
-    public static Command refreshUpgradeMenu;
-    public static Command<bool> errorsOnly;
+    public Command refreshUpgradeMenu;
+    public Command<bool> errorsOnly;
 
     public BaseCommands(DebugConsole console)
     {
@@ -123,24 +121,6 @@ public class BaseCommands
             }
         });
 
-        //         setSprintSpeed = new Command<float>("walkspeed", "set the sprint speed of the player", "walkspeed <float>", (newSpeed) =>
-        //         {
-        // #nullable enable
-        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
-        // #nullable restore
-        //             if (go != null && go.transform.name == "Player")
-        //             {
-        //                 go.transform.GetComponent<PlayerMovementHandler>().walkSpeed = newSpeed;
-        //                 console.TextToConsole("Set sprint speed of the player to " + newSpeed);
-        //             }
-        //             else
-        //             {
-        //                 console.TextToConsole("Cannot find the player");
-        //                 return;
-        //             }
-        //         });
-
-
         reloadLevel = new Command("reload", "reloads the level", "reload", () =>
         {
             try
@@ -161,29 +141,7 @@ public class BaseCommands
             }
         });
 
-        //         damagePlayer = new Command<float>("damage", "damages the player", "damage <float>", (damage) =>
-        //         {
-
-
-        // #nullable enable
-        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
-        // #nullable restore
-        //             if (go != null && go.transform.name == "Player")
-        //             {
-        //                 go.transform.GetComponent<IDamageable>().TakeDamage(damage);
-        //                 console.TextToConsole($"player hp is now at {go.transform.GetComponent<Health>().ReturnHealthValue()}");
-
-        //             }
-        //             else
-        //             {
-        //                 console.TextToConsole("Cannot find the player");
-        //                 return;
-        //             }
-
-        //         });
-
-
-        damagePlayer = new Command<float>("heal", "damages the player", "damage <float>", (health) =>
+        damagePlayer = new Command<float>("damage", "damages the player", "damage <float>", (health) =>
         {
 
 
@@ -204,28 +162,6 @@ public class BaseCommands
 
         });
 
-        removeDialog = new Command("rmrfdialog", "damages the player", "rmrfdialog", () =>
-        {
-
-#nullable enable
-            GameObject[] dialogueObjects = GameObject.FindGameObjectsWithTag("DialogueObject");
-#nullable restore
-            if (dialogueObjects.Length > 0)
-            {
-                foreach (var dobj in dialogueObjects)
-                {
-                    GameObject.Destroy(dobj);
-                }
-
-                console.TextToConsole($"removed {dialogueObjects.Length} from the scene");
-            }
-            else
-            {
-                console.TextToConsole("Cannot find any dialogueObjects");
-                return;
-            }
-
-        });
 
 
         noClip = new Command("noclip", "gives you that ability to walk through walls", "noclip", () =>
@@ -233,19 +169,27 @@ public class BaseCommands
 #nullable enable
             GameObject? go = GameObject.FindGameObjectWithTag("Player");
 #nullable restore
-            if (go != null && go.transform.name == "Player")
+            if (go && go.transform.name.ToLower().Contains("player"))
             {
-                if (go.transform.GetComponent<NoClipPlayerController>() != null)
+                if (go.transform.GetComponent<NoClipPlayerController>())
                 {
                     console.DestroyUnityObject(go.GetComponent<NoClipPlayerController>());
-                    go.transform.GetComponent<CharacterController>().enabled = true;
+                    if (go.transform.GetComponent<CharacterController>())
+                        go.transform.GetComponent<CharacterController>().enabled = true;
+                    if (go.transform.GetComponent<Rigidbody>())
+                        go.transform.GetComponent<Rigidbody>().isKinematic = false;
+
 
                     console.TextToConsole($"No clip mode deactivated");
                 }
                 else
                 {
 
-                    go.transform.GetComponent<CharacterController>().enabled = false;
+                    if (go.transform.GetComponent<CharacterController>())
+                        go.transform.GetComponent<CharacterController>().enabled = false;
+                    if (go.transform.GetComponent<Rigidbody>())
+                        go.transform.GetComponent<Rigidbody>().isKinematic = true;
+
                     go.AddComponent<NoClipPlayerController>();
 
                     console.TextToConsole($"No clip mode activated");
@@ -255,72 +199,12 @@ public class BaseCommands
             }
             else
             {
-                console.TextToConsole("Cannot find the player");
-                return;
+                throw new NullReferenceException("Cannot locate the player object. No object with Player tag and name containing player");
+                //console.TextToConsole("Cannot find the player");
+                // return;
             }
         });
 
-
-        //         unlockAllAbilities = new Command("unlockall", "gives you all the abilities", "unlockall", () =>
-        //         {
-        // #nullable enable
-        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
-        // #nullable restore
-        //             if (go != null && go.transform.name == "Player")
-        //             {
-
-        //                 go.GetComponent<ShieldAbility>().unlockedShield = true;
-        //                 go.GetComponent<PlayerAttackHandler>().heavyAttackUnlocked = true;
-
-        //                 console.TextToConsole($"Unlocked all abilities");
-
-        //             }
-        //             else
-        //             {
-        //                 console.TextToConsole("Cannot find the player");
-        //                 return;
-        //             }
-        //         });
-
-
-        // removeHud = new Command("togglehud", "removes the hud", "togglehud", () =>
-        // {
-        //     if (PlayerCanvasReference.instance == null)
-        //     {
-        //         console.TextToConsole("Cannot find the canvas!");
-        //         return;
-        //     }
-
-        //     GameObject playerCanvas = PlayerCanvasReference.instance.GetPlayerCanvasReference();
-
-        //     GameObject hudCanvas = playerCanvas.transform.Find("Player HUD").gameObject;
-
-        //     hudCanvas.SetActive(!hudCanvas.activeSelf);
-
-        //     console.TextToConsole("Toggled");
-        // });
-
-        //         setAttackDamage = new Command<float>("setdmg", "sets the player light attack damage", "setdmg", (x) =>
-        //         {
-        // #nullable enable
-        //             GameObject? go = GameObject.FindGameObjectWithTag("Player");
-        // #nullable restore
-        //             if (go != null && go.transform.name == "Player")
-        //             {
-
-        //                 go.GetComponent<PlayerAttackHandler>().lightAttackDamage = x;
-
-        //                 console.TextToConsole($"Setted the damage");
-
-        //             }
-        //             else
-        //             {
-        //                 console.TextToConsole("Cannot find the player");
-        //                 return;
-        //             }
-        //         });
-
-        // foreach
 
         toggleDoors = new Command("toggledoors", "Toggles all the door's open states in the current room of the player.", "toggledoors", () =>
         {
@@ -409,14 +293,10 @@ public class BaseCommands
             loadLevel,
             tp,
             destroyObjectCommand,
-            // setSprintSpeed,
             reloadLevel,
-            // damagePlayer,
-            removeDialog,
+            damagePlayer,
+            healPlayer,
             noClip,
-            // unlockAllAbilities,
-            // removeHud,
-            // setAttackDamage,
             toggleDoors,
             giveScrap,
             giveUpgradeCard,
