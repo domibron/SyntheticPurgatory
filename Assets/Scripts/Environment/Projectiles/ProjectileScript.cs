@@ -103,6 +103,14 @@ public class ProjectileScript : MonoBehaviour
     }
 
 
+    // Collision events do not trigger like I suspected.
+    // Trigger enter events failing to activate for fast moving projectiles.
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     print("collision for a trigger?");
+    // }
+
+
     private void OnTriggerEnter(Collider other)
     {
         // ProjectileLogic(other);
@@ -164,7 +172,7 @@ public class ProjectileScript : MonoBehaviour
         decalObject.transform.LookAt(transform.position + rb.linearVelocity.normalized);
         // decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles);
 
-        decalObject.transform.parent = null;
+        decalObject.transform.parent = hit.transform;
 
         decalObject.SetActive(true);
 
