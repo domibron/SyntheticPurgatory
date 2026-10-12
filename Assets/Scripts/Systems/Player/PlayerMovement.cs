@@ -177,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// The delay for when the <see cref="m_lateGrounded"/> can be updated.
     /// </summary>
-    private const float k_lateGroundedRefreshDelay = 0.1f;
+    private const float k_lateGroundedRefreshDelay = 0.2f;
 
     /// <summary>
     /// Ground slope states.
@@ -404,16 +404,26 @@ public class PlayerMovement : MonoBehaviour
         m_linearVelMagLerp = Mathf.Lerp(m_linearVelMagLerp, m_linearVel.magnitude, 10f * Time.deltaTime);
 
         // Head bob time.
-        if (m_linearVel.magnitude > 0) m_movementTimeForBobbing += Time.deltaTime * m_linearVelMagLerp * 1.75f;
-        else m_movementTimeForBobbing = 0;
+        if (m_linearVel.magnitude > 1f && m_lateGrounded)
+        {
+            m_movementTimeForBobbing += Time.deltaTime * m_linearVelMagLerp * 1.75f;
 
-        // Calculate the needed offset for head bobbing.
-        float sideOffset = Mathf.Sin(m_movementTimeForBobbing);
-        float heightOffset = Mathf.Cos(sideOffset * (Mathf.PI / 2f)) - 1f;
+            // Calculate the needed offset for head bobbing.
+            float sideOffset = Mathf.Sin(m_movementTimeForBobbing);
+            float heightOffset = Mathf.Cos(sideOffset * (Mathf.PI / 2f)) - 1f;
 
-        // Apply head bobbing to the camera offset.
-        m_cameraAdditonalOffset = m_moveableCamera.transform.right * sideOffset * GetHalfHeight() * 0.1f;
-        m_cameraAdditonalOffset += m_moveableCamera.transform.up * heightOffset * GetHalfHeight() * 0.1f;
+            // Apply head bobbing to the camera offset.
+            m_cameraAdditonalOffset = m_moveableCamera.transform.right * sideOffset * GetHalfHeight() * 0.1f;
+            m_cameraAdditonalOffset += m_moveableCamera.transform.up * heightOffset * GetHalfHeight() * 0.1f;
+        }
+        else
+        {
+            m_movementTimeForBobbing = 0;
+
+            m_cameraAdditonalOffset = Vector3.Lerp(m_cameraAdditonalOffset, Vector3.zero, 10f * Time.deltaTime);
+        }
+
+
 
 
         // Apply all camera movements and offsets.
@@ -469,11 +479,11 @@ public class PlayerMovement : MonoBehaviour
         if (m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Movement) || m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look) || m_rb.isKinematic) return;
 
 
-        // ========================
-        //   Landing Camera Punt.
-        // ========================
+        // ===========================
+        //   Landing Camera Punting.
+        // ===========================
         // TODO: fix issue where camera punts down when going down slopes fast.
-        if (!m_lateGrounded && CheckIsGrounded() && m_verticalVel.y < 1f && m_currentSlopeState != SlopeState.SteepSlope)
+        if (!m_lateGrounded && CheckIsGrounded() && m_verticalVel.y < -5f && m_currentSlopeState != SlopeState.SteepSlope)
         {
             m_lateGrounded = CheckIsGrounded(); // ! Terrible decision to update lategrounded like this.
             PuntCameraDown(4f);
@@ -880,8 +890,8 @@ public class PlayerMovement : MonoBehaviour
         else if (!m_isCrouchKeyDown && m_isCrouched)
         {
             // Uncrouching. Aditional check to see if the player will fit.
-            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * 0.05f), m_defaultRadius, Vector3.up, out RaycastHit info,
-                m_defaultHeight - (m_defaultRadius * 2f), m_groundLayer, QueryTriggerInteraction.Ignore))
+            if (!Physics.SphereCast(GetWorldFeetPos() + (Vector3.up * (m_defaultRadius + 0.05f)), m_defaultRadius - 0.01f, Vector3.up, out RaycastHit info,
+                m_defaultHeight - ((m_defaultRadius + 0.05f) * 2f), m_groundLayer, QueryTriggerInteraction.Ignore))
             {
                 m_isCrouched = false;
 
