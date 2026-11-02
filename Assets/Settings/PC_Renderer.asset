@@ -1,20 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1306741704494513507
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c74a9bcd3536f3340abb8f3bbd990eda, type: 3}
-  m_Name: GameViewFilterFSRF
-  m_EditorClassIdentifier: Assembly-CSharp::GameViewFilterFSRF
-  m_Active: 1
-  m_fullScreenMat: {fileID: 2100000, guid: edd0c4f24de4731458e6532631a901e8, type: 2}
-  m_injectionPoint: 600
 --- !u!114 &-611101732990053160
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -63,8 +48,8 @@ MonoBehaviour:
   - {fileID: 7833122117494664109}
   - {fileID: 4419261551964167578}
   - {fileID: -611101732990053160}
-  - {fileID: -1306741704494513507}
-  m_RendererFeatureMap: ad6b866f10d7b46c9a9d5d9ef75e543dd894802b36ee84f79d826ada5785dded
+  - {fileID: 3171302640351196583}
+  m_RendererFeatureMap: ad6b866f10d7b46c9a9d5d9ef75e543dd894802b36ee84f7a73564f9f2ba022c
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   m_AssetVersion: 3
@@ -93,6 +78,21 @@ MonoBehaviour:
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
   m_TileOnlyMode: 0
+--- !u!114 &3171302640351196583
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c74a9bcd3536f3340abb8f3bbd990eda, type: 3}
+  m_Name: GameViewFilterFSRF
+  m_EditorClassIdentifier: Assembly-CSharp::GameViewFilterFSRF
+  m_Active: 1
+  m_fullScreenMat: {fileID: 2100000, guid: edd0c4f24de4731458e6532631a901e8, type: 2}
+  m_injectionPoint: 600
 --- !u!114 &4419261551964167578
 MonoBehaviour:
   m_ObjectHideFlags: 1

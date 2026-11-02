@@ -17,9 +17,11 @@ public class GameViewFilterFSRF : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (Application.isPlaying && !Instance) Instance = this;
+        if (Application.isPlaying) Instance = this;
 
-        if (renderingData.cameraData.cameraType == CameraType.SceneView) return;
+        if (renderingData.cameraData.isSceneViewCamera) return;
+
+        if (!renderingData.cameraData.resolveFinalTarget) return;
 
         if (!m_fullScreenMat) return;
 
@@ -34,50 +36,50 @@ public class GameViewFilterFSRF : ScriptableRendererFeature
 
     public override void Create()
     {
-        if (Application.isPlaying)
-        {
-            Instance = this;
-        }
-
         m_fullscreenPass = new FullscreenPass();
 
-        EnsureRuntimeMaterial();
-
-        Material materialToUse =
-        Application.isPlaying && m_runtimeMat ? m_runtimeMat : m_fullScreenMat;
-
-        m_fullscreenPass.SetMaterial(materialToUse);
+        m_fullscreenPass.renderPassEvent = m_injectionPoint;
     }
 
     protected override void Dispose(bool disposing)
     {
-        if (Instance) Instance = null;
+        if (Instance == this) Instance = null;
 
 
-        if (m_runtimeMat)
+        if (m_runtimeMat != null)
         {
             CoreUtils.Destroy(m_runtimeMat);
             m_runtimeMat = null;
         }
+
+        m_fullscreenPass = null;
     }
 
     private void EnsureRuntimeMaterial()
     {
-        if (Application.isPlaying &&
-        m_runtimeMat == null &&
-        m_fullScreenMat != null)
+        if (!Application.isPlaying) return;
+
+        if (m_runtimeMat != null || m_fullScreenMat == null) return;
+
+
+        m_runtimeMat = new Material(m_fullScreenMat)
         {
-            m_runtimeMat = new Material(m_fullScreenMat);
-            m_runtimeMat.SetInt("_InEffect", 0);
-            m_runtimeMat.SetFloat("_Activation", 1);
-            m_runtimeMat.SetFloat("_Intensity", 0);
-            m_runtimeMat.SetFloat("_Darken", 0);
-        }
+            name = m_fullScreenMat.name + " (Runtime)",
+            hideFlags = HideFlags.DontSave
+        };
+
+        m_runtimeMat.SetInt("_InEffect", 0);
+        m_runtimeMat.SetFloat("_Activation", 1);
+        m_runtimeMat.SetFloat("_Intensity", 0);
+        m_runtimeMat.SetFloat("_Darken", 0);
+
     }
 
     public void SetIntensity(float value = 0)
     {
         EnsureRuntimeMaterial();
+
+        if (m_runtimeMat == null) return;
 
         value = Mathf.Clamp01(value);
         m_runtimeMat?.SetFloat("_Intensity", value);
@@ -87,12 +89,16 @@ public class GameViewFilterFSRF : ScriptableRendererFeature
     {
         EnsureRuntimeMaterial();
 
+        if (m_runtimeMat == null) return;
+
         m_runtimeMat?.SetFloat("_InEffect", value ? 1 : 0);
     }
 
     public void SetDarken(float value = 0)
     {
         EnsureRuntimeMaterial();
+
+        if (m_runtimeMat == null) return;
 
         value = Mathf.Clamp01(value);
         m_runtimeMat?.SetFloat("_Darken", value);
@@ -122,34 +128,53 @@ public class GameViewFilterFSRF : ScriptableRendererFeature
             m_mat = material;
         }
 
-        public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
+
+        public override void RecordRenderGraph(
+            RenderGraph renderGraph,
+            ContextContainer frameData)
         {
-            if (!m_mat) return;
+            if (!m_mat)
+                return;
 
             var resource = frameData.Get<UniversalResourceData>();
+            var cameraData = frameData.Get<UniversalCameraData>();
+
+            // Only process the final camera in the stack.
+            if (!cameraData.resolveFinalTarget)
+                return;
 
             TextureHandle source = resource.activeColorTexture;
 
             var destinationDesc = renderGraph.GetTextureDesc(source);
             destinationDesc.name = "Fullscreen Effect Result";
 
-            TextureHandle destination = renderGraph.CreateTexture(destinationDesc);
+            TextureHandle destination =
+                renderGraph.CreateTexture(destinationDesc);
 
-            var blitParams = new RenderGraphUtils.BlitMaterialParameters(
-            source,
-            destination,
-            m_mat,
-            0
-            );
+            // Apply Shader Graph effect.
+            var blitParams =
+                new RenderGraphUtils.BlitMaterialParameters(
+                    source,
+                    destination,
+                    m_mat,
+                    0
+                );
 
             renderGraph.AddBlitPass(
-
-            blitParams,
-            "Full Screen Shader Effect"
+                blitParams,
+                "Fullscreen Shader Effect"
             );
 
-            resource.cameraColor = destination;
+            // Copy the processed image back into the original texture.
+            renderGraph.AddBlitPass(
+                destination,
+                source,
+                Vector2.one,
+                Vector2.zero,
+                passName: "Copy Fullscreen Result Back"
+            );
         }
+
 
     }
 }
