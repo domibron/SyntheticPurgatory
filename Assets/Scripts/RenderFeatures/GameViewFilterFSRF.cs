@@ -4,6 +4,9 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.RenderGraphModule.Util;
 
+/// <summary>
+/// Full screen render feature that only targets the game view.
+/// </summary>
 public class GameViewFilterFSRF : ScriptableRendererFeature
 {
     public static GameViewFilterFSRF Instance { private set; get; }
@@ -36,9 +39,10 @@ public class GameViewFilterFSRF : ScriptableRendererFeature
 
     public override void Create()
     {
-        m_fullscreenPass = new FullscreenPass();
-
-        m_fullscreenPass.renderPassEvent = m_injectionPoint;
+        m_fullscreenPass = new FullscreenPass
+        {
+            renderPassEvent = m_injectionPoint
+        };
     }
 
     protected override void Dispose(bool disposing)
