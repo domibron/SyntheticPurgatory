@@ -148,9 +148,9 @@ public class BaseCommands
 #nullable enable
             GameObject? go = GameObject.FindGameObjectWithTag("Player");
 #nullable restore
-            if (go != null && go.transform.name == "Player")
+            if (go != null && go.transform.name.Contains("Player"))
             {
-                go.transform.GetComponent<Health>().AddToHealth(health);
+                go.transform.GetComponent<Health>().AddToHealth(-health);
                 console.TextToConsole($"player hp is now at {go.transform.GetComponent<Health>().GetHealthValue()}");
 
             }
