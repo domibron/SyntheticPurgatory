@@ -80,6 +80,12 @@ public class PlayerHUD : MonoBehaviour
     private float currentFlashTime = 0;
     private bool isFlash = false;
 
+    public bool IsVisible = true;
+
+
+    [SerializeField]
+    private GameObject uiObject;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -106,6 +112,8 @@ public class PlayerHUD : MonoBehaviour
         healthBarImage.fillAmount = playerHealth.GetHealthNormalized();
         currentValue = 1;
         targetValue = 1;
+
+        IsVisible = true;
     }
 
     private void OnHealthChanged(float newAmount, float oldAmount)
@@ -131,6 +139,8 @@ public class PlayerHUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        uiObject.SetActive(IsVisible);
+
         if (gameManager != null && lastDivisible == -1)
         {
             lastDivisible = ((int)(gameManager.GetCurrentTime()) / 30);
@@ -282,11 +292,11 @@ public class PlayerHUD : MonoBehaviour
             bottomRightUI.SetActive(true);
         }
 
-        int targetInvScrap = ScrapLevelM.Instance.currentInventoryScrap;
+        int targetInvScrap = ScrapLevelM.Instance.CurrentInventoryScrap;
         if (curHeldScrapNum < targetInvScrap) { curHeldScrapNum++; }
         else if (curHeldScrapNum > targetInvScrap) { curHeldScrapNum--; }
 
-        int targetDepoScrap = ScrapLevelM.Instance.currentDepositedScrap;
+        int targetDepoScrap = ScrapLevelM.Instance.CurrentDepositedScrap;
         if (curDepoScrapNum < targetDepoScrap) { curDepoScrapNum++; }
         else if (curDepoScrapNum > targetDepoScrap) { curDepoScrapNum--; }
 

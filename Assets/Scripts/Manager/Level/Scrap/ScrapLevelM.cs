@@ -31,12 +31,12 @@ public class ScrapLevelM : MonoBehaviour
     /// <summary>
     /// The current amount of scrap in the inventory.
     /// </summary>
-    public int currentInventoryScrap = 0;
+    public int CurrentInventoryScrap { private set; get; } = 0;
 
     /// <summary>
     /// The scrap that is deposited. This will be moved into the game manager at the end of the run.
     /// </summary>
-    public int currentDepositedScrap = 0;
+    public int CurrentDepositedScrap { private set; get; } = 0;
 
     /// <summary>
     /// When scrap is collected by the player.
@@ -193,7 +193,7 @@ public class ScrapLevelM : MonoBehaviour
     /// <returns>True if there is space.</returns>
     public bool IsSpaceInScrapInv()
     {
-        return currentInventoryScrap < maxInventoryScrap;
+        return CurrentInventoryScrap < maxInventoryScrap;
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public class ScrapLevelM : MonoBehaviour
     /// <returns>The remaining space in the inventory.</returns>
     public int GetRemainingScrapInvSpace()
     {
-        return maxInventoryScrap - currentInventoryScrap;
+        return maxInventoryScrap - CurrentInventoryScrap;
     }
 
     /// <summary>
@@ -221,11 +221,11 @@ public class ScrapLevelM : MonoBehaviour
     /// <returns>The remaining amount left over if there is overflow.</returns>
     public int CollectScrap(int amount)
     {
-        if (currentInventoryScrap >= maxInventoryScrap) return amount;
+        if (CurrentInventoryScrap >= maxInventoryScrap) return amount;
 
-        int remainder = (currentInventoryScrap + amount) - maxInventoryScrap;
+        int remainder = (CurrentInventoryScrap + amount) - maxInventoryScrap;
 
-        currentInventoryScrap += (amount - Mathf.Max(remainder, 0));
+        CurrentInventoryScrap += (amount - Mathf.Max(remainder, 0));
 
         // ! ~ What? The event?
         // InvokeCollectedScrap(amount);
@@ -246,12 +246,12 @@ public class ScrapLevelM : MonoBehaviour
     /// <param name="amount">The amount of scrap to remove from the inventory.</param>
     public void RemoveScrapFromInv(int amount)
     {
-        if (currentInventoryScrap <= 0) return;
+        if (CurrentInventoryScrap <= 0) return;
 
-        currentInventoryScrap -= amount;
+        CurrentInventoryScrap -= amount;
 
         // Prevent negative, you cannot carry negative scrap.
-        if (currentInventoryScrap < 0) currentInventoryScrap = 0;
+        if (CurrentInventoryScrap < 0) CurrentInventoryScrap = 0;
 
         InvokeDroppedScrap(amount);
     }
@@ -262,10 +262,10 @@ public class ScrapLevelM : MonoBehaviour
     /// <param name="amount">The amount to deposit.</param>
     public void DepositScrap(int amount)
     {
-        if (currentInventoryScrap <= 0 || amount <= 0) return;
+        if (CurrentInventoryScrap <= 0 || amount <= 0) return;
 
-        currentInventoryScrap -= amount;
-        currentDepositedScrap += amount;
+        CurrentInventoryScrap -= amount;
+        CurrentDepositedScrap += amount;
 
 
         // InvokeDepositedScrap(amount);
@@ -283,30 +283,30 @@ public class ScrapLevelM : MonoBehaviour
     /// <returns>The total amount of scrap that was collected.</returns>
     public int GetAllCollectedScrap()
     {
-        int leftOvers = currentInventoryScrap;
-        currentInventoryScrap = 0; // stop any depositing to prevent duplication.
+        int leftOvers = CurrentInventoryScrap;
+        CurrentInventoryScrap = 0; // stop any depositing to prevent duplication.
 
         // GameManager.Instance.AddToDepositedScrap(currentDepositedScrap + leftOvers);
-        return currentDepositedScrap + leftOvers;
+        return CurrentDepositedScrap + leftOvers;
     }
 
-    /// <summary>
-    /// Get the scrap currently in the inventory.
-    /// </summary>
-    /// <returns>The scrap in the inventory of the player.</returns>
-    public int GetScrapInInventory()
-    {
-        return currentInventoryScrap;
-    }
+    // /// <summary>
+    // /// Get the scrap currently in the inventory.
+    // /// </summary>
+    // /// <returns>The scrap in the inventory of the player.</returns>
+    // public int GetScrapInInventory()
+    // {
+    //     return currentInventoryScrap;
+    // }
 
-    /// <summary>
-    /// Get all the scrap that was deposited this run.
-    /// </summary>
-    /// <returns>The amount of scrap deposited.</returns>
-    public int GetDepositedScrap()
-    {
-        return currentDepositedScrap;
-    }
+    // /// <summary>
+    // /// Get all the scrap that was deposited this run.
+    // /// </summary>
+    // /// <returns>The amount of scrap deposited.</returns>
+    // public int GetDepositedScrap()
+    // {
+    //     return currentDepositedScrap;
+    // }
 
 
     /// <summary>

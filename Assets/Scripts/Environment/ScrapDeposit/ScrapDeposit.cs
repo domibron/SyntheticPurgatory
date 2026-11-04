@@ -67,10 +67,10 @@ public class ScrapDeposit : MonoBehaviour
         if (playerInRange && currentDelay <= 0)
         {
             // * DEPO
-            if (ScrapLevelM.Instance.GetScrapInInventory() <= 0) return;
+            if (ScrapLevelM.Instance.CurrentInventoryScrap <= 0) return;
 
 
-            ScrapItemData scrapItemData = ScrapLevelM.GetPrefabWithHighestWorth(ScrapLevelM.Instance.GetScrapInInventory(), ScrapLevelM.Instance.DepositScrapWithWorth);
+            ScrapItemData scrapItemData = ScrapLevelM.GetPrefabWithHighestWorth(ScrapLevelM.Instance.CurrentInventoryScrap, ScrapLevelM.Instance.DepositScrapWithWorth);
 
             GameObject scrapObject = Instantiate(scrapItemData.ScrapPrefab, playerTransform.position, Quaternion.identity);
             ScrapLevelM.Instance.DepositScrap(scrapItemData.ScrapWorth);

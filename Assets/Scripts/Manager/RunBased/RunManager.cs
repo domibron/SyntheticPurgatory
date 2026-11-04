@@ -311,7 +311,7 @@ public class RunManager : MonoBehaviour
             epicModuleData.AddAmount(ModuleLevelM.Instance.GetAllModuleCountOfType(ModuleTier.Epic));
         }
 
-        AddToDepositedScrap(ScrapLevelM.Instance.GetDepositedScrap());
+        AddToDepositedScrap(ScrapLevelM.Instance.CurrentDepositedScrap);
         statsHolder.totalScrap += ScrapLevelM.Instance.GetAllCollectedScrap();
 
         ResetTimer();
