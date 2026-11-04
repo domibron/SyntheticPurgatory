@@ -84,7 +84,7 @@ public class DeathVFXandHealthLink : MonoBehaviour
 
 
         float target01 = (m_damageIntensityStart - m_lastHealthState) / m_damageIntensityStart;
-        print($"{EaseExpo(target01)}");
+        // print($"{EaseExpo(target01)}");
 
         m_smoothIntensity = Mathf.Lerp(m_smoothIntensity, EaseExpo(target01), Time.deltaTime * (1 / m_damageFadeIn));
 

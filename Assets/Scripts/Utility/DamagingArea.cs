@@ -45,6 +45,8 @@ public class DamagingArea : MonoBehaviour
         // Fixed a bug when iterating over a list and modifying that list.
         List<Health> objectsToDamage = objectsInside;
 
+        // TODO: cache the list, contents can be modified whilst iterating.
+
         foreach (Health damageableObject in objectsToDamage)
         {
             // if null remove.

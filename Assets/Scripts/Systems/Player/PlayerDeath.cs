@@ -61,10 +61,9 @@ public class PlayerDeath : MonoBehaviour
 
 
         // TODO: Create a proper text stat block and not call it death screen. Need to work on a proper end of dungeon screen.
-        if (!RunManager.Instance)
-        {
-            deathCanvasScript.ActivateCanvas(true);
-        }
+
+        deathCanvasScript.ActivateCanvas(true);
+
 
         // if (!RunManager.Instance || RunManager.Instance.GetCurrentLives() > 1)
         // {
