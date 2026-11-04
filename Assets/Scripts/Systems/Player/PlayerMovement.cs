@@ -233,8 +233,11 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     float m_currentWaitUntilJumpRestAllowed = 0f;
 
+    #endregion
 
-    // Vels
+
+
+    #region Velocities
 
     Vector3 m_linearVel = Vector3.zero;
     Vector3 m_verticalVel = Vector3.zero;
@@ -247,8 +250,11 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 m_lastSpeed = Vector3.zero;
 
+    #endregion
 
-    // Camera
+
+
+    #region Camera
 
     float m_fovAccelLerp = 0f;
     float m_fovMaxSpeedLerp = 0f;
@@ -344,6 +350,13 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    void Start()
+    {
+        GetComponent<Health>().onDeath += RagdollCamera;
+    }
+
+
+
     void Update()
     {
         // ===============================
@@ -358,7 +371,7 @@ public class PlayerMovement : MonoBehaviour
         // ======================
         HandleCameraMovement();
 
-        if (m_rb.isKinematic) return;
+        if (m_rb.isKinematic || m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look)) return;
 
         // =====================
         //   Jump reset timer.
@@ -689,6 +702,22 @@ public class PlayerMovement : MonoBehaviour
     public void PuntCameraRollCounterClockWise(float force)
     {
         PuntCamera(Vector3.forward * force);
+    }
+
+
+    private void RagdollCamera()
+    {
+        SphereCollider sphCol = m_moveableCamera.gameObject.AddComponent<SphereCollider>();
+        sphCol.radius = 0.3f;
+
+        Rigidbody camRB = m_moveableCamera.gameObject.AddComponent<Rigidbody>();
+        camRB.mass = 100f;
+        camRB.linearDamping = 1f;
+        camRB.angularDamping = 3f;
+
+        camRB.linearVelocity = m_linearVel + m_verticalVel;
+
+        m_moveableCamera.Find("Items").transform.SetParent(transform);
     }
 
     #endregion
