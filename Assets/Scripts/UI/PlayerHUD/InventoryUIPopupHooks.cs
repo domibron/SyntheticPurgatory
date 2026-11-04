@@ -91,7 +91,7 @@ public class InventoryUIPopupHooks : MonoBehaviour
 
         invFullSpamProtect = invFullSpamWait;
 
-        popupManager.DisplayText($"Inventory is full! <b>({scrapManager.GetScrapInInventory()}/{scrapManager.GetMaxScrapInventory()})</b>", "warn", duration);
+        popupManager.DisplayText($"Inventory is full! <b>({scrapManager.CurrentInventoryScrap}/{scrapManager.GetMaxScrapInventory()})</b>", "warn", duration);
         toolTipManager.DisplayTooltip($"<color=red>Inventory is full!</color>", duration, 5);
     }
 

@@ -294,7 +294,8 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-
+    [SerializeField]
+    bool m_debugInfo = false;
 
 
     // =============
@@ -573,6 +574,8 @@ public class PlayerMovement : MonoBehaviour
 
     void OnGUI()
     {
+        if (!m_debugInfo) return;
+
         const float k_textSize = 30f;
         GUILayout.Label($"<color=blue><size={Screen.height / k_textSize}>" + m_rb.linearVelocity.magnitude.ToString("F2"));
         GUILayout.Label($"<color=blue><size={Screen.height / k_textSize}>" + "m_linearVel " + m_linearVel.ToString("F2"));

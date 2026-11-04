@@ -25,22 +25,6 @@ public class SpawnPlayer : SequenceBase
         // GetComponent<NavMeshBaker>().onNavMeshSurfaceGenerated += OnNavMeshSurfaceGenerated;
     }
 
-    private void OnNavMeshSurfaceGenerated()
-    {
-        if (playerPrefab != null)
-        {
-            GameObject canvasObject = Instantiate(playerCanvas);
-            GameObject playerObject = Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
-
-            playerObject.transform.GetComponent<PlayerDeath>().deathCanvasScript = canvasObject.transform.GetComponent<DeathCanvas>();
-        }
-    }
-
-    private void OnLevelGenComplete()
-    {
-        playerSpawnLocation = levelGenerator.GetPlayerSpawnLocation();
-    }
-
     public override void StartSequence()
     {
         currentProgress = 0f;
@@ -48,10 +32,14 @@ public class SpawnPlayer : SequenceBase
 
         if (playerPrefab != null)
         {
-            GameObject canvasObject = Instantiate(playerCanvas);
-            GameObject playerObject = Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
+            // We dont store the values here anmore.
+            Instantiate(playerCanvas);
+            Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
 
-            playerObject.transform.GetComponent<PlayerDeath>().deathCanvasScript = canvasObject.transform.GetComponent<DeathCanvas>();
+            /// DO NOT put code here if you need to link a system with the player, use <see cref="PlayerRefFetcher.Instance"/> instead.
+            /// Just make sure to wait for the player to spawn first. Look at this link for more info for start corutine.
+            /// <see cref="https://docs.unity.com/en-us/engine/6000.0/script-reference/unityengine/monobehaviour/start#remarks"/>.
+            // playerObject.transform.GetComponent<PlayerDeath>().deathCanvasScript = canvasObject.transform.GetComponent<DeathCanvas>();
         }
 
         currentProgress = 1f;

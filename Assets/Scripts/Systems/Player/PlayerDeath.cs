@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -8,7 +9,7 @@ public class PlayerDeath : MonoBehaviour
     /// <summary>
     /// DeathCanvas object to activate upon death
     /// </summary>
-    public DeathCanvas deathCanvasScript;
+    public DeathCanvas deathCanvasScript; // TODO: this doesn't look like it would get the player canvas. But it does in game?
 
 
     /// <summary>
@@ -18,10 +19,16 @@ public class PlayerDeath : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    IEnumerator Start()
     {
-        endCanvasScript = deathCanvasScript.transform.GetComponent<EndStateScreen>(); //TEMPORARY
         GetComponent<Health>().onDeath += OnPlayerDeath;
+
+        while (!deathCanvasScript) // WAIT until the player has spawned.
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        endCanvasScript = deathCanvasScript.transform.GetComponent<EndStateScreen>(); //TEMPORARY
     }
 
     /// <summary>
@@ -52,15 +59,15 @@ public class PlayerDeath : MonoBehaviour
             Cursor.visible = true;
         }
 
-        if (RunManager.Instance.GetCurrentLives() > 1)
+        if (!RunManager.Instance || RunManager.Instance.GetCurrentLives() > 1)
         {
             deathCanvasScript.ActivateCanvas(true); // Activate death screen
-            if (ScrapLevelM.Instance != null)
-                deathCanvasScript.ShowStats(ScrapLevelM.Instance.currentDepositedScrap, ScrapLevelM.Instance.currentInventoryScrap);
+            // if (ScrapLevelM.Instance != null) // TODO: Move stat fetching into the death canvas.
+            //     deathCanvasScript.ShowStats(ScrapLevelM.Instance.currentDepositedScrap, ScrapLevelM.Instance.currentInventoryScrap);
         }
         else
         {
-            endCanvasScript.ActivateCanvas(true);
+            endCanvasScript?.ActivateCanvas(true);
         }
     }
 }
