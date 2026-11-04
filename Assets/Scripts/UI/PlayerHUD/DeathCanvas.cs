@@ -15,16 +15,7 @@ public class DeathCanvas : MonoBehaviour
     /// </summary>
     [SerializeField]
     private GameObject deathCanvasCollection;
-    /// <summary>
-    /// Text Object for displaying deposited scrap text
-    /// </summary>
-    [SerializeField]
-    private TMP_Text depoScrapStatText;
-    /// <summary>
-    /// Text Object for displaying lost scrap stat
-    /// </summary>
-    [SerializeField]
-    private TMP_Text lostScrapStatText;
+
     /// <summary>
     /// Bool for checking if the stats have been displayed
     /// </summary>
@@ -36,13 +27,26 @@ public class DeathCanvas : MonoBehaviour
     [SerializeField]
     private Image backgroundDarkenImage;
 
+    [SerializeField]
+    private TMP_Text connectionOfflineText;
+
+    Coroutine m_animateConnectionOfflineCoroutine = null;
+
     Color startingDarkenColor;
+    Color startingConOfflineColor;
 
     IEnumerator Start()
     {
         deathConsole.text = "";
 
         startingDarkenColor = backgroundDarkenImage.color;
+        startingDarkenColor.a = 0f;
+        backgroundDarkenImage.color = startingDarkenColor;
+
+        startingConOfflineColor = connectionOfflineText.color;
+        startingConOfflineColor.a = 0;
+        connectionOfflineText.color = startingConOfflineColor;
+
 
         ActivateCanvas(false);
 
@@ -70,15 +74,37 @@ public class DeathCanvas : MonoBehaviour
     {
         if (deathCanvasCollection.activeSelf)
         {
+            const float fadeTime = 3f;
+
             if (backgroundDarkenImage.color.a < 1)
             {
                 backgroundDarkenImage.color = new Color(startingDarkenColor.r, startingDarkenColor.b, startingDarkenColor.g,
-                    backgroundDarkenImage.color.a + (Time.deltaTime * (1 / 3f)));
+                    backgroundDarkenImage.color.a + (Time.deltaTime * (1 / fadeTime)));
+            }
+
+            if (connectionOfflineText.color.a < 1)
+            {
+                connectionOfflineText.color = new Color(startingConOfflineColor.r, startingConOfflineColor.g, startingConOfflineColor.b,
+                connectionOfflineText.color.a + Time.deltaTime * (1 / fadeTime));
             }
         }
         else
         {
             backgroundDarkenImage.color = startingDarkenColor;
+            connectionOfflineText.color = startingConOfflineColor;
+        }
+    }
+
+    private IEnumerator AnimateConnectionOffline()
+    {
+        const float flash = 0.5f;
+
+        while (true)
+        {
+            connectionOfflineText.text = "connection:\noffline";
+            yield return new WaitForSeconds(flash);
+            connectionOfflineText.text = "connection:\n! offline !";
+            yield return new WaitForSeconds(flash);
         }
     }
 
@@ -109,22 +135,20 @@ public class DeathCanvas : MonoBehaviour
         if (state)
         {
             StartCoroutine(AnimateDeath());
+
+            if (m_animateConnectionOfflineCoroutine == null)
+            {
+                m_animateConnectionOfflineCoroutine = StartCoroutine(AnimateConnectionOffline());
+            }
         }
-    }
-
-
-    /// <summary>
-    /// Show the stats of the level onto the screen
-    /// </summary>
-    /// <param name="scrapDeposited">Total value for the total scrap deposited</param>
-    /// <param name="scrapLost">Value of the held scrap on death</param>
-    public void ShowStats(int scrapDeposited, int scrapLost)
-    {
-        if (shownStats) { return; }
-
-        shownStats = true;
-        depoScrapStatText.text = (depoScrapStatText.text + scrapDeposited);
-        lostScrapStatText.text = (lostScrapStatText.text + scrapLost);
+        else
+        {
+            if (m_animateConnectionOfflineCoroutine != null)
+            {
+                StopCoroutine(m_animateConnectionOfflineCoroutine);
+                m_animateConnectionOfflineCoroutine = null;
+            }
+        }
     }
 
 
