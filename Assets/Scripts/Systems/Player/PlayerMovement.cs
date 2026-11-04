@@ -707,6 +707,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void RagdollCamera()
     {
+        // this is such a hack
+
         SphereCollider sphCol = m_moveableCamera.gameObject.AddComponent<SphereCollider>();
         sphCol.radius = 0.3f;
 

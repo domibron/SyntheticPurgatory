@@ -283,7 +283,7 @@ public class RunManager : MonoBehaviour
     /// Returns to the hub world if the player still has lives, otherwise it ends the run.
     /// </summary>
     /// <param name="playerDied"></param>
-    public void ReturnToHubWorld(bool playerDied = false)
+    public void TryToReturnToHubWorld(bool playerDied = false)
     {
         // is player dead?
         // minus lives

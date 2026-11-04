@@ -14,38 +14,32 @@ public class DeathCanvas : MonoBehaviour
     /// Object on the canvas that contains all the death canvas GUI
     /// </summary>
     [SerializeField]
-    private GameObject deathCanvasCollection;
+    private GameObject m_deathCanvasCollection;
 
     /// <summary>
     /// Bool for checking if the stats have been displayed
     /// </summary>
-    private bool shownStats = false;
+    private bool m_shownStats = false;
 
     [SerializeField]
-    private TMP_Text deathConsole;
+    private TMP_Text m_deathConsole;
+
 
     [SerializeField]
-    private Image backgroundDarkenImage;
-
-    [SerializeField]
-    private TMP_Text connectionOfflineText;
+    private TMP_Text m_connectionOfflineText;
 
     Coroutine m_animateConnectionOfflineCoroutine = null;
 
-    Color startingDarkenColor;
-    Color startingConOfflineColor;
+    [SerializeField]
+    private CanvasGroup canvasGroup;
+
 
     IEnumerator Start()
     {
-        deathConsole.text = "";
+        m_deathConsole.text = "";
 
-        startingDarkenColor = backgroundDarkenImage.color;
-        startingDarkenColor.a = 0f;
-        backgroundDarkenImage.color = startingDarkenColor;
+        canvasGroup.alpha = 0f;
 
-        startingConOfflineColor = connectionOfflineText.color;
-        startingConOfflineColor.a = 0;
-        connectionOfflineText.color = startingConOfflineColor;
 
 
         ActivateCanvas(false);
@@ -72,26 +66,18 @@ public class DeathCanvas : MonoBehaviour
 
     void Update()
     {
-        if (deathCanvasCollection.activeSelf)
+        if (m_deathCanvasCollection.activeSelf)
         {
             const float fadeTime = 3f;
 
-            if (backgroundDarkenImage.color.a < 1)
+            if (canvasGroup.alpha < 1)
             {
-                backgroundDarkenImage.color = new Color(startingDarkenColor.r, startingDarkenColor.b, startingDarkenColor.g,
-                    backgroundDarkenImage.color.a + (Time.deltaTime * (1 / fadeTime)));
-            }
-
-            if (connectionOfflineText.color.a < 1)
-            {
-                connectionOfflineText.color = new Color(startingConOfflineColor.r, startingConOfflineColor.g, startingConOfflineColor.b,
-                connectionOfflineText.color.a + Time.deltaTime * (1 / fadeTime));
+                canvasGroup.alpha += (Time.deltaTime * (1 / fadeTime));
             }
         }
         else
         {
-            backgroundDarkenImage.color = startingDarkenColor;
-            connectionOfflineText.color = startingConOfflineColor;
+            canvasGroup.alpha = 0;
         }
     }
 
@@ -101,16 +87,16 @@ public class DeathCanvas : MonoBehaviour
 
         while (true)
         {
-            connectionOfflineText.text = "connection:\noffline";
+            m_connectionOfflineText.text = "connection:\noffline";
             yield return new WaitForSeconds(flash);
-            connectionOfflineText.text = "connection:\n! offline !";
+            m_connectionOfflineText.text = "connection:\n! offline !";
             yield return new WaitForSeconds(flash);
         }
     }
 
     private void OnDeviceChanged(InputManager.InputDeviceType newDevice, InputManager.InputDeviceType oldDevice)
     {
-        if (!deathCanvasCollection.activeSelf) return;
+        if (!m_deathCanvasCollection.activeSelf) return;
 
 
         if (newDevice == InputManager.InputDeviceType.Gamepad)
@@ -130,7 +116,7 @@ public class DeathCanvas : MonoBehaviour
     /// <param name="state">Whether to turn on or off the death canvas</param>
     public void ActivateCanvas(bool state)
     {
-        deathCanvasCollection.SetActive(state);
+        m_deathCanvasCollection.SetActive(state);
 
         if (state)
         {
@@ -165,13 +151,13 @@ public class DeathCanvas : MonoBehaviour
         }
         else
         {
-            RunManager.Instance.ReturnToHubWorld(true);
+            RunManager.Instance.TryToReturnToHubWorld(true);
         }
     }
 
     private IEnumerator AnimateDeath()
     {
-        deathConsole.text = "";
+        m_deathConsole.text = "";
 
         yield return new WaitForSeconds(3f);
 
@@ -248,7 +234,7 @@ public class DeathCanvas : MonoBehaviour
 
 
         // display stats IG
-        deathConsole.text = "";
+        m_deathConsole.text = "";
 
 
         yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
@@ -303,7 +289,7 @@ public class DeathCanvas : MonoBehaviour
                 if (end >= text.Length)
                 {
                     yield return new WaitForSeconds(delay);
-                    deathConsole.text += text[index];
+                    m_deathConsole.text += text[index];
                     index++;
                 }
                 else
@@ -314,19 +300,19 @@ public class DeathCanvas : MonoBehaviour
                         add += text[i];
                     }
 
-                    deathConsole.text += add;
+                    m_deathConsole.text += add;
                     index = end + 1;
                 }
             }
             else if (text[index] == '\n')
             {
-                deathConsole.text += text[index];
+                m_deathConsole.text += text[index];
                 index++;
             }
             else
             {
                 yield return new WaitForSeconds(delay);
-                deathConsole.text += text[index];
+                m_deathConsole.text += text[index];
                 index++;
             }
 

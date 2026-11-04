@@ -2788,6 +2788,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3182235840513801843}
+  - component: {fileID: 1241140285516039593}
   m_Layer: 5
   m_Name: DeathScreen
   m_TagString: Untagged
@@ -2818,6 +2819,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1241140285516039593
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2869918897005718140}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3034292316531418823
 GameObject:
   m_ObjectHideFlags: 0
@@ -3229,7 +3242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.03529412}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8375,7 +8388,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6447845502640862518}
-  - component: {fileID: 7652662847784608827}
   m_Layer: 5
   m_Name: EndStateScreen
   m_TagString: Untagged
@@ -8404,14 +8416,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &7652662847784608827
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8075720347380591414}
-  m_CullTransparentMesh: 1
 --- !u!1 &8092313554257967280
 GameObject:
   m_ObjectHideFlags: 0
@@ -10007,10 +10011,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c218253d40595440a61617074f84d4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deathCanvasCollection: {fileID: 2869918897005718140}
-  deathConsole: {fileID: 1706517568217253282}
-  backgroundDarkenImage: {fileID: 3877734716575733685}
-  connectionOfflineText: {fileID: 1164362441089338906}
+  m_deathCanvasCollection: {fileID: 2869918897005718140}
+  m_deathConsole: {fileID: 1706517568217253282}
+  m_connectionOfflineText: {fileID: 1164362441089338906}
+  canvasGroup: {fileID: 1241140285516039593}
 --- !u!114 &2832204009845583925
 MonoBehaviour:
   m_ObjectHideFlags: 0
