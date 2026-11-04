@@ -21,7 +21,7 @@ public class ExitTrigger : MonoBehaviour
             }
             else
             {
-                RunManager.Instance?.ReturnToHubWorld();
+                RunManager.Instance?.TryToReturnToHubWorld();
             }
 
         }

@@ -59,15 +59,22 @@ public class PlayerDeath : MonoBehaviour
             Cursor.visible = true;
         }
 
-        if (!RunManager.Instance || RunManager.Instance.GetCurrentLives() > 1)
+
+        // TODO: Create a proper text stat block and not call it death screen. Need to work on a proper end of dungeon screen.
+        if (!RunManager.Instance)
         {
-            deathCanvasScript.ActivateCanvas(true); // Activate death screen
-            // if (ScrapLevelM.Instance != null) // TODO: Move stat fetching into the death canvas.
-            //     deathCanvasScript.ShowStats(ScrapLevelM.Instance.currentDepositedScrap, ScrapLevelM.Instance.currentInventoryScrap);
+            deathCanvasScript.ActivateCanvas(true);
         }
-        else
-        {
-            endCanvasScript?.ActivateCanvas(true);
-        }
+
+        // if (!RunManager.Instance || RunManager.Instance.GetCurrentLives() > 1)
+        // {
+        //     deathCanvasScript.ActivateCanvas(true); // Activate death screen
+        //     // if (ScrapLevelM.Instance != null) // TODO: Move stat fetching into the death canvas.
+        //     //     deathCanvasScript.ShowStats(ScrapLevelM.Instance.currentDepositedScrap, ScrapLevelM.Instance.currentInventoryScrap);
+        // }
+        // else
+        // {
+        //     endCanvasScript?.ActivateCanvas(true);
+        // }
     }
 }
