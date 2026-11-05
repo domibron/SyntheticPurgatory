@@ -28,9 +28,11 @@ public class EntityCulling : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     IEnumerator Start()
     {
-        while (PlayerRefFetcher.Instance == null) yield return null;
-
-        player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
+        while (player == null)
+        {
+            player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
+            yield return new WaitForEndOfFrame();
+        }
 
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
 

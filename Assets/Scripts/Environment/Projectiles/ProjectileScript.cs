@@ -32,7 +32,9 @@ public class ProjectileScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         sphereCollider = GetComponent<SphereCollider>();
-        decalObject?.SetActive(false);
+
+        if (decalObject != null)
+            decalObject?.SetActive(false);
     }
 
     void FixedUpdate()

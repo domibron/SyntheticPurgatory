@@ -98,9 +98,9 @@ public class RoomCulling : MonoBehaviour
             animators.Add(animator);
         }
 
-        EntityCulling[] gatheredEntityCullings = GetComponentsInChildren<EntityCulling>();
+        EntityCulling[] gatheredEntityCulling = GetComponentsInChildren<EntityCulling>();
 
-        entities.AddRange(gatheredEntityCullings);
+        entities.AddRange(gatheredEntityCulling);
 
         foreach (EntityCulling entityCulling in entities)
         {
