@@ -109,9 +109,9 @@ public class RoomCullingManager : SequenceBase
 
     void SetupAllRooms()
     {
-        List<SpawnedLevelRoomData> spawnedLevelRoomDatas = levelGenerator.GetAllSpawnedRoomData();
+        List<SpawnedLevelRoomData> spawnedLevelRoomData = levelGenerator.GetAllSpawnedRoomData();
         // print("list " + spawnedLevelRoomDatas.Count + "");
-        foreach (SpawnedLevelRoomData spawnedLevelRoom in spawnedLevelRoomDatas)
+        foreach (SpawnedLevelRoomData spawnedLevelRoom in spawnedLevelRoomData)
         {
             spawnedLevelRoom.GetRoomObject().GetComponent<RoomCulling>().SetupRoomCulling();
         }
@@ -119,9 +119,9 @@ public class RoomCullingManager : SequenceBase
 
     void UnloadAllRooms()
     {
-        List<SpawnedLevelRoomData> spawnedLevelRoomDatas = levelGenerator.GetAllSpawnedRoomData();
+        List<SpawnedLevelRoomData> spawnedLevelRoomData = levelGenerator.GetAllSpawnedRoomData();
         // print("list " + spawnedLevelRoomDatas.Count + "");
-        foreach (SpawnedLevelRoomData spawnedLevelRoom in spawnedLevelRoomDatas)
+        foreach (SpawnedLevelRoomData spawnedLevelRoom in spawnedLevelRoomData)
         {
             spawnedLevelRoom.GetRoomObject().GetComponent<RoomCulling>().SetRendererState(VisibleState.Unload);
             spawnedLevelRoom.GetRoomObject().SetActive(false);
