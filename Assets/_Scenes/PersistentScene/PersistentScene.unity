@@ -215,6 +215,7 @@ MonoBehaviour:
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -412,6 +413,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -546,6 +548,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -928,6 +931,7 @@ GameObject:
   - component: {fileID: 1651306242}
   - component: {fileID: 1651306244}
   - component: {fileID: 1651306243}
+  - component: {fileID: 1651306245}
   m_Layer: 0
   m_Name: PersistantObject
   m_TagString: Untagged
@@ -1022,6 +1026,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientId: 1437893216409223309
+--- !u!114 &1651306245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1651306238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24323a47700fdb14aa6c0d85f5dc10d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetTo60FPS
 --- !u!1 &1742369105
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,9 +1319,17 @@ PrefabInstance:
       propertyPath: m_Direction
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5428623495505141656, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
     - target: {fileID: 6993306367820778018, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_SortingOrder
       value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7071489997196733130, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 7613019450060471019, guid: b3657ccfd0f8cd9459f3db77c2b9d018, type: 3}
       propertyPath: m_Size

@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System.Collections;
-using UnityEngine.UI;
 using System;
 
 // By Vincent Pressey
@@ -16,10 +15,6 @@ public class DeathCanvas : MonoBehaviour
     [SerializeField]
     private GameObject m_deathCanvasCollection;
 
-    /// <summary>
-    /// Bool for checking if the stats have been displayed
-    /// </summary>
-    private bool m_shownStats = false;
 
     [SerializeField]
     private TMP_Text m_deathConsole;
@@ -33,6 +28,7 @@ public class DeathCanvas : MonoBehaviour
     [SerializeField]
     private CanvasGroup canvasGroup;
 
+    private const float k_fadeTime = 3f;
 
     IEnumerator Start()
     {
@@ -68,11 +64,10 @@ public class DeathCanvas : MonoBehaviour
     {
         if (m_deathCanvasCollection.activeSelf)
         {
-            const float fadeTime = 3f;
 
             if (canvasGroup.alpha < 1)
             {
-                canvasGroup.alpha += (Time.deltaTime * (1 / fadeTime));
+                canvasGroup.alpha += (Time.deltaTime * (1 / k_fadeTime));
             }
         }
         else
@@ -83,14 +78,19 @@ public class DeathCanvas : MonoBehaviour
 
     private IEnumerator AnimateConnectionOffline()
     {
+        m_connectionOfflineText.text = "";
+
+        yield return new WaitForSecondsRealtime(k_fadeTime - 0.1f);
+
+
         const float flash = 0.5f;
 
         while (true)
         {
             m_connectionOfflineText.text = "connection:\noffline";
-            yield return new WaitForSeconds(flash);
+            yield return new WaitForSecondsRealtime(flash);
             m_connectionOfflineText.text = "connection:\n! offline !";
-            yield return new WaitForSeconds(flash);
+            yield return new WaitForSecondsRealtime(flash);
         }
     }
 
@@ -159,105 +159,106 @@ public class DeathCanvas : MonoBehaviour
     {
         m_deathConsole.text = "";
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSecondsRealtime(k_fadeTime);
 
         float upper = 0.1f;
         float lower = 0.01f;
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] <color=red>ERROR</color>\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] <size=30><color=red>ERROR</color></size>\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] <size=36><b><color=red>ERROR</color></b></size>\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] MACHINE CONNECTION OFFLINE\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] ATTEMPTING RECONNECTION\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] ATTEMPT 1\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] ATTEMPT 2\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] ATTEMPT 3\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] CRITICAL FAILURE\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] PROTOTYPE <b>M.A.U</b> DEVICE LOST\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] INITIALISING REBUILD PROTOCOLS\n");
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] CALCULATING REMAINING RESOURCES...\n");
 
-        if (RunManager.Instance && RunManager.Instance.GetCurrentLives() > 0)
+
+        if (RunManager.Instance && RunManager.Instance.GetCurrentLives() - 1 > 0)
         {
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] ENOUGH TO MAKE <i>{RunManager.Instance.GetCurrentLives() - 1}</i> MORE\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] CREATING NEW MACHINE\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] DO NOT FAIL ME\n");
             if (RunManager.Instance.GetCurrentLives() - 1 == 1)
             {
-                yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+                yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
                 yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] YOU ARE MY ONLY SALVATION\n");
-                yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+                yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
                 yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] YOU MUST FREE ME\n");
-                yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+                yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
                 yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] YOU MUST NOT FAIL\n");
             }
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] DOWNLOADING DATA BANK\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] DOWNLOAD COMPLETE\n");
 
         }
         else
         {
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] NOT ENOUGH RESOURCES\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] DEVISER MISSION FAILED\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] PROTOCOL 47-B\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] MUST NEVER FALL INTO ENEMY HANDS\n");
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] <color=red>ACTIVATING SELF DESTRUCT</color>\n");
 
         }
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH:mm:ss.ffff")}] ERASING LOGS\n");
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
 
 
         // display stats IG
         m_deathConsole.text = "";
 
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH: mm: ss.ffff")}] / STATS \\\n");
 
 
         if (!ScrapLevelM.Instance || !RunManager.Instance)
         {
-            yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+            yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
             yield return PrintText($"[{DateTime.Now.ToString("HH: mm: ss.ffff")}] CANNOT CONNECT TO STATS\n");
             yield break;
         }
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH: mm: ss.ffff")}] SCRAP LOST: {ScrapLevelM.Instance.CurrentInventoryScrap}\n");
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH: mm: ss.ffff")}] SCRAP GAINED: +{ScrapLevelM.Instance.CurrentDepositedScrap}\n");
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH: mm: ss.ffff")}] TOTAL SCRAP: {RunManager.Instance.GetCurrentScrapCount() + ScrapLevelM.Instance.CurrentDepositedScrap}\n");
 
-        yield return new WaitForSeconds(UnityEngine.Random.Range(upper, lower));
+        yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(upper, lower));
         yield return PrintText($"[{DateTime.Now.ToString("HH: mm: ss.ffff")}] ENEMIES KILLED: AMOUNT\n");
 
     }
@@ -266,10 +267,18 @@ public class DeathCanvas : MonoBehaviour
     {
         int index = 0;
 
-        float delay = 0.000001f;
+        float delay = 0.01f;
+
+        float timer = 0f;
 
         while (index < text.Length)
         {
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+
             if (text[index] == '<')
             {
                 int end = index + 1;
@@ -288,7 +297,7 @@ public class DeathCanvas : MonoBehaviour
 
                 if (end >= text.Length)
                 {
-                    yield return new WaitForSeconds(delay);
+                    timer += delay;
                     m_deathConsole.text += text[index];
                     index++;
                 }
@@ -311,12 +320,10 @@ public class DeathCanvas : MonoBehaviour
             }
             else
             {
-                yield return new WaitForSeconds(delay);
+                timer += delay;
                 m_deathConsole.text += text[index];
                 index++;
             }
-
-            yield return null;
         }
 
     }

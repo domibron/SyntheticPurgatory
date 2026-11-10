@@ -299,6 +299,9 @@ public class RunManager : MonoBehaviour
                 // I really hate it here. What is happening.
                 // The tech debt is a real thing. Mystery functions that do nothing.
                 // History of what was a solution to a removed problem.
+
+                LevelLoading.Instance.LoadScene(LevelCollection.LevelKey.MainMenu.ToString());
+                return;
             }
 
 
