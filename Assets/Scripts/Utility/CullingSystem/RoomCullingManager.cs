@@ -70,16 +70,25 @@ public class RoomCullingManager : SequenceBase
     private void SetUpCullingManager()
     {
         currentProgress = 0f;
-        player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
+        player = PlayerRefFetcher.Instance.transform;
+
+        if (player == null) throw new NullReferenceException("PLAYER IS NULL");
+
         SetupAllRooms();
         currentProgress = 0.333f;
-        UnloadAllRooms();
-        currentProgress = 0.666f;
+
 
 
         Vector2Int currentRoomCoordinates = levelGenerator.GetGridCoordinates(player.position);
         lastCoordinates = currentRoomCoordinates;
+        player.GetComponent<Rigidbody>().isKinematic = true;
+        UnloadAllRooms();
         UpdateRoomCulling(currentRoomCoordinates);
+        player.GetComponent<Rigidbody>().isKinematic = false;
+
+
+        currentProgress = 0.666f;
+
         currentProgress = 1f;
         OnThisSequenceEnd?.Invoke();
     }

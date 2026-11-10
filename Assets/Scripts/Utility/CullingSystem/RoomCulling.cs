@@ -87,6 +87,8 @@ public class RoomCulling : MonoBehaviour
 
         }
 
+        // collect animators tied to the room.
+
         Animator[] collectedAnimators = GetComponentsInChildren<Animator>();
 
         foreach (Animator animator in collectedAnimators)
@@ -98,12 +100,15 @@ public class RoomCulling : MonoBehaviour
             animators.Add(animator);
         }
 
+        // Get all the entities tied to this room.
+
         EntityCulling[] gatheredEntityCulling = GetComponentsInChildren<EntityCulling>();
 
         entities.AddRange(gatheredEntityCulling);
 
         foreach (EntityCulling entityCulling in entities)
         {
+            entityCulling.ForceInitializeEntityCulling(PlayerRefFetcher.Instance.transform);
             entityCulling.OverrideCulling();
             entityCulling.TryOverrideMeshVisibility(false);
         }
