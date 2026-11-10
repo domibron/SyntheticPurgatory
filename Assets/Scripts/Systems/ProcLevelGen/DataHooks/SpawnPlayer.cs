@@ -37,7 +37,7 @@ public class SpawnPlayer : SequenceBase
             Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
 
             /// DO NOT put code here if you need to link a system with the player, use <see cref="PlayerRefFetcher.Instance"/> instead.
-            /// Just make sure to wait for the player to spawn first. Look at this link for more info for start corutine.
+            /// Just make sure to wait for the player to spawn first. Look at this link for more info for start coroutine.
             /// <see cref="https://docs.unity.com/en-us/engine/6000.0/script-reference/unityengine/monobehaviour/start#remarks"/>.
             // playerObject.transform.GetComponent<PlayerDeath>().deathCanvasScript = canvasObject.transform.GetComponent<DeathCanvas>();
         }

@@ -1,57 +1,62 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EntityCulling : MonoBehaviour
 {
-    MeshRenderer[] meshRenderers;
+    MeshRenderer[] m_meshRenderers;
 
-    Transform player;
+    Transform m_player;
 
-    float maxDistance = 48;
+    float m_maxDistance = 48;
 
-    bool overrideCulling = false;
+    bool m_overrideCulling = false;
 
-    Vector2Int gridCoordinates = Vector2Int.zero;
+    Vector2Int m_gridCoordinates = Vector2Int.zero;
 
-    LevelGenerator levelGenerator;
+    LevelGenerator m_levelGenerator;
 
-    private bool isReady = false;
+    private bool m_isReady = false;
 
     [SerializeField]
-    private bool alsoDisablePhysics = true;
+    private bool m_alsoDisablePhysics = true;
 
-    private Rigidbody rb;
+    private Rigidbody m_rb;
 
+    private Animator m_animator;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    IEnumerator Start()
+    void Start()
     {
-        while (player == null)
-        {
-            player = PlayerRefFetcher.Instance.GetPlayerRef().transform;
-            yield return new WaitForEndOfFrame();
-        }
+        m_meshRenderers = GetComponentsInChildren<MeshRenderer>();
 
-        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        m_rb = GetComponent<Rigidbody>();
 
-        rb = GetComponent<Rigidbody>();
+        m_animator = GetComponent<Animator>();
 
 
         if (LevelGenObjectRefGetter.Instance == null)
         {
-            Debug.LogWarning("NON CRITICAL: LevelGenObjectRefGetter could not be found!");
+            Debug.LogWarning($"NON CRITICAL: {nameof(LevelGenObjectRefGetter)} could not be found!");
 
         }
         else
         {
-            levelGenerator = LevelGenObjectRefGetter.Instance.transform.GetComponent<LevelGenerator>();
+            m_levelGenerator = LevelGenObjectRefGetter.Instance.transform.GetComponent<LevelGenerator>();
 
-            gridCoordinates = levelGenerator.GetGridCoordinates(transform.position);
+            m_gridCoordinates = m_levelGenerator.GetGridCoordinates(transform.position);
 
-            isReady = true;
+            m_isReady = true;
+        }
 
+        if (PlayerRefFetcher.Instance != null)
+        {
+            m_player = PlayerRefFetcher.Instance.transform;
+        }
+        else
+        {
+            return; // break the damn function.
         }
 
     }
@@ -59,19 +64,19 @@ public class EntityCulling : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (levelGenerator == null) return;
+        if (m_levelGenerator == null) return;
 
-        if (player == null) return;
+        if (m_player == null) return;
 
-        if (levelGenerator.GetGridCoordinates(transform.position) != gridCoordinates)
+        if (m_levelGenerator.GetGridCoordinates(transform.position) != m_gridCoordinates)
         {
-            overrideCulling = false; // object is on the move.
+            m_overrideCulling = false; // object is on the move.
         }
 
 
-        if (overrideCulling) return;
+        if (m_overrideCulling) return;
 
-        if (Vector3.Distance(player.position, transform.position) > maxDistance)
+        if (Vector3.Distance(m_player.position, transform.position) > m_maxDistance)
         {
             SetMeshVisibility(false);
         }
@@ -89,29 +94,75 @@ public class EntityCulling : MonoBehaviour
 
     private IEnumerator TrySetMeshVisibility(bool isVisible)
     {
-        while (!isReady) yield return null;
+        while (!m_isReady) yield return null;
 
-        foreach (var renderer in meshRenderers)
+        foreach (var renderer in m_meshRenderers)
         {
             if (renderer.enabled != isVisible)
                 renderer.enabled = isVisible;
         }
 
-        if (rb != null && alsoDisablePhysics)
+        if (m_rb != null && m_alsoDisablePhysics)
         {
-            rb.isKinematic = !isVisible;
+            m_rb.isKinematic = !isVisible;
+        }
+
+        if (m_animator != null)
+        {
+            m_animator.enabled = isVisible;
         }
     }
 
-    public void OverrideCulling()
+    public void OverrideCulling(bool isOverridden = true)
     {
-        overrideCulling = true;
+        m_overrideCulling = isOverridden;
     }
 
     public void TryOverrideMeshVisibility(bool isVisible = false)
     {
-        if (!overrideCulling) return;
+        if (!m_overrideCulling) return;
 
         SetMeshVisibility(isVisible);
+    }
+
+    public void ForceInitializeEntityCulling(Transform playerObject, LevelGenerator levelGenerator = null, bool isOverridden = true)
+    {
+        if (playerObject == null)
+        {
+            if (PlayerRefFetcher.Instance != null)
+            {
+                m_player = PlayerRefFetcher.Instance.transform;
+            }
+            else
+            {
+                throw new NullReferenceException("Cannot get the player!");
+            }
+        }
+
+        if (levelGenerator != null)
+        {
+            m_levelGenerator = levelGenerator;
+
+            m_gridCoordinates = m_levelGenerator.GetGridCoordinates(transform.position);
+
+            Debug.Log("Fetched coordinates!");
+        }
+        else if (m_levelGenerator == null && levelGenerator == null)
+        {
+            m_levelGenerator = LevelGenObjectRefGetter.Instance.transform.GetComponent<LevelGenerator>();
+
+            m_gridCoordinates = m_levelGenerator.GetGridCoordinates(transform.position);
+
+            Debug.Log($"{nameof(m_levelGenerator)} was null but another fetch was made!");
+        }
+
+        if (!m_levelGenerator)
+        {
+            throw new NullReferenceException("Cannot get the level generator!");
+        }
+
+        OverrideCulling(isOverridden);
+
+        m_isReady = true;
     }
 }
