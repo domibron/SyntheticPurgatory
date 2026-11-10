@@ -38,8 +38,8 @@ public class EntityCulling : MonoBehaviour
 
         if (LevelGenObjectRefGetter.Instance == null)
         {
-            Debug.LogWarning($"NON CRITICAL: {nameof(LevelGenObjectRefGetter)} could not be found!");
-
+            // SILENCED this message because it floods the console.
+            // Debug.LogWarning($"NON CRITICAL: {nameof(LevelGenObjectRefGetter)} could not be found!");
         }
         else
         {
@@ -145,7 +145,8 @@ public class EntityCulling : MonoBehaviour
 
             m_gridCoordinates = m_levelGenerator.GetGridCoordinates(transform.position);
 
-            Debug.Log("Fetched coordinates!");
+            // SILENCED this message because it floods the console.
+            // Debug.Log("Fetched coordinates!");
         }
         else if (m_levelGenerator == null && levelGenerator == null)
         {
@@ -153,7 +154,8 @@ public class EntityCulling : MonoBehaviour
 
             m_gridCoordinates = m_levelGenerator.GetGridCoordinates(transform.position);
 
-            Debug.Log($"{nameof(m_levelGenerator)} was null but another fetch was made!");
+            // SILENCED this message because it floods the console.
+            // Debug.Log($"{nameof(m_levelGenerator)} was null but another fetch was made!");
         }
 
         if (!m_levelGenerator)
