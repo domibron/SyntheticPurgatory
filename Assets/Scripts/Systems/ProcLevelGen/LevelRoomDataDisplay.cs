@@ -6,6 +6,9 @@ public class LevelRoomDataDisplay : MonoBehaviour
 {
     public SpawnedLevelRoomData LevelRoomData = null;
 
+    [SerializeField]
+    private bool showDebug = false;
+
     public void SetUpRoom(SpawnedLevelRoomData levelRoomData)
     {
         LevelRoomData = levelRoomData;
@@ -26,6 +29,8 @@ public class LevelRoomDataDisplay : MonoBehaviour
     void OnDrawGizmos()
     {
         if (LevelRoomData == null) return;
+
+        if (!showDebug) return;
 
         float halfOfUnitPerMeters = LevelRoomData.GetUnitSizeInMeters() / 2f;
 
