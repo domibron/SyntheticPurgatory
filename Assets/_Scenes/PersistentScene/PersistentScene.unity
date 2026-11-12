@@ -930,6 +930,7 @@ GameObject:
   - component: {fileID: 1495061069}
   - component: {fileID: 1495061071}
   - component: {fileID: 1495061070}
+  - component: {fileID: 1495061072}
   m_Layer: 5
   m_Name: Tips
   m_TagString: Untagged
@@ -1056,6 +1057,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1495061068}
   m_CullTransparentMesh: 1
+--- !u!114 &1495061072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495061068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb56bc296a1b23447b7c5ae580fb68c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tips
+  m_tipsData: {fileID: 11400000, guid: 25e16fab00ff652409f42b45fee3c089, type: 2}
+  m_textBox: {fileID: 1495061070}
+  m_secondsPerTip: 6
 --- !u!1 &1651306238
 GameObject:
   m_ObjectHideFlags: 0
