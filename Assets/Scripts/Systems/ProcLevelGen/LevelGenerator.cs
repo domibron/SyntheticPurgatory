@@ -67,30 +67,8 @@ public class LevelGenerator : SequenceBase
     {
         // clear lists before using in case of some strange behaviours.
 
-        SetupRoomGeneration();
+        // SetupRoomGeneration();
     }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-        // roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
-
-    }
-
-    // void Update()
-    // {
-    //     if (roomGenerationCoroutine != null)
-    //     {
-    //         return;
-    //     }
-
-    //     if (PlayerRefFetcher.Instance == null) return;
-
-    //     print(GetRoomIDFromCoordinates(GetRoomCoordinates(PlayerRefFetcher.Instance.GetPlayerRef().transform.position)));
-
-
-    // }
 
     private IEnumerator StartLevelGeneration()
     {
@@ -147,10 +125,6 @@ public class LevelGenerator : SequenceBase
         }
 
 
-        // if (CHECKING_CRITERIA)
-        // {
-        //     DestoryAllRooms();
-        // }
 
         // clean up
         if (roomGenerationCoroutine != null)
@@ -983,6 +957,8 @@ public class LevelGenerator : SequenceBase
 
     public override void StartSequence()
     {
+        SetupRoomGeneration();
+
         currentLevelGenerationProgress = 0f;
         roomGenerationCoroutine = StartCoroutine(StartLevelGeneration());
     }

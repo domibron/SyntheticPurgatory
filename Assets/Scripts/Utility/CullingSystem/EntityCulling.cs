@@ -68,9 +68,15 @@ public class EntityCulling : MonoBehaviour
 
         if (m_player == null) return;
 
-        if (m_levelGenerator.GetGridCoordinates(transform.position) != m_gridCoordinates)
+        Vector2Int check = m_levelGenerator.GetGridCoordinates(transform.position);
+
+        if (check != m_gridCoordinates)
         {
             m_overrideCulling = false; // object is on the move.
+
+            m_gridCoordinates = check;
+
+            transform.parent = m_levelGenerator.GetRoomGameObjectFromID(m_levelGenerator.GetRoomIDFromCoordinates(check)).transform;
         }
 
 
