@@ -40,7 +40,7 @@ public class Constants
     public const string ScrapTag = "Scrap";
 
     //                  LAYERS
-    public const string DepoSrapLayer = "DepoScrap";
+    public const string DepoScrapLayer = "DepoScrap";
 
     public const string ScrapLayer = "Scrap";
 
