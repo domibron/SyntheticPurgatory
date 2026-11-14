@@ -10,5 +10,5 @@ public interface IDamageable
     /// </summary>
     /// <param name="damage">The amount to deal.</param>
     /// <param name="hitPosition">The position of the attack / attacker.</param>
-    public void TakeDamage(float damage, Vector3 hitPosition);
+    public void TakeDamage(DamageContext context);
 }

@@ -11,18 +11,18 @@ public class DeltDamageStorer : MonoBehaviour
     void Awake()
     {
         gameManager = RunManager.Instance;
-        GetComponent<Health>().OnHealthChanged += OnHealthChanged;
+        GetComponent<Health>().HealthUpdated += OnHealthChanged;
     }
 
 
     void OnDisable()
     {
-        GetComponent<Health>().OnHealthChanged -= OnHealthChanged;
+        GetComponent<Health>().HealthUpdated -= OnHealthChanged;
     }
 
-    private void OnHealthChanged(float newHealthValue, float oldHealthValue)
+    private void OnHealthChanged(HealthChangedContext context)
     {
-        float damageReceived = oldHealthValue - newHealthValue;
+        float damageReceived = context.PreviousHealth - context.CurrentHealth;
 
         if (damageReceived <= 0) return;
 

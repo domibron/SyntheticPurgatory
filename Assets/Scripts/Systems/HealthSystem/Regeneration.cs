@@ -32,7 +32,7 @@ public class Regeneration : MonoBehaviour
     {
         health = GetComponent<Health>();
 
-        health.OnHealthChanged += OnHealthChanged;
+        health.HealthUpdated += OnHealthChanged;
     }
 
     // Update is called once per frame
@@ -62,9 +62,9 @@ public class Regeneration : MonoBehaviour
     /// </summary>
     /// <param name="newHealth">The new health value.</param>
     /// <param name="oldHealth">The old health value.</param>
-    private void OnHealthChanged(float newHealth, float oldHealth)
+    private void OnHealthChanged(HealthChangedContext context)
     {
-        if (newHealth < oldHealth)
+        if (context.CurrentHealth < context.PreviousHealth)
         {
             // pause regeneration
             currentDelay = regenerationDelay;

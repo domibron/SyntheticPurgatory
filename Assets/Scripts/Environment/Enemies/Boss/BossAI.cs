@@ -107,11 +107,11 @@ public class BossAI : BaseEnemy
         lastHealthPercentage = health.GetHealthNormalized();
 
 
-        health.onDeath += OnDeath;
-        health.OnHealthChanged += OnTakeDamage;
+        health.OnDeath += Death;
+        // health.HealthUpdated += TakeDamage;
     }
 
-    private void OnTakeDamage(float newHealth, float oldHealth)
+    private void TakeDamage(HealthChangedContext _)
     {
         // Below moved to update using a alternative method.
         // if (health.GetHealthNormalized() <= lastHealthPercentage - fallBackAfterTakenDamage)
@@ -121,7 +121,7 @@ public class BossAI : BaseEnemy
         // }
     }
 
-    private void OnDeath()
+    private void Death()
     {
         Destroy(this.gameObject);
         print("Win!!!!");

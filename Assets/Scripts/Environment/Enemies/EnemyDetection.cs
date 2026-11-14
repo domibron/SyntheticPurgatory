@@ -78,7 +78,7 @@ public class EnemyDetection : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GetComponent<Health>().OnHealthChanged += AlertFromDamage;
+        GetComponent<Health>().HealthUpdated += AlertFromDamage;
 
         targetObject = GameObject.FindWithTag("Player");
     }
@@ -108,7 +108,7 @@ public class EnemyDetection : MonoBehaviour
         {
             lostTarget(isDetecting);
         }
-        
+
     }
 
 
@@ -138,7 +138,7 @@ public class EnemyDetection : MonoBehaviour
     /// <summary>
     /// Instantly alert this enemy if they take damage
     /// </summary>
-    private void AlertFromDamage(float oldHP, float newHP)
+    private void AlertFromDamage(HealthChangedContext _)
     {
         if (activated) { currentLose = loseTimer; return; } // Keep persuing player if hit when active
 

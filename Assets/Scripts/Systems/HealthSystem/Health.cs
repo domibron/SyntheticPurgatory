@@ -1,6 +1,57 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Contains the update of heath and what was the cause.
+/// </summary>
+public struct HealthChangedContext
+{
+    /// <summary>
+    /// The damage context contains the cause.
+    /// </summary>
+    public DamageContext? DamageContext;
+
+    /// <summary>
+    /// What this entity is immune to.
+    /// </summary>
+    public DamageTypes Immunities;
+
+
+    /// <summary>
+    /// The current health the entity sits at after the change.
+    /// </summary>
+    public float CurrentHealth;
+
+    /// <summary>
+    /// The previous health before this update.
+    /// </summary>
+    public float PreviousHealth;
+
+    /// <summary>
+    /// The total HP this entity has.
+    /// </summary>
+    public float MaxHealth;
+
+
+    /// <summary>
+    /// Creates a new health context.
+    /// </summary>
+    /// <param name="currentHealth">The current health of this entity after the change.</param>
+    /// <param name="previousHealth">The health before the change.</param>
+    /// <param name="maxHealth">The total health this entity has.</param>
+    /// <param name="immunities">What types is the entity immune to.</param>
+    /// <param name="damageContext">The cause of the change.</param>
+    public HealthChangedContext(float currentHealth, float previousHealth, float maxHealth, DamageTypes immunities = DamageTypes.None, DamageContext? damageContext = null)
+    {
+        CurrentHealth = currentHealth;
+        PreviousHealth = previousHealth;
+        MaxHealth = maxHealth;
+
+        Immunities = immunities;
+
+        DamageContext = damageContext;
+    }
+}
 
 /// <summary>
 /// The health class to give objects health.
@@ -23,7 +74,7 @@ public class Health : MonoBehaviour
     /// If entity can take damage from toxic sources
     /// </summary>
     [SerializeField]
-    protected bool toxicImmunity = false;
+    protected DamageTypes immunities = DamageTypes.None;
 
     /// <summary>
     /// Used to only trigger the on death event once.
@@ -33,19 +84,32 @@ public class Health : MonoBehaviour
     /// <summary>
     /// Called once when the entity has no more health left.
     /// </summary>
-    public event Action onDeath;
+    public event Action OnDeath;
 
     /// <summary>
     /// Called when adding to the health, the provided float is what to add to the health. new, old.
     /// </summary>
-    public event OnValueChangedDelegate OnHealthChanged;
+    [Obsolete("Please use OnHealthUpdated!", true)]
+    public event OnValueChangedDelegate HealthChanged;
 
     /// <summary>
     /// A delegate for when a value was changed sending both the original and updated values.
     /// </summary>
     /// <param name="newValue">The new value after the change.</param>
     /// <param name="oldValue">The original value before the change.</param>
+    [Obsolete("Please use OnHealthUpdatedDelegate!", true)]
     public delegate void OnValueChangedDelegate(float newValue, float oldValue);
+
+    /// <summary>
+    /// Called when the health was changed in some way.
+    /// </summary>
+    public event OnHealthUpdatedDelegate HealthUpdated;
+
+    /// <summary>
+    /// A delegate for when the health is updated giving a <see cref="HealthChangedContext"/> about the change and what caused it.
+    /// </summary>
+    /// <param name="context">The change and cause.</param>
+    public delegate void OnHealthUpdatedDelegate(HealthChangedContext context);
 
     protected virtual void Start()
     {
@@ -62,13 +126,14 @@ public class Health : MonoBehaviour
     }
 
     /// <summary>
-    /// Use this to add to or remove from the health. new, old
+    /// Adds to the health directly skipping the damage context.
     /// </summary>
     /// <param name="amount">The value to add to the health.</param>
     public virtual void AddToHealth(float amount)
     {
+        if (amount == 0) return;
 
-        if (amount != 0) InvokeOnHealthChanged(currentHealth + amount, currentHealth);
+        InvokeOnHealthUpdated(new HealthChangedContext(currentHealth + amount, currentHealth, maxHealth));
         currentHealth += amount;
 
 
@@ -80,8 +145,37 @@ public class Health : MonoBehaviour
         }
     }
 
+    public virtual void UpdateHealth(DamageContext context)
+    {
+        if ((immunities & context.Type) != 0)
+        {
+            InvokeOnHealthUpdated(new HealthChangedContext(currentHealth, currentHealth, maxHealth, immunities, context));
+            return;
+        }
+
+        float damage = context.Damage * (context.IsCritical ? 2f : 1f);
+
+        if (damage != 0)
+        {
+            InvokeOnHealthUpdated(new HealthChangedContext(currentHealth - damage, currentHealth, maxHealth, immunities, context));
+        }
+
+        currentHealth -= damage;
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+
+        if (currentHealth <= 0)
+        {
+            CallOnDeathEvent();
+        }
+    }
+
     /// <summary>
-    /// Set the objects health to 0 and invoke death
+    /// Set the objects health to 0 and invoke death.
     /// </summary>
     public virtual void InstantKill()
     {
@@ -123,7 +217,7 @@ public class Health : MonoBehaviour
     /// <returns>Boolean</returns>
     public virtual bool GetToxicImmunity()
     {
-        return toxicImmunity;
+        return (immunities & DamageTypes.Toxic) != 0;
     }
 
     /// <summary>
@@ -155,9 +249,10 @@ public class Health : MonoBehaviour
     /// Calls the onAddToHealth event.
     /// </summary>
     /// <param name="amount">The amount to add to the current health value.</param>
+    [Obsolete("Please use InvokeOnHealthUpdated instead!", false)]
     protected void InvokeOnHealthChanged(float newAmount, float oldHealth)
     {
-        OnHealthChanged?.Invoke(newAmount, oldHealth);
+        HealthChanged?.Invoke(newAmount, oldHealth);
     }
 
     /// <summary>
@@ -165,7 +260,12 @@ public class Health : MonoBehaviour
     /// </summary>
     protected void InvokeOnDeath()
     {
-        onDeath?.Invoke();
+        OnDeath?.Invoke();
     }
 
+
+    protected void InvokeOnHealthUpdated(HealthChangedContext context)
+    {
+        HealthUpdated?.Invoke(context);
+    }
 }

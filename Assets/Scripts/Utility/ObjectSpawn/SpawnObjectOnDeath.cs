@@ -20,7 +20,7 @@ public class SpawnObjectOnDeath : SpawnObjectAndSetSize
         if (onDeathTarget == null)
             onDeathTarget = GetComponent<Health>();
 
-        onDeathTarget.onDeath += OnDeath;
+        onDeathTarget.OnDeath += OnDeath;
 
         if (forceOrigin == null)
             forceOrigin = transform;

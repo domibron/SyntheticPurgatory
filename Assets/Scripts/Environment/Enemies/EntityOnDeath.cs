@@ -12,7 +12,7 @@ public class EntityOnDeath : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GetComponent<Health>().onDeath += OnDeath;
+        GetComponent<Health>().OnDeath += OnDeath;
     }
 
     private void OnDeath()

@@ -37,7 +37,7 @@ public class HitScrapDropper : MonoBehaviour
     void Start()
     {
         healthScript = GetComponent<Health>();
-        GetComponent<Health>().OnHealthChanged += ScrapDropping;
+        GetComponent<Health>().HealthUpdated += ScrapDropping;
         dropper = GetComponent<ScrapDropper>();
 
         hitScrapRemaining = TotalHitScrap;
@@ -46,15 +46,14 @@ public class HitScrapDropper : MonoBehaviour
     /// <summary>
     /// Drop scrap based on object health difference
     /// </summary>
-    /// <param name="newHP">Health after taking damage</param>
-    /// <param name="oldHP">Health before taking damage</param>
-    private void ScrapDropping(float newHP, float oldHP)
+    /// <param name="context">The context of the change.</param>
+    private void ScrapDropping(HealthChangedContext context)
     {
-        float hitHPNotches = healthScript.GetMaxHealthValue() / (TotalHitScrap + 1); // Calculate health values to spawn scrap at
-        int currentNotch = Mathf.FloorToInt(oldHP / hitHPNotches); // Calculate integer relative to totalHitScrap to know how many scrap is left to be spawned
+        float hitHPNotches = context.MaxHealth / (TotalHitScrap + 1); // Calculate health values to spawn scrap at
+        int currentNotch = Mathf.FloorToInt(context.PreviousHealth / hitHPNotches); // Calculate integer relative to totalHitScrap to know how many scrap is left to be spawned
         float nextNotch = currentNotch * hitHPNotches; // Get exact health value that is next to be checked
 
-        while (newHP <= nextNotch && currentNotch > 0 && hitScrapRemaining > 0) // Spawn scrap if health difference passes hit-scrap threshold
+        while (context.CurrentHealth <= nextNotch && currentNotch > 0 && hitScrapRemaining > 0) // Spawn scrap if health difference passes hit-scrap threshold
         {
             if (nextNotch != healthScript.GetMaxHealthValue()) // Do not spawn scrap on first hit
             {
