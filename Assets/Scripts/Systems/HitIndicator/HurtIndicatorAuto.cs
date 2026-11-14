@@ -66,7 +66,7 @@ public class HurtIndicatorAuto : MonoBehaviour
 
         // subscript to the take damage health event to flash when taking damage.
         if (GetComponent<Health>())
-            GetComponent<Health>().OnHealthChanged += TakenDamage;
+            GetComponent<Health>().HealthUpdated += TakenDamage;
         else
             Debug.Log("Cannot find health for damage flash!", this.gameObject);
 
@@ -109,10 +109,9 @@ public class HurtIndicatorAuto : MonoBehaviour
     /// <summary>
     /// Function to hook into onTakeDamage event on health scripts.
     /// </summary>
-    /// <param name="amount">The amount of damage to take.</param>
-    protected virtual void TakenDamage(float newHealth, float oldHealth)
+    protected virtual void TakenDamage(HealthChangedContext context)
     {
-        float amount = newHealth - oldHealth;
+        float amount = context.CurrentHealth - context.PreviousHealth;
         if (amount < 0)
             Flash(normalColor);
     }

@@ -47,12 +47,12 @@ public class HealthFloatingNumberSystem : MonoBehaviour
 
         if (floatingTextSystem == null) Debug.LogError($"Need a {nameof(floatingTextSystem)} component to also be added!", this);
 
-        health.OnHealthChanged += OnHealthChanged;
+        health.HealthUpdated += OnHealthChanged;
     }
 
-    protected virtual void OnHealthChanged(float newHealth, float oldHealth) // TODO: redo for readability. Remove magic numbers
+    protected virtual void OnHealthChanged(HealthChangedContext context) // TODO: redo for readability. Remove magic numbers
     {
-        float amount = newHealth - oldHealth;
+        float amount = context.CurrentHealth - context.PreviousHealth;
 
         if (amount == 0) return; // we dont want 0 on screen.
 

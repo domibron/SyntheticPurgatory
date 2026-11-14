@@ -92,7 +92,7 @@ public class PlayerHUD : MonoBehaviour
         playerObject = PlayerRefFetcher.Instance.GetPlayerRef();
         playerCombat = playerObject.GetComponent<PlayerCombat>();
         playerHealth = playerObject.GetComponent<Health>();
-        playerHealth.OnHealthChanged += OnHealthChanged;
+        playerHealth.HealthUpdated += OnHealthChanged;
 
         gameManager = RunManager.Instance;
 
@@ -116,9 +116,9 @@ public class PlayerHUD : MonoBehaviour
         IsVisible = true;
     }
 
-    private void OnHealthChanged(float newAmount, float oldAmount)
+    private void OnHealthChanged(HealthChangedContext context)
     {
-        if (newAmount - oldAmount < 0)
+        if (context.CurrentHealth - context.PreviousHealth < 0)
         {
             currentApearTime = apearTime;
 
@@ -130,7 +130,7 @@ public class PlayerHUD : MonoBehaviour
             targetValue = playerHealth.GetHealthNormalized();
         }
 
-        if (newAmount <= 0)
+        if (context.CurrentHealth <= 0)
         {
             playerDied = true;
         }

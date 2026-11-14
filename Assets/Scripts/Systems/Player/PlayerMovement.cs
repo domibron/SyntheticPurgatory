@@ -352,7 +352,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        GetComponent<Health>().onDeath += RagdollCamera;
+        GetComponent<Health>().OnDeath += RagdollCamera;
     }
 
 

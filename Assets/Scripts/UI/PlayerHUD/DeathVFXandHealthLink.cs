@@ -29,7 +29,7 @@ public class DeathVFXandHealthLink : MonoBehaviour
     {
         m_playerHealth = GetComponent<Health>();
 
-        m_playerHealth.onDeath += OnDeath;
+        m_playerHealth.OnDeath += OnDeath;
 
         m_deathEffect = GameViewFilterFSRF.Instance;
         if (m_deathEffect == null) Debug.LogError($"{nameof(GameViewFilterFSRF)} is not ready!");

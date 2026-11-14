@@ -35,6 +35,11 @@ public class PlayerCombat : MonoBehaviour
 
 
     /// <summary>
+    /// Decimal percentage of the critical hit chance. Stats set this.
+    /// </summary>
+    float m_criticalHitChance = 0.01f;
+
+    /// <summary>
     /// The melee box size.
     /// </summary>
     [SerializeField, FormerlySerializedAs("meleeBounds")]
@@ -502,7 +507,8 @@ public class PlayerCombat : MonoBehaviour
                 c.GetComponent<IMeleeAble>()?.MeleeObject();
 
 
-                c.transform.GetComponent<IDamageable>()?.TakeDamage(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward); // deal damage.
+                // c.transform.GetComponent<IDamageable>()?.TakeDamage(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward); // deal damage.
+                c.transform.GetComponent<IDamageable>()?.TakeDamage(new DamageContext(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward)); // deal damage.
 
             }
         }
@@ -535,6 +541,7 @@ public class PlayerCombat : MonoBehaviour
         // Projectile firing.
         GameObject projectile = Instantiate(m_projectilePrefab, m_mainCamera.position, Quaternion.identity);
         projectile.GetComponent<ProjectileScript>().ProjectileDamage = m_projectileDamage;
+        projectile.GetComponent<ProjectileScript>().CriticalChance = m_criticalHitChance;
 
         Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
         projectileRB.AddForce(m_mainCamera.forward * m_projectileSpeed, ForceMode.VelocityChange);

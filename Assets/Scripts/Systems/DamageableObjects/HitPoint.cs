@@ -30,13 +30,22 @@ public class HitPoint : MonoBehaviour, IDamageable
     private Health health;
 
 
-    void IDamageable.TakeDamage(float damage, Vector3 hitPosition)
+    void IDamageable.TakeDamage(DamageContext context)
     {
-        float totalDamage = damage * hitPointsData.GetMultiplier(hitPointType);
+        // fixed the part multiplier not being applied to the health part by overriding the context damage.
+        context.Damage *= hitPointsData.GetMultiplier(hitPointType) * (context.IsCritical ? 2f : 1f);
 
-        health.AddToHealth(-Mathf.Abs(totalDamage));
+        health.UpdateHealth(context);
 
+        // should be through the health system.
         if (floatingTextSystem != null)
-            floatingTextSystem.SpawnText(Mathf.Abs(totalDamage).ToString("F0"), hitPointsData.GetGradient(hitPointType, false), 3, -10, hitPosition);
+        {
+            floatingTextSystem.SpawnText(Mathf.Abs(context.Damage).ToString("F0"), hitPointsData.GetGradient(hitPointType, context.IsCritical), 3, -10, context.Source);
+
+            if (context.IsCritical)
+            {
+                floatingTextSystem.SpawnText("Critical", hitPointsData.GetGradient(hitPointType, context.IsCritical), 3, -10, context.Source);
+            }
+        }
     }
 }

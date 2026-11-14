@@ -17,10 +17,10 @@ public class StandardDamageableObject : MonoBehaviour, IDamageable
         health = GetComponent<Health>();
     }
 
-    void IDamageable.TakeDamage(float damage, Vector3 hitPosition)
+    void IDamageable.TakeDamage(DamageContext context)
     {
         // floating numbers pop up.
-        health.AddToHealth(-Mathf.Abs(damage));
+        health.UpdateHealth(context);
 
         // print(hitPointsData.GetGradient(type));
     }

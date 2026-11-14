@@ -14,36 +14,38 @@ public class ProjectileScript : MonoBehaviour
     /// <summary>
     /// Did the projectile already hit something. Prevents entities getting hit multiple times.
     /// </summary>
-    private bool hasHit;
+    private bool m_hasHit;
 
     /// <summary>
     /// The source of the projectile, ideally the entity that fired it.
     /// </summary>
     public Transform SourceForProjectile;
 
+    public float CriticalChance;
+
     [SerializeField]
-    private GameObject decalObject;
+    private GameObject m_decalObject;
 
-    Rigidbody rb;
+    Rigidbody m_rb;
 
-    SphereCollider sphereCollider;
+    SphereCollider m_sphereCollider;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        sphereCollider = GetComponent<SphereCollider>();
+        m_rb = GetComponent<Rigidbody>();
+        m_sphereCollider = GetComponent<SphereCollider>();
 
-        if (decalObject != null)
-            decalObject?.SetActive(false);
+        if (m_decalObject != null)
+            m_decalObject?.SetActive(false);
     }
 
     void FixedUpdate()
     {
-        if (hasHit) return;
+        if (m_hasHit) return;
 
 
-        if (Physics.SphereCast(transform.position - (rb.linearVelocity.normalized * Time.fixedDeltaTime), sphereCollider.radius, rb.linearVelocity.normalized, out RaycastHit hit,
-            rb.linearVelocity.magnitude * Time.fixedDeltaTime, sphereCollider.includeLayers, QueryTriggerInteraction.Collide))
+        if (Physics.SphereCast(transform.position - (m_rb.linearVelocity.normalized * Time.fixedDeltaTime), m_sphereCollider.radius, m_rb.linearVelocity.normalized, out RaycastHit hit,
+            m_rb.linearVelocity.magnitude * Time.fixedDeltaTime, m_sphereCollider.includeLayers, QueryTriggerInteraction.Collide))
         {
 
 
@@ -56,10 +58,12 @@ public class ProjectileScript : MonoBehaviour
             {
                 if (damageable != null) // Damage object if it has the enemy damage area script attached
                 {
-                    hasHit = true;
+                    m_hasHit = true;
 
                     hit.transform.GetComponent<IShootable>()?.HitObject();
-                    damageable.TakeDamage(-ProjectileDamage, transform.position);
+                    // damageable.TakeDamage(-ProjectileDamage, transform.position);
+                    damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
+                        UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
 
                     SetUpDecal(hit);
 
@@ -80,10 +84,12 @@ public class ProjectileScript : MonoBehaviour
             {
                 if (damageable != null)
                 {
-                    hasHit = true;
+                    m_hasHit = true;
 
                     hit.transform.GetComponent<IShootable>()?.HitObject();
-                    damageable.TakeDamage(-ProjectileDamage, transform.position);
+                    // damageable.TakeDamage(-ProjectileDamage, transform.position);
+                    damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
+                        UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
                     SetUpDecal(hit);
 
                     // print("Special");
@@ -120,7 +126,7 @@ public class ProjectileScript : MonoBehaviour
 
     private void ProjectileLogic(Collider other)
     {
-        if (hasHit) return;
+        if (m_hasHit) return;
 
         if (SourceForProjectile)
             other.gameObject.GetComponent<IDamageDirection>()?.DamagedFrom(SourceForProjectile.position);
@@ -131,9 +137,12 @@ public class ProjectileScript : MonoBehaviour
         {
             if (damageable != null) // Damage object if it has the enemy damage area script attached
             {
-                hasHit = true;
+                m_hasHit = true;
 
-                damageable.TakeDamage(-ProjectileDamage, transform.position);
+                // damageable.TakeDamage(-ProjectileDamage, transform.position);
+                damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
+                    UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
+
 
                 SetUpDecal(other);
 
@@ -151,8 +160,11 @@ public class ProjectileScript : MonoBehaviour
         {
             if (damageable != null)
             {
-                damageable.TakeDamage(-ProjectileDamage, transform.position);
-                hasHit = true;
+                // damageable.TakeDamage(-ProjectileDamage, transform.position);
+                damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
+                    UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
+
+                m_hasHit = true;
             }
         }
 
@@ -165,54 +177,54 @@ public class ProjectileScript : MonoBehaviour
 
     private void SetUpDecal(RaycastHit hit)
     {
-        if (!decalObject) return;
+        if (!m_decalObject) return;
 
 
         // decalObject.transform.position = hit.point + (hit.normal.normalized * 0.5f);
         // decalObject.transform.LookAt(transform.position + -hit.normal.normalized);
-        decalObject.transform.position = hit.point + (-rb.linearVelocity.normalized * 0.5f);
-        decalObject.transform.LookAt(transform.position + rb.linearVelocity.normalized);
+        m_decalObject.transform.position = hit.point + (-m_rb.linearVelocity.normalized * 0.5f);
+        m_decalObject.transform.LookAt(transform.position + m_rb.linearVelocity.normalized);
         // decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles);
 
-        decalObject.transform.parent = hit.transform;
+        m_decalObject.transform.parent = hit.transform;
 
-        decalObject.SetActive(true);
+        m_decalObject.SetActive(true);
 
-        Destroy(decalObject, 10f);
+        Destroy(m_decalObject, 10f);
 
 
     }
 
     private void SetUpDecal(Collider collider)
     {
-        if (decalObject)
+        if (m_decalObject)
         {
-            decalObject.transform.parent = collider.transform;
+            m_decalObject.transform.parent = collider.transform;
 
 
             Vector3 targetLocation = Vector3.zero;
 
-            if (Physics.Raycast(transform.position - rb.linearVelocity * 0.1f, rb.linearVelocity.normalized, out RaycastHit hit, rb.linearVelocity.magnitude * 0.2f, rb.includeLayers, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(transform.position - m_rb.linearVelocity * 0.1f, m_rb.linearVelocity.normalized, out RaycastHit hit, m_rb.linearVelocity.magnitude * 0.2f, m_rb.includeLayers, QueryTriggerInteraction.Collide))
             {
                 targetLocation = hit.point;
 
-                decalObject.transform.position = targetLocation;
-                decalObject.transform.LookAt(hit.normal);
-                decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles + new Vector3(-90, 0, 0));
+                m_decalObject.transform.position = targetLocation;
+                m_decalObject.transform.LookAt(hit.normal);
+                m_decalObject.transform.rotation = Quaternion.Euler(m_decalObject.transform.rotation.eulerAngles + new Vector3(-90, 0, 0));
             }
             else
             {
                 targetLocation = transform.position;
 
-                decalObject.transform.position = targetLocation;
-                decalObject.transform.LookAt(targetLocation - transform.position);
-                decalObject.transform.rotation = Quaternion.Euler(decalObject.transform.rotation.eulerAngles + new Vector3(-90, 0, 0));
+                m_decalObject.transform.position = targetLocation;
+                m_decalObject.transform.LookAt(targetLocation - transform.position);
+                m_decalObject.transform.rotation = Quaternion.Euler(m_decalObject.transform.rotation.eulerAngles + new Vector3(-90, 0, 0));
             }
 
-            decalObject.SetActive(true);
+            m_decalObject.SetActive(true);
 
             // TODO: replace with better self destruct script.
-            Destroy(decalObject, 10f);
+            Destroy(m_decalObject, 10f);
         }
     }
 

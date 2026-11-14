@@ -63,7 +63,8 @@ public class Explosion : MonoBehaviour
     {
         if (other.isTrigger) return;
 
-        other.GetComponent<IDamageable>()?.TakeDamage(damage, transform.position);
+        // other.GetComponent<IDamageable>()?.TakeDamage(damage, transform.position);
+        other.GetComponent<IDamageable>()?.TakeDamage(new DamageContext(damage, transform.position));
     }
 
     /// <summary>

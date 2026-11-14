@@ -31,7 +31,7 @@ public class ObjectDeath : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GetComponent<Health>().onDeath += KillObject;
+        GetComponent<Health>().OnDeath += KillObject;
     }
 
     /// <summary>

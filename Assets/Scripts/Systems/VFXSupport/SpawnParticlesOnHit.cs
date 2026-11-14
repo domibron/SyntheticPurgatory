@@ -14,12 +14,12 @@ public class SpawnParticlesOnHit : MonoBehaviour
     void Start()
     {
         if (health == null) health = GetComponent<Health>();
-        health.OnHealthChanged += OnHealthChanged;
+        health.HealthUpdated += OnHealthChanged;
     }
 
-    private void OnHealthChanged(float newHealth, float oldHealth)
+    private void OnHealthChanged(HealthChangedContext context)
     {
-        if (newHealth < oldHealth)
+        if (context.CurrentHealth < context.PreviousHealth)
         {
             SpawnParticles();
         }
