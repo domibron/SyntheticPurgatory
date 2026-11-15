@@ -63,7 +63,7 @@ public class ProjectileScript : MonoBehaviour
                     hit.transform.GetComponent<IShootable>()?.HitObject();
                     // damageable.TakeDamage(-ProjectileDamage, transform.position);
                     damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
-                        UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
+                        Utils.RollForChance(CriticalChance)));
 
                     SetUpDecal(hit);
 
@@ -89,7 +89,7 @@ public class ProjectileScript : MonoBehaviour
                     hit.transform.GetComponent<IShootable>()?.HitObject();
                     // damageable.TakeDamage(-ProjectileDamage, transform.position);
                     damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
-                        UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
+                        Utils.RollForChance(CriticalChance)));
                     SetUpDecal(hit);
 
                     // print("Special");
@@ -141,7 +141,7 @@ public class ProjectileScript : MonoBehaviour
 
                 // damageable.TakeDamage(-ProjectileDamage, transform.position);
                 damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
-                    UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
+                    Utils.RollForChance(CriticalChance)));
 
 
                 SetUpDecal(other);
@@ -162,7 +162,7 @@ public class ProjectileScript : MonoBehaviour
             {
                 // damageable.TakeDamage(-ProjectileDamage, transform.position);
                 damageable.TakeDamage(new DamageContext(ProjectileDamage, transform.position, DamageTypes.Normal,
-                    UnityEngine.Random.Range(0f, 1f) <= CriticalChance ? true : false));
+                    Utils.RollForChance(CriticalChance)));
 
                 m_hasHit = true;
             }

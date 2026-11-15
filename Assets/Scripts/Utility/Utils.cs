@@ -29,6 +29,17 @@ public static class Utils
 
 
     /// <summary>
+    /// Runs a chance roll with the threshold to pass. 0.1 is 10% of success.
+    /// </summary>
+    /// <param name="chance">The decimal percentage of the chance succeeding (Clamped between 0 and 1).</param>
+    /// <returns>True if successful.</returns>
+    public static bool RollForChance(float chance)
+    {
+        return UnityEngine.Random.Range(0f, 1f) <= Mathf.Clamp01(chance) ? true : false;
+    }
+
+
+    /// <summary>
     /// Checks if the flag enum only has one flag.
     /// </summary>
     /// <typeparam name="TEnum">Enum type</typeparam>

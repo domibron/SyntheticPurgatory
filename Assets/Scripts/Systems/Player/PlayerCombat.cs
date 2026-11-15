@@ -508,7 +508,8 @@ public class PlayerCombat : MonoBehaviour
 
 
                 // c.transform.GetComponent<IDamageable>()?.TakeDamage(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward); // deal damage.
-                c.transform.GetComponent<IDamageable>()?.TakeDamage(new DamageContext(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward)); // deal damage.
+                c.transform.GetComponent<IDamageable>()?.TakeDamage(new DamageContext(m_meleeDamage, m_mainCamera.position + m_mainCamera.forward,
+                    isCritical: Utils.RollForChance(m_criticalHitChance))); // deal damage.
 
             }
         }
