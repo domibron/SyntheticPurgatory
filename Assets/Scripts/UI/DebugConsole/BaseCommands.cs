@@ -11,56 +11,62 @@ public class BaseCommands
 
     // could throw all the conmmands in the list creations as short hand.
 
-    public Command test;
-    public Command help;
-    public Command reloadLevel;
-    public Command<string[]> testMessage;
-    public Command<int> loadLevel;
-    public Command<float, float, float> tp;
-    public Command destroyObjectCommand;
-    public Command<float> setSprintSpeed;
+    // public Command test;
+    // public Command help;
+    // public Command reloadLevel;
+    // public Command<string[]> testMessage;
+    // public Command<int> loadLevel;
+    // public Command<float, float, float> tp;
+    // public Command destroyObjectCommand;
+    // public Command<float> setSprintSpeed;
 
-    public Command<float> damagePlayer;
-    public Command<float> healPlayer;
-    public Command noClip;
+    // public Command<float> damagePlayer;
+    // public Command<float> healPlayer;
+    // public Command noClip;
 
-    public Command<float> setAttackDamage;
+    // public Command<float> setAttackDamage;
 
-    public Command toggleDoors;
-    public Command<int> giveScrap;
-    public Command<int, int> giveUpgradeCard;
+    // public Command toggleDoors;
+    // public Command<int> giveScrap;
+    // public Command<int, int> giveUpgradeCard;
 
-    public Command refreshUpgradeMenu;
-    public Command<bool> errorsOnly;
+    // public Command refreshUpgradeMenu;
+    // public Command<bool> errorsOnly;
 
     public BaseCommands(DebugConsole console)
     {
-        test = new Command("test", "test the debug console", "test", () =>
+
+        List<object> commandsToAdd = new List<object>()
+        {
+
+        new Command("test", "test the debug console", "test", () =>
         {
             console.TextToConsole($"Test + {System.DateTime.Now}");
-        });
+        }),
 
-        testMessage = new Command<string[]>("send", "sends the message to the debug console", "send <string>", (message) =>
-        {
-            string finalMessage = "";
 
-            foreach (var str in message)
+        new Command<string[]>("send", "sends the message to the debug console", "send <string>", (message) =>
             {
-                finalMessage += str + " ";
-            }
+                string finalMessage = "";
 
-            console.TextToConsole(finalMessage);
-        });
+                foreach (var str in message)
+                {
+                    finalMessage += str + " ";
+                }
 
-        help = new Command("help", "generates help message", "help", () =>
+                console.TextToConsole(finalMessage);
+            }),
+
+
+        new Command("help", "generates help message", "help", () =>
         {
             for (int i = 0; i < console.commands.Count; i++)
             {
                 console.TextToConsole((console.commands[i] as CommandBase).CommandHelp + " - " + (console.commands[i] as CommandBase).CommandDescription);
             }
-        });
+        }),
 
-        loadLevel = new Command<int>("loadlevel", "Loads the desired scene with that build index", "loadlevel <int>", (index) =>
+         new Command<int>("loadlevel", "Loads the desired scene with that build index", "loadlevel <int>", (index) =>
         {
             try
             {
@@ -85,9 +91,9 @@ public class BaseCommands
             {
                 console.TextToConsole("I have failed to load that scene \n" + e.Message);
             }
-        });
+        }),
 
-        tp = new Command<float, float, float>("tp", "teleports the player in that direction (direction is relative to player z forward)", "tp <float> <float> <float>", (x, y, z) =>
+        new Command<float, float, float>("tp", "teleports the player in that direction (direction is relative to player z forward)", "tp <float> <float> <float>", (x, y, z) =>
         {
 #nullable enable
             GameObject? go = GameObject.FindGameObjectWithTag("Player");
@@ -104,9 +110,9 @@ public class BaseCommands
                 console.TextToConsole("Cannot find the player");
                 return;
             }
-        });
+        }),
 
-        destroyObjectCommand = new Command("obliterate", "Deletes the game object 50m in front of the camera", "obliterate", () =>
+        new Command("obliterate", "Deletes the game object 50m in front of the camera", "obliterate", () =>
         {
             try
             {
@@ -119,9 +125,9 @@ public class BaseCommands
             {
                 console.TextToConsole("Failed");
             }
-        });
+        }),
 
-        reloadLevel = new Command("reload", "reloads the level", "reload", () =>
+        new Command("reload", "reloads the level", "reload", () =>
         {
             try
             {
@@ -139,9 +145,9 @@ public class BaseCommands
             {
                 console.TextToConsole("I have failed to load that scene \n" + e.Message);
             }
-        });
+        }),
 
-        damagePlayer = new Command<float>("damage", "damages the player", "damage <float>", (health) =>
+        new Command<float>("damage", "damages the player", "damage <float>", (health) =>
         {
 
 
@@ -160,11 +166,11 @@ public class BaseCommands
                 return;
             }
 
-        });
+        }),
 
 
 
-        noClip = new Command("noclip", "gives you that ability to walk through walls", "noclip", () =>
+        new Command("noclip", "gives you that ability to walk through walls", "noclip", () =>
         {
 #nullable enable
             GameObject? go = GameObject.FindGameObjectWithTag("Player");
@@ -203,10 +209,10 @@ public class BaseCommands
                 //console.TextToConsole("Cannot find the player");
                 // return;
             }
-        });
+        }),
 
 
-        toggleDoors = new Command("toggledoors", "Toggles all the door's open states in the current room of the player.", "toggledoors", () =>
+        new Command("toggledoors", "Toggles all the door's open states in the current room of the player.", "toggledoors", () =>
         {
             if (LevelGenObjectRefGetter.Instance == null)
             {
@@ -227,9 +233,9 @@ public class BaseCommands
             levelGen.GetComponent<DoorGenerator>().ToggleDoors(levelGen.GetComponent<LevelGenerator>().GetRoomIDFromCoordinates(levelGen.GetComponent<LevelGenerator>().GetGridCoordinates(player.transform.position)));
 
             console.TextToConsole("Toggled the doors");
-        });
+        }),
 
-        giveScrap = new Command<int>("givescrap", "Gives the desired amount of scrap into inventory.", "givescrap <int>", (scrap) =>
+        new Command<int>("givescrap", "Gives the desired amount of scrap into inventory.", "givescrap <int>", (scrap) =>
         {
             if (RunManager.Instance == null)
             {
@@ -242,9 +248,9 @@ public class BaseCommands
 
             console.TextToConsole($"Gave {scrap}. Current amount is {RunManager.Instance.GetCurrentScrapCount()}");
 
-        });
+        }),
 
-        giveUpgradeCard = new Command<int, int>("giveupcard", "Gives the desired amount of the upgrade card.", "giveupcard <int card type> <int amount>", (type, amount) =>
+        new Command<int, int>("giveupcard", "Gives the desired amount of the upgrade card.", "giveupcard <int card type> <int amount>", (type, amount) =>
         {
             if (RunManager.Instance == null)
             {
@@ -268,9 +274,9 @@ public class BaseCommands
             RunManager.Instance.AddToStoredModules(cardTeir.Value, amount);
 
             console.TextToConsole($"Gave {amount} of {cardTeir.Value.ToString()}. Current amount is {RunManager.Instance.GetModuleCount(cardTeir.Value)}");
-        });
+        }),
 
-        refreshUpgradeMenu = new Command("refupmenu", "Refreshes the upgrade menu.", "refupmenu", () =>
+        new Command("refupmenu", "Refreshes the upgrade menu.", "refupmenu", () =>
         {
             if (UpgradeMenuManager.Instance == null)
             {
@@ -278,30 +284,15 @@ public class BaseCommands
             }
 
             UpgradeMenuManager.Instance.UpdateStatUI();
-        });
+        }),
 
-        errorsOnly = new Command<bool>("errorsOnly", "Only log errors in console", "errorsOnly <bool>", (b) =>
-        {
-            console.ChangeWatchMessage(b);
-        });
+            new Command<bool>("errorsOnly", "Only log errors in console", "errorsOnly <bool>", (b) =>
+            {
+                console.ChangeWatchMessage(b);
+            }),
 
-        List<object> commandsToAdd = new List<object>()
-        {
-            test,
-            testMessage,
-            help,
-            loadLevel,
-            tp,
-            destroyObjectCommand,
-            reloadLevel,
-            damagePlayer,
-            healPlayer,
-            noClip,
-            toggleDoors,
-            giveScrap,
-            giveUpgradeCard,
-            refreshUpgradeMenu,
-            errorsOnly,
+
+
         };
 
         foreach (var command in commandsToAdd)

@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 8392236656935590501}
   - component: {fileID: 4493655451717947915}
   - component: {fileID: 8412521640920198886}
+  - component: {fileID: 1051757014353582529}
   m_Layer: 9
   m_Name: P_MeleeEnemy
   m_TagString: Enemy
@@ -114,6 +115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 60
+  immunities: 0
 --- !u!114 &782351348226389806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,10 +245,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756158581593521815}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 15
-  m_Drag: 10
-  m_AngularDrag: 100
+  m_LinearDamping: 10
+  m_AngularDamping: 100
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -292,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alsoDisablePhysics: 1
+  m_alsoDisablePhysics: 1
 --- !u!114 &8368313451598693076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -375,6 +377,18 @@ MonoBehaviour:
   materialName: DamageFlash
   opacity: 100
   hurtDuration: 0.2
+--- !u!114 &1051757014353582529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756158581593521815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11fd6f78111adc947b51e351746e2d28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IncrementEnemiesKilledSteamStat
 --- !u!1 &2324691687616851649
 GameObject:
   m_ObjectHideFlags: 0

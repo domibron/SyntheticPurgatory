@@ -52,6 +52,8 @@ public class SteamManager : MonoBehaviour
 
     protected SteamAPIWarningMessageHook_t m_SteamAPIWarningMessageHook;
 
+    private Coroutine m_steamAPIUpdateTicking;
+
     [AOT.MonoPInvokeCallback(typeof(SteamAPIWarningMessageHook_t))]
     protected static void SteamAPIDebugTextHook(int nSeverity, System.Text.StringBuilder pchDebugText)
     {
@@ -140,6 +142,10 @@ public class SteamManager : MonoBehaviour
         }
 
         s_EverInitialized = true;
+
+        m_steamAPIUpdateTicking = StartCoroutine(RunSteamCallbacks());
+
+
     }
 
     // This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.
@@ -186,14 +192,31 @@ public class SteamManager : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!m_bInitialized)
-        {
-            return;
-        }
+        // if (!m_bInitialized)
+        // {
+        //     return;
+        // }
 
-        // Run Steam client callbacks
-        SteamAPI.RunCallbacks();
+        // // Run Steam client callbacks
+        // SteamAPI.RunCallbacks();
     }
+
+    private IEnumerator RunSteamCallbacks()
+    {
+        while (true)
+        {
+            yield return null;
+
+            if (!m_bInitialized)
+            {
+                continue;
+            }
+
+            // Run Steam client callbacks
+            SteamAPI.RunCallbacks();
+        }
+    }
+
 #else
 	public static bool Initialized {
 		get {
@@ -201,4 +224,7 @@ public class SteamManager : MonoBehaviour
 		}
 	}
 #endif // !DISABLESTEAMWORKS
+
+
+
 }

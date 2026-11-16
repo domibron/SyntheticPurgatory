@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 918023559336668982}
   - component: {fileID: 6493708469788743520}
   - component: {fileID: 5387092552275465334}
+  - component: {fileID: -5963804732245661720}
   m_Layer: 9
   m_Name: P_RangedEnemy
   m_TagString: Enemy
@@ -151,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 80
+  immunities: 0
 --- !u!114 &3442713779235369882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,10 +282,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4427628415408339441}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 12
-  m_Drag: 8
-  m_AngularDrag: 75
+  m_LinearDamping: 8
+  m_AngularDamping: 75
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -329,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf263aed9f309bd4d90d82645bbc3cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alsoDisablePhysics: 1
+  m_alsoDisablePhysics: 1
 --- !u!114 &4516463004191535880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,6 +414,18 @@ MonoBehaviour:
   materialName: DamageFlash
   opacity: 100
   hurtDuration: 0.2
+--- !u!114 &-5963804732245661720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427628415408339441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11fd6f78111adc947b51e351746e2d28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IncrementEnemiesKilledSteamStat
 --- !u!1 &4670689773716219448
 GameObject:
   m_ObjectHideFlags: 0

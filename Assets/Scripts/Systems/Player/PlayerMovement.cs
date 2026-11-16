@@ -337,7 +337,7 @@ public class PlayerMovement : MonoBehaviour
         //   Get Default Values.
         // =======================
         m_cameraPosWorld = m_moveableCamera.position;
-        m_cameraRot = m_moveableCamera.rotation.eulerAngles;
+        m_cameraRot = m_moveableCamera.localRotation.eulerAngles;
 
         m_defaultRadius = m_col.radius;
         m_defaultHeight = m_col.height;
