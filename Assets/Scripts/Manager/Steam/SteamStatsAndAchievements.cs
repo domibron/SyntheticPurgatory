@@ -204,6 +204,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
     {
         if (!SteamManager.Initialized) return;
 
+        if (achievement.m_bAchieved) return;
+
         achievement.m_bAchieved = true;
 
         SteamUserStats.SetAchievement(achievement.m_eAchievementID.ToString());
