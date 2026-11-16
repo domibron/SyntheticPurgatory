@@ -47,10 +47,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: Library
-          #key: Library-${{ matrix.targetPlatform }}
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-SyntheticPurgatory-Windows64
           restore-keys: |
-            Library-
+            Library-SyntheticPurgatory-Windows64
       - uses: game-ci/unity-builder@v4
         id: buildStep
         env:
