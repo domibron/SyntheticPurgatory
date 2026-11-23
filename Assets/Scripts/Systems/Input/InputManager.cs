@@ -7,6 +7,22 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class InputManager : MonoBehaviour
 {
+    public enum InputKey : int
+    {
+        Move,
+        Look,
+        Jump,
+        Crouch,
+        Attack,
+        Melee,
+        RightCharge,
+        LeftCharge,
+        Throw,
+        Interact,
+        Sprint,
+        Reload,
+    }
+
     /// <summary>
     /// Singleton for the <see cref="InputManager"/>.
     /// </summary>
@@ -42,10 +58,10 @@ public class InputManager : MonoBehaviour
     /// <summary>
     /// All the types of input that the player can use.
     /// </summary>
-    public enum InputDeviceType
+    public enum InputDeviceType : int
     {
-        Keyboard,
-        Gamepad,
+        Gamepad = 0,
+        Keyboard = 1,
     }
 
     void Awake()
@@ -91,5 +107,19 @@ public class InputManager : MonoBehaviour
         return activeInputDevice;
     }
 
+    // public string GetInputKeyName(InputKey key)
+    // {
+
+    //     switch (key)
+    //     {
+    //         default:
+    //             return "NO VALID KEY";
+    //         case InputKey.Forward:
+    //             int bindingIndex = playerInput.actions.FindAction("Move").GetBindingIndex(InputBinding.MaskByGroup(PlayerInput.all[0].currentControlScheme));
+
+
+    //             return playerInput.actions.FindAction("Move").GetBindingDisplayString(bindingIndex);
+    //     }
+    // }
 
 }

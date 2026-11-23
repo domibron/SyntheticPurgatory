@@ -6,6 +6,60 @@ using UnityEngine.InputSystem;
 
 public class PauseCanvas : MonoBehaviour
 {
+    private static PauseState m_pauseState;
+
+    private static PauseState m_lastKnownPauseState;
+
+    public static PauseState CurrentPauseState
+    {
+        get => m_pauseState;
+        set
+        {
+            if (value == PauseState.Override)
+            {
+                m_lastKnownPauseState = m_pauseState;
+            }
+            else if (value == PauseState.Restore)
+            {
+                m_pauseState = m_lastKnownPauseState;
+            }
+
+            if (m_pauseState != PauseState.DenyOverrides)
+            {
+                m_pauseState = value;
+            }
+        }
+    }
+
+    public enum PauseState : int
+    {
+        /// <summary>
+        /// The game is playing. Used by pause menu.
+        /// </summary>
+        Resumed,
+
+        /// <summary>
+        /// The game is paused. Used by pause menu.
+        /// </summary>
+        Paused,
+
+        /// <summary>
+        /// Something else is controlling the game's pause state.
+        /// </summary>
+        Override,
+
+        /// <summary>
+        /// Deny any overrides.
+        /// </summary>
+        DenyOverrides,
+
+        /// <summary>
+        /// Restore the last pause state.
+        /// </summary>
+        Restore,
+    }
+
+
     private GameObject playerObject;
 
     // private PlayerMovement playerMovement;
@@ -72,6 +126,8 @@ public class PauseCanvas : MonoBehaviour
 
     void Start()
     {
+        CurrentPauseState = PauseState.Resumed;
+
         pauseInput = InputSystem.actions.FindAction("Pause");
 
         pauseInput.started += AlternateState;
@@ -168,9 +224,7 @@ public class PauseCanvas : MonoBehaviour
             Cursor.visible = true;
         }
 
-        unpausedPausedState = Time.timeScale;
-
-        Time.timeScale = 0;
+        TryPausingTime();
 
         pauseCanvasCollection.SetActive(true);
 
@@ -184,7 +238,7 @@ public class PauseCanvas : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
 
-        Time.timeScale = unpausedPausedState;
+        TryResumingTime();
 
         pauseCanvasCollection.SetActive(false);
     }
@@ -208,6 +262,10 @@ public class PauseCanvas : MonoBehaviour
         //? Isn't the player destroyed? So this is pointless?
         playerDisabling.CurrentDisabledState = unpausedPlayerState;
 
+        // Deny any overrides.
+        m_pauseState = PauseState.DenyOverrides;
+
+        // make sure time is resumed.
         Time.timeScale = 1;
 
         LevelLoading.Instance.LoadMainMenu();
@@ -218,4 +276,30 @@ public class PauseCanvas : MonoBehaviour
         Application.Quit();
     }
 
+
+    public void TryPausingTime()
+    {
+        if (m_pauseState == PauseState.Resumed)
+        {
+            m_pauseState = PauseState.Paused;
+            unpausedPausedState = Time.timeScale;
+        }
+        else
+        {
+            m_lastKnownPauseState = PauseState.Paused;
+        }
+    }
+
+    public void TryResumingTime()
+    {
+        if (m_pauseState == PauseState.Paused)
+        {
+            m_pauseState = PauseState.Resumed;
+            Time.timeScale = unpausedPausedState;
+        }
+        else
+        {
+            m_lastKnownPauseState = PauseState.Resumed;
+        }
+    }
 }
