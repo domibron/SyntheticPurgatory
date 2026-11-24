@@ -22,7 +22,7 @@ public class PlayerRefFetcher : MonoBehaviour
             Instance = this;
         }
 
-        Debug.Log("PLAYER REF FETCHER: Has set up the reference!");
+        Debug.Log("PLAYER REF FETCHER: Has created the reference!");
     }
 
     [Obsolete("It just gets this game object. Don't bother using this function", false)]
