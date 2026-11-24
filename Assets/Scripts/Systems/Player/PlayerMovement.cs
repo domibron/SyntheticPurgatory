@@ -90,6 +90,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     WeaponMovement m_weaponMovement;
 
+
     /// <summary>
     /// The angle threashold before the surface is considered steep.
     /// </summary>
@@ -106,6 +107,18 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     [Obsolete("Used for old movement implementation and is scheduled for removal.")]
     const float k_minAccelRate = 0.01f;
+
+    #endregion
+
+
+
+    #region Audio
+
+    [SerializeField]
+    private AudioSource m_singleStepAS;
+
+    private bool m_wasStepPlayed = false;
+
 
     #endregion
 
@@ -427,6 +440,17 @@ public class PlayerMovement : MonoBehaviour
             // Calculate the needed offset for head bobbing.
             float sideOffset = Mathf.Sin(m_movementTimeForBobbing);
             float heightOffset = Mathf.Cos(sideOffset * (Mathf.PI / 2f)) - 1f;
+
+
+            if (heightOffset < -0.9f && !m_wasStepPlayed && IsGrounded)
+            {
+                m_wasStepPlayed = true;
+                m_singleStepAS.Play();
+            }
+            else if (heightOffset > -0.5)
+            {
+                m_wasStepPlayed = false;
+            }
 
             // Apply head bobbing to the camera offset.
             m_cameraAdditonalOffset = m_moveableCamera.transform.right * sideOffset * GetHalfHeight() * 0.1f;
