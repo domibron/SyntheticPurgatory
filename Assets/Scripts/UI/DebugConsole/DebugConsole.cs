@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+using Debug = UnityEngine.Debug;
 
 [Serializable]
 public class ConsoleSettings
@@ -696,7 +699,7 @@ public class DebugConsole : MonoBehaviour
 			CheckArgumentCount(args, 1);
 			string text = string.Join(" ", args.Skip(1));
 			LogToConsole(text);
-		}, null, ("string text", "The text to log.")));
+		}, null, ("string", "The text to log.")));
 
 
 		Commands.Add(new Command("version", "Get the game's current version.", (string[] args) =>
@@ -748,7 +751,7 @@ public class DebugConsole : MonoBehaviour
 				LogToConsole("NoClip activated.");
 			}
 
-		}, null, ("bool enable", "Optional set the noclip mode")));
+		}, null, ("bool", "Optional set the noclip mode")));
 
 		Commands.Add(new Command("givescrap", "Give scrap to yourself.", (string[] args) =>
 		{
@@ -766,7 +769,7 @@ public class DebugConsole : MonoBehaviour
 			LogToConsole($"Added {count} to your inventory! Now at {RunManager.Instance.GetCurrentScrapCount()} scrap!");
 
 
-		}, null, ("int amount", "The amount of scrap to give yourself")));
+		}, null, ("int", "The amount of scrap to give yourself")));
 
 
 		Commands.Add(new Command("giveupgradecards", "Give upgrade cards to yourself.", (string[] args) =>
@@ -792,7 +795,7 @@ public class DebugConsole : MonoBehaviour
 				0,
 				Enum.GetNames(typeof(ModuleTier)).ToList()
 			}
-		}, ("keycode", "The card tier to give"), ("int amount", "The quantity to give of that specified card tier")));
+		}, ("card tier", "The card tier to give"), ("int amount", "The quantity to give of that specified card tier")));
 
 		Commands.Add(new Command("hurtself", "Adds damage to the player character.", (string[] args) =>
 		{
@@ -810,7 +813,7 @@ public class DebugConsole : MonoBehaviour
 			player.GetComponent<Health>().AddToHealth(damage);
 
 
-		}, null, ("float damage", "The amount of damage to apply to the player")));
+		}, null, ("float", "Damage to apply.")));
 
 
 		Commands.Add(new Command("reload", "Reloads the current scene.", (_) =>
@@ -896,7 +899,7 @@ public class DebugConsole : MonoBehaviour
 				0,
 				new List<string> { "500" }
 			}
-		}, ("float height", "(Default: 500) The height of the console.")));
+		}, ("float", "(Default: 500) The height of the console.")));
 
 
 		Commands.Add(new Command("quit", "Quits the game. (Force unity to crash hard both engine and game)", (_) =>
@@ -904,6 +907,111 @@ public class DebugConsole : MonoBehaviour
 			Debug.Log("Shutting down gracefully...");
 			UnityEngine.Diagnostics.Utils.ForceCrash(UnityEngine.Diagnostics.ForcedCrashCategory.FatalError);
 		}, null));
+
+
+		Commands.Add(new Command("viewalllogs", "Shows all the logs that are being sent to the console.", (string[] args) =>
+		{
+
+			if (args.Length > 0)
+			{
+				m_consoleSettings.OnlyWatchForErrors = !ParseBool(args[1]);
+			}
+			else
+			{
+				m_consoleSettings.OnlyWatchForErrors = !m_consoleSettings.OnlyWatchForErrors;
+			}
+
+			ApplySettings();
+
+			LogToConsole($"Full logging has been set to {!m_consoleSettings.OnlyWatchForErrors}.");
+
+			WriteConsoleSettings();
+
+		}, null, ("bool", "(Default: False) Set whether to see the logs or not.")));
+
+
+		Commands.Add(new Command("echo", "Toggle command logging.", (string[] args) =>
+		{
+			if (args.Length > 1)
+			{
+				m_consoleSettings.Echo = ParseBool(args[1]);
+			}
+			else
+			{
+				m_consoleSettings.Echo = !m_consoleSettings.Echo;
+			}
+
+
+			if (enabled)
+			{
+				LogToConsole("Echo enabled.");
+			}
+
+			ApplySettings();
+
+			WriteConsoleSettings();
+
+		}, null, ("bool", "(Default: True) Enable logging?")));
+
+
+		Commands.Add(new Command("clear", "Clears the console.", (_) =>
+		{
+			m_logs.Clear();
+
+			UpdateLogWindow();
+
+		}, null));
+
+
+		Commands.Add(new Command("open", "Opens the file / folder.", (string[] args) =>
+		{
+			CheckArgumentCount(args, 1);
+
+			switch (args[1])
+			{
+				default:
+					throw new Exception($"\"{args[1]}\" is not a valid folder!");
+
+				case "logs":
+					OpenInFileBrowser(Application.consoleLogPath);
+					LogToConsole("Opened logs file.");
+					break;
+
+				case "saves":
+					OpenInFileBrowser(Application.persistentDataPath);
+					LogToConsole("Opened saves file location.");
+					break;
+			}
+
+		}, new Dictionary<int, List<string>>
+		{
+			{
+				0,
+				new List<string> { "logs", "saves" }
+			}
+		}, ("string type", "Which folder to go to")));
+
+
+		Commands.Add(new Command("removeplayerprefs", "Deletes PlayerPrefs settings.", (string[] args) =>
+		{
+			CheckForCheats();
+
+			if (args.Length > 1)
+			{
+				PlayerPrefs.DeleteKey(args[1]);
+				LogToConsole("Deleted PlayerPrefs key \"" + args[1] + "\".");
+			}
+			else
+			{
+				PlayerPrefs.DeleteAll();
+				LogToConsole("Deleted all PlayerPrefs keys.");
+			}
+
+
+		}, null, ("string key", "If provided a key, only delete that key. Otherwise delete all PlayerPrefs.")));
+
+
+
 
 
 
@@ -930,5 +1038,10 @@ public class DebugConsole : MonoBehaviour
 		Commands.Add(command);
 
 		Debug.Log($"Successfully registered {command.Name} command!");
+	}
+
+	public static void OpenInFileBrowser(string path)
+	{
+		Process.Start("explorer.exe", path.Replace("/", "\\"));
 	}
 }
