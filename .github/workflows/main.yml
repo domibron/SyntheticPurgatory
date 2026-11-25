@@ -41,6 +41,7 @@ jobs:
           docker-images: true
           swap-storage: true
       - uses: actions/checkout@v4
+        id: cache
         with:
           fetch-depth: 0
           lfs: true
@@ -65,3 +66,9 @@ jobs:
         with:
           name: Build-${{ matrix.targetPlatform }}-v${{ steps.buildStep.outputs.buildVersion }}
           path: Build
+      - name: Save cache
+        if: steps.cache.outputs.cache-hit != true
+        uses: actions/cache/save@v4
+        with:
+          path: Libarary
+          key: Library-SyntheticPurgatory-Windows64
