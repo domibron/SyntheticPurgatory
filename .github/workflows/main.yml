@@ -48,7 +48,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: Library
-          key: Library-SyntheticPurgatory-Windows64
+          key: Library-SyntheticPurgatory-${{ hashFiles('Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-SyntheticPurgatory-${{ hashFiles('Packages/**', 'ProjectSettings/**') }}
       - uses: game-ci/unity-builder@v4
