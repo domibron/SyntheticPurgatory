@@ -207,6 +207,8 @@ public class DebugConsole : MonoBehaviour
 			m_inputField.DeactivateInputField();
 
 			HandleDescriptionText(new string[0]);
+
+			((RectTransform)m_descriptionText.transform.parent).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
 		}
 
 		// m_consoleRootObject.SetActive(m_isConsoleActive);
