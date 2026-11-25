@@ -101,8 +101,6 @@ public class Sequencer : MonoBehaviour
 
         OnSequencesEnd?.Invoke();
 
-        LevelLoading.Instance?.ReleaseLevelLoading();
-
         yield return null;
     }
 

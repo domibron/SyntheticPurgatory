@@ -87,9 +87,14 @@ public class PlayerHUD : MonoBehaviour
     private GameObject uiObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    IEnumerator Start()
     {
-        playerObject = PlayerRefFetcher.Instance.GetPlayerRef();
+        while (PlayerRefFetcher.Instance == null)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        playerObject = PlayerRefFetcher.Instance.gameObject;
         playerCombat = playerObject.GetComponent<PlayerCombat>();
         playerHealth = playerObject.GetComponent<Health>();
         playerHealth.HealthUpdated += OnHealthChanged;
@@ -139,6 +144,11 @@ public class PlayerHUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (PlayerRefFetcher.Instance == null)
+        {
+            return;
+        }
+
         uiObject.SetActive(IsVisible);
 
         if (gameManager != null && lastDivisible == -1)

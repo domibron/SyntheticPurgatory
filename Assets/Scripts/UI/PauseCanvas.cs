@@ -160,13 +160,18 @@ public class PauseCanvas : MonoBehaviour
         }
     }
 
-    void Start()
+    IEnumerator Start()
     {
         SetPauseState(PauseState.Resumed);
 
         pauseInput = InputSystem.actions.FindAction("Pause");
 
         pauseInput.started += AlternateState;
+
+        while (PlayerRefFetcher.Instance == null)
+        {
+            yield return new WaitForEndOfFrame();
+        }
 
         playerObject = PlayerRefFetcher.Instance.gameObject;
         // playerMovement = playerObject.GetComponent<PlayerMovement>();

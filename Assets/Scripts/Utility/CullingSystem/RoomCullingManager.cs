@@ -67,9 +67,15 @@ public class RoomCullingManager : SequenceBase
 
     }
 
-    private void SetUpCullingManager()
+    private IEnumerator SetUpCullingManager()
     {
         currentProgress = 0f;
+
+        while (PlayerRefFetcher.Instance == null)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         player = PlayerRefFetcher.Instance.transform;
 
         if (player == null) throw new NullReferenceException("PLAYER IS NULL");
@@ -350,7 +356,7 @@ public class RoomCullingManager : SequenceBase
         if (levelGenerator == null) levelGenerator = GetComponent<LevelGenerator>();
         // localLevelGrid = levelGenerator.GetLevelGrid();
         levelGridSize = levelGenerator.GetGridSize();
-        SetUpCullingManager();
+        StartCoroutine(SetUpCullingManager());
     }
 
     public override float GetProgress()

@@ -5,6 +5,11 @@ public class PlayerRefFetcher : MonoBehaviour
 {
     public static PlayerRefFetcher Instance { private set; get; }
 
+    void OnDestroy()
+    {
+        Instance = null;
+    }
+
     void Awake()
     {
         if (Instance != null && Instance != this)
