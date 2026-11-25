@@ -120,11 +120,7 @@ public class SimpleDialogueSystem : MonoBehaviour
             switch (dialogue.Data[i].DialogueNext)
             {
                 case DialogueNext.ResumeGame:
-                    PauseCanvas.CurrentPauseState = PauseCanvas.PauseState.Restore;
-
-                    // TODO: make a less fucked up solution. Like maybe pause time in the bloody pause canvas?
-                    if (PauseCanvas.CurrentPauseState == PauseCanvas.PauseState.Resumed)
-                        Time.timeScale = 1; // unpause the game. might fail with pause system.
+                    PauseCanvas.SetPauseState(PauseCanvas.PauseState.RestoreFromOverride);
 
                     while (!m_isNextDialogueRequested)
                     {
@@ -133,7 +129,7 @@ public class SimpleDialogueSystem : MonoBehaviour
                     break;
 
                 case DialogueNext.ResumeWaitForAction:
-                    PauseCanvas.CurrentPauseState = PauseCanvas.PauseState.Restore;
+                    PauseCanvas.SetPauseState(PauseCanvas.PauseState.RestoreFromOverride);
 
                     if (PauseCanvas.CurrentPauseState == PauseCanvas.PauseState.Resumed)
                         Time.timeScale = 1; // unpause the game. might fail with pause system.
@@ -147,15 +143,14 @@ public class SimpleDialogueSystem : MonoBehaviour
                     break;
 
                 case DialogueNext.PauseGame:
-                    PauseCanvas.CurrentPauseState = PauseCanvas.PauseState.Override;
-                    Time.timeScale = 0; // pause the game. might incur a bug with pause system..
+                    PauseCanvas.SetPauseState(PauseCanvas.PauseState.OverridePaused);
 
                     while (!m_isNextDialogueRequested)
                     {
                         yield return new WaitForEndOfFrame();
                     }
 
-                    PauseCanvas.CurrentPauseState = PauseCanvas.PauseState.Restore;
+                    PauseCanvas.SetPauseState(PauseCanvas.PauseState.RestoreFromOverride);
 
                     if (PauseCanvas.CurrentPauseState == PauseCanvas.PauseState.Resumed)
                         Time.timeScale = 1; // unpause the game. might fail with pause system.
@@ -171,10 +166,7 @@ public class SimpleDialogueSystem : MonoBehaviour
 
                     HideDialogueUI();
 
-                    PauseCanvas.CurrentPauseState = PauseCanvas.PauseState.Restore;
-
-                    if (PauseCanvas.CurrentPauseState == PauseCanvas.PauseState.Resumed)
-                        Time.timeScale = 1; // unpause the game. might fail with pause system.
+                    PauseCanvas.SetPauseState(PauseCanvas.PauseState.RestoreFromOverride);
 
                     m_isWaitingForActionComplete = true;
 

@@ -10,25 +10,43 @@ public class PauseCanvas : MonoBehaviour
 
     private static PauseState m_lastKnownPauseState;
 
+    private static PauseState m_lastKnownDebugPauseSate;
+
+    public static bool IsPaused
+    {
+        get
+        {
+            return (m_pauseState == PauseState.DebugConsolePaused || m_pauseState == PauseState.OverridePaused || m_pauseState == PauseState.Paused);
+        }
+    }
+
+    public static bool IsResumed
+    {
+        get
+        {
+            return (m_pauseState == PauseState.OverrideResume || m_pauseState == PauseState.Resumed);
+        }
+    }
+
+    public static bool IsForcedPaused
+    {
+        get
+        {
+            return (m_pauseState == PauseState.DebugConsolePaused || m_pauseState == PauseState.OverridePaused);
+        }
+    }
+
+    public static bool IsForcedResume
+    {
+        get
+        {
+            return (m_pauseState == PauseState.OverrideResume);
+        }
+    }
+
     public static PauseState CurrentPauseState
     {
         get => m_pauseState;
-        set
-        {
-            if (value == PauseState.Override)
-            {
-                m_lastKnownPauseState = m_pauseState;
-            }
-            else if (value == PauseState.Restore)
-            {
-                m_pauseState = m_lastKnownPauseState;
-            }
-
-            if (m_pauseState != PauseState.DenyOverrides)
-            {
-                m_pauseState = value;
-            }
-        }
     }
 
     public enum PauseState : int
@@ -46,7 +64,17 @@ public class PauseCanvas : MonoBehaviour
         /// <summary>
         /// Something else is controlling the game's pause state.
         /// </summary>
-        Override,
+        OverridePaused,
+
+        /// <summary>
+        /// Something else is controlling the game's pause state.
+        /// </summary>
+        OverrideResume,
+
+        /// <summary>
+        /// Debug console is pausing the game.
+        /// </summary>
+        DebugConsolePaused,
 
         /// <summary>
         /// Deny any overrides.
@@ -56,7 +84,12 @@ public class PauseCanvas : MonoBehaviour
         /// <summary>
         /// Restore the last pause state.
         /// </summary>
-        Restore,
+        RestoreFromOverride,
+
+        /// <summary>
+        /// Restore the last pause state.
+        /// </summary>
+        RestoreFromDebugPause,
     }
 
 
@@ -106,6 +139,9 @@ public class PauseCanvas : MonoBehaviour
     {
         if (InputManager.Instance != null)
             InputManager.Instance.onDeviceChanged -= OnDeviceChanged;
+
+        m_pauseState = PauseState.Resumed;
+        Time.timeScale = 1;
     }
 
     private void OnDeviceChanged(InputManager.InputDeviceType newDevice, InputManager.InputDeviceType oldDevice)
@@ -126,7 +162,7 @@ public class PauseCanvas : MonoBehaviour
 
     void Start()
     {
-        CurrentPauseState = PauseState.Resumed;
+        SetPauseState(PauseState.Resumed);
 
         pauseInput = InputSystem.actions.FindAction("Pause");
 
@@ -202,6 +238,8 @@ public class PauseCanvas : MonoBehaviour
 
     public void OpenPauseMenu()
     {
+        // if (IsForcedPaused || IsForcedResume) return;
+
         unpausedPlayerState = playerDisabling.CurrentDisabledState;
 
         playerDisabling.CurrentDisabledState = PlayerDisabling.DisabledType.All;
@@ -224,21 +262,22 @@ public class PauseCanvas : MonoBehaviour
             Cursor.visible = true;
         }
 
-        TryPausingTime();
+        SetPauseState(PauseState.Paused);
 
         pauseCanvasCollection.SetActive(true);
-
     }
 
     public void ResumeGame()
     {
+        // if (IsForcedPaused || IsForcedResume) return;
+
         playerDisabling.CurrentDisabledState = unpausedPlayerState;
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
 
-        TryResumingTime();
+        SetPauseState(PauseState.Resumed);
 
         pauseCanvasCollection.SetActive(false);
     }
@@ -277,29 +316,138 @@ public class PauseCanvas : MonoBehaviour
     }
 
 
-    public void TryPausingTime()
+    public static void UpdateTimeScaleBasedOnPauseState()
     {
-        if (m_pauseState == PauseState.Resumed)
+
+    }
+
+    public static void SetPauseState(PauseState pauseState)
+    {
+        print($"IN {pauseState} CUR {m_pauseState}");
+
+        if (m_pauseState == PauseState.DenyOverrides)
         {
-            m_pauseState = PauseState.Paused;
-            unpausedPausedState = Time.timeScale;
+            Debug.LogWarning("Pause system is denying overrides due to requirements to keep time flowing.");
+            return;
         }
-        else
+
+        if (m_pauseState == pauseState)
         {
-            m_lastKnownPauseState = PauseState.Paused;
+            return;
+        }
+
+        if (m_pauseState == PauseState.DebugConsolePaused)
+        {
+            if (pauseState == PauseState.DebugConsolePaused)
+            {
+                return;
+            }
+            else if (pauseState == PauseState.RestoreFromDebugPause)
+            {
+                m_pauseState = PauseState.RestoreFromDebugPause;
+                SetPauseState(m_lastKnownDebugPauseSate);
+                return;
+            }
+            else if (pauseState == PauseState.Resumed)
+            {
+                if (m_lastKnownDebugPauseSate == PauseState.OverridePaused)
+                {
+                    m_lastKnownPauseState = PauseState.Resumed;
+                }
+                else
+                {
+                    m_lastKnownDebugPauseSate = pauseState;
+                }
+            }
+            else if (pauseState == PauseState.Paused)
+            {
+                if (m_pauseState == PauseState.OverrideResume)
+                {
+                    m_lastKnownPauseState = PauseState.Paused;
+                }
+                else
+                {
+                    m_lastKnownDebugPauseSate = pauseState;
+                }
+            }
+            else if (pauseState == PauseState.OverridePaused)
+            {
+                m_lastKnownDebugPauseSate = pauseState;
+            }
+            else if (pauseState == PauseState.OverrideResume)
+            {
+                m_lastKnownDebugPauseSate = pauseState;
+            }
+            else if (pauseState == PauseState.RestoreFromOverride)
+            {
+                m_lastKnownDebugPauseSate = pauseState;
+            }
+
+            Debug.LogWarning("Debug console is denying overrides.");
+
+            return;
+        }
+
+        switch (pauseState)
+        {
+            case PauseState.Resumed:
+                if (m_pauseState == PauseState.OverridePaused)
+                {
+                    m_lastKnownPauseState = PauseState.Resumed;
+                }
+                else
+                {
+                    m_pauseState = pauseState;
+                    Time.timeScale = 1;
+                }
+                return;
+
+            case PauseState.Paused:
+                if (m_pauseState == PauseState.OverrideResume)
+                {
+                    m_lastKnownPauseState = PauseState.Paused;
+                }
+                else
+                {
+                    m_pauseState = pauseState;
+                    Time.timeScale = 0;
+                }
+                return;
+
+            case PauseState.OverridePaused:
+                m_lastKnownPauseState = m_pauseState;
+                m_pauseState = pauseState;
+                Time.timeScale = 1;
+                return;
+
+            case PauseState.OverrideResume:
+                m_lastKnownPauseState = m_pauseState;
+                m_pauseState = pauseState;
+                Time.timeScale = 0;
+                return;
+
+            case PauseState.RestoreFromOverride:
+                m_pauseState = PauseState.RestoreFromOverride;
+                SetPauseState(m_lastKnownPauseState);
+                return;// DO NOT SET VALUES.
+
+            case PauseState.RestoreFromDebugPause:
+                m_pauseState = PauseState.RestoreFromDebugPause;
+                SetPauseState(m_lastKnownDebugPauseSate);
+                return;// DO NOT SET VALUES.
+
+            case PauseState.DebugConsolePaused:
+                m_lastKnownDebugPauseSate = m_pauseState;
+                m_pauseState = pauseState;
+                Time.timeScale = 0;
+                return;
+
+            case PauseState.DenyOverrides:
+                m_pauseState = pauseState;
+                Time.timeScale = 1;
+                return;
         }
     }
 
-    public void TryResumingTime()
-    {
-        if (m_pauseState == PauseState.Paused)
-        {
-            m_pauseState = PauseState.Resumed;
-            Time.timeScale = unpausedPausedState;
-        }
-        else
-        {
-            m_lastKnownPauseState = PauseState.Resumed;
-        }
-    }
+
 }
