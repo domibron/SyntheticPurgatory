@@ -1,450 +1,934 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[Serializable]
+public class ConsoleSettings
+{
+	public float ConsoleHeight;
 
+	public bool OnlyWatchForErrors;
+
+	public bool Echo;
+
+	public int MaxLogCount;
+
+	public int MaxLogCommandHistory;
+
+	public static ConsoleSettings defaultSettings => new ConsoleSettings
+	{
+		ConsoleHeight = 500f,
+		OnlyWatchForErrors = true,
+		Echo = true,
+		MaxLogCount = 100,
+		MaxLogCommandHistory = 100,
+	};
+}
 
 public class DebugConsole : MonoBehaviour
 {
-	public static DebugConsole instance;
+	public static DebugConsole Instance { get; private set; }
 
-	public GameObject consoleWindow;
+	[SerializeField]
+	private GameObject m_consoleRootObject;
 
-	public GameObject content;
+	[SerializeField]
+	private RectTransform m_consoleRect;
 
-	public GameObject textPrefab;
+	[SerializeField]
+	private RectTransform m_logWindowRect;
 
-	public TMP_InputField inputField;
+	[SerializeField]
+	private TMP_Text m_logWindow;
 
-	public Scrollbar vertScrollBar;
+	[SerializeField]
+	private TMP_InputField m_inputField;
 
-	bool consoleOpen = false;
+	[SerializeField]
+	private TMP_Text m_descriptionText;
 
-	[NonSerialized]
-	public List<object> commands = new List<object>();
+	[SerializeField]
+	private Scrollbar m_vertScrollBar;
 
-	const int MAX_DEBUG_MESSAGES = 50;
+	[SerializeField]
+	bool m_isConsoleActive = false;
 
-	[NonSerialized]
-	public Queue<GameObject> debugMessages = new Queue<GameObject>(MAX_DEBUG_MESSAGES + 1);
+	ConsoleSettings m_consoleSettings;
 
-	private bool onlyWatchForErrors = true;
+	public static List<Command> Commands = new List<Command>();
 
-	BaseCommands baseCommands;
+	const int k_maxConsoleMessages = 100;
+	const int k_maxExecutedCommands = 100;
 
-	public enum CommandResult
+	const float k_inputFieldHeight = 40f;
+
+	private Queue<string> m_logs = new Queue<string>(k_maxConsoleMessages);
+
+	private Stack<string> m_executedCommands = new Stack<string>(k_maxExecutedCommands);
+
+	public static string ConsoleConfigPath => Application.persistentDataPath + "\\ConsoleSettings.json";
+
+	private int m_selectedCommandInHistory = 0;
+
+	void OnDisable()
 	{
-		UnkownCommand,
-		Success,
-		Failed,
-		MissingArgs,
-		CommandParseFailed,
-		CommandCausedAnException,
+		Application.logMessageReceived -= ApplicationLogCallback;
+	}
+
+	void OnEnable()
+	{
+		Application.logMessageReceived += ApplicationLogCallback;
 	}
 
 
 	void Awake()
 	{
-		if (instance != null && instance != this)
+		if (Instance != null && Instance != this)
 		{
-			Destroy(this.gameObject);
+			Destroy(gameObject);
 		}
 		else
 		{
-			instance = this;
-			DontDestroyOnLoad(this.gameObject);
+			Instance = this;
+			DontDestroyOnLoad(gameObject);
 		}
 
-		// InitCommands();
-		baseCommands = new BaseCommands(instance);
-
-	}
-
-	private void MessageReceived(string condition, string stackTrace, LogType type)
-	{
-		string suffix = "";
-
-		if (onlyWatchForErrors && type != LogType.Error) return;
-
-		switch (type)
+		ConsoleSettings consoleSettings = ReadConsoleSettings();
+		if (consoleSettings != null)
 		{
-			case LogType.Error:
-				suffix = "<color=red>ERROR: ";
-				break;
-			case LogType.Exception:
-				suffix = "<color=red>EXCEPTION: ";
-				break;
-			case LogType.Assert:
-				suffix = "<color=red>ASSERT: ";
-				break;
-			case LogType.Warning:
-				suffix = "<color=yellow>WARNING: ";
-				break;
-			case LogType.Log:
-				suffix = "<color=white>LOG: ";
-				break;
+			m_consoleSettings = consoleSettings;
+		}
+		else
+		{
+			m_consoleSettings = ConsoleSettings.defaultSettings;
 		}
 
-		string message = suffix + condition;
-
-#if UNITY_EDITOR || DEBUG || true
-		if (type != LogType.Log)
-			message += "\n" + stackTrace;
-#endif
-
-		TextToConsole(message);
-
-	}
-
-	void OnDisable()
-	{
-		Application.logMessageReceived -= MessageReceived;
-	}
-
-	void OnEnable()
-	{
-		Application.logMessageReceived += MessageReceived;
+		ApplySettings();
 	}
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		consoleWindow.SetActive(consoleOpen);
+		m_isConsoleActive = false;
+		ClearInputField();
+
+		if (Commands.Count <= 0)
+		{
+			RegisterAllCommands();
+		}
+
+
+		HandleConsoleActiveState();
+
+		Time.maximumDeltaTime = 0.5f;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.BackQuote) || (consoleOpen && Input.GetKeyDown(KeyCode.Escape)))
+		HandleConsoleActiveState();
+
+
+		if (m_isConsoleActive)
 		{
-			consoleOpen = !consoleOpen;
+			string[] argsNoEmpty = m_inputField.text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			string[] argsAll = m_inputField.text.Split(' ');
 
-			// if (UIManager.Instance.inGameMenu || UIManager.Instance.inDialogueMenu) consoleOpen = false;
+			HandleDescriptionText(argsAll);
 
-			consoleWindow.SetActive(consoleOpen);
-
-			//Time.timeScale = consoleOpen ? 0 : 1;
-			// UIManager.Instance.inGameMenu = consoleOpen; // jank fix to get console to pause.
-
-
-			if (consoleOpen)
+			if (Input.GetKeyDown(KeyCode.Tab))
 			{
-				if (EventSystem.current != null)
-					EventSystem.current.SetSelectedGameObject(inputField.gameObject);
-				inputField.ActivateInputField();
+				TryFinishCommandPart(argsAll);
 			}
-		}
-
-
-		if (consoleOpen)
-		{
 			if (Input.GetKeyDown(KeyCode.Return))
 			{
-				EndEdit();
+				TryExecuteCommand(argsNoEmpty);
 			}
 
-			vertScrollBar.value += Input.GetAxisRaw("Mouse ScrollWheel");
+			if (Input.GetKeyDown(KeyCode.UpArrow))
+			{
+				GoToCommandHistory(1);
+			}
+			if (Input.GetKeyDown(KeyCode.DownArrow))
+			{
+				GoToCommandHistory(-1);
+			}
+
+			m_vertScrollBar.value += Input.GetAxisRaw("Mouse ScrollWheel");
 		}
 	}
 
-	public void TextToConsole(string text)
+	private void SelectInputField()
 	{
-		GameObject textObj = Instantiate(textPrefab, content.transform, false);
+		m_inputField.ActivateInputField();
 
-		textObj.GetComponent<TMP_Text>().text = text;
+		m_inputField.Select();
 
-		if (debugMessages.Count >= 50)
-		{
-			Destroy(debugMessages.Dequeue());
-		}
-
-		debugMessages.Enqueue(textObj);
-
-		vertScrollBar.value = -1;
+		if (EventSystem.current != null)
+			EventSystem.current.SetSelectedGameObject(m_inputField.gameObject);
 	}
 
-	public void EndEdit()
+	public void ToggleActiveState()
 	{
-		string command = inputField.text;
+		m_isConsoleActive = !m_isConsoleActive;
 
-		if (string.IsNullOrEmpty(command))
+		if (m_isConsoleActive)
 		{
-			TextToConsole("<color=red>Enter something valid!</color>");
+			UpdateLogWindow();
+
+			SelectInputField();
+
+
+			PauseCanvas.SetPauseState(PauseCanvas.PauseState.DebugConsolePaused);
+		}
+		else
+		{
+			if (PauseCanvas.CurrentPauseState == PauseCanvas.PauseState.DebugConsolePaused)
+			{
+				PauseCanvas.SetPauseState(PauseCanvas.PauseState.RestoreFromDebugPause);
+			}
+
+			m_selectedCommandInHistory = -1;
+
+			ClearInputField();
+			m_inputField.DeactivateInputField();
+
+			HandleDescriptionText(new string[0]);
+		}
+
+		// m_consoleRootObject.SetActive(m_isConsoleActive);
+	}
+
+	public void SetCaretToEnd()
+	{
+		m_inputField.caretPosition = m_inputField.text.Length;
+	}
+
+	private void GoToCommandHistory(int change)
+	{
+		if (m_executedCommands.Count <= -1) return;
+
+		m_selectedCommandInHistory += change;
+
+		m_selectedCommandInHistory = Mathf.Clamp(m_selectedCommandInHistory, -1, m_executedCommands.Count - 1);
+
+		if (m_selectedCommandInHistory == -1)
+		{
+			m_inputField.text = "";
+			SetCaretToEnd();
 			return;
 		}
 
-		CommandResult result = ParseCommand(command);
+		m_inputField.text = m_executedCommands.ElementAt(m_selectedCommandInHistory);
 
-		// if (result == CommandResult.Success) TextToConsole("Success");
-		// if (result == 1) TextToConsole("<color=red>Unknown Command!</color>");
-		// if (result == 2) TextToConsole("<color=red>INTERNAL ERROR</color>");
-
-		string prefix = "";
-
-		switch (result)
-		{
-			case CommandResult.Failed:
-				prefix = "<b><color=red>[COMMAND FAILED] ";
-				break;
-			case CommandResult.MissingArgs:
-				prefix = "<b><color=yellow>[COMMAND IS MISSING ARGUMENTS] ";
-				break;
-			case CommandResult.CommandCausedAnException:
-				prefix = "<b><color=red>[COMMAND CAUSED AN ERROR] ";
-				break;
-			case CommandResult.Success:
-				prefix = "<b><color=green>[COMMAND SUCCEEDED] ";
-				break;
-			case CommandResult.UnkownCommand:
-				prefix = "<b><color=red>[UNKOWN COMMAND] ";
-				break;
-			case CommandResult.CommandParseFailed:
-				prefix = "<b><color=red>[COMMAND PARSE FAILED] ";
-				break;
-		}
-
-		TextToConsole(prefix); // + result.ToString());
-
-		inputField.text = "";
-
-		inputField.ActivateInputField();
-
+		SetCaretToEnd();
 	}
 
-	public CommandResult ParseCommand(string input)
+	private void ApplySettings()
 	{
-		string[] original = input.Split(' ');
-		string command = original[0];
-		// print("." + command + ".");
-		string[] args = new string[original.Length];
-		for (int i = 1; i < original.Length; i++)
-		{
-			args[i - 1] = original[i];
-		}
-
-		for (int i = 0; i < commands.Count; i++)
-		{
-			CommandBase commandBase = commands[i] as CommandBase;
-
-			// Changed from contains to Equals to hopefully fix commands that are like kill do not overrule commands that are killAll for example, because killAll contains kill.
-			if (!command.Equals(commandBase.Command, StringComparison.CurrentCultureIgnoreCase))
-			{
-				continue; // this command is not our command we are looking for, so we continue.
-			}
-
-			if (commands[i] as Command != null)
-			{
-				try
-				{
-					(commands[i] as Command).Invoke();
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			if (args.Length <= 0 || args[0] == null) return CommandResult.MissingArgs;
-
-			else if (commands[i] as Command<string> != null)
-			{
-				try
-				{
-					(commands[i] as Command<string>).Invoke(args[0]);
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<string[]> != null)
-			{
-				try
-				{
-					(commands[i] as Command<string[]>).Invoke(args);
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<string, string> != null)
-			{
-				try
-				{
-					(commands[i] as Command<string, string>).Invoke(args[0], args[1]);
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<string, string, string> != null)
-			{
-				try
-				{
-					(commands[i] as Command<string, string, string>).Invoke(args[0], args[1], args[2]);
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<float> != null)
-			{
-				try
-				{
-					(commands[i] as Command<float>).Invoke(float.Parse(args[0]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<float, float> != null)
-			{
-				try
-				{
-					(commands[i] as Command<float, float>).Invoke(float.Parse(args[0]), float.Parse(args[1]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<float, float, float> != null)
-			{
-				try
-				{
-					(commands[i] as Command<float, float, float>).Invoke(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<bool> != null)
-			{
-				try
-				{
-					(commands[i] as Command<bool>).Invoke(bool.Parse(args[0]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<bool, bool> != null)
-			{
-				try
-				{
-					(commands[i] as Command<bool, bool>).Invoke(bool.Parse(args[0]), bool.Parse(args[1]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<bool, bool, bool> != null)
-			{
-				try
-				{
-					(commands[i] as Command<bool, bool, bool>).Invoke(bool.Parse(args[0]), bool.Parse(args[1]), bool.Parse(args[2]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<int> != null)
-			{
-				try
-				{
-					(commands[i] as Command<int>).Invoke(int.Parse(args[0]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<int, int> != null)
-			{
-				try
-				{
-					(commands[i] as Command<int, int>).Invoke(int.Parse(args[0]), int.Parse(args[1]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-			else if (commands[i] as Command<int, int, int> != null)
-			{
-				try
-				{
-					(commands[i] as Command<int, int, int>).Invoke(int.Parse(args[0]), int.Parse(args[1]), int.Parse(args[2]));
-					return CommandResult.Success;
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(e.Message);
-					return CommandResult.CommandCausedAnException;
-				}
-			}
-
-		}
-
-		return CommandResult.UnkownCommand;
+		m_logWindowRect.sizeDelta = new Vector2(1f, m_consoleSettings.ConsoleHeight - k_inputFieldHeight);
 	}
 
-	public void DestroyUnityObject(UnityEngine.Object objectToDestroy)
+	private void WriteConsoleSettings()
 	{
-		Destroy(objectToDestroy);
+		File.WriteAllText(ConsoleConfigPath, JsonConvert.SerializeObject(m_consoleSettings, Formatting.Indented, new JsonSerializerSettings
+		{
+			ReferenceLoopHandling = ReferenceLoopHandling.Error
+		}));
+		LogToConsole("Saved console settings to disk.");
 	}
 
-	public void ChangeWatchMessage(bool watchingErrorsOnly = true)
+	private ConsoleSettings ReadConsoleSettings()
 	{
-		onlyWatchForErrors = watchingErrorsOnly;
+		if (File.Exists(ConsoleConfigPath))
+		{
+#nullable enable
+			ConsoleSettings? consoleSettings = JsonConvert.DeserializeObject<ConsoleSettings>(File.ReadAllText(ConsoleConfigPath));
+			return consoleSettings;
+#nullable restore
+		}
+		return null;
+	}
+
+
+	private void HandleConsoleActiveState()
+	{
+		if (Input.GetKeyDown(KeyCode.BackQuote) || (m_isConsoleActive && Input.GetKeyDown(KeyCode.Escape)))
+		{
+			ToggleActiveState();
+		}
+
+		bool flag = m_consoleRect.anchoredPosition.y < (m_consoleSettings.ConsoleHeight) - 1;
+		if (m_consoleRootObject.activeSelf != flag)
+		{
+			m_consoleRootObject.SetActive(flag);
+
+			if (flag)
+			{
+				SelectInputField();
+			}
+		}
+
+		float slideTarget = (m_isConsoleActive ? 0f : (m_consoleSettings.ConsoleHeight) + 10);
+		m_consoleRect.anchoredPosition = new Vector2(0, Mathf.Lerp(m_consoleRect.anchoredPosition.y, slideTarget, Time.unscaledDeltaTime * 8f));
+	}
+
+	private void ClearInputField()
+	{
+		m_inputField.text = "";
+		HandleDescriptionText(new string[0]);
+	}
+
+
+	private void ApplicationLogCallback(string condition, string stackTrace, LogType type)
+	{
+		if (m_consoleSettings.OnlyWatchForErrors && type != LogType.Error) return;
+
+		switch (type)
+		{
+			case LogType.Error:
+				LogToConsole($"<color=red> {condition}; {stackTrace} </color>");
+				break;
+			case LogType.Exception:
+				LogToConsole($"<color=red> {condition}; {stackTrace} </color>");
+				break;
+			case LogType.Assert:
+				LogToConsole($"<color=red> {condition}; {stackTrace} </color>");
+				break;
+			case LogType.Warning:
+				LogToConsole($"<color=yellow> {condition}; {stackTrace} </color>");
+				break;
+			case LogType.Log:
+				LogToConsole($"{condition}");
+				break;
+		}
+	}
+
+
+	public void TryFinishCommandPart(string[] args)
+	{
+		if (args.Length <= 0 || string.IsNullOrEmpty(args[0]))
+		{
+			return;
+		}
+
+		if (args.Length == 1)
+		{
+			{
+				Command command = SearchFirst(args[0]);
+				if (command != null)
+				{
+					m_inputField.text = command.Name + " ";
+				}
+			}
+		}
+		else
+		{
+			Command command = SearchExact(args[0]);
+			if (command != null && command.ArgAutofill != null && command.ArgAutofill.TryGetValue(args.Length - 2, out var value))
+			{
+				string text = SearchArgumentAutofillFirst(args[^1], value);
+				if (!string.IsNullOrEmpty(text))
+				{
+					m_inputField.text = string.Join(" ", args.Take(args.Length - 1)) + " " + text;
+				}
+			}
+			char c = m_inputField.text.Substring(m_inputField.text.Length - 1, 1)[0];
+			if (c == '.' || c == ',')
+			{
+				m_inputField.text += "0";
+			}
+			m_inputField.text += " ";
+		}
+		SetCaretToEnd();
+	}
+
+	public void HandleDescriptionText(string[] args)
+	{
+		m_descriptionText.text = "";
+		// Vector3 bottomLeft = m_inputField.textComponent.textInfo.characterInfo[m_inputField.caretPosition].bottomLeft;
+		// Vector3 vector = m_inputField.transform.TransformPoint(bottomLeft);
+		// m_descriptionText.transform.localPosition = new Vector3(vector.x, 0);
+		m_descriptionText.transform.parent.transform.position = new Vector3(0, Screen.height - m_consoleSettings.ConsoleHeight);
+		((RectTransform)m_descriptionText.transform.parent).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_descriptionText.textBounds.size.y);
+		//  = new Vector2(((RectTransform)m_descriptionText.transform.parent).sizeDelta.x, m_descriptionText.GetPreferredValues(m_descriptionText.text, m_descriptionText.rectTransform.rect.width, Mathf.Infinity).y);
+
+		if (args.Length <= 0 || string.IsNullOrEmpty(args[0]))
+		{
+			return;
+		}
+
+		string text = "";
+		if (args.Length == 1)
+		{
+			List<Command> list = Search(args[0]);
+			if (list.Count <= 0)
+			{
+				text = $"<color=orange>Invalid command \"{args[0]}\"";
+				m_descriptionText.text = text;
+			}
+
+			bool flag = true;
+			foreach (Command command in list)
+			{
+				if (flag)
+				{
+					text += "<color=yellow>";
+				}
+				text += command.GetShortDescription(flag) + "\n";
+				if (flag)
+				{
+					text += "</color>";
+				}
+				flag = false;
+			}
+		}
+		else
+		{
+			Command command = SearchExact(args[0]);
+
+			if (command == null)
+			{
+				text = $"<color=orange>Invalid command \"{args[0]}\"";
+				m_descriptionText.text = text;
+				return;
+			}
+
+			text = command.Name + " ";
+			int num = args.Length - 2;
+			for (int i = 0; i < command.ArgDescriptions.Length; i++)
+			{
+				if (i == num)
+				{
+					text += "<color=yellow>";
+					text += $"[{command.ArgDescriptions[i].ShortDesc} - {command.ArgDescriptions[i].LongDesc}] ";
+					text += "</color>";
+				}
+				else
+				{
+					text += $"[{command.ArgDescriptions[i].ShortDesc}] ";
+				}
+			}
+
+			if (command.ArgAutofill != null && command.ArgAutofill.TryGetValue(num, out var value))
+			{
+				// value = SearchArgumentAutofill(args[^1], value);
+				value = SearchArgumentAutofill(args[args.Length - 1], value);
+				text += "\n";
+				for (int i = 0; i < value.Count; i++)
+				{
+					if (i <= 0)
+					{
+						text += "<color=yellow>";
+						text += value[i] + "\n";
+						text += "</color>";
+					}
+					else
+					{
+						text += value[i] + "\n";
+					}
+				}
+			}
+		}
+
+		m_descriptionText.text = text;
+	}
+
+	public void LogToConsole(string text)
+	{
+		if (!m_consoleSettings.Echo) return;
+
+		// Create space.
+		if (m_logs.Count >= m_consoleSettings.MaxLogCount)
+		{
+			m_logs.Dequeue();
+		}
+
+		// log.
+		TimeSpan timeSpan = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble);
+		m_logs.Enqueue($"[<alpha=#55>{timeSpan.ToString("mm\\:ss")}<alpha=#FF>] {text}");
+
+		// Update UI.
+		UpdateLogWindow();
+	}
+
+	public void UpdateLogWindow()
+	{
+		m_logWindow.text = string.Join("\n", m_logs);
+
+		m_vertScrollBar.value = -1;
+	}
+
+	public void TryExecuteCommand(string[] args, bool addCommandToHistory = true)
+	{
+		m_selectedCommandInHistory = -1;
+
+		if (args.Length <= 0 || string.IsNullOrWhiteSpace(args[0]))
+		{
+			SelectInputField();
+			return;
+		}
+
+		Command command = SearchExact(args[0]);
+		if (command == null)
+		{
+			LogToConsole($"<color=orange>Invalid command \"{args[0]}\"</color>");
+			if (addCommandToHistory)
+			{
+				SelectInputField();
+				AddCommandToHistoryAndClearInput();
+			}
+			return;
+		}
+
+		try
+		{
+			command.Action(args);
+		}
+		catch (Exception e)
+		{
+			LogToConsole($"<color=orange>Command \"{args[0]}\" failed: {e.Message}</color>");
+		}
+
+		if (addCommandToHistory)
+		{
+			AddCommandToHistoryAndClearInput();
+		}
+
+		SelectInputField();
+	}
+
+
+	private void AddCommandToHistoryAndClearInput()
+	{
+		if (string.IsNullOrEmpty(m_inputField.text)) return;
+
+		// Create space.
+		if (m_executedCommands.Count >= m_consoleSettings.MaxLogCommandHistory)
+		{
+			m_executedCommands.Pop();
+		}
+
+		// Add to history.
+		m_executedCommands.Push(m_inputField.text);
+
+		// Clear input.
+		m_inputField.text = "";
+	}
+
+	public static List<string> SearchArgumentAutofill(string input, List<string> fills)
+	{
+		return fills.Where((string c) => c.Contains(input)).ToList();
+	}
+
+	public static string SearchArgumentAutofillFirst(string input, List<string> fills)
+	{
+		return fills.FirstOrDefault((string c) => c.Contains(input));
+	}
+
+	public static List<Command> Search(string input)
+	{
+		return Commands.Where((Command c) => c.Name.Contains(input, StringComparison.OrdinalIgnoreCase)).ToList();
+	}
+
+	public static Command SearchFirst(string input)
+	{
+		return Commands.FirstOrDefault((Command c) => c.Name.Contains(input, StringComparison.OrdinalIgnoreCase));
+	}
+
+	public static Command SearchExact(string input)
+	{
+		return Commands.FirstOrDefault((Command c) => c.Name.Equals(input, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private int ParseInt(string s)
+	{
+		if (!int.TryParse(s, out var result))
+		{
+			throw new Exception("\"" + s + "\" is not a valid integer value! (0, 1, 5, etc)");
+		}
+		return result;
+	}
+
+	private float ParseFloat(string s)
+	{
+		if (!float.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+		{
+			throw new Exception("\"" + s + "\" is not a valid float value! (2, 0.7, 14.1, etc)");
+		}
+		return result;
+	}
+
+	private bool ParseBool(string s)
+	{
+		if (!bool.TryParse(s, out var result))
+		{
+			throw new Exception("\"" + s + "\" is not a valid boolean value! (true/false)");
+		}
+		return result;
+	}
+
+	private Color ParseColor(string s)
+	{
+		if (!ColorUtility.TryParseHtmlString(s, out var color))
+		{
+			throw new Exception("\"" + s + "\" is not a valid color value! (#FFFFFF, etc)");
+		}
+		return color;
+	}
+
+	private TEnum ParseEnum<TEnum>(string s)
+		where TEnum : struct, Enum
+	{
+		if (!Enum.TryParse<TEnum>(s, out var result))
+		{
+			throw new Exception("\"" + s + "\" is not a valid value!");
+		}
+
+		return result;
+	}
+
+	private Vector3 ParsePosition(string s)
+	{
+		switch (s)
+		{
+			case "player":
+				return PlayerRefFetcher.Instance.transform.position;
+			case "random":
+				// TODO: use world size.
+				return UnityEngine.Random.insideUnitSphere * UnityEngine.Random.Range(0, 100);
+			default:
+				{
+					string[] array = s.Split(',');
+					if (array.Length == 3)
+					{
+						return new Vector3(ParseFloat(array[0]), ParseFloat(array[1]), ParseFloat(array[3]));
+					}
+
+					throw new Exception("\"" + s + "\" is not a valid position! (player/random/#,#,#)");
+				}
+		}
+	}
+
+	// TODO: implement
+	private void CheckForCheats()
+	{
+		// if ((!WorldGeneration.world || WorldGeneration.world.biomeOverride != WorldGeneration.OverrideSceneType.Tutorial) && !SteamManager.disableAchievements)
+		// {
+		// SteamManager.disableAchievements = true;
+		Alert("<color=#ff006a>WARNING: You used a cheat command. Achievements are disabled until you restart the game.</color>");
+		// }
+	}
+
+	public void Alert(string message)
+	{
+		if (!m_isConsoleActive)
+		{
+			ToggleActiveState();
+		}
+		ExecuteCommand("log " + message);
+	}
+
+	public void ExecuteCommand(string command)
+	{
+		TryExecuteCommand(command.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+	}
+
+	private void RunCommandString(string commandStr)
+	{
+		commandStr = commandStr.Replace('_', ' ');
+		string[] array = commandStr.Split(';');
+		foreach (string text in array)
+		{
+			TryExecuteCommand(text.Split(' ', StringSplitOptions.RemoveEmptyEntries), false);
+		}
+	}
+
+	private void CheckArgumentCount(string[] args, int desired)
+	{
+		if (args.Length <= desired)
+		{
+			throw new Exception(string.Format("Expected at least {0} argument{1}, but got {2}.", desired, (desired > 1) ? "s" : "", args.Length - 1));
+		}
+	}
+
+
+	private void AddCustomCommand(string[] args)
+	{
+		string commandString = args[2];
+		Commands.Add(new Command(args[0].Replace(' ', '.'), args[1].Replace('_', ' '), (string[] array) =>
+		{
+			RunCommandString(commandString);
+		}, null)
+		{
+			IsCustomCommand = true
+		});
+	}
+
+
+
+	public void RegisterAllCommands()
+	{
+		Commands.Add(new Command("help", "Shows the command list.", (string[] args) =>
+		{
+			List<string> list = new List<string>();
+
+			foreach (Command command in Commands)
+			{
+				list.Add($"{command.GetShortDescription()} - <alpha=#48>{command.Description}<alpha=#FF>");
+			}
+			list.Add("Scroll to see all the commands.");
+			LogToConsole(string.Join("\n", list));
+		}, null));
+
+		Commands.Add(new Command("log", "Adds text to the console history.", (string[] args) =>
+		{
+			CheckArgumentCount(args, 1);
+			string text = string.Join(" ", args.Skip(1));
+			LogToConsole(text);
+		}, null, ("string text", "The text to log.")));
+
+
+		Commands.Add(new Command("version", "Get the game's current version.", (string[] args) =>
+		{
+			LogToConsole("v" + Application.version);
+		}, null));
+
+
+		Commands.Add(new Command("noclip", "Allows you to move around without any collisions or gravity.", (string[] args) =>
+		{
+			CheckForCheats();
+
+			bool specifiedActive = false;
+			bool targetMode = false;
+
+			if (args.Length > 1)
+			{
+				specifiedActive = true;
+				targetMode = ParseBool(args[1]);
+			}
+
+			GameObject player = GameObject.FindGameObjectWithTag(Constants.PlayerTag);
+
+			if (player == null)
+			{
+				throw new Exception("No player was found! Are in a active game right now?");
+			}
+
+			if (player.GetComponent<NoClipPlayerController>() || (specifiedActive && !targetMode))
+			{
+				Destroy(player.GetComponent<NoClipPlayerController>());
+
+				if (player.transform.GetComponent<CharacterController>())
+					player.transform.GetComponent<CharacterController>().enabled = true;
+				if (player.transform.GetComponent<Rigidbody>())
+					player.transform.GetComponent<Rigidbody>().isKinematic = false;
+
+				LogToConsole("NoClip deactivated.");
+			}
+			else if ((specifiedActive && targetMode) || !specifiedActive)
+			{
+				if (player.transform.GetComponent<CharacterController>())
+					player.transform.GetComponent<CharacterController>().enabled = false;
+				if (player.transform.GetComponent<Rigidbody>())
+					player.transform.GetComponent<Rigidbody>().isKinematic = true;
+
+				player.AddComponent<NoClipPlayerController>();
+
+				LogToConsole("NoClip activated.");
+			}
+
+		}, null, ("bool enable", "Optional set the noclip mode")));
+
+		Commands.Add(new Command("givescrap", "Give scrap to yourself.", (string[] args) =>
+		{
+			CheckForCheats();
+			CheckArgumentCount(args, 1);
+			int count = ParseInt(args[1]);
+
+			if (RunManager.Instance == null)
+			{
+				throw new Exception("You are not currently in a game!");
+			}
+
+			RunManager.Instance.AddToDepositedScrap(count);
+
+			LogToConsole($"Added {count} to your inventory! Now at {RunManager.Instance.GetCurrentScrapCount()} scrap!");
+
+
+		}, null, ("int amount", "The amount of scrap to give yourself")));
+
+
+		Commands.Add(new Command("giveupgradecards", "Give upgrade cards to yourself.", (string[] args) =>
+		{
+			CheckForCheats();
+			CheckArgumentCount(args, 2);
+
+			ModuleTier moduleTier = ParseEnum<ModuleTier>(args[1]);
+			int amount = ParseInt(args[2]);
+
+			if (RunManager.Instance == null)
+			{
+				throw new Exception("You are not currently in a game!");
+			}
+
+			RunManager.Instance.AddToStoredModules(moduleTier, amount);
+
+			LogToConsole($"Added {amount} of {moduleTier.ToString()} to your inventory! Now at {RunManager.Instance.GetModuleCount(moduleTier)} module{RunManager.Instance.GetModuleCount(moduleTier) > 1: 's' : ''}!");
+
+		}, new Dictionary<int, List<string>>
+		{
+			{
+				0,
+				Enum.GetNames(typeof(ModuleTier)).ToList()
+			}
+		}, ("keycode", "The card tier to give"), ("int amount", "The quantity to give of that specified card tier")));
+
+		Commands.Add(new Command("hurtself", "Adds damage to the player character.", (string[] args) =>
+		{
+			CheckForCheats();
+			CheckArgumentCount(args, 1);
+			float damage = ParseFloat(args[1]);
+
+			GameObject player = GameObject.FindGameObjectWithTag(Constants.PlayerTag);
+
+			if (!player)
+			{
+				throw new Exception("No player was found! Are in a active game right now?");
+			}
+
+			player.GetComponent<Health>().AddToHealth(damage);
+
+
+		}, null, ("float damage", "The amount of damage to apply to the player")));
+
+
+		Commands.Add(new Command("reload", "Reloads the current scene.", (_) =>
+		{
+			if (LevelLoading.Instance)
+			{
+				if (LevelLoading.Instance.IsLoading)
+				{
+					throw new Exception("Cannot reload a scene when currently loading!");
+				}
+
+				LevelLoading.Instance.Reload();
+			}
+			else
+			{
+				SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+			}
+
+			LogToConsole("Reloading scene!");
+
+		}, null));
+
+
+		Commands.Add(new Command("destroy", "Destroys the current object in front of the camera.", (_) =>
+		{
+			CheckForCheats();
+			if (Physics.Raycast(Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f)), out RaycastHit hit, 1000f))
+			{
+				LogToConsole($"Destroyed {hit.transform.name}!");
+				Destroy(hit.transform.gameObject);
+			}
+			else
+			{
+				LogToConsole("Nothing to destroy!");
+			}
+
+		}, null));
+
+		Commands.Add(new Command("getplayerpos", "Get the current position of the player.", (_) =>
+		{
+			LogToConsole($"You're at: {Camera.main.transform.position}");
+
+		}, null));
+
+		Commands.Add(new Command("updateupgrademenu", "Updates the upgrade menu for anything that hasn't updated due to \"changes\".", (_) =>
+		{
+			CheckForCheats();
+
+			if (!UpgradeMenuManager.Instance)
+			{
+				throw new Exception("You need to be on the hub world!");
+			}
+
+			UpgradeMenuManager.Instance.UpdateStatUI();
+
+		}, null));
+
+
+		Commands.Add(new Command("setconsoleheight", "Set the height of the console.", (string[] args) =>
+		{
+			CheckArgumentCount(args, 1);
+			float height = ParseFloat(args[1]);
+
+			if (height < 100f)
+			{
+				height = 100f;
+			}
+			else if (height > (float)Screen.height)
+			{
+				height = Screen.height;
+			}
+
+			m_consoleSettings.ConsoleHeight = height;
+			ApplySettings();
+
+			LogToConsole($"Console height has been set to {height}.");
+
+			WriteConsoleSettings();
+
+		}, new Dictionary<int, List<string>>
+		{
+			{
+				0,
+				new List<string> { "500" }
+			}
+		}, ("float height", "(Default: 500) The height of the console.")));
+
+
+		Commands.Add(new Command("quit", "Quits the game. (Force unity to crash hard both engine and game)", (_) =>
+		{
+			Debug.Log("Shutting down gracefully...");
+			UnityEngine.Diagnostics.Utils.ForceCrash(UnityEngine.Diagnostics.ForcedCrashCategory.FatalError);
+		}, null));
+
+
+
+
+
+
+
+
+
+
+
+
+
+		Commands.OrderBy(x => x.Name);
+	}
+
+	public void RegisterCommand(Command command)
+	{
+		if (SearchExact(command.Name) != null)
+		{
+			throw new Exception("There is a command already registered with that name!");
+		}
+
+		Commands.Add(command);
+
+		Debug.Log($"Successfully registered {command.Name} command!");
 	}
 }

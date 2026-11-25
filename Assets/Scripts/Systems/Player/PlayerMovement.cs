@@ -371,6 +371,8 @@ public class PlayerMovement : MonoBehaviour
         // ======================
         HandleCameraMovement();
 
+
+        if (m_rb.isKinematic && !m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look)) m_moveableCamera.localRotation = Quaternion.Euler(m_cameraRot);
         if (m_rb.isKinematic || m_playerDisabling.IsDisabled(PlayerDisabling.DisabledType.Look)) return;
 
         // =====================

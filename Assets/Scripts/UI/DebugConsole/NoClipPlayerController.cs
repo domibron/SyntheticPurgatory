@@ -32,6 +32,9 @@ public class NoClipPlayerController : MonoBehaviour
     InputAction crouch;
     InputAction sprint;
 
+    public float SprintSpeed = 15f;
+    public float WalkSpeed = 5f;
+
     // doesnt work with synth perg.
     // This if from the input system
     // public void OnMove(InputValue value)
@@ -87,11 +90,11 @@ public class NoClipPlayerController : MonoBehaviour
         WorldDirection.Normalize();
 
         // hard set values for now.
-        float speed = 3f;
+        float speed = WalkSpeed;
 
         if (isSprinting)
         {
-            speed = 9f;
+            speed = SprintSpeed;
         }
 
         // we set the local vel with the input.
@@ -99,7 +102,7 @@ public class NoClipPlayerController : MonoBehaviour
 
         // we move the player.
         if (rb)
-            rb.MovePosition(transform.position + currentMovement * Time.deltaTime);
+            rb.MovePosition(transform.position + (currentMovement * Time.deltaTime));
         else
             transform.Translate(currentMovement * Time.deltaTime);
     }
