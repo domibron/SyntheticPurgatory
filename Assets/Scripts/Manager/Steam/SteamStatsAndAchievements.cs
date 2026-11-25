@@ -345,7 +345,7 @@ public class SteamStatsAndAchievements : MonoBehaviour
         {
             if (stat.m_eStatID != targetStat) continue;
 
-            return JsonUtility.FromJson<Stat_t>(JsonUtility.ToJson(stat));
+            return stat;
         }
 
         return null;
