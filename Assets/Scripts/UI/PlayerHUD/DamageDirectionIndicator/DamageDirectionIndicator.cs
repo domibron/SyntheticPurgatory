@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class DamageDirectionIndicator : MonoBehaviour
@@ -26,8 +27,13 @@ public class DamageDirectionIndicator : MonoBehaviour
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    IEnumerator Start()
     {
+        while (PlayerRefFetcher.Instance == null)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         if (playerTransform == null)
         {
             if (PlayerRefFetcher.Instance != null)
@@ -38,7 +44,6 @@ public class DamageDirectionIndicator : MonoBehaviour
             else
             {
                 Debug.LogError("Player Ref is NULL!");
-                return;
             }
         }
     }

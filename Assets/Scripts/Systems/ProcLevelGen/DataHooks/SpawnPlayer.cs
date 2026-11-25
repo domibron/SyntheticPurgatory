@@ -9,7 +9,7 @@ public class SpawnPlayer : SequenceBase
     [SerializeField]
     private GameObject playerCanvas;
 
-    private Vector3 playerSpawnLocation;
+    private Transform playerSpawnLocation;
 
     private LevelGenerator levelGenerator;
 
@@ -32,9 +32,10 @@ public class SpawnPlayer : SequenceBase
 
         if (playerPrefab != null)
         {
-            // We dont store the values here anmore.
+            // We dont store the values here any more.
             Instantiate(playerCanvas);
-            Instantiate(playerPrefab, playerSpawnLocation, Quaternion.identity);
+            Instantiate(playerPrefab, playerSpawnLocation.position, Quaternion.Euler(0, playerSpawnLocation.rotation.eulerAngles.y, 0));
+
 
             /// DO NOT put code here if you need to link a system with the player, use <see cref="PlayerRefFetcher.Instance"/> instead.
             /// Just make sure to wait for the player to spawn first. Look at this link for more info for start coroutine.

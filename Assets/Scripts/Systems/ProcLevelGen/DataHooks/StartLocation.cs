@@ -5,8 +5,8 @@ public class StartLocation : MonoBehaviour
     [SerializeField]
     private Transform playerStartSpawnLocation;
 
-    public Vector3 GetSpawnLocation()
+    public Transform GetSpawnLocation()
     {
-        return playerStartSpawnLocation.position;
+        return playerStartSpawnLocation;
     }
 }

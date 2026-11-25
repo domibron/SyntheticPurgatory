@@ -51,7 +51,7 @@ public class LevelGenerator : SequenceBase
     public event Action onLevelGenerationDestroy;
     public override event Action OnThisSequenceEnd;
 
-    private Vector3 playerSpawnLocation;
+    private Transform playerSpawnLocation;
 
     private float currentLevelGenerationProgress = 0f;
 
@@ -92,7 +92,7 @@ public class LevelGenerator : SequenceBase
         }
         else
         {
-            playerSpawnLocation = Vector3.zero;
+            playerSpawnLocation = null;
 
             // some cool checks to get spawn room grid cords and convert into a spawn locations.
         }
@@ -815,7 +815,7 @@ public class LevelGenerator : SequenceBase
         return spacesAfterDoorways >= minDoorwayCountToSucceed;
     }
 
-    public Vector3 GetPlayerSpawnLocation()
+    public Transform GetPlayerSpawnLocation()
     {
         return playerSpawnLocation;
     }
