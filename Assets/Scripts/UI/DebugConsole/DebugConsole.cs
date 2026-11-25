@@ -623,14 +623,17 @@ public class DebugConsole : MonoBehaviour
 		}
 	}
 
-	// TODO: implement
 	private void CheckForCheats()
 	{
-		// if ((!WorldGeneration.world || WorldGeneration.world.biomeOverride != WorldGeneration.OverrideSceneType.Tutorial) && !SteamManager.disableAchievements)
-		// {
-		// SteamManager.disableAchievements = true;
-		Alert("<color=#ff006a>WARNING: You used a cheat command. Achievements are disabled until you restart the game.</color>");
-		// }
+		if (!SteamStatsAndAchievements.AreAchievementsDisabled)
+		{
+#if UNITY_EDITOR
+			Alert("<color=#ff006a>Achievements would have been disabled but since this is in the editor this was ignored.</color>");
+#else
+			SteamStatsAndAchievements.DisableAchievements();
+			Alert("<color=#ff006a>WARNING: You used a cheat command. Achievements are disabled until you restart the game.</color>");
+#endif
+		}
 	}
 
 	public void Alert(string message)

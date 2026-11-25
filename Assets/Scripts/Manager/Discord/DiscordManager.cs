@@ -92,7 +92,7 @@ public class DiscordManager : MonoBehaviour
         catch (ResultException ex)
         {
             print("DISCORD: " + ex.Message);
-            return; // fuck off
+            return; // fuck off. WOAH, what's with the hostility?
         }
     }
 

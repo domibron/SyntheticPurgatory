@@ -8,6 +8,7 @@ public class SteamStatsAndAchievements : MonoBehaviour
 
     public static bool Initialized { get; private set; }
 
+    public static bool AreAchievementsDisabled { get; private set; } = false;
 
     public enum Achievement : int
     {
@@ -44,6 +45,7 @@ public class SteamStatsAndAchievements : MonoBehaviour
     {
         Initialized = false;
         Instance = null;
+        AreAchievementsDisabled = false;
     }
 #endif
 
@@ -76,6 +78,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
 
         Instance = this;
 
+        AreAchievementsDisabled = false;
+
         /// Here are where the achievements are assigned to the collection.
         /// Once you created the enum for that achievement and it has the same API name as the enum.
         /// You define it here. Dont worry about the names and descriptions as they will be fetched from Steam.
@@ -96,7 +100,7 @@ public class SteamStatsAndAchievements : MonoBehaviour
         /// Here are the stats that you can get and update.
         /// When adding a new stat make sure the API name on the steamworks and the enum are a match.
         /// You will also need to give it a name too. This is NOT automatically fetched.
-        /// make sure to define the stat type since Steam will error if you try to set or get a miss0-matched type.
+        /// make sure to define the stat type since Steam will error if you try to set or get a miss-matched type.
         /// Use the respected functions to get and update the stats.
 
         m_Stats = new Stat_t[]
@@ -120,6 +124,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
         RefreshAchievements();
         RefreshStats();
 
+        if (AreAchievementsDisabled) return; // Deny achievement progression.
+
         foreach (Achievement_t achievement in m_Achievements)
         {
             if (achievement.m_bAchieved || achievement.m_CheckCriteria is null) continue;
@@ -138,6 +144,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
     public void UnlockAchievement(Achievement achievement)
     {
         if (!SteamManager.Initialized) return;
+
+        if (AreAchievementsDisabled) return; // Deny achievement progression.
 
         UnlockAchievement(GetAchievement(achievement));
     }
@@ -186,7 +194,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
         return false;
     }
 
-    public Achievement_t GetAchievement(Achievement achievement)
+
+    private Achievement_t GetAchievement(Achievement achievement)
     {
         if (!SteamManager.Initialized) return null;
 
@@ -205,6 +214,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
         if (!SteamManager.Initialized) return;
 
         if (achievement.m_bAchieved) return;
+
+        if (AreAchievementsDisabled) return; // Deny achievement progression.
 
         achievement.m_bAchieved = true;
 
@@ -246,6 +257,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
         if (!SteamManager.Initialized) return;
 
         if (values.Length <= 0) return;
+
+        if (AreAchievementsDisabled) return; // Deny achievement progression.
 
         foreach (Stat_t stat in m_Stats)
         {
@@ -319,6 +332,11 @@ public class SteamStatsAndAchievements : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Get the copy of the stat.
+    /// </summary>
+    /// <param name="targetStat">The stat to get.</param>
+    /// <returns>A copy of the stat.</returns>
     public Stat_t GetStat(Stat targetStat)
     {
         if (!SteamManager.Initialized) return null;
@@ -327,7 +345,7 @@ public class SteamStatsAndAchievements : MonoBehaviour
         {
             if (stat.m_eStatID != targetStat) continue;
 
-            return stat;
+            return JsonUtility.FromJson<Stat_t>(JsonUtility.ToJson(stat));
         }
 
         return null;
@@ -365,6 +383,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
     public void AddToStat(Stat targetStat, object amount)
     {
         if (!SteamManager.Initialized) return;
+
+        if (AreAchievementsDisabled) return; // Deny any achievement progression gain.
 
         foreach (Stat_t stat in m_Stats)
         {
@@ -465,6 +485,7 @@ public class SteamStatsAndAchievements : MonoBehaviour
             return;
         }
 
+        return;
 
         GUILayout.Label("m_totalGamesWon: " + GetStatValue(Stat.STAT_GAMES_WON, out bool _));
         GUILayout.Label("m_nTotalEnemiesKilled: " + GetStatValue(Stat.STAT_ENEMIES_KILLED, out bool _));
@@ -530,6 +551,12 @@ public class SteamStatsAndAchievements : MonoBehaviour
             m_strName = name;
             m_eStatType = type;
         }
+    }
+
+
+    public static void DisableAchievements()
+    {
+        AreAchievementsDisabled = true;
     }
 
     #endregion
