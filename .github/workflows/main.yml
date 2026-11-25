@@ -50,7 +50,7 @@ jobs:
           path: Library
           key: Library-SyntheticPurgatory-Windows64
           restore-keys: |
-            Library-SyntheticPurgatory-Windows64
+            Library-SyntheticPurgatory-${{ hashFiles('Packages/**', 'ProjectSettings/**') }}
       - uses: game-ci/unity-builder@v4
         id: buildStep
         env:
@@ -66,9 +66,3 @@ jobs:
         with:
           name: Build-${{ matrix.targetPlatform }}-v${{ steps.buildStep.outputs.buildVersion }}
           path: Build
-      - name: Save cache
-        if: steps.cache.outputs.cache-hit != true
-        uses: actions/cache/save@v4
-        with:
-          path: Libarary
-          key: Library-SyntheticPurgatory-Windows64
