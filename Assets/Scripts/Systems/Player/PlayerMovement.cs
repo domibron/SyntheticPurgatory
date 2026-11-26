@@ -22,7 +22,7 @@ using UnityEngine.Serialization;
 // TODO: seperate the camera controller from the movement.
 
 /// <summary>
-/// The player movement and camerea controller.
+/// The player movement and camera controller.
 /// </summary>
 public class PlayerMovement : MonoBehaviour
 {
@@ -119,6 +119,11 @@ public class PlayerMovement : MonoBehaviour
 
     private bool m_wasStepPlayed = false;
 
+    [SerializeField]
+    private AudioSource m_jumpAS;
+
+    [SerializeField]
+    private AudioSource m_landAS;
 
     #endregion
 
@@ -237,6 +242,13 @@ public class PlayerMovement : MonoBehaviour
     bool m_isJumping = false;
 
     /// <summary>
+    /// Is the player performing a jump.
+    /// </summary>
+    bool m_isSliding = false;
+
+    bool m_wasSlideBootApplied = false;
+
+    /// <summary>
     /// Delay before resetting the ability to jump.
     /// </summary>
     const float k_waitBeforeEnableJumpReset = 0.4f;
@@ -310,6 +322,12 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     float m_jumpHeight = 2f;
+
+    [SerializeField]
+    float m_slideForce = 2f;
+
+    [SerializeField]
+    float m_slideFriction = 2f;
 
     #endregion
 
@@ -433,7 +451,7 @@ public class PlayerMovement : MonoBehaviour
         m_linearVelMagLerp = Mathf.Lerp(m_linearVelMagLerp, m_linearVel.magnitude, 10f * Time.deltaTime);
 
         // Head bob time.
-        if (m_linearVel.magnitude > 1f && m_lateGrounded)
+        if (m_linearVel.magnitude > 1f && m_lateGrounded && !m_isSliding)
         {
             m_movementTimeForBobbing += Time.deltaTime * m_linearVelMagLerp * 1.75f;
 
@@ -526,7 +544,9 @@ public class PlayerMovement : MonoBehaviour
         if (!m_lateGrounded && CheckIsGrounded() && m_verticalVel.y < -5f && m_currentSlopeState != SlopeState.SteepSlope)
         {
             m_lateGrounded = CheckIsGrounded(); // ! Terrible decision to update lategrounded like this.
-            PuntCameraDown(4f);
+
+            PuntCameraDown(Mathf.Clamp(Mathf.Abs(m_verticalVel.y) - 5f, 1f, 4f));
+            m_landAS.Play();
         }
 
 
@@ -710,6 +730,14 @@ public class PlayerMovement : MonoBehaviour
         PuntCamera(Vector3.left * force);
     }
 
+    public void PuntCameraUpForced(float force)
+    {
+        float extra = m_cameraPuntForce.x;
+        if (extra < 0) extra = 0;
+
+        PuntCamera(Vector3.left * (force + extra));
+    }
+
     public void PuntCameraLeft(float force)
     {
         PuntCamera(Vector3.down * force);
@@ -757,7 +785,7 @@ public class PlayerMovement : MonoBehaviour
     private void Movement()
     {
         // ==============================
-        //   Frame Changeable Varibles.
+        //   Frame Changing Variables.
         // ==============================
         float accel = 1 / m_walkAccelRate; // mps^2
         float deAccel = accel; // mps^2
@@ -767,11 +795,13 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+
         // =====================
         //   Sprinting Checks.
         // =====================
-        // ? Isnt this just input handling?
-        if (m_isSprintKeyDown && IsGrounded)
+        // ? Isn't this just input handling?
+        // Technically, no. Assigning variables based on states.
+        if (m_isSprintKeyDown && IsGrounded && !m_isCrouched)
         {
             m_isSprinting = true;
 
@@ -783,7 +813,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (m_isSprinting && !IsGrounded)
             {
-                lastAirTarget = m_maxSprintSpeed;
+                lastAirTarget = m_maxWalkSpeed;
             }
 
             m_isSprinting = false;
@@ -791,10 +821,41 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+        // ===================
+        //   Sliding Boost and.
+        // ===================
+        if (m_isSprintKeyDown && m_isCrouched && IsGrounded && !m_wasSlideBootApplied)
+        {
+            m_wasSlideBootApplied = true;
+
+            // Very abusable.
+            m_linearVel += m_inputWishDirWorld.normalized * m_slideForce;
+        }
+        else if (!m_isCrouched && IsGrounded)
+        {
+            m_wasSlideBootApplied = false;
+        }
+
+
+
+        // ===================
+        //   Sliding Checks.
+        // ===================
+        if (m_isCrouched)
+        {
+            m_isSliding = m_linearVel.magnitude > targetSpeed;
+        }
+        else
+        {
+            m_isSliding = false;
+        }
+
+
+
         // ===============
         //   Velocities.
         // ===============
-        if (IsGrounded && !m_isJumping)
+        if (IsGrounded && !m_isJumping && !m_isSliding)
         {
             // ======================
             //   Grounded Movement.
@@ -859,7 +920,47 @@ public class PlayerMovement : MonoBehaviour
                 m_verticalVel.y = -1;
             }
         }
-        else
+        else if (IsGrounded && !m_isJumping && m_isSliding)
+        {
+            // ===========================
+            //   Sliding Level Movement.
+            // ===========================
+            if (m_currentSlopeState == SlopeState.FlatGround)
+            {
+                // Add friction to the sliding speed.
+                m_linearVel += -m_linearVel * m_slideFriction * Time.fixedDeltaTime;
+
+                if (m_inputWishDirWorld.magnitude > 0.1f)
+                {
+                    m_linearVel += ((m_inputWishDirWorld.normalized * m_linearVel.magnitude) - m_linearVel) * Time.fixedDeltaTime * accel;
+                }
+
+            }
+            else if (m_currentSlopeState == SlopeState.SlightSlope)
+            {
+                // ==================================
+                //   Sliding Slight Slope Movement.
+                // ==================================
+                Vector3 slideDir = Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage);
+
+                m_linearVel += (slideDir + (-m_linearVel * m_slideFriction)) * Time.fixedDeltaTime;
+
+                if (m_inputWishDirWorld.magnitude > 0.1f)
+                {
+                    m_linearVel += ((m_inputWishDirWorld.normalized * m_linearVel.magnitude) - m_linearVel) * Time.fixedDeltaTime * accel;
+                }
+            }
+            else
+            {
+                // =========================
+                //   Steep Slope Movement.
+                // =========================
+                Vector3 slideDir = Vector3.ProjectOnPlane(GetGravityVector(), m_groundNormalAverage);
+
+                m_linearVel += slideDir * Time.fixedDeltaTime;
+            }
+        }
+        else if (!IsGrounded || m_isJumping)
         {
             // =================
             //   Air Movement.
@@ -890,7 +991,9 @@ public class PlayerMovement : MonoBehaviour
             m_isJumping = true;
             m_currentWaitUntilJumpRestAllowed = k_waitBeforeEnableJumpReset;
 
-            PuntCameraUp(4f);
+            PuntCameraUpForced(4f);
+
+            m_jumpAS.Play();
         }
     }
 
@@ -990,7 +1093,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void ResetJumpWhenGrounded()
     {
-        if (IsGrounded && m_currentSlopeState != SlopeState.SteepSlope && m_currentWaitUntilJumpRestAllowed <= 0)
+        if (m_lateGrounded && m_currentSlopeState != SlopeState.SteepSlope && m_currentWaitUntilJumpRestAllowed <= 0)
         {
             m_isJumping = false;
         }
