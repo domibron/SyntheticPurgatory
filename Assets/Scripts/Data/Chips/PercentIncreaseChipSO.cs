@@ -14,19 +14,19 @@ public class PercentIncreaseChipSO : ChipSO
     /// <summary>
     /// The target stat to modify.
     /// </summary>
-    public StatType targetStat = StatType.MaxHealth;
+    public string targetStatName = "";
 
     public override void ModifyStats(ref PlayerStats pStats, ref MiscellaneousStats mStats)
     {
         // foreach the enum and use the value to cycle through and increase. ~ Ur using ref so much, I just came back from c++ I want to make sure that I have a ref.
-        IncreaseStat(ref UpgradeMenuManager.ConvertEnumToStat(targetStat, ref pStats, ref mStats));
+        IncreaseStat(UpgradeMenuManager.GetUpgradeableStatByName(targetStatName, pStats, mStats));
     }
 
     /// <summary>
     /// Increases the stat if the stat is increase otherwise it will decrease the stat.
     /// </summary>
     /// <param name="pStat">A reference to he stat to modify.</param>
-    protected virtual void IncreaseStat(ref UpgradableStat pStat)
+    protected virtual void IncreaseStat(UpgradableStat pStat)
     {
         if (pStat.IsIncreasingStat)
         {

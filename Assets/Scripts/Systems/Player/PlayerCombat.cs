@@ -31,12 +31,14 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// How much damage the projectile will do. Stats set this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.ProjectileDamageStat))]
     float m_projectileDamage = 12f;
 
 
     /// <summary>
     /// Decimal percentage of the critical hit chance. Stats set this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.CriticalHitChance))]
     float m_criticalHitChance = 0.01f;
 
     /// <summary>
@@ -54,11 +56,13 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// The melee attack interval. Stats set this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.MeleeAttackDelayStat))]
     float m_meleeAttackDelay = 0.5f;
 
     /// <summary>
     /// The damage the melee will do per hit. Stats set this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.MeleeDamageStat))]
     float m_meleeDamage = 10f;
 
     /// <summary>
@@ -77,11 +81,13 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// The force to apply to objects when they have been kicked. Stats set this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.BashForceStat))]
     float m_bashForce = 10f;
 
     /// <summary>
     /// The bash attack interval. Stats set this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.BashAttackDelayStat))]
     float m_bashAttackDelay = 0.5f;
 
 
@@ -133,6 +139,7 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// How many shots before needing to recharge fully. Stats sets this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.ShotsPerFullChargeStat))]
     int m_shotsPerFullCharge = 12;
 
     /// <summary>
@@ -145,16 +152,19 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// How fast to fire when low on charge. Stats sets this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.StandardSecondsPerShot))]
     float m_standardSecondsPerShot = 0.4f;
 
     /// <summary>
     /// How fast the cannon fires when fully charged. Stats sets this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.ChargedSecondsPerShot))]
     float m_chargedSecondsPerShot = 0.1f;
 
     /// <summary>
     /// The delay after a shot before the cannon can start recharging. Stats sets this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.DelayAfterFireBeforeRecharging))]
     float m_delayAfterFireBeforeRecharging = 0.4f;
 
     /// <summary>
@@ -165,6 +175,7 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// How long to disable the cannon before the player can fire again after full depletion. Stats sets this.
     /// </summary>
+    [StatAssignable(nameof(PlayerStats.OverheatForceCoolDownStat))]
     float m_overheatForceCoolDown = 2.25f;
 
     /// <summary>
@@ -392,31 +403,15 @@ public class PlayerCombat : MonoBehaviour
         if (stats == null)
         {
             Debug.LogError("No player stats! Using default values!");
-            stats = new PlayerStats();
+            return;
             // return;
         }
 
-        m_projectileDamage = stats.ProjectileDamageStat.GetCurrentValue();
-        m_rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
-        m_shotsPerFullCharge = (int)stats.ShotsPerFullChargeStat.GetCurrentValue();
-        m_standardSecondsPerShot = stats.StandardSecondsPerShot;
-        m_chargedSecondsPerShot = stats.ChargedSecondsPerShot;
-        m_delayAfterFireBeforeRecharging = stats.DelayAfterFireBeforeRecharging;
-        m_overheatForceCoolDown = stats.OverheatForceCoolDownStat.GetCurrentValue();
-        // projectileFireRate = stats.ProjectileFireRate;
-        // projectileMagSize = stats.ProjectileMagSize;
+        stats.ApplyStats(this);
 
-        m_meleeAttackDelay = stats.MeleeAttackDelayStat.GetCurrentValue();
-        m_meleeDamage = stats.MeleeDamageStat.GetCurrentValue();
+        // could turn these into variables field get => thingies.
         m_meleeBounds.z = stats.MeleeReachStat.GetCurrentValue();
-
-
-        m_bashForce = stats.BashForceStat.GetCurrentValue();
-        m_bashAttackDelay = stats.BashAttackDelayStat.GetCurrentValue();
-        // reloadTime = stats.ReloadTime;
-        // rechargeRate = stats.ReloadTime;
-
-        // TODO: calc charge here.
+        m_rechargeRate = 1f / stats.RechargeSecondsStat.GetCurrentValue();
     }
 
     /// <summary>

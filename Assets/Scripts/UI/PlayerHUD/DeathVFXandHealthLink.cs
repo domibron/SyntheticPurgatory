@@ -35,6 +35,17 @@ public class DeathVFXandHealthLink : MonoBehaviour
         if (m_deathEffect == null) Debug.LogError($"{nameof(GameViewFilterFSRF)} is not ready!");
     }
 
+    void OnDestroy()
+    {
+        GameViewFilterFSRF.Instance?.ResetEffect();
+        GameViewFilterFSRF.Instance?.SetEffectActive();
+    }
+
+    void OnDisable()
+    {
+        GameViewFilterFSRF.Instance?.ResetEffect();
+        GameViewFilterFSRF.Instance?.SetEffectActive();
+    }
 
     void Update()
     {

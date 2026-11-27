@@ -8,14 +8,6 @@ public class MeleeEnemyStats : CoreStats, ICloneable
 {
     public float health = 0f;
 
-    public override object Clone()
-    {
-        return new MeleeEnemyStats
-        {
-            health = health,
-
-        };
-    }
 
 }
 

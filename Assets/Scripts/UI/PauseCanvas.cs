@@ -127,8 +127,6 @@ public class PauseCanvas : MonoBehaviour
 
     private PlayerDisabling.DisabledType unpausedPlayerState;
 
-    private float unpausedPausedState = 1f;
-
     void OnEnable()
     {
         if (InputManager.Instance != null)
@@ -328,8 +326,6 @@ public class PauseCanvas : MonoBehaviour
 
     public static void SetPauseState(PauseState pauseState)
     {
-        print($"IN {pauseState} CUR {m_pauseState}");
-
         if (m_pauseState == PauseState.DenyOverrides)
         {
             Debug.LogWarning("Pause system is denying overrides due to requirements to keep time flowing.");
@@ -341,64 +337,23 @@ public class PauseCanvas : MonoBehaviour
             return;
         }
 
-        if (m_pauseState == PauseState.DebugConsolePaused)
-        {
-            if (pauseState == PauseState.DebugConsolePaused)
-            {
-                return;
-            }
-            else if (pauseState == PauseState.RestoreFromDebugPause)
-            {
-                m_pauseState = PauseState.RestoreFromDebugPause;
-                SetPauseState(m_lastKnownDebugPauseSate);
-                return;
-            }
-            else if (pauseState == PauseState.Resumed)
-            {
-                if (m_lastKnownDebugPauseSate == PauseState.OverridePaused)
-                {
-                    m_lastKnownPauseState = PauseState.Resumed;
-                }
-                else
-                {
-                    m_lastKnownDebugPauseSate = pauseState;
-                }
-            }
-            else if (pauseState == PauseState.Paused)
-            {
-                if (m_pauseState == PauseState.OverrideResume)
-                {
-                    m_lastKnownPauseState = PauseState.Paused;
-                }
-                else
-                {
-                    m_lastKnownDebugPauseSate = pauseState;
-                }
-            }
-            else if (pauseState == PauseState.OverridePaused)
-            {
-                m_lastKnownDebugPauseSate = pauseState;
-            }
-            else if (pauseState == PauseState.OverrideResume)
-            {
-                m_lastKnownDebugPauseSate = pauseState;
-            }
-            else if (pauseState == PauseState.RestoreFromOverride)
-            {
-                m_lastKnownDebugPauseSate = pauseState;
-            }
-
-            Debug.LogWarning("Debug console is denying overrides.");
-
-            return;
-        }
-
         switch (pauseState)
         {
             case PauseState.Resumed:
                 if (m_pauseState == PauseState.OverridePaused)
                 {
                     m_lastKnownPauseState = PauseState.Resumed;
+                }
+                else if (m_pauseState == PauseState.DebugConsolePaused)
+                {
+                    if (m_pauseState == PauseState.OverridePaused)
+                    {
+                        m_lastKnownPauseState = PauseState.Resumed;
+                    }
+                    else
+                    {
+                        m_lastKnownDebugPauseSate = PauseState.Resumed;
+                    }
                 }
                 else
                 {
@@ -412,6 +367,17 @@ public class PauseCanvas : MonoBehaviour
                 {
                     m_lastKnownPauseState = PauseState.Paused;
                 }
+                else if (m_pauseState == PauseState.DebugConsolePaused)
+                {
+                    if (m_pauseState == PauseState.OverrideResume)
+                    {
+                        m_lastKnownPauseState = PauseState.Paused;
+                    }
+                    else
+                    {
+                        m_lastKnownDebugPauseSate = PauseState.Paused;
+                    }
+                }
                 else
                 {
                     m_pauseState = pauseState;
@@ -420,26 +386,95 @@ public class PauseCanvas : MonoBehaviour
                 return;
 
             case PauseState.OverridePaused:
-                m_lastKnownPauseState = m_pauseState;
-                m_pauseState = pauseState;
-                Time.timeScale = 1;
+                if (m_pauseState == PauseState.DebugConsolePaused)
+                {
+                    if (m_lastKnownDebugPauseSate == PauseState.Resumed || m_lastKnownDebugPauseSate == PauseState.Paused)
+                    {
+                        m_lastKnownPauseState = m_lastKnownDebugPauseSate;
+                    }
+                    m_lastKnownDebugPauseSate = PauseState.OverridePaused;
+                }
+                else
+                {
+                    m_lastKnownPauseState = m_pauseState;
+                    m_pauseState = pauseState;
+                    Time.timeScale = 1;
+                }
                 return;
 
             case PauseState.OverrideResume:
-                m_lastKnownPauseState = m_pauseState;
-                m_pauseState = pauseState;
-                Time.timeScale = 0;
+                if (m_pauseState == PauseState.DebugConsolePaused)
+                {
+                    if (m_lastKnownDebugPauseSate == PauseState.Resumed || m_lastKnownDebugPauseSate == PauseState.Paused)
+                    {
+                        m_lastKnownPauseState = m_lastKnownDebugPauseSate;
+                    }
+                    m_lastKnownDebugPauseSate = PauseState.OverrideResume;
+                }
+                else
+                {
+                    m_lastKnownPauseState = m_pauseState;
+                    m_pauseState = pauseState;
+                    Time.timeScale = 0;
+                }
                 return;
 
             case PauseState.RestoreFromOverride:
-                m_pauseState = PauseState.RestoreFromOverride;
-                SetPauseState(m_lastKnownPauseState);
-                return;// DO NOT SET VALUES.
+                if (m_pauseState == PauseState.DebugConsolePaused)
+                {
+                    if (m_lastKnownDebugPauseSate != PauseState.Resumed && m_lastKnownDebugPauseSate != PauseState.Paused)
+                    {
+                        m_lastKnownDebugPauseSate = m_lastKnownPauseState;
+                    }
+                }
+                else
+                {
+                    m_pauseState = m_lastKnownPauseState;
+                    if (m_lastKnownPauseState == PauseState.Resumed)
+                    {
+                        Time.timeScale = 1;
+                    }
+                    else if (m_lastKnownPauseState == PauseState.Paused)
+                    {
+                        Time.timeScale = 0;
+                    }
+                }
+                return;
 
             case PauseState.RestoreFromDebugPause:
-                m_pauseState = PauseState.RestoreFromDebugPause;
-                SetPauseState(m_lastKnownDebugPauseSate);
-                return;// DO NOT SET VALUES.
+                if (m_lastKnownDebugPauseSate == PauseState.Resumed)
+                {
+                    m_pauseState = m_lastKnownDebugPauseSate;
+                    Time.timeScale = 1;
+                }
+                else if (m_lastKnownDebugPauseSate == PauseState.Paused)
+                {
+                    m_pauseState = m_lastKnownDebugPauseSate;
+                    Time.timeScale = 0;
+                }
+                else if (m_lastKnownDebugPauseSate == PauseState.OverridePaused)
+                {
+                    m_pauseState = m_lastKnownDebugPauseSate;
+                    Time.timeScale = 0;
+                }
+                else if (m_lastKnownDebugPauseSate == PauseState.OverrideResume)
+                {
+                    m_pauseState = m_lastKnownDebugPauseSate;
+                    Time.timeScale = 1;
+                }
+                else if (m_lastKnownDebugPauseSate == PauseState.RestoreFromOverride)
+                {
+                    m_pauseState = m_lastKnownPauseState;
+                    if (m_lastKnownPauseState == PauseState.Resumed)
+                    {
+                        Time.timeScale = 1;
+                    }
+                    else if (m_lastKnownPauseState == PauseState.Paused)
+                    {
+                        Time.timeScale = 0;
+                    }
+                }
+                return;
 
             case PauseState.DebugConsolePaused:
                 m_lastKnownDebugPauseSate = m_pauseState;

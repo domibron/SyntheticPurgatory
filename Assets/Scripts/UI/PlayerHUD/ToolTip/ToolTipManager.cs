@@ -48,6 +48,12 @@ public class ToolTipManager : MonoBehaviour
             Instance = this;
         }
     }
+
+    void OnDestroy()
+    {
+        Instance = null;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

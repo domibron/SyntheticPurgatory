@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef0d8fed2bda3d145bd4cccb1cb11e4b, type: 3}
   m_Name: SO_PlayerStats
   m_EditorClassIdentifier: 
-  stats:
+  pStats:
     MaxHealthStat:
       BaseStat: 100
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 1
       IncreasePerLevel: 1
@@ -34,7 +34,7 @@ MonoBehaviour:
     RegenerationSpeed: 2
     RegenerationAmountStat:
       BaseStat: 5
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 1
       IncreasePerLevel: 1
@@ -50,70 +50,85 @@ MonoBehaviour:
       CurrentCost: 10
       CurrentUpgradeAmount: 1
       ChipIncreaseAmount: 0
-    WalkSpeed: 4
-    GroundRunSpeedStat:
-      BaseStat: 5.5
-      IsThereAMax: 0
+    RunSpeed:
+      BaseStat: 8
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 1
       IncreasePerLevel: 1
-      BaseCost: 10
-      IncreaseCostAmount: 1.1
+      BaseCost: 1
+      IncreaseCostAmount: 1
       Prefix: 
-      Suffix: m/s
-      StringModifiers: N1
+      Suffix: 
+      StringModifiers: 
       StatName: Sprint Speed
-      StatDescription: How fust you run.
-      CurrentValue: 5.5
+      StatDescription: Description
+      CurrentValue: 8
       UpgradedAmount: 0
-      CurrentCost: 10
+      CurrentCost: 1
       CurrentUpgradeAmount: 1
       ChipIncreaseAmount: 0
-    AirSpeed: 3
-    GroundAccelerationPercentBase: 5.4545455
-    AirAccelerationPercentBase: 6.6666665
-    JumpForce: 7
-    SlideBoostPercentageStat:
-      BaseStat: 1.6
-      IsThereAMax: 0
+    WalkSpeed:
+      BaseStat: 5
+      StatHasMax: 0
       MaxStat: 0
-      IncreaseAmount: 0.1
+      IncreaseAmount: 1
       IncreasePerLevel: 1
-      BaseCost: 10
-      IncreaseCostAmount: 1.1
+      BaseCost: 1
+      IncreaseCostAmount: 1
       Prefix: 
       Suffix: 
-      StringModifiers: P0
+      StringModifiers: 
+      StatName: Walk Speed
+      StatDescription: Description
+      CurrentValue: 5
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
+    WalkAccelRate: 0.1
+    RunAccelRate: 0.2
+    AirAccelRate: 0.5
+    JumpHeight:
+      BaseStat: 2
+      StatHasMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: 
+      StringModifiers: 
+      StatName: Jump Height
+      StatDescription: Description
+      CurrentValue: 2
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
+      ChipIncreaseAmount: 0
+    SlideForce:
+      BaseStat: 5
+      StatHasMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: 
+      StringModifiers: 
       StatName: Slide Boost
       StatDescription: Description
-      CurrentValue: 1.6
+      CurrentValue: 5
       UpgradedAmount: 0
-      CurrentCost: 10
-      CurrentUpgradeAmount: 0.1
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
       ChipIncreaseAmount: 0
-    AirBoostPercentageStat:
-      BaseStat: 2.5
-      IsThereAMax: 0
-      MaxStat: 0
-      IncreaseAmount: 0.1
-      IncreasePerLevel: 1
-      BaseCost: 10
-      IncreaseCostAmount: 1.1
-      Prefix: 
-      Suffix: 
-      StringModifiers: P0
-      StatName: Air Boost
-      StatDescription: Description
-      CurrentValue: 2.5
-      UpgradedAmount: 0
-      CurrentCost: 10
-      CurrentUpgradeAmount: 0.1
-      ChipIncreaseAmount: 0
-    GroundFriction: 5
-    AirFriction: 1
+    SlideFriction: 2
     ProjectileDamageStat:
       BaseStat: 16
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 1
       IncreasePerLevel: 1
@@ -131,7 +146,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     RechargeSecondsStat:
       BaseStat: 2
-      IsThereAMax: 1
+      StatHasMax: 0
       MaxStat: 0.1
       IncreaseAmount: -0.1
       IncreasePerLevel: 1
@@ -149,7 +164,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     ShotsPerFullChargeStat:
       BaseStat: 12
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 1
       IncreasePerLevel: 1
@@ -170,7 +185,7 @@ MonoBehaviour:
     DelayAfterFireBeforeRecharging: 0.4
     OverheatForceCoolDownStat:
       BaseStat: 2
-      IsThereAMax: 1
+      StatHasMax: 0
       MaxStat: 0.1
       IncreaseAmount: -0.1
       IncreasePerLevel: 1
@@ -178,7 +193,7 @@ MonoBehaviour:
       IncreaseCostAmount: 1.1
       Prefix: 
       Suffix: s
-      StringModifiers: 
+      StringModifiers: N2
       StatName: Overheat
       StatDescription: Overheat cool down time
       CurrentValue: 2
@@ -188,7 +203,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     MeleeAttackDelayStat:
       BaseStat: 0.5
-      IsThereAMax: 1
+      StatHasMax: 0
       MaxStat: 0.1
       IncreaseAmount: -0.05
       IncreasePerLevel: 1
@@ -206,7 +221,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     MeleeDamageStat:
       BaseStat: 16
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 2
       IncreasePerLevel: 2
@@ -224,7 +239,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     MeleeReachStat:
       BaseStat: 1.75
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 0.05
       IncreasePerLevel: 1
@@ -242,7 +257,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     MeleeStaggerTimeStat:
       BaseStat: 0.6
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 0.05
       IncreasePerLevel: 1
@@ -260,7 +275,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     BashForceStat:
       BaseStat: 12
-      IsThereAMax: 0
+      StatHasMax: 0
       MaxStat: 0
       IncreaseAmount: 1
       IncreasePerLevel: 1
@@ -278,7 +293,7 @@ MonoBehaviour:
       ChipIncreaseAmount: 0
     BashAttackDelayStat:
       BaseStat: 0.5
-      IsThereAMax: 1
+      StatHasMax: 0
       MaxStat: 0.1
       IncreaseAmount: -0.05
       IncreasePerLevel: 1
@@ -293,4 +308,22 @@ MonoBehaviour:
       UpgradedAmount: 0
       CurrentCost: 10
       CurrentUpgradeAmount: -0.05
+      ChipIncreaseAmount: 0
+    CriticalHitChance:
+      BaseStat: 0.01
+      StatHasMax: 0
+      MaxStat: 0
+      IncreaseAmount: 1
+      IncreasePerLevel: 1
+      BaseCost: 1
+      IncreaseCostAmount: 1
+      Prefix: 
+      Suffix: 
+      StringModifiers: 
+      StatName: Critical Chance
+      StatDescription: Description
+      CurrentValue: 0.01
+      UpgradedAmount: 0
+      CurrentCost: 1
+      CurrentUpgradeAmount: 1
       ChipIncreaseAmount: 0

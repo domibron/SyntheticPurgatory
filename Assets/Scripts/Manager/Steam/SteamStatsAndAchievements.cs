@@ -37,6 +37,8 @@ public class SteamStatsAndAchievements : MonoBehaviour
 
     public Action StatsRefreshed;
 
+    private bool debugInfo = false;
+
 
 #if UNITY_2019_3_OR_NEWER
     // In case of disabled Domain Reload, reset static members before entering Play Mode.
@@ -479,13 +481,16 @@ public class SteamStatsAndAchievements : MonoBehaviour
 
     public void OnGUI()
     {
+        if (!debugInfo)
+        {
+            return;
+        }
+
         if (!SteamManager.Initialized)
         {
             GUILayout.Label("Steamworks not Initialized");
             return;
         }
-
-        return;
 
         GUILayout.Label("m_totalGamesWon: " + GetStatValue(Stat.STAT_GAMES_WON, out bool _));
         GUILayout.Label("m_nTotalEnemiesKilled: " + GetStatValue(Stat.STAT_ENEMIES_KILLED, out bool _));

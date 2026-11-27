@@ -19,44 +19,6 @@ public class MiscellaneousStats : CoreStats, ICloneable
 
     public UpgradableStat MaxLevelTimeStat = new(120f);
 
-    public UpgradableStat CriticalHitChanceStat = new(0.1f);
-
-    protected override UpgradableStat[] GetAllUpgradableStats()
-    {
-        UpgradableStat[] upgradablePlayerStats =
-        {
-            MaxCollectionRangeStat,
-            MaxInventoryScrapStat,
-            MaxLevelTimeStat,
-            CriticalHitChanceStat,
-        };
-
-        return upgradablePlayerStats;
-    }
-
-    public override object Clone()
-    {
-        return new MiscellaneousStats
-        {
-            MaxCollectionRangeStat = (UpgradableStat)MaxCollectionRangeStat.Clone(),
-            CollectItemIntoInventoryRange = CollectItemIntoInventoryRange,
-
-            FlyAccel = FlyAccel,
-            FlyMaxSpeed = FlyMaxSpeed,
-            FlyDistanceBoost = FlyDistanceBoost,
-
-            DepositRate = DepositRate,
-
-            MaxInventoryScrapStat = (UpgradableStat)MaxInventoryScrapStat.Clone(),
-
-            ScrapRangeUpgradeAmount = ScrapRangeUpgradeAmount,
-
-            MaxLevelTimeStat = (UpgradableStat)MaxLevelTimeStat.Clone(),
-
-            CriticalHitChanceStat = (UpgradableStat)CriticalHitChanceStat.Clone(),
-        };
-    }
-
 }
 
 [CreateAssetMenu(menuName = "ScriptableObjects/Stats/Miscellaneous", fileName = "SO_MiscellaneousStats")]

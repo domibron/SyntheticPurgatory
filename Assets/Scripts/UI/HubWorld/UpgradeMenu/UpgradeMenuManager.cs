@@ -119,30 +119,32 @@ public class UpgradeMenuManager : MonoBehaviour
         }
     }
 
-    public (UpgradableStat, UpgradableStat) GetCurrentStat(StatType statType)
+    public (UpgradableStat, UpgradableStat) GetCurrentStat(string nameOfUpgradeableStat)
     {
-        return (ConvertEnumToStat(statType, ref currentPStats, ref currentMiscStats), ConvertEnumToStat(statType, ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats));
+        return (GetUpgradeableStatByName(nameOfUpgradeableStat, currentPStats, currentMiscStats),
+            GetUpgradeableStatByName(nameOfUpgradeableStat, upgradedButNotAppliedPStats, upgradedButNotAppliedMiscStats));
 
     }
 
-    public void AddUpgradeOnce(StatType statType)
+    public void AddUpgradeOnce(string nameOfUpgradeableStat)
     {
 
-        currentCost += UpgradeOnce(ref ConvertEnumToStat(statType, ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats));
+        currentCost += UpgradeOnce(GetUpgradeableStatByName(nameOfUpgradeableStat, upgradedButNotAppliedPStats, upgradedButNotAppliedMiscStats));
 
 
         UpdateStatUI();
     }
 
-    public void RemoveUpgradeOnce(StatType statType)
+    public void RemoveUpgradeOnce(string nameOfUpgradeableStat)
     {
-        currentCost += RemoveUpgradeOnce(ref ConvertEnumToStat(statType, ref currentPStats, ref currentMiscStats), ref ConvertEnumToStat(statType, ref upgradedButNotAppliedPStats, ref upgradedButNotAppliedMiscStats));
+        currentCost += RemoveUpgradeOnce(GetUpgradeableStatByName(nameOfUpgradeableStat, currentPStats, currentMiscStats),
+            GetUpgradeableStatByName(nameOfUpgradeableStat, upgradedButNotAppliedPStats, upgradedButNotAppliedMiscStats));
 
 
         UpdateStatUI();
     }
 
-    private int RemoveUpgradeOnce(ref UpgradableStat currentStat, ref UpgradableStat upgradingStat)
+    private int RemoveUpgradeOnce(UpgradableStat currentStat, UpgradableStat upgradingStat)
     {
         int diff = upgradingStat.UpgradedAmount - currentStat.UpgradedAmount;
         if (diff - 1 < 0) return 0;
@@ -155,7 +157,7 @@ public class UpgradeMenuManager : MonoBehaviour
         return costRemoval;
     }
 
-    private int UpgradeOnce(ref UpgradableStat upgradingStat)
+    private int UpgradeOnce(UpgradableStat upgradingStat)
     {
         if (upgradingStat.GetMaxUpgradeCountPossible() == 0) return 0;
 
@@ -283,52 +285,27 @@ public class UpgradeMenuManager : MonoBehaviour
         menuManager.OpenMenu(mainMenuKey);
     }
 
-    public static ref UpgradableStat ConvertEnumToStat(StatType statType, ref PlayerStats pStats, ref MiscellaneousStats mStats)
+#nullable enable
+    public static UpgradableStat GetUpgradeableStatByName(string nameOfUpgradeableStat, PlayerStats pStats, MiscellaneousStats mStats)
     {
-        switch (statType)
+        foreach (var stat in pStats.GetAllUpgradableStats())
         {
-            default:
-                throw new NullReferenceException("No valid stat for enum!");
-            case StatType.MaxHealth:
-                return ref pStats.MaxHealthStat;
-            case StatType.RegenerationAmount:
-                return ref pStats.RegenerationAmountStat;
-            case StatType.GroundSpeed:
-                return ref pStats.GroundRunSpeedStat;
-            case StatType.SlideBoostForce:
-                return ref pStats.SlideBoostPercentageStat;
-            case StatType.AirBoostForce:
-                return ref pStats.AirBoostPercentageStat;
-            case StatType.ProjectileDamage:
-                return ref pStats.ProjectileDamageStat;
-            case StatType.CannonRechargeRate:
-                return ref pStats.RechargeSecondsStat;
-            case StatType.ShotsPerFullCharge:
-                return ref pStats.ShotsPerFullChargeStat;
-            case StatType.OverheatForceCoolDown:
-                return ref pStats.OverheatForceCoolDownStat;
-            case StatType.MeleeDamage:
-                return ref pStats.MeleeDamageStat;
-            case StatType.MeleeDelay:
-                return ref pStats.MeleeAttackDelayStat;
-            case StatType.BashDelay:
-                return ref pStats.BashAttackDelayStat;
-            case StatType.EnemyStaggerTime:
-                return ref pStats.MeleeStaggerTimeStat;
-            case StatType.Reach:
-                return ref pStats.MeleeReachStat;
-            case StatType.KnockBackForce:
-                return ref pStats.BashForceStat;
-            case StatType.MaxScrapCarry:
-                return ref mStats.MaxInventoryScrapStat;
-            case StatType.ItemCollectionRange:
-                return ref mStats.MaxCollectionRangeStat;
-            case StatType.TimeLimit:
-                return ref mStats.MaxLevelTimeStat;
-            case StatType.CriticalChance:
-                return ref mStats.CriticalHitChanceStat;
-
+            if (stat.GetName() == nameOfUpgradeableStat)
+            {
+                return stat;
+            }
         }
-    }
 
+        foreach (var stat in mStats.GetAllUpgradableStats())
+        {
+            if (stat.GetName() == nameOfUpgradeableStat)
+            {
+                return stat;
+            }
+        }
+
+
+        throw new NullReferenceException($"Cannot find stat with the name of {nameOfUpgradeableStat}! Is the name correct?");
+    }
+#nullable restore
 }

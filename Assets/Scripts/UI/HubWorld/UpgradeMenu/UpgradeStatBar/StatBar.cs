@@ -32,7 +32,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     TMP_Text text;
 
     [SerializeField]
-    StatType statBarType = StatType.MaxHealth;
+    string statName = "";
 
     [SerializeField]
     AudioClip hover;
@@ -209,7 +209,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             throw new NullReferenceException($"Urm, {nameof(UpgradeMenuManager)} is null but you called update stats.");
         }
 
-        (currentStat, upgradedButNotAppliedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statBarType);
+        (currentStat, upgradedButNotAppliedStat) = UpgradeMenuManager.Instance.GetCurrentStat(statName);
 
         if (currentStat == null || upgradedButNotAppliedStat == null)
         {
@@ -331,7 +331,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (UpgradeMenuManager.Instance.GetRemainingScrap() - upgradedButNotAppliedStat.UpgradeCost() < 0) return; // Prevents and purchases that puts the player into negative.
 
-        UpgradeMenuManager.Instance.AddUpgradeOnce(statBarType);
+        UpgradeMenuManager.Instance.AddUpgradeOnce(statName);
 
         uiAudioSource.PlayOneShot(add);
     }
@@ -342,7 +342,7 @@ public class StatBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (upgradedButNotAppliedStat.UpgradedAmount <= currentStat.UpgradedAmount) return; // Stops accidental downgrades that eat into current stats.
 
-        UpgradeMenuManager.Instance.RemoveUpgradeOnce(statBarType);
+        UpgradeMenuManager.Instance.RemoveUpgradeOnce(statName);
 
         uiAudioSource.PlayOneShot(remove);
     }

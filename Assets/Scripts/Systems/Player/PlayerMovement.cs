@@ -94,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// The angle threashold before the surface is considered steep.
     /// </summary>
-    const float k_slopeToSteepSlopeThreshold = 40;
+    const float k_slopeToSteepSlopeThreshold = 50;
 
     /// <summary>
     /// The angle threshold before the surgace is considered a slight slope.
@@ -132,6 +132,7 @@ public class PlayerMovement : MonoBehaviour
     #region Input related
 
     //TODO: remove from imp. default input should be set correctly.
+    // ^ This referring to the constants, should be baked into the input default values.
     /// <summary>
     /// The multiplier to sensitivity to decrease the base sensitivity. 
     /// </summary>
@@ -286,7 +287,7 @@ public class PlayerMovement : MonoBehaviour
     float m_vertFovSmoohing = 0f;
 
     Vector3 m_cameraPosWorld = Vector3.zero;
-    Vector3 m_cameraAdditonalOffset = Vector3.zero;
+    Vector3 m_cameraAdditionalOffset = Vector3.zero;
 
     Vector3 m_cameraRot = Vector3.zero;
 
@@ -305,29 +306,29 @@ public class PlayerMovement : MonoBehaviour
     #region Movement Related
 
 
-    [SerializeField]
-    float m_maxSprintSpeed = 10;
+    [StatAssignable("RunSpeed")]
+    float m_maxSprintSpeed = 8;
 
-    [SerializeField]
+    [StatAssignable("WalkSpeed")]
     float m_maxWalkSpeed = 5;
 
-    [SerializeField]
-    float m_walkAccelRate = 0.1f;
+    [StatAssignable("WalkAccelRate")]
+    float m_walkAccelRate = 0.2f;
 
-    [SerializeField]
+    [StatAssignable("RunAccelRate")]
     float m_sprintAccelRate = 0.2f;
 
-    [SerializeField]
+    [StatAssignable("AirAccelRate")]
     float m_airAccelRate = 0.5f;
 
-    [SerializeField]
+    [StatAssignable("JumpHeight")]
     float m_jumpHeight = 2f;
 
-    [SerializeField]
-    float m_slideForce = 2f;
+    [StatAssignable("JumpHeight")]
+    float m_slideForce = 5f;
 
-    [SerializeField]
-    float m_slideFriction = 2f;
+    [StatAssignable("SlideFriction")]
+    float m_slideFriction = 0.5f;
 
     #endregion
 
@@ -471,21 +472,21 @@ public class PlayerMovement : MonoBehaviour
             }
 
             // Apply head bobbing to the camera offset.
-            m_cameraAdditonalOffset = m_moveableCamera.transform.right * sideOffset * GetHalfHeight() * 0.1f;
-            m_cameraAdditonalOffset += m_moveableCamera.transform.up * heightOffset * GetHalfHeight() * 0.1f;
+            m_cameraAdditionalOffset = m_moveableCamera.transform.right * sideOffset * GetHalfHeight() * 0.1f;
+            m_cameraAdditionalOffset += m_moveableCamera.transform.up * heightOffset * GetHalfHeight() * 0.1f;
         }
         else
         {
             m_movementTimeForBobbing = 0;
 
-            m_cameraAdditonalOffset = Vector3.Lerp(m_cameraAdditonalOffset, Vector3.zero, 10f * Time.deltaTime);
+            m_cameraAdditionalOffset = Vector3.Lerp(m_cameraAdditionalOffset, Vector3.zero, 10f * Time.deltaTime);
         }
 
 
 
 
         // Apply all camera movements and offsets.
-        m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditonalOffset;
+        m_moveableCamera.position = m_cameraPosWorld + m_cameraAdditionalOffset;
 
 
 
@@ -1431,12 +1432,14 @@ public class PlayerMovement : MonoBehaviour
     /// <param name="stats">The stats to read from.</param>
     public void UpdateVariablesWithStats(PlayerStats stats)
     {
-        // if (stats == null)
-        // {
-        //     Debug.LogError("No player stats! Using default values!");
-        //     stats = new PlayerStats();
-        //     // return;
-        // }
+        if (stats == null)
+        {
+            Debug.LogError("No player stats! Using default values in script values!");
+            // stats = new PlayerStats();
+            return;
+        }
+
+        stats.ApplyStats(this);
 
         // walkSpeed = stats.WalkSpeed;
         // runSpeed = stats.GroundRunSpeedStat.GetCurrentValue();
@@ -1454,6 +1457,8 @@ public class PlayerMovement : MonoBehaviour
 
         // groundFriction = stats.GroundFriction;
         // airFriction = stats.AirFriction;
+
+
 
         Debug.LogWarning("Player stats have not been implemented onto the player!");
     }

@@ -11,33 +11,35 @@ using UnityEngine.Serialization;
 [Serializable]
 public class PlayerStats : CoreStats, ICloneable
 {
-    public UpgradableStat MaxHealthStat = new UpgradableStat(100f);
 
+    // ===========
+    //   Health.
+    // =========== 
+    public UpgradableStat MaxHealthStat = new UpgradableStat(100f);
 
     public float RegenerationSpeed = 1f;
     public UpgradableStat RegenerationAmountStat = new(5f);
 
-    public float WalkSpeed = 4f;
-    public UpgradableStat GroundRunSpeedStat = new(5.5f);
-    public float AirSpeed = 3f; // TODO: should be a fraction from gound speed.
 
-    // public float GroundAcceleration = 30f;
-    // public float AirAcceleration = 20f;
+    // =============
+    //   Movement.
+    // =============
+    public UpgradableStat RunSpeed = new(8f);
+    public UpgradableStat WalkSpeed = new(5f);
 
-    // this should be calculated from accel and speed to get this. Speed * thisPercentage = accel.
-    public float GroundAccelerationPercentBase = 5.45454545455f;
-    public float AirAccelerationPercentBase = 6.66666666667f;
+    public float WalkAccelRate = 0.2f;
+    public float RunAccelRate = 0.2f;
+    public float AirAccelRate = 0.5f;
 
-    public float JumpForce = 9.2f;
+    public UpgradableStat JumpHeight = new(2f);
 
-
-    public UpgradableStat SlideBoostPercentageStat = new(1.65f);
-    public UpgradableStat AirBoostPercentageStat = new(2.5f);
-
-    public float GroundFriction = 5f;
-    public float AirFriction = 1;
+    public UpgradableStat SlideForce = new(5f);
+    public float SlideFriction = 0.5f;
 
 
+    // ======================
+    //   Projectile Weapon.
+    // ======================
     public UpgradableStat ProjectileDamageStat = new(12f);
     public UpgradableStat RechargeSecondsStat = new(0.3f);
     public UpgradableStat ShotsPerFullChargeStat = new(10);
@@ -47,82 +49,23 @@ public class PlayerStats : CoreStats, ICloneable
     public UpgradableStat OverheatForceCoolDownStat = new(3f);
 
 
+    // =================
+    //   Melee Weapon.
+    // =================
     public UpgradableStat MeleeAttackDelayStat = new(0.5f);
     public UpgradableStat MeleeDamageStat = new(10f);
     public UpgradableStat MeleeReachStat = new(1.5f);
     public UpgradableStat MeleeStaggerTimeStat = new(0.4f);
 
+    // =========
+    //   Bash.
+    // =========
     public UpgradableStat BashForceStat = new(10f);
     public UpgradableStat BashAttackDelayStat = new(0.5f);
 
-    protected override UpgradableStat[] GetAllUpgradableStats()
-    {
-        UpgradableStat[] upgradablePlayerStats =
-        {
-            MaxHealthStat,
-            RegenerationAmountStat,
-            GroundRunSpeedStat,
-            SlideBoostPercentageStat,
-            AirBoostPercentageStat,
-            ProjectileDamageStat,
-            RechargeSecondsStat,
-            ShotsPerFullChargeStat,
-            OverheatForceCoolDownStat,
-            MeleeAttackDelayStat,
-            MeleeDamageStat,
-            MeleeReachStat,
-            MeleeStaggerTimeStat,
-            BashForceStat,
-            BashAttackDelayStat,
-        };
-
-        return upgradablePlayerStats;
-    }
-
-    public override object Clone()
-    {
-        return new PlayerStats
-        {
-            MaxHealthStat = (UpgradableStat)MaxHealthStat.Clone(),
-
-            RegenerationSpeed = RegenerationSpeed,
-            RegenerationAmountStat = (UpgradableStat)RegenerationAmountStat.Clone(),
-
-            WalkSpeed = WalkSpeed,
-            GroundRunSpeedStat = (UpgradableStat)GroundRunSpeedStat.Clone(),
-            AirSpeed = AirSpeed,
-
-            GroundAccelerationPercentBase = GroundAccelerationPercentBase,
-            AirAccelerationPercentBase = AirAccelerationPercentBase,
-
-            JumpForce = JumpForce,
-
-            // SlideBoostForce = SlideBoostForce,
-            // AirBoostForce = AirBoostForce,
-
-            SlideBoostPercentageStat = (UpgradableStat)SlideBoostPercentageStat.Clone(),
-            AirBoostPercentageStat = (UpgradableStat)AirBoostPercentageStat.Clone(),
-
-            ProjectileDamageStat = (UpgradableStat)ProjectileDamageStat.Clone(),
-            RechargeSecondsStat = (UpgradableStat)RechargeSecondsStat.Clone(),
-            ShotsPerFullChargeStat = (UpgradableStat)ShotsPerFullChargeStat.Clone(),
-            StandardSecondsPerShot = StandardSecondsPerShot,
-            ChargedSecondsPerShot = ChargedSecondsPerShot,
-            DelayAfterFireBeforeRecharging = DelayAfterFireBeforeRecharging,
-            OverheatForceCoolDownStat = (UpgradableStat)OverheatForceCoolDownStat.Clone(),
-            // ProjectileFireRate = ProjectileFireRate,
 
 
-            MeleeAttackDelayStat = (UpgradableStat)MeleeAttackDelayStat.Clone(),
-            MeleeDamageStat = (UpgradableStat)MeleeDamageStat.Clone(),
-            BashForceStat = (UpgradableStat)BashForceStat.Clone(),
-            BashAttackDelayStat = (UpgradableStat)BashAttackDelayStat.Clone(),
-
-            MeleeReachStat = (UpgradableStat)MeleeReachStat.Clone(),
-            MeleeStaggerTimeStat = (UpgradableStat)MeleeStaggerTimeStat.Clone(),
-
-        };
-    }
+    public UpgradableStat CriticalHitChance = new(0.01f);
 
 }
 

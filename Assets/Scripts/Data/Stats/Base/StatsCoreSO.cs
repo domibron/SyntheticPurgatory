@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 
@@ -12,14 +15,65 @@ public class CoreStats : ICloneable
     /// Returns a array of all the upgradable stats in this stat class.
     /// </summary>
     /// <returns>Array of UpgradableStat.</returns>
-    protected virtual UpgradableStat[] GetAllUpgradableStats()
+    public virtual List<UpgradableStat> GetAllUpgradableStats()
     {
-        UpgradableStat[] upgradablePlayerStats =
-        {
-            // add your stats here.
-        };
+        return GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic) // NonPublic gets serializeFields.
+            .Where(field => typeof(UpgradableStat).IsAssignableFrom(field.FieldType)) // Also checks inherited members.
+            .Select(field => (UpgradableStat)field.GetValue(this))
+            .Where(stat => stat != null)
+            .ToList();
+    }
 
-        return upgradablePlayerStats;
+    public virtual List<FieldInfo> GetAllStats()
+    {
+        return GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic) // NonPublic gets serializeFields.
+            .ToList();
+    }
+
+
+    public void ApplyStats(object target)
+    {
+        FieldInfo[] fields = target.GetType().GetFields(
+        BindingFlags.Public |
+        BindingFlags.Instance |
+        BindingFlags.NonPublic
+        );
+
+        foreach (FieldInfo field in fields)
+        {
+            var attribute = field.GetCustomAttribute<StatAssignableAttribute>();
+
+            if (attribute == null) continue;
+
+            var stat = GetAllStats().FirstOrDefault(s => s.Name == attribute.TargetStatName);
+
+            if (stat == null)
+            {
+                Debug.LogError($"No matching stat for {attribute.TargetStatName}!");
+                continue;
+            }
+
+            object statValue = stat.GetValue(this);
+
+            if (statValue is UpgradableStat upgradableStat)
+            {
+                statValue = upgradableStat.GetCurrentValue();
+            }
+
+            if (statValue is float floatValue)
+            {
+                field.SetValue(target, floatValue);
+            }
+            else if (statValue is int intValue)
+            {
+                field.SetValue(target, intValue);
+            }
+            else
+            {
+                Debug.LogError($"Unsupported stat type! {stat.FieldType}");
+                continue;
+            }
+        }
     }
 
     /// <summary>
@@ -49,13 +103,20 @@ public class CoreStats : ICloneable
     /// Get a deep copy of this stat class.
     /// </summary>
     /// <returns>A copy of this stat class.</returns>
-    public virtual object Clone()
+    public object Clone()
     {
-        var clone = new CoreStats
+        var clone = (CoreStats)MemberwiseClone();
+
+        foreach (var field in GetType().GetFields(
+        BindingFlags.Instance |
+        BindingFlags.Public |
+        BindingFlags.NonPublic))
         {
-
-        };
-
+            if (field.GetValue(this) is UpgradableStat stat)
+            {
+                field.SetValue(clone, stat.Clone());
+            }
+        }
 
         return clone;
     }

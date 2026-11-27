@@ -43,13 +43,12 @@ public class DamagingArea : MonoBehaviour
     private void DamageTick()
     {
         // Fixed a bug when iterating over a list and modifying that list.
-        List<Health> objectsToDamage = objectsInside;
-
-        // TODO: cache the list, contents can be modified whilst iterating.
+        List<Health> objectsToDamage = new List<Health>();
+        objectsToDamage.AddRange(objectsInside);
 
         foreach (Health damageableObject in objectsToDamage)
         {
-            // if null remove.
+            // if null remove from master list.
             if (!damageableObject)
             {
                 objectsInside.Remove(damageableObject);

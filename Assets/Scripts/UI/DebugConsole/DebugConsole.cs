@@ -130,8 +130,6 @@ public class DebugConsole : MonoBehaviour
 
 
 		HandleConsoleActiveState();
-
-		Time.maximumDeltaTime = 0.5f;
 	}
 
 	// Update is called once per frame
@@ -800,7 +798,7 @@ public class DebugConsole : MonoBehaviour
 			}
 		}, ("card tier", "The card tier to give"), ("int amount", "The quantity to give of that specified card tier")));
 
-		Commands.Add(new Command("hurtself", "Adds damage to the player character.", (string[] args) =>
+		Commands.Add(new Command("damageplayer", "Adds damage to the player character.", (string[] args) =>
 		{
 			CheckForCheats();
 			CheckArgumentCount(args, 1);
@@ -813,8 +811,11 @@ public class DebugConsole : MonoBehaviour
 				throw new Exception("No player was found! Are in a active game right now?");
 			}
 
-			player.GetComponent<Health>().AddToHealth(damage);
+			Health h = player.GetComponent<Health>();
 
+			LogToConsole($"Damaged player! Now at {h.GetHealthValue() - damage}.");
+
+			h.AddToHealth(-damage);
 
 		}, null, ("float", "Damage to apply.")));
 

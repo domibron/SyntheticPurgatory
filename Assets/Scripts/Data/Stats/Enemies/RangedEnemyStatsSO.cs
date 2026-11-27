@@ -19,24 +19,6 @@ public class RangedEnemyStats : CoreStats, ICloneable
     public float dodgeSpeed = 0f;
 
 
-    public override object Clone()
-    {
-        return new RangedEnemyStats
-        {
-            health = health,
-
-            damage = damage,
-            attackRange = attackRange,
-            attackSpeed = attackSpeed,
-
-            baseSpeed = baseSpeed,
-            followSpeed = followSpeed,
-            fleeSpeed = fleeSpeed,
-            stuckSpeed = stuckSpeed,
-            dodgeSpeed = dodgeSpeed,
-        };
-    }
-
 }
 
 [CreateAssetMenu(menuName = "ScriptableObjects/Stats/RangedEnemyStats", fileName = "SO_RangedEnemyStats")]
